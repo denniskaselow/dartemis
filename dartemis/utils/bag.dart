@@ -2,20 +2,20 @@
 
 #import('dart:coreimpl');
 
-#import('ImmutableBag.dart');
+#import('immutable_bag.dart');
 
 
 class Bag<E> implements ImmutableBag<E> {
   List _data;
   int _size = 0;
-  
+
   Bag([int capacity = 16]) {
     _data = new List(capacity);
   }
 
   /**
    * Returns the element at the specified position in Bag.
-   * 
+   *
    * @param index
    *            index of the element to return
    * @return the element at the specified position in bag
@@ -26,7 +26,7 @@ class Bag<E> implements ImmutableBag<E> {
 
   /**
    * Returns the number of elements in this bag.
-   * 
+   *
    * @return the number of elements in this bag
    */
   int get size() {
@@ -35,19 +35,19 @@ class Bag<E> implements ImmutableBag<E> {
 
   /**
    * Returns true if this list contains no elements.
-   * 
+   *
    * @return true if this list contains no elements
    */
   bool isEmpty() {
     return _size == 0;
   }
-  
+
 
 
   /**
    * Removes the element at the specified position in this Bag. does this by
    * overwriting it was last element then removing last element
-   * 
+   *
    * @param index
    *            the index of element to be removed
    * @return element that was removed from the Bag
@@ -58,14 +58,14 @@ class Bag<E> implements ImmutableBag<E> {
     _data[index] = _data[--_size]; // overwrite item to remove with last
     // element
     _data[_size] = null; // null last element, so gc can do its work
-    
+
     return o;
   }
-  
-  
+
+
   /**
    * Remove and return the last object in the bag.
-   * 
+   *
    * @return the last object in the bag, null if empty.
    */
   E removeLast() {
@@ -73,17 +73,17 @@ class Bag<E> implements ImmutableBag<E> {
       Object o = _data[--_size];
       _data[_size] = null;
       return o;
-    }    
+    }
     return null;
   }
-  
+
 
 
   /**
    * Removes the first occurrence of the specified element from this Bag, if
    * it is present. If the Bag does not contain the element, it is unchanged.
    * does this by overwriting it was last element then removing last element
-   * 
+   *
    * @param o
    *            element to be removed from this list, if present
    * @return <tt>true</tt> if this list contained the specified element
@@ -102,11 +102,11 @@ class Bag<E> implements ImmutableBag<E> {
 
     return false;
   }
-  
+
 
   /**
    * Check if bag contains this element.
-   * 
+   *
    * @param o
    * @return
    */
@@ -118,13 +118,13 @@ class Bag<E> implements ImmutableBag<E> {
     }
     return false;
   }
-  
+
 
 
   /**
    * Removes from this Bag all of its elements that are contained in the
    * specified Bag.
-   * 
+   *
    * @param bag
    *            Bag containing elements to be removed from this Bag
    * @return {@code true} if this Bag changed as a result of the call
@@ -151,22 +151,22 @@ class Bag<E> implements ImmutableBag<E> {
   }
 
 
-  
+
   /**
    * Returns the number of elements the bag can hold without growing.
-   * 
+   *
    * @return the number of elements the bag can hold without growing.
    */
   int get capacity() {
     return _data.length;
   }
-  
+
 
 
   /**
    * Adds the specified element to the end of this bag. if needed also
    * increases the capacity of the bag.
-   * 
+   *
    * @param o
    *            element to be added to this list
    */
@@ -181,7 +181,7 @@ class Bag<E> implements ImmutableBag<E> {
 
   /**
    * Set element at specified index in the bag.
-   * 
+   *
    * @param index position of element
    * @param o the element
    */
@@ -194,14 +194,14 @@ class Bag<E> implements ImmutableBag<E> {
     }
     _data[index] = o;
   }
-  
+
 
 
   void _grow() {
     int newCapacity = ((_data.length * 3) / 2 + 1).toInt();
     _growTo(newCapacity);
   }
-  
+
   void _growTo(int newCapacity) {
     List oldData = _data;
     _data = new List(newCapacity);
@@ -222,7 +222,7 @@ class Bag<E> implements ImmutableBag<E> {
   }
 
   /**
-   * Add all items into this bag. 
+   * Add all items into this bag.
    * @param added
    */
   void addAll(Bag<E> items) {
@@ -230,9 +230,9 @@ class Bag<E> implements ImmutableBag<E> {
       add(items[i]);
     }
   }
-  
+
   String toString() {
     return Collections.collectionToString(_data);
   }
-  
+
 }
