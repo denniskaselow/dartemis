@@ -198,7 +198,7 @@ class Bag<E> implements ImmutableBag<E> {
 
 
   void _grow() {
-    int newCapacity = (_data.length * 3) / 2 + 1;
+    int newCapacity = ((_data.length * 3) / 2 + 1).toInt();
     _growTo(newCapacity);
   }
   

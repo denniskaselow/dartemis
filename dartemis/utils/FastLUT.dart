@@ -1,13 +1,8 @@
-#library('dartemis');
-
-
-
 // Math.sin() is slow. Using a lookup table for sin/cos is roughly 50x faster.
 // The loss of accuracy is minimal, maximum error is roughly 0,001.
 // You can probably get away with it.
 // Thanks to Riven
 // From: http://riven8192.blogspot.com/2009/08/fastmath-sincos-lookup-tables.html
-
 
 double sin(num rad) {
   return _sin((rad * _radToIndex).toInt() & _SIN_MASK);
