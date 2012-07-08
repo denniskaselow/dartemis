@@ -1,7 +1,7 @@
 #library('dartemis');
 
 class FastMath {
-  
+
    static final  PI = Math.PI;
    static final  SQUARED_PI = PI * PI;
    static final  HALF_PI = 0.5 * PI;
@@ -24,8 +24,8 @@ class FastMath {
   }
 
   static double sin(double x) {
-    x = _sin_a * x * abs(x) + _sin_b * x;
-    return _sin_p * (x * abs(x) - x) + x;
+    x = _sin_a * x * x.abs() + _sin_b * x;
+    return _sin_p * (x * x.abs() - x) + x;
   }
 
   static double tan(final double x) {
@@ -33,7 +33,7 @@ class FastMath {
   }
 
   static double asin(final double x) {
-    return x * (abs(x) * (abs(x) * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
+    return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
   }
 
   static double acos(final double x) {
@@ -41,25 +41,22 @@ class FastMath {
   }
 
   static double atan(final double x) {
-    return (abs(x) < 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
+    return (x.abs() < 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
   }
 
 //  static double inverseSqrt(double x) {
 //    final double xhalves = 0.5 * x;
-//    x = Double.longBitsToDouble(0x5FE6EB50C7B537AAl - (Double.doubleToRawLongBits(x) >> 1)); 
+//    x = Double.longBitsToDouble(0x5FE6EB50C7B537AAl - (Double.doubleToRawLongBits(x) >> 1));
 //    return x * (1.5 - xhalves * x * x); // more iterations possible
 //  }
 //
 //  static double sqrt(final double x) {
 //    return x * inverseSqrt(x);
 //  }
-//    
-  static num abs(num x) {
-      return (x < 0) ? -x : x;
-  }
-  
+//
+
   static double signum(num x) {
     return (x < 0) ? -1.0 : (x > 0) ? 1.0 : 0;
 }
-  
+
 }
