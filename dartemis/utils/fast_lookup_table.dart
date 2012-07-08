@@ -45,7 +45,6 @@ double _cos(index) {
   if (null == _cosLookUpTable) {
     _cosLookUpTable = _createLookUpTable(Math.cos);
   }
-  print(_cosLookUpTable[index]);
   return _cosLookUpTable[index];
 }
 

@@ -42,6 +42,7 @@ class FastMath {
     return (x.abs() < 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
   }
 
+  // find a way to do this in dart
 //  static double inverseSqrt(double x) {
 //    final double xhalves = 0.5 * x;
 //    x = Double.longBitsToDouble(0x5FE6EB50C7B537AAl - (Double.doubleToRawLongBits(x) >> 1));
@@ -52,6 +53,9 @@ class FastMath {
 //    return x * inverseSqrt(x);
 //  }
 //
+
+  // for now, this has to do
+  static double sqrt(num x) => Math.sqrt(x);
 
   static double signum(num x) {
     return (x < 0) ? -1.0 : (x > 0) ? 1.0 : 0;
