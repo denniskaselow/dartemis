@@ -1,8 +1,3 @@
-#library('dartemis');
-
-#import('dart:coreimpl');
-
-#import('immutable_bag.dart');
 
 
 class Bag<E> implements ImmutableBag<E> {

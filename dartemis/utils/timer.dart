@@ -1,5 +1,3 @@
-#library('dartemis');
-
 abstract class Timer {
   int delay;
   bool _repeat;

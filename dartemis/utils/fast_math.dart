@@ -1,5 +1,3 @@
-#library('dartemis');
-
 class FastMath {
 
    static final  PI = Math.PI;
