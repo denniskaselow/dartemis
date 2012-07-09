@@ -12,12 +12,25 @@
 #source('dartemis/component.dart');
 #source('dartemis/component_type.dart');
 #source('dartemis/component_type_manager.dart');
+
+#source('dartemis/entity.dart');
+#source('dartemis/entity_manager.dart');
+#source('dartemis/entity_system.dart');
+
 #source('dartemis/manager.dart');
+
+#source('dartemis/system_manager.dart');
+#source('dartemis/tag_manager.dart');
+#source('dartemis/group_manager.dart');
+
+#source('dartemis/world.dart');
+
 
 
 main() {
-  print(Utils.getRotatedX(1.0, 2.0, 3.0, 4.0, 5.0));
+  print(new ComponentType());
 
-  var component = new ComponentType();
-  print(component.type);
+
+  print(new Bag<Entity>());
+  print(new World());
 }
