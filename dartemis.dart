@@ -51,10 +51,7 @@ class SomeComponent implements Component {
 
 // TODO remove when this is implemented http://news.dartlang.org/2012/06/proposal-for-first-class-types-in-dart.html
 class Type {
-
   final String classname;
-
   const Type(this.classname);
-
-  String toString() => classname;
+  String descriptor() => classname;
 }

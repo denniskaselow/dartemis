@@ -6,11 +6,11 @@ class ComponentTypeManager {
     if (null == _componentTypes) {
       _componentTypes = new Map<String, ComponentType>();
     }
-    ComponentType type = _componentTypes[typeOfClass.toString()];
+    ComponentType type = _componentTypes[typeOfClass.descriptor()];
 
     if (type == null) {
       type = new ComponentType();
-      _componentTypes[typeOfClass.toString()] = type;
+      _componentTypes[typeOfClass.descriptor()] = type;
     }
 
     return type;

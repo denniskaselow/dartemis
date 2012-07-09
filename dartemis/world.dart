@@ -33,7 +33,7 @@ class World {
    * @param manager to be added
    */
   void set manager(Manager manager) {
-    _managers[manager.type.toString()] = manager;
+    _managers[manager.type.descriptor()] = manager;
   }
 
   /**
@@ -44,7 +44,7 @@ class World {
    * @return the manager
    */
   Manager getManager(Type managerType) {
-    return _managers[managerType.toString()];
+    return _managers[managerType.descriptor()];
   }
 
   /**

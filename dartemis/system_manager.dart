@@ -12,7 +12,7 @@ class SystemManager {
   EntitySystem setSystem(EntitySystem system) {
     system._world = _world;
 
-    _systems[system.type.toString()] = system;
+    _systems[system.type.descriptor()] = system;
 
     if(!_bagged.contains(system))
       _bagged.add(system);
@@ -23,7 +23,7 @@ class SystemManager {
   }
 
   EntitySystem getSystem(Type type) {
-    return _systems[type.toString()];
+    return _systems[type.descriptor()];
   }
 
   Bag<EntitySystem> getSystems() {
