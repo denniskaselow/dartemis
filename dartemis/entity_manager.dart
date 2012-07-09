@@ -71,21 +71,21 @@ class EntityManager {
   }
 
   void _addComponent(Entity e, Component component) {
-//    ComponentType type = ComponentTypeManager.getTypeFor(component.getClass());
-//
-//    if(type.id >= _componentsByType.capacity) {
-//      _componentsByType[type.id] = null;
-//    }
-//
-//    Bag<Component> components = _componentsByType[type.id];
-//    if(components == null) {
-//      components = new Bag<Component>();
-//      _componentsByType[type.id] = components;
-//    }
-//
-//    components[e.id] = component;
-//
-//    e._addTypeBit(type.bit);
+    ComponentType type = ComponentTypeManager.getTypeFor(component.type);
+
+    if(type.id >= _componentsByType.capacity) {
+      _componentsByType[type.id] = null;
+    }
+
+    Bag<Component> components = _componentsByType[type.id];
+    if(components == null) {
+      components = new Bag<Component>();
+      _componentsByType[type.id] = components;
+    }
+
+    components[e.id] = component;
+
+    e._addTypeBit(type.bit);
   }
 
   void _refresh(Entity e) {
@@ -97,8 +97,8 @@ class EntityManager {
   }
 
   void _removeComponent(Entity e, Component component) {
-//    ComponentType type = ComponentTypeManager.getTypeFor(component.getClass());
-//    removeComponent(e, type);
+    ComponentType type = ComponentTypeManager.getTypeFor(component.type);
+    removeComponent(e, type);
   }
 
   void _removeComponentByType(Entity e, ComponentType type) {

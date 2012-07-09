@@ -1,8 +1,8 @@
 class Entity {
-  int _id;
-  int _uniqueId;
-  int _typeBits;
-  int _systemBits;
+  int _id = 0;
+  int _uniqueId = 0;
+  int _typeBits = 0;
+  int _systemBits = 0;
 
   World _world;
   EntityManager _entityManager;
@@ -95,10 +95,9 @@ class Entity {
    * @param type the expected return component type.
    * @return component that matches, or null if none is found.
    */
-  // TODO that class business
-//  <T extends Component> T getComponent(Class<T> type) {
-//    return type.cast(getComponent(ComponentTypeManager.getTypeFor(type)));
-//  }
+   Component getComponentByClass(Type typeOfClass) {
+     return getComponent(ComponentTypeManager.getTypeFor(typeOfClass));
+   }
 
   /**
    * Get all components belonging to this entity.

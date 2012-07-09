@@ -17,7 +17,7 @@ class FastMath {
 
    static final _atan_a = 0.280872;
 
-   static  double cos(final double x) {
+   static double cos(final double x) {
     return sin(x + ((x > HALF_PI) ? -THREE_PI_HALVES : HALF_PI));
   }
 

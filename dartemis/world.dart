@@ -9,7 +9,7 @@ class World {
   Bag<Entity> _refreshed;
   Bag<Entity> _deleted;
 
-//  Map<Class<? extends Manager>, Manager> _managers;
+  Map<String, Manager> _managers;
 
   World() {
     _entityManager = new EntityManager(this);
@@ -20,7 +20,7 @@ class World {
     _refreshed = new Bag<Entity>();
     _deleted = new Bag<Entity>();
 
-//    _managers = new HashMap<Class<? extends Manager>, Manager>();
+    _managers = new Map<String, Manager>();
   }
 
   GroupManager get groupManager() => _groupManager;
@@ -32,9 +32,9 @@ class World {
    * Allows for setting a custom manager.
    * @param manager to be added
    */
-//  void set manager(Manager manager) {
-//    _managers.put(manager.getClass(), manager);
-//  }
+  void set manager(Manager manager) {
+    _managers[manager.type.toString()] = manager;
+  }
 
   /**
    * Returns a manager of the specified type.
@@ -43,9 +43,9 @@ class World {
    * @param managerType class type of the manager
    * @return the manager
    */
-//  <T extends Manager> T getManager(Class<T> managerType) {
-//    return managerType.cast(_managers.get(managerType));
-//  }
+  Manager getManager(Type managerType) {
+    return _managers[managerType.toString()];
+  }
 
   /**
    * Delete the provided entity from the world.

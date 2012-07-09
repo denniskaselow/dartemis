@@ -16,7 +16,6 @@ class EntitySystem {
 
   EntitySystem();
 
-  // TODO class related
 //  public EntitySystem(Class<? extends Component>... types) {
 //    _actives = new Bag<Entity>();
 //
@@ -100,14 +99,16 @@ class EntitySystem {
    * @param otherTypes
    * @return
    */
-  // TODO class related
-//  @SuppressWarnings("unchecked")
-//  protected static Class<? extends Component>[] getMergedTypes(Class<? extends Component> requiredType, Class<? extends Component>[] otherTypes) {
-//    Class<? extends Component>[] types = new Class[1+otherTypes.length];
-//    types[0] = requiredType;
-//    for(int i = 0; otherTypes.length > i; i++) {
-//      types[i+1] = otherTypes[i];
-//    }
-//    return types;
-//  }
+  static List<Type> getMergedTypes(Type requiredType, [List<Type> otherTypes = new List(0)]) {
+    var types = new List<Type>(1+otherTypes.length);
+    types[0] = requiredType;
+    for(int i = 0; otherTypes.length > i; i++) {
+      types[i+1] = otherTypes[i];
+    }
+    return types;
+  }
+
+
+  var _type = new Type('EntitySystem');
+  Type get type() => _type;
 }

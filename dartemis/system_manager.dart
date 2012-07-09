@@ -1,30 +1,30 @@
 class SystemManager {
-// TODO class related
+
   World _world;
-//  Map<Class<?>, EntitySystem> _systems;
+  Map<String, EntitySystem> _systems;
   Bag<EntitySystem> _bagged;
 
   SystemManager(this._world) {
-//    systems = new Map<Class<?>, EntitySystem>();
+    _systems = new Map<String, EntitySystem>();
     _bagged = new Bag<EntitySystem>();
   }
 
   EntitySystem setSystem(EntitySystem system) {
     system._world = _world;
 
-//    systems.put(system.getClass(), system);
+    _systems[system.type.toString()] = system;
 
     if(!_bagged.contains(system))
       _bagged.add(system);
 
-//    system.setSystemBit(SystemBitManager.getBitFor(system.getClass()));
+    system._systemBit = SystemBitManager._getBitFor(system.type);
 
     return system;
   }
 
-//  public <T extends EntitySystem> T getSystem(Class<T> type) {
-//    return type.cast(systems.get(type));
-//  }
+  EntitySystem getSystem(Type type) {
+    return _systems[type.toString()];
+  }
 
   Bag<EntitySystem> getSystems() {
     return _bagged;

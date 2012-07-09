@@ -1,26 +1,28 @@
 class ComponentTypeManager {
 
-  // TODO do something about that Class<Component> stuff
-  // or wait until: http://news.dartlang.org/2012/06/proposal-for-first-class-types-in-dart.html
-//  static var _componentTypes = new Map<Class<Component>, ComponentType>();
-//
-//  static ComponentType getTypeFor(Class<Component> c){
-//    ComponentType type = _componentTypes[c];
-//
-//    if (type == null) {
-//      type = new ComponentType();
-//      _componentTypes[c] = type;
-//    }
-//
-//    return type;
-//  }
-//
-//  static int get bit(Class<Component> c){
-//    return getTypeFor(c).getBit();
-//  }
-//
-//  static int get id(Class<Component> c){
-//    return getTypeFor(c).getId();
-//  }
+  static var _componentTypes;
+
+  static ComponentType getTypeFor(Type typeOfClass){
+    if (null == _componentTypes) {
+      _componentTypes = new Map<String, ComponentType>();
+    }
+    ComponentType type = _componentTypes[typeOfClass.toString()];
+
+    if (type == null) {
+      type = new ComponentType();
+      _componentTypes[typeOfClass.toString()] = type;
+    }
+
+    return type;
+  }
+
+  static int getBit(Type typeOfClass) {
+    return getTypeFor(typeOfClass).bit;
+  }
+
+  static int getId(Type typeOfClass) {
+    return getTypeFor(typeOfClass).id;
+  }
+
 
 }
