@@ -41,6 +41,10 @@ main() {
   world.loopStart();
   var component = entity.getComponentByClass(const Type('SomeComponent'));
   print(component);
+
+  Type type = const Type("foo");
+  Type type2 = new Type("foo");
+  print(type == type2);
 }
 
 class SomeComponent implements Component {
@@ -50,8 +54,13 @@ class SomeComponent implements Component {
 }
 
 // TODO remove when this is implemented http://news.dartlang.org/2012/06/proposal-for-first-class-types-in-dart.html
-class Type {
+class Type implements Hashable {
   final String classname;
   const Type(this.classname);
-  String descriptor() => classname;
+  int hashCode() => classname.hashCode();
+  bool operator==(other) {
+    if (this === other) return true;
+    if (null == other) return false;
+    return classname == other.classname;
+  }
 }

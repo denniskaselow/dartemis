@@ -4,13 +4,13 @@ class ComponentTypeManager {
 
   static ComponentType getTypeFor(Type typeOfClass){
     if (null == _componentTypes) {
-      _componentTypes = new Map<String, ComponentType>();
+      _componentTypes = new Map<Type, ComponentType>();
     }
-    ComponentType type = _componentTypes[typeOfClass.descriptor()];
+    ComponentType type = _componentTypes[typeOfClass];
 
     if (type == null) {
       type = new ComponentType();
-      _componentTypes[typeOfClass.descriptor()] = type;
+      _componentTypes[typeOfClass] = type;
     }
 
     return type;

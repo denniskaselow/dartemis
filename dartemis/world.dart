@@ -9,7 +9,7 @@ class World {
   Bag<Entity> _refreshed;
   Bag<Entity> _deleted;
 
-  Map<String, Manager> _managers;
+  Map<Type, Manager> _managers;
 
   World() {
     _entityManager = new EntityManager(this);
@@ -20,7 +20,7 @@ class World {
     _refreshed = new Bag<Entity>();
     _deleted = new Bag<Entity>();
 
-    _managers = new Map<String, Manager>();
+    _managers = new Map<Type, Manager>();
   }
 
   GroupManager get groupManager() => _groupManager;
@@ -33,7 +33,7 @@ class World {
    * @param manager to be added
    */
   void set manager(Manager manager) {
-    _managers[manager.type.descriptor()] = manager;
+    _managers[manager.type] = manager;
   }
 
   /**
@@ -44,7 +44,7 @@ class World {
    * @return the manager
    */
   Manager getManager(Type managerType) {
-    return _managers[managerType.descriptor()];
+    return _managers[managerType];
   }
 
   /**

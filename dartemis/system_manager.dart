@@ -1,8 +1,8 @@
 class SystemManager {
 
   World _world;
-  Map<String, EntitySystem> _systems;
-  Bag<EntitySystem> _bagged;
+  var _systems;
+  var _bagged;
 
   SystemManager(this._world) {
     _systems = new Map<String, EntitySystem>();
@@ -12,7 +12,7 @@ class SystemManager {
   EntitySystem setSystem(EntitySystem system) {
     system._world = _world;
 
-    _systems[system.type.descriptor()] = system;
+    _systems[system.type] = system;
 
     if(!_bagged.contains(system))
       _bagged.add(system);
@@ -23,7 +23,7 @@ class SystemManager {
   }
 
   EntitySystem getSystem(Type type) {
-    return _systems[type.descriptor()];
+    return _systems[type];
   }
 
   Bag<EntitySystem> getSystems() {
