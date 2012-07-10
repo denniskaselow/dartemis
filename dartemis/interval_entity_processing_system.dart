@@ -19,11 +19,11 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
    * Process a entity this system is interested in.
    * @param e the entity to process.
    */
-  abstract void _process(Entity e);
+  abstract void processEntity(Entity e);
 
   void _processEntities(ImmutableBag<Entity> entities) {
     for (int i = 0, s = entities.size; s > i; i++) {
-      _process(entities[i]);
+      processEntity(entities[i]);
     }
   }
 

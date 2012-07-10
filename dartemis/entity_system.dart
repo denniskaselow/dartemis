@@ -9,8 +9,8 @@
  */
 class EntitySystem {
 
-  int _systemBit;
-  int _typeFlags;
+  int _systemBit = 0;
+  int _typeFlags = 0;
   World _world;
   Bag<Entity> _actives;
 
@@ -58,7 +58,7 @@ class EntitySystem {
   /**
    * Override to implement code that gets executed when systems are initialized.
    */
-  void _initialize() {}
+  void initialize() {}
 
   /**
    * Called if the system has received a entity it is interested in, e.g. created or a component was added to it.

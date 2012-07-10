@@ -5,7 +5,7 @@ class SystemManager {
   var _bagged;
 
   SystemManager(this._world) {
-    _systems = new Map<String, EntitySystem>();
+    _systems = new Map<Type, EntitySystem>();
     _bagged = new Bag<EntitySystem>();
   }
 
@@ -35,7 +35,7 @@ class SystemManager {
    */
   void initializeAll() {
      for (int i = 0; i < _bagged.size; i++) {
-        _bagged[i]._initialize();
+        _bagged[i].initialize();
      }
   }
 }
