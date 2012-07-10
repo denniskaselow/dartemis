@@ -59,9 +59,5 @@ class Type implements Hashable {
   final String classname;
   const Type(this.classname);
   int hashCode() => classname.hashCode();
-  bool operator==(other) {
-    if (this === other) return true;
-    if (null == other) return false;
-    return classname == other.classname;
-  }
+  bool operator==(other) => other is Type && classname == other.classname;
 }
