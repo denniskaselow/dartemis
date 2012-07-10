@@ -97,16 +97,15 @@ class EntitySystem {
    * @param otherTypes
    * @return
    */
-  static List<Type> getMergedTypes(Type requiredType, [List<Type> otherTypes = new List(0)]) {
-    var types = new List<Type>(1+otherTypes.length);
+  static List<Type> getMergedTypes(Type requiredType, [List<Type> otherTypes]) {
+    var otherTypesLength = null == otherTypes ? 0 : otherTypes.length;
+    var types = new List<Type>(1+otherTypesLength);
     types[0] = requiredType;
-    for(int i = 0; otherTypes.length > i; i++) {
+    for(int i = 0; otherTypesLength > i; i++) {
       types[i+1] = otherTypes[i];
     }
     return types;
   }
 
-
-  var _type = const Type('EntitySystem');
-  Type get type() => _type;
+  Type get type() => const Type('EntitySystem');
 }

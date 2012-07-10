@@ -94,4 +94,6 @@ abstract class DelayedEntitySystem extends EntitySystem {
     _acc = 0;
   }
 
+  Type get type() => const Type('DelayedEntitySystem');
+
 }
