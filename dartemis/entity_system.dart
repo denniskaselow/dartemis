@@ -30,9 +30,9 @@ class EntitySystem {
 
   void process() {
     if(_checkProcessing()) {
-      begin();
-      processEntities(_actives);
-      end();
+      _begin();
+      _processEntities(_actives);
+      _end();
     }
   }
 
@@ -79,16 +79,16 @@ class EntitySystem {
     if (interest && !contains && _typeFlags > 0) {
       _actives.add(e);
       e._addSystemBit(_systemBit);
-      added(e);
+      _added(e);
     } else if (!interest && contains && _typeFlags > 0) {
-      remove(e);
+      _remove(e);
     }
   }
 
   void _remove(Entity e) {
     _actives.remove(e);
     e._removeSystemBit(_systemBit);
-    removed(e);
+    _removed(e);
   }
 
   /**

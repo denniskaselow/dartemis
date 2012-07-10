@@ -41,9 +41,9 @@ class EntityManager {
 
     e._typeBits = 0;
 
-    refresh(e);
+    _refresh(e);
 
-    removeComponentsOfEntity(e);
+    _removeComponentsOfEntity(e);
 
     _count--;
     _totalRemoved++;
@@ -98,7 +98,7 @@ class EntityManager {
 
   void _removeComponent(Entity e, Component component) {
     ComponentType type = ComponentTypeManager.getTypeFor(component.type);
-    removeComponent(e, type);
+    _removeComponentByType(e, type);
   }
 
   void _removeComponentByType(Entity e, ComponentType type) {

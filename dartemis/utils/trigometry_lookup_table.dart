@@ -23,7 +23,7 @@ double cosDeg(num deg) {
 final _RAD = Math.PI / 180.0;
 final _DEG = 180.0 / Math.PI;
 final _SIN_BITS = 12;
-final _SIN_MASK = ~(-1 << _SIN_BITS);
+final _SIN_MASK = 4095; // ~(-1 << _SIN_BITS);
 final _SIN_COUNT = _SIN_MASK + 1;
 final _radFull = Math.PI * 2.0;
 final _radToIndex = _SIN_COUNT / _radFull;

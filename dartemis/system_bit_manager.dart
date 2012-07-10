@@ -1,9 +1,12 @@
 class SystemBitManager {
 
   static int _POS = 0;
-  static var _systemBits = new Map<Type, int>();
+  static var _systemBits;
 
   static int _getBitFor(Type esType) {
+    if (null == _systemBits) {
+      _systemBits = new Map<Type, int>();
+    }
     var bit = _systemBits[esType];
 
     if(bit == null){
