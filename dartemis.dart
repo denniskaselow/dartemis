@@ -14,7 +14,6 @@
 #source('dartemis/component_type.dart');
 #source('dartemis/component_type_manager.dart');
 
-
 #source('dartemis/entity.dart');
 #source('dartemis/entity_manager.dart');
 
@@ -23,6 +22,7 @@
 #source('dartemis/delayed_entity_system.dart');
 #source('dartemis/delayed_entity_processing_system.dart');
 #source('dartemis/interval_entity_system.dart');
+#source('dartemis/interval_entity_processing_system.dart');
 
 #source('dartemis/manager.dart');
 
