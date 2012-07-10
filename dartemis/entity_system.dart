@@ -14,16 +14,14 @@ class EntitySystem {
   World _world;
   Bag<Entity> _actives;
 
-  EntitySystem();
+  EntitySystem([List<Type> types]) {
+    _actives = new Bag<Entity>();
 
-//  public EntitySystem(Class<? extends Component>... types) {
-//    _actives = new Bag<Entity>();
-//
-//    for (Class<? extends Component> type : types) {
-//      ComponentType ct = ComponentTypeManager.getTypeFor(type);
-//      _typeFlags |= ct.getBit();
-//    }
-//  }
+    for (Type type in types) {
+      ComponentType ct = ComponentTypeManager.getTypeFor(type);
+      _typeFlags |= ct.bit;
+    }
+  }
 
   /**
    * Called before processing of entities begins.
@@ -31,7 +29,7 @@ class EntitySystem {
   void _begin() {}
 
   void process() {
-    if(checkProcessing()) {
+    if(_checkProcessing()) {
       begin();
       processEntities(_actives);
       end();
@@ -109,6 +107,6 @@ class EntitySystem {
   }
 
 
-  var _type = new Type('EntitySystem');
+  var _type = const Type('EntitySystem');
   Type get type() => _type;
 }
