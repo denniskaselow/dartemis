@@ -93,23 +93,23 @@ class Utils {
   static double getRotatedX(double currentX, double currentY, double pivotX, double pivotY, double angleDegrees) {
     double x = currentX - pivotX;
     double y = currentY - pivotY;
-    double xr = (x * cosDeg(angleDegrees)) - (y * sinDeg(angleDegrees));
+    double xr = (x * TrigUtil.cosDeg(angleDegrees)) - (y * TrigUtil.sinDeg(angleDegrees));
     return xr + pivotX;
   }
 
   static double getRotatedY(double currentX, double currentY, double pivotX, double pivotY, double angleDegrees) {
     double x = currentX - pivotX;
     double y = currentY - pivotY;
-    double yr = (x * sinDeg(angleDegrees)) + (y * cosDeg(angleDegrees));
+    double yr = (x * TrigUtil.sinDeg(angleDegrees)) + (y * TrigUtil.cosDeg(angleDegrees));
     return yr + pivotY;
   }
 
   static double getXAtEndOfRotatedLineByOrigin(double x, double lineLength, double angleDegrees) {
-    return x + cosDeg(angleDegrees) * lineLength;
+    return x + TrigUtil.cosDeg(angleDegrees) * lineLength;
   }
 
   static double getYAtEndOfRotatedLineByOrigin(double y, double lineLength, double angleDegrees) {
-    return y + sinDeg(angleDegrees) * lineLength;
+    return y + TrigUtil.sinDeg(angleDegrees) * lineLength;
   }
 
   static bool collides(double x1, double y1, double radius1, double x2, double y2, double radius2) {
