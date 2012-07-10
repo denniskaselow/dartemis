@@ -20,6 +20,7 @@
 #source('dartemis/entity.dart');
 #source('dartemis/entity_manager.dart');
 
+#source('dartemis/entity_processing_system.dart');
 #source('dartemis/entity_system.dart');
 
 #source('dartemis/manager.dart');
