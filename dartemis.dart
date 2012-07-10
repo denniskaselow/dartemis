@@ -35,12 +35,6 @@
 
 
 main() {
-  print(new ComponentType());
-
-
-  print(new Bag<Entity>());
-  print(new World());
-
   var world = new World();
   var entity = world.createEntity();
   entity.addComponent(new SomeComponent());
