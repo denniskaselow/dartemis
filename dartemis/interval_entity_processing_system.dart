@@ -13,7 +13,7 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
    * @param requiredType the required component type.
    * @param otherTypes other component types.
    */
-  IntervalEntityProcessingSystem(int interval, Type requiredType, [List<Type> otherTypes]) : super(interval, getMergedTypes(requiredType, otherTypes));
+  IntervalEntityProcessingSystem(int interval, Type requiredType, [List<Type> otherTypes]) : super(interval, EntitySystem.getMergedTypes(requiredType, otherTypes));
 
   /**
    * Process a entity this system is interested in.

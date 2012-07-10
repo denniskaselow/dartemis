@@ -5,7 +5,7 @@ abstract class DelayedEntityProcessingSystem extends DelayedEntitySystem {
    * @param requiredType the required component type.
    * @param otherTypes other component types.
    */
-  DelayedEntityProcessingSystem(Type requiredType, [List<Type> otherTypes]) : super(getMergedTypes(requiredType, otherTypes));
+  DelayedEntityProcessingSystem(Type requiredType, [List<Type> otherTypes]) : super(EntitySystem.getMergedTypes(requiredType, otherTypes));
 
   /**
    * Process a entity this system is interested in.
