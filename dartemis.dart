@@ -10,6 +10,7 @@
 #source('dartemis/utils/utils.dart');
 
 #source('dartemis/component.dart');
+#source('dartemis/component_mapper.dart');
 #source('dartemis/component_type.dart');
 #source('dartemis/component_type_manager.dart');
 
