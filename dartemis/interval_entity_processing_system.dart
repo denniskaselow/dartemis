@@ -21,7 +21,7 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
    */
   abstract void processEntity(Entity e);
 
-  void _processEntities(ImmutableBag<Entity> entities) {
+  void processEntities(ImmutableBag<Entity> entities) {
     for (int i = 0, s = entities.size; s > i; i++) {
       processEntity(entities[i]);
     }

@@ -22,13 +22,13 @@ abstract class EntityProcessingSystem extends EntitySystem {
   abstract void processEntity(Entity e);
 
 
-  void _processEntities(ImmutableBag<Entity> entities) {
+  void processEntities(ImmutableBag<Entity> entities) {
     for (int i = 0, s = entities.size; s > i; i++) {
       processEntity(entities[i]);
     }
   }
 
-  bool _checkProcessing() => true;
+  bool checkProcessing() => true;
 
   Type get type() => const Type('EntityProcessingSystem');
 }

@@ -3,6 +3,8 @@
  * The most raw entity system. It should not typically be used, but you can create your own
  * entity system handling by extending this. It is recommended that you use the other provided
  * entity system implementations.
+ * 
+ * There is no need to ever call any other method than process on objects of this class.
  *
  * @author Arni Arent
  *
@@ -26,20 +28,23 @@ class EntitySystem {
   /**
    * Called before processing of entities begins.
    */
-  void _begin() {}
+  void begin() {}
 
+  /**
+   * This is the only method that is supposed to be called from outside the library,
+   */
   void process() {
-    if(_checkProcessing()) {
-      _begin();
-      _processEntities(_actives);
-      _end();
+    if(checkProcessing()) {
+      begin();
+      processEntities(_actives);
+      end();
     }
   }
 
   /**
    * Called after the processing of entities ends.
    */
-  void _end() {}
+  void end() {}
 
   /**
    * Any implementing entity system must implement this method and the logic
@@ -47,13 +52,13 @@ class EntitySystem {
    *
    * @param entities the entities this system contains.
    */
-  abstract void _processEntities(ImmutableBag<Entity> entities);
+  abstract void processEntities(ImmutableBag<Entity> entities);
 
   /**
    *
    * @return true if the system should be processed, false if not.
    */
-  abstract bool _checkProcessing();
+  abstract bool checkProcessing();
 
   /**
    * Override to implement code that gets executed when systems are initialized.
@@ -64,13 +69,13 @@ class EntitySystem {
    * Called if the system has received a entity it is interested in, e.g. created or a component was added to it.
    * @param e the entity that was added to this system.
    */
-  void _added(Entity e) {}
+  void added(Entity e) {}
 
   /**
    * Called if a entity was removed from this system, e.g. deleted or had one of it's components removed.
    * @param e the entity that was removed from this system.
    */
-  void _removed(Entity e) {}
+  void removed(Entity e) {}
 
   void _change(Entity e) {
     bool contains = (_systemBit & e._systemBits) == _systemBit;
@@ -79,7 +84,7 @@ class EntitySystem {
     if (interest && !contains && _typeFlags > 0) {
       _actives.add(e);
       e._addSystemBit(_systemBit);
-      _added(e);
+      added(e);
     } else if (!interest && contains && _typeFlags > 0) {
       _remove(e);
     }
@@ -88,7 +93,7 @@ class EntitySystem {
   void _remove(Entity e) {
     _actives.remove(e);
     e._removeSystemBit(_systemBit);
-    _removed(e);
+    removed(e);
   }
 
   /**

@@ -30,12 +30,12 @@ abstract class DelayedEntitySystem extends EntitySystem {
 
   DelayedEntitySystem([List<Type> types]) : super(types);
 
-  void _processEntities(ImmutableBag<Entity> entities) {
-    _processEntitiesWithAccDelta(entities, _acc);
+  void processEntities(ImmutableBag<Entity> entities) {
+    processEntitiesWithAccDelta(entities, _acc);
     stop();
   }
 
-  bool _checkProcessing() {
+  bool checkProcessing() {
     if(_running) {
       _acc += _world.delta;
 
@@ -50,7 +50,7 @@ abstract class DelayedEntitySystem extends EntitySystem {
    * The entities to process with _accumulated delta.
    * @param entities read-only bag of entities.
    */
-  abstract void _processEntitiesWithAccDelta(ImmutableBag<Entity> entities, int _accumulatedDelta);
+  abstract void processEntitiesWithAccDelta(ImmutableBag<Entity> entities, int _accumulatedDelta);
 
   /**
    * Start processing of entities after a certain amount of milliseconds.
