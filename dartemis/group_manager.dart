@@ -1,8 +1,8 @@
 /**
  * If you need to group your entities together, e.g. tanks going into "units" group or explosions into "effects",
- * then use this manager. You must retrieve it using _world instance.
+ * then use this manager. You must retrieve it using world instance.
  *
- * A entity can only belong to one group at a time.
+ * An [Entity] can only belong to one group at a time.
  *
  * @author Arni Arent
  *
@@ -20,28 +20,25 @@ class GroupManager {
   }
 
   /**
-   * Set the group of the entity.
-   *
-   * @param group group to set the entity into.
-   * @param e entity to set into the group.
+   * Set the [group] of the [entity].
    */
-  void addEntityToGroup(String group, Entity e) {
-    remove(e); // Entity can only belong to one group.
+  void addEntityToGroup(String group, Entity entity) {
+    remove(entity); // Entity can only belong to one group.
 
     Bag<Entity> entities = _entitiesByGroup[group];
     if(entities == null) {
       entities = new Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
-    entities.add(e);
+    entities.add(entity);
 
-    _groupByEntity[e.id] = group;
+    _groupByEntity[entity.id] = group;
   }
 
   /**
-   * Get all entities that belong to the provided group.
-   * @param group name of the group.
-   * @return read-only bag of entities belonging to the group.
+   * Get all entities that belong to the provided [group].
+   * 
+   * Returns a read-only bag of entities belonging to the [group].
    */
   ImmutableBag<Entity> getEntities(String group) {
     Bag<Entity> bag = _entitiesByGroup[group];
@@ -51,40 +48,38 @@ class GroupManager {
   }
 
   /**
-   * Removes the provided entity from the group it is assigned to, if any.
-   * @param e the entity.
+   * Removes the provided [entity] from the group it is assigned to, if any.
    */
-  void remove(Entity e) {
-    if(e.id < _groupByEntity.getCapacity()) {
-      String group = _groupByEntity[e.id];
+  void remove(Entity entity) {
+    if(entity.id < _groupByEntity.getCapacity()) {
+      String group = _groupByEntity[entity.id];
       if(group != null) {
-        _groupByEntity.set(e.id, null);
+        _groupByEntity.set(entity.id, null);
 
         Bag<Entity> entities = _entitiesByGroup[group];
         if(entities != null) {
-          entities.remove(e);
+          entities.remove(entity);
         }
       }
     }
   }
 
   /**
-   * @param e entity
-   * @return the name of the group that this entity belongs to, null if none.
+   * Returns the name of the group that this [entity] belongs to, [:null:] if none.
    */
-  String getGroupOf(Entity e) {
-    if(e.id < _groupByEntity.getCapacity()) {
-      return _groupByEntity[e.id];
+  String getGroupOf(Entity entity) {
+    if(entity.id < _groupByEntity.getCapacity()) {
+      return _groupByEntity[entity.id];
     }
     return null;
   }
 
   /**
-   * Checks if the entity belongs to any group.
-   * @param e the entity to check.
-   * @return true if it is in any group, false if none.
+   * Checks if the [entity] belongs to any group.
+   * 
+   * Returns [:true:] if it is in any group, [:false:] if none.
    */
-  bool isGrouped(Entity e) {
-    return getGroupOf(e) != null;
+  bool isGrouped(Entity entity) {
+    return getGroupOf(entity) != null;
   }
 }

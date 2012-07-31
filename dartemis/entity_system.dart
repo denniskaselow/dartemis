@@ -48,7 +48,7 @@ class EntitySystem {
 
   /**
    * Any implementing entity system must implement this method and the logic
-   * to process the given [:entities:] of the system.
+   * to process the given [entities] of the system.
    */
   abstract void processEntities(ImmutableBag<Entity> entities);
 
@@ -63,12 +63,12 @@ class EntitySystem {
   void initialize() {}
 
   /**
-   * Called if the system has received an [:entity:] it is interested in, e.g. created or a component was added to it.
+   * Called if the system has received an [entity] it is interested in, e.g. created or a component was added to it.
    */
   void added(Entity entity) {}
 
   /**
-   * Called if an [:entity:] was removed from this system, e.g. deleted or had one of it's components removed.
+   * Called if an [entity] was removed from this system, e.g. deleted or had one of it's components removed.
    */
   void removed(Entity entity) {}
 
