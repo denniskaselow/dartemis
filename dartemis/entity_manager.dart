@@ -119,20 +119,17 @@ class EntityManager {
   }
 
   /**
-   *
-   * @return how many entities are currently active.
+   * Returns how many entities are currently active.
    */
   int get entityCount() => _count;
 
   /**
-   *
-   * @return how many entities have been created since start.
+   * Returns how many entities have been created since start.
    */
   int get totalCreated() => _totalCreated;
 
   /**
-   *
-   * @return how many entities have been removed since start.
+   * Returns how many entities have been removed since start.
    */
   int get totalRemoved() => _totalRemoved;
 
