@@ -62,9 +62,6 @@ class EntityManager {
 
   /**
    * Check if this entity is active, or has been deleted, within the framework.
-   *
-   * @param entityId
-   * @return active or not.
    */
   bool isActive(int entityId) {
     return _activeEntities[entityId] != null;
