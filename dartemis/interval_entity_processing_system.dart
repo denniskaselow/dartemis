@@ -9,17 +9,14 @@
 abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
 
   /**
-   * Create a new IntervalEntityProcessingSystem. It requires at least one component.
-   * @param requiredType the required component type.
-   * @param otherTypes other component types.
+   * Create a new [IntervalEntityProcessingSystem]. It requires at least one component.
    */
   IntervalEntityProcessingSystem(int interval, Type requiredType, [List<Type> otherTypes]) : super(interval, EntitySystem.getMergedTypes(requiredType, otherTypes));
 
   /**
-   * Process a entity this system is interested in.
-   * @param e the entity to process.
+   * Process an [entity] this system is interested in.
    */
-  abstract void processEntity(Entity e);
+  abstract void processEntity(Entity entity);
 
   void processEntities(ImmutableBag<Entity> entities) {
     for (int i = 0, s = entities.size; s > i; i++) {

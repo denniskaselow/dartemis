@@ -47,17 +47,14 @@ abstract class DelayedEntitySystem extends EntitySystem {
   }
 
   /**
-   * The entities to process with _accumulated delta.
-   * @param entities read-only bag of entities.
+   * The readonly bag of [entities] to process with [accumulatedDelta].
    */
-  abstract void processEntitiesWithAccDelta(ImmutableBag<Entity> entities, int _accumulatedDelta);
+  abstract void processEntitiesWithAccDelta(ImmutableBag<Entity> entities, int accumulatedDelta);
 
   /**
-   * Start processing of entities after a certain amount of milliseconds.
+   * Start processing of entities after a certain [delay] in milliseconds.
    *
-   * Cancels current _delayed run and starts a new one.
-   *
-   * @param _delay time _delay in milliseconds until processing starts.
+   * Cancels current delayed run and starts a new one.
    */
   void startDelayedRun(int delay) {
     _delay = delay;
@@ -66,9 +63,7 @@ abstract class DelayedEntitySystem extends EntitySystem {
   }
 
   /**
-   * Get the initial _delay that the system was ordered to process entities after.
-   *
-   * @return the originally set _delay.
+   * Get the initial [:delay:] as set by [startDelayedRun].
    */
   int get initialTimeDelay() => _delay;
 
@@ -82,16 +77,23 @@ abstract class DelayedEntitySystem extends EntitySystem {
   /**
    * Check if the system is counting down towards processing.
    *
-   * @return true if it's counting down, false if it's not _running.
+   * Return [:true:] if it's counting down, [:false:] if it's not running.
    */
   bool get running() => _running;
 
   /**
-   * Aborts _running the system in the future and stops it. Call delayedRun() to start it again.
+   * Aborts running the system in the future and stops it. Call [delayedRun] to start it again.
    */
   void stop() {
     _running = false;
     _acc = 0;
+  }
+  
+  /**
+   * Run a stopped system again.
+   */
+  void delayedRun() {
+    _running = true;
   }
 
   Type get type() => const Type('DelayedEntitySystem');
