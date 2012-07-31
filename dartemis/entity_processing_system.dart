@@ -1,4 +1,3 @@
-
 /**
  * A typical entity system. Use this when you need to process entities possessing the
  * provided component types.
@@ -9,17 +8,14 @@
 abstract class EntityProcessingSystem extends EntitySystem {
 
   /**
-   * Create a new EntityProcessingSystem. It requires at least one component.
-   * @param requiredType the required component type.
-   * @param otherTypes other component types.
+   * Create a new [EntityProcessingSystem]. It requires at least one component.
    */
   EntityProcessingSystem(Type requiredType, [List<Type> otherTypes]) : super(EntitySystem.getMergedTypes(requiredType, otherTypes));
 
   /**
-   * Process a entity this system is interested in.
-   * @param e the entity to process.
+   * Process a [entity] this system is interested in.
    */
-  abstract void processEntity(Entity e);
+  abstract void processEntity(Entity entity);
 
 
   void processEntities(ImmutableBag<Entity> entities) {

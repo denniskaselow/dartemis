@@ -9,11 +9,7 @@ class Bag<E> implements ImmutableBag<E> {
   }
 
   /**
-   * Returns the element at the specified position in Bag.
-   *
-   * @param index
-   *            index of the element to return
-   * @return the element at the specified position in bag
+   * Returns the element at the specified [index] in the bag.
    */
   E operator [](int index) {
     return _data[index];
@@ -21,31 +17,21 @@ class Bag<E> implements ImmutableBag<E> {
 
   /**
    * Returns the number of elements in this bag.
-   *
-   * @return the number of elements in this bag
    */
   int get size() {
     return _size;
   }
 
   /**
-   * Returns true if this list contains no elements.
-   *
-   * @return true if this list contains no elements
+   * Returns [:true:] if this list contains no elements.
    */
   bool isEmpty() {
     return _size == 0;
   }
 
-
-
   /**
-   * Removes the element at the specified position in this Bag. does this by
-   * overwriting it was last element then removing last element
-   *
-   * @param index
-   *            the index of element to be removed
-   * @return element that was removed from the Bag
+   * Removes the element at the specified [index] in this bag. Does this by
+   * overwriting with the last element and then removing the last element.
    */
   E removeAt(int index) {
     var o = _data[index]; // make copy of element to remove so it can be
@@ -57,11 +43,8 @@ class Bag<E> implements ImmutableBag<E> {
     return o;
   }
 
-
   /**
    * Remove and return the last object in the bag.
-   *
-   * @return the last object in the bag, null if empty.
    */
   E removeLast() {
     if(size > 0) {
@@ -72,16 +55,12 @@ class Bag<E> implements ImmutableBag<E> {
     return null;
   }
 
-
-
   /**
-   * Removes the first occurrence of the specified element from this Bag, if
+   * Removes the first occurrence of the specified element from this bag, if
    * it is present. If the Bag does not contain the element, it is unchanged.
-   * does this by overwriting it was last element then removing last element
-   *
-   * @param o
-   *            element to be removed from this list, if present
-   * @return <tt>true</tt> if this list contained the specified element
+   * Does this by overwriting with the last element and then removing the last
+   * element.
+   * Returns [:true:] if this list contained the specified element.
    */
   bool remove(E o) {
     for (int i = 0; i < _size; i++) {
@@ -100,7 +79,7 @@ class Bag<E> implements ImmutableBag<E> {
 
 
   /**
-   * Check if bag contains this element.
+   * Check if this bag contains this element.
    *
    * @param o
    * @return
@@ -118,11 +97,9 @@ class Bag<E> implements ImmutableBag<E> {
 
   /**
    * Removes from this Bag all of its elements that are contained in the
-   * specified Bag.
+   * specified [bag].
    *
-   * @param bag
-   *            Bag containing elements to be removed from this Bag
-   * @return {@code true} if this Bag changed as a result of the call
+   * Retur s [:true:] if this Bag changed as a result of the call
    */
   bool removeAll(Bag<E> bag) {
     bool modified = false;
@@ -145,25 +122,16 @@ class Bag<E> implements ImmutableBag<E> {
     return modified;
   }
 
-
-
   /**
    * Returns the number of elements the bag can hold without growing.
-   *
-   * @return the number of elements the bag can hold without growing.
    */
   int get capacity() {
     return _data.length;
   }
 
-
-
   /**
-   * Adds the specified element to the end of this bag. if needed also
+   * Adds the specified element [o] to the end of this bag. if needed also
    * increases the capacity of the bag.
-   *
-   * @param o
-   *            element to be added to this list
    */
   void add(E o) {
     // is size greater than capacity increase capacity
@@ -175,10 +143,7 @@ class Bag<E> implements ImmutableBag<E> {
   }
 
   /**
-   * Set element at specified index in the bag.
-   *
-   * @param index position of element
-   * @param o the element
+   * Set element [o] at specified [index] in the bag.
    */
   void operator []=(int index, E o) {
     if(index >= _data.length) {
@@ -189,8 +154,6 @@ class Bag<E> implements ImmutableBag<E> {
     }
     _data[index] = o;
   }
-
-
 
   void _grow() {
     int newCapacity = ((_data.length * 3) / 2 + 1).toInt();
@@ -217,8 +180,7 @@ class Bag<E> implements ImmutableBag<E> {
   }
 
   /**
-   * Add all items into this bag.
-   * @param added
+   * Add all [items] into this bag.
    */
   void addAll(Bag<E> items) {
     for(int i = 0; items.size > i; i++) {

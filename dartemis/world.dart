@@ -29,54 +29,44 @@ class World {
   TagManager get tagManager() => _tagManager;
 
   /**
-   * Allows for setting a custom manager.
-   * @param manager to be added
+   * Allows for setting a custom [manager].
    */
   void set manager(Manager manager) {
     _managers[manager.type] = manager;
   }
 
   /**
-   * Returns a manager of the specified type.
-   *
-   * @param <T>
-   * @param managerType class type of the manager
-   * @return the manager
+   * Returns a [Manager] of the specified [managerType].
    */
   Manager getManager(Type managerType) {
     return _managers[managerType];
   }
 
   /**
-   * Delete the provided entity from the world.
-   * @param e entity
+   * Delete the provided [entity] from the world.
    */
-  void deleteEntity(Entity e) {
-    if(!_deleted.contains(e)) {
-      _deleted.add(e);
+  void deleteEntity(Entity entity) {
+    if(!_deleted.contains(entity)) {
+      _deleted.add(entity);
     }
   }
 
   /**
-   * Ensure all systems are notified of changes to this entity.
-   * @param e entity
+   * Ensure all systems are notified of changes to this [entity].
    */
-  void refreshEntity(Entity e) {
-    _refreshed.add(e);
+  void refreshEntity(Entity entity) {
+    _refreshed.add(entity);
   }
 
   /**
-   * Create and return a new or reused entity instance.
-   * @return entity
+   * Create and return a new or reused [Entity] instance.
    */
   Entity createEntity() {
     return _entityManager._create();
   }
 
   /**
-   * Get a entity having the specified id.
-   * @param entityId
-   * @return entity
+   * Get an [Entity] having the specified [entityId].
    */
   Entity getEntity(int entityId) {
     return _entityManager._getEntity(entityId);

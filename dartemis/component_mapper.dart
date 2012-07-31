@@ -3,8 +3,6 @@
  * to retrieve components from entities often and fast.
  *
  * @author Arni Arent
- *
- * @param <T>
  */
 class ComponentMapper {
   ComponentType _type;

@@ -7,7 +7,7 @@
  * There is no need to ever call any other method than process on objects of this class.
  *
  * @author Arni Arent
- *
+ * 
  */
 class EntitySystem {
 
@@ -48,15 +48,12 @@ class EntitySystem {
 
   /**
    * Any implementing entity system must implement this method and the logic
-   * to process the given entities of the system.
-   *
-   * @param entities the entities this system contains.
+   * to process the given [entities] of the system.
    */
   abstract void processEntities(ImmutableBag<Entity> entities);
 
   /**
-   *
-   * @return true if the system should be processed, false if not.
+   * Returns true if the system should be processed, false if not.
    */
   abstract bool checkProcessing();
 
@@ -66,16 +63,14 @@ class EntitySystem {
   void initialize() {}
 
   /**
-   * Called if the system has received a entity it is interested in, e.g. created or a component was added to it.
-   * @param e the entity that was added to this system.
+   * Called if the system has received an [entity] it is interested in, e.g. created or a component was added to it.
    */
-  void added(Entity e) {}
+  void added(Entity entity) {}
 
   /**
-   * Called if a entity was removed from this system, e.g. deleted or had one of it's components removed.
-   * @param e the entity that was removed from this system.
+   * Called if an [entity] was removed from this system, e.g. deleted or had one of it's components removed.
    */
-  void removed(Entity e) {}
+  void removed(Entity entity) {}
 
   void _change(Entity e) {
     bool contains = (_systemBit & e._systemBits) == _systemBit;
@@ -97,10 +92,7 @@ class EntitySystem {
   }
 
   /**
-   * Merge together a required type and a array of other types. Used in derived systems.
-   * @param requiredType
-   * @param otherTypes
-   * @return
+   * Merge together a [requiredType] and a array of [otherTypes]. Used in derived systems.
    */
   static List<Type> getMergedTypes(Type requiredType, [List<Type> otherTypes]) {
     var otherTypesLength = null == otherTypes ? 0 : otherTypes.length;
