@@ -33,27 +33,6 @@
 
 #source('dartemis/world.dart');
 
-
-main() {
-  var world = new World();
-  var entity = world.createEntity();
-  entity.addComponent(new SomeComponent());
-  entity.refresh();
-  world.loopStart();
-  var component = entity.getComponentByClass(const Type('SomeComponent'));
-  print(component);
-
-  Type type = const Type("foo");
-  Type type2 = new Type("foo");
-  print(type == type2);
-}
-
-class SomeComponent implements Component {
-  var _type = const Type("SomeComponent");
-
-  Type get type() => _type;
-}
-
 // TODO remove when this is implemented http://news.dartlang.org/2012/06/proposal-for-first-class-types-in-dart.html
 class Type implements Hashable {
   final String classname;
