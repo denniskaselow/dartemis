@@ -1,11 +1,11 @@
 abstract class Timer {
-  int delay;
-  bool _repeat;
+  final int delay;
+  final bool repeat;
   int _acc;
   bool _done;
   bool _stopped;
 
-  Timer(this.delay, this._repeat);
+  Timer(this.delay, this.repeat);
 
   void update(int delta) {
     if (!_done && !_stopped) {
@@ -14,7 +14,7 @@ abstract class Timer {
       if (_acc >= delay) {
         _acc -= delay;
 
-        if (_repeat) {
+        if (repeat) {
           reset();
         } else {
           _done = true;
@@ -32,7 +32,7 @@ abstract class Timer {
   }
 
   bool get done() {
-    return done;
+    return _done;
   }
 
   bool get running() {

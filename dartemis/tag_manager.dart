@@ -1,10 +1,8 @@
 class TagManager {
   World _world;
-  Map<String, Entity> _entityByTag;
+  final _entityByTag;
 
-  TagManager(this._world) {
-    _entityByTag = new HashMap<String, Entity>();
-  }
+  TagManager(this._world) : _entityByTag = new Map<String, Entity>();
 
   void register(String tag, Entity e) {
     _entityByTag[tag] = e;

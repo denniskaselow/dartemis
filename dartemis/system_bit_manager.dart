@@ -1,4 +1,4 @@
-class SystemBitManager {
+class _SystemBitManager {
 
   static int _POS = 0;
   static var _systemBits;

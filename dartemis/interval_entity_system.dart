@@ -7,14 +7,14 @@
  */
 abstract class IntervalEntitySystem extends EntitySystem {
   int _acc;
-  int _interval;
+  final int interval;
 
-  IntervalEntitySystem(this._interval, [List<Type> types]) : super(types);
+  IntervalEntitySystem(this.interval, [List<Type> types]) : super(types);
 
   bool checkProcessing() {
     _acc += _world.delta;
-    if(_acc >= _interval) {
-      _acc -= _interval;
+    if(_acc >= interval) {
+      _acc -= interval;
       return true;
     }
     return false;

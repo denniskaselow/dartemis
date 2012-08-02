@@ -1,26 +1,22 @@
 class EntityManager {
 
   World _world;
-  Bag<Entity> _activeEntities;
-  Bag<Entity> _removedAndAvailable;
+  final Bag<Entity> _activeEntities;
+  final Bag<Entity> _removedAndAvailable;
   var _nextAvailableId = 0;
   var _count = 0;
   var _uniqueEntityId = 0;
   var _totalCreated = 0;
   var _totalRemoved = 0;
 
-  Bag<Bag<Component>> _componentsByType;
+  final Bag<Bag<Component>> _componentsByType;
 
-  Bag<Component> _entityComponents; // Added for debug support.
+  final Bag<Component> _entityComponents; // Added for debug support.
 
-  EntityManager(this._world) {
-    _activeEntities = new Bag<Entity>();
-    _removedAndAvailable = new Bag<Entity>();
-
-    _componentsByType = new Bag<Bag<Component>>();
-
-    _entityComponents = new Bag<Component>();
-  }
+  EntityManager(this._world) : _activeEntities = new Bag<Entity>(), 
+                               _removedAndAvailable = new Bag<Entity>(), 
+                               _componentsByType = new Bag<Bag<Component>>(),
+                               _entityComponents = new Bag<Component>();
 
   Entity _create() {
     Entity e = _removedAndAvailable.removeLast();
@@ -87,7 +83,7 @@ class EntityManager {
 
   void _refresh(Entity e) {
     SystemManager systemManager = _world.systemManager;
-    Bag<EntitySystem> systems = systemManager.getSystems();
+    Bag<EntitySystem> systems = systemManager.systems;
     for(int i = 0, s=systems.size; s > i; i++) {
       systems[i]._change(e);
     }

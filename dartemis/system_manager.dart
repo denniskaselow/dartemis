@@ -1,41 +1,35 @@
 class SystemManager {
 
   World _world;
-  var _systems;
-  var _bagged;
+  final _systemsByType;
+  final systems;
 
-  SystemManager(this._world) {
-    _systems = new Map<Type, EntitySystem>();
-    _bagged = new Bag<EntitySystem>();
-  }
+  SystemManager(this._world) : _systemsByType = new Map<Type, EntitySystem>(),
+                               systems = new Bag<EntitySystem>();
 
   EntitySystem setSystem(EntitySystem system) {
     system._world = _world;
 
-    _systems[system.type] = system;
+    _systemsByType[system.type] = system;
 
-    if(!_bagged.contains(system))
-      _bagged.add(system);
+    if(!systems.contains(system))
+      systems.add(system);
 
-    system._systemBit = SystemBitManager._getBitFor(system.type);
+    system._systemBit = _SystemBitManager._getBitFor(system.type);
 
     return system;
   }
 
   EntitySystem getSystem(Type type) {
-    return _systems[type];
-  }
-
-  Bag<EntitySystem> getSystems() {
-    return _bagged;
+    return _systemsByType[type];
   }
 
   /**
    * After adding all systems to the world, you must initialize them all.
    */
   void initializeAll() {
-     for (int i = 0; i < _bagged.size; i++) {
-        _bagged[i].initialize();
+     for (int i = 0; i < systems.size; i++) {
+        systems[i].initialize();
      }
   }
 }

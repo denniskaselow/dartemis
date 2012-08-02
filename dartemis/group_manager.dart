@@ -8,17 +8,15 @@
  *
  */
 class GroupManager {
-  World _world;
-  var _EMPTY_BAG;
-  var _entitiesByGroup;
-  var _groupByEntity;
+  final World _world;
+  final _EMPTY_BAG;
+  final _entitiesByGroup;
+  final _groupByEntity;
 
-  GroupManager(this._world) {
-    _entitiesByGroup = new Map<String, Bag<Entity>>();
-    _groupByEntity = new Bag<String>();
-    _EMPTY_BAG = new Bag<Entity>();
-  }
-
+  GroupManager(this._world) : _entitiesByGroup = new Map<String, Bag<Entity>>(),
+                              _groupByEntity = new Bag<String>(),
+                              _EMPTY_BAG = new Bag<Entity>();
+  
   /**
    * Set the [group] of the [entity].
    */

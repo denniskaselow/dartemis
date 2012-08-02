@@ -1,26 +1,23 @@
 class World {
 
+  final Bag<Entity> _refreshed;
+  final Bag<Entity> _deleted;  
+  final Map<Type, Manager> _managers;
+  
   SystemManager _systemManager;
   EntityManager _entityManager;
   TagManager _tagManager;
   GroupManager _groupManager;
 
   int delta;
-  Bag<Entity> _refreshed;
-  Bag<Entity> _deleted;
 
-  Map<Type, Manager> _managers;
-
-  World() {
+  World() : _refreshed = new Bag<Entity>(),
+            _deleted = new Bag<Entity>(),
+            _managers = new Map<Type, Manager>() {
     _entityManager = new EntityManager(this);
     _systemManager = new SystemManager(this);
     _tagManager = new TagManager(this);
     _groupManager = new GroupManager(this);
-
-    _refreshed = new Bag<Entity>();
-    _deleted = new Bag<Entity>();
-
-    _managers = new Map<Type, Manager>();
   }
 
   GroupManager get groupManager() => _groupManager;
@@ -31,7 +28,7 @@ class World {
   /**
    * Allows for setting a custom [manager].
    */
-  void set manager(Manager manager) {
+  void addManager(Manager manager) {
     _managers[manager.type] = manager;
   }
 
