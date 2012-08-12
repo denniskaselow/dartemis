@@ -76,9 +76,6 @@ class EntitySystem {
     bool contains = (_systemBit & e._systemBits) == _systemBit;
     bool interest = (_typeFlags & e._typeBits) == _typeFlags;
 
-    print(contains);
-    print(interest);
-
     if (interest && !contains && _typeFlags > 0) {
       _actives.add(e);
       e._addSystemBit(_systemBit);
