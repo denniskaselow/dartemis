@@ -37,7 +37,7 @@ abstract class DelayedEntitySystem extends EntitySystem {
 
   bool checkProcessing() {
     if(_running) {
-      _acc += _world.delta;
+      _acc += world.delta;
 
       if(_acc >= _delay) {
         return true;
@@ -88,7 +88,7 @@ abstract class DelayedEntitySystem extends EntitySystem {
     _running = false;
     _acc = 0;
   }
-  
+
   /**
    * Run a stopped system again.
    */

@@ -8,7 +8,7 @@ class SystemManager {
                                systems = new Bag<EntitySystem>();
 
   EntitySystem setSystem(EntitySystem system) {
-    system._world = _world;
+    system.world = _world;
 
     _systemsByType[system.type] = system;
 
