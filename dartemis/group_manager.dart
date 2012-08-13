@@ -9,14 +9,14 @@
  */
 class GroupManager {
   final World _world;
-  final _EMPTY_BAG;
-  final _entitiesByGroup;
-  final _groupByEntity;
+  final Bag<Entity> _EMPTY_BAG;
+  final Map<String, Bag<Entity>> _entitiesByGroup;
+  final Bag<String> _groupByEntity;
 
   GroupManager(this._world) : _entitiesByGroup = new Map<String, Bag<Entity>>(),
                               _groupByEntity = new Bag<String>(),
                               _EMPTY_BAG = new Bag<Entity>();
-  
+
   /**
    * Set the [group] of the [entity].
    */
@@ -35,7 +35,7 @@ class GroupManager {
 
   /**
    * Get all entities that belong to the provided [group].
-   * 
+   *
    * Returns a read-only bag of entities belonging to the [group].
    */
   ImmutableBag<Entity> getEntities(String group) {
@@ -49,10 +49,10 @@ class GroupManager {
    * Removes the provided [entity] from the group it is assigned to, if any.
    */
   void remove(Entity entity) {
-    if(entity.id < _groupByEntity.getCapacity()) {
+    if(entity.id < _groupByEntity.capacity) {
       String group = _groupByEntity[entity.id];
       if(group != null) {
-        _groupByEntity.set(entity.id, null);
+        _groupByEntity[entity.id] = null;
 
         Bag<Entity> entities = _entitiesByGroup[group];
         if(entities != null) {
@@ -66,7 +66,7 @@ class GroupManager {
    * Returns the name of the group that this [entity] belongs to, [:null:] if none.
    */
   String getGroupOf(Entity entity) {
-    if(entity.id < _groupByEntity.getCapacity()) {
+    if(entity.id < _groupByEntity.capacity) {
       return _groupByEntity[entity.id];
     }
     return null;
@@ -74,7 +74,7 @@ class GroupManager {
 
   /**
    * Checks if the [entity] belongs to any group.
-   * 
+   *
    * Returns [:true:] if it is in any group, [:false:] if none.
    */
   bool isGrouped(Entity entity) {
