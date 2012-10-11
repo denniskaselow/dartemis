@@ -9,17 +9,17 @@
  * @author Arni Arent
  *
  */
-class EntitySystem {
+abstract class EntitySystem {
 
   int _systemBit = 0;
   int _typeFlags = 0;
   World world;
   Bag<Entity> _actives;
 
-  EntitySystem([List<Type> types]) {
+  EntitySystem([List<String> componentTypes]) {
     _actives = new Bag<Entity>();
 
-    for (Type type in types) {
+    for (String type in componentTypes) {
       ComponentType ct = ComponentTypeManager.getTypeFor(type);
       _typeFlags |= ct.bit;
     }
@@ -94,15 +94,10 @@ class EntitySystem {
   /**
    * Merge together a [requiredType] and a array of [otherTypes]. Used in derived systems.
    */
-  static List<Type> getMergedTypes(Type requiredType, [List<Type> otherTypes]) {
-    var otherTypesLength = null == otherTypes ? 0 : otherTypes.length;
-    var types = new List<Type>(1+otherTypesLength);
-    types[0] = requiredType;
-    for(int i = 0; otherTypesLength > i; i++) {
-      types[i+1] = otherTypes[i];
-    }
-    return types;
+  static List<String> getMergedTypes(String requiredComponentName, [List<String> otherComponentNames]) {
+    List<String> mergedList = [requiredComponentName];
+    mergedList.addAll(otherComponentNames);
+    return mergedList;
   }
 
-  Type get type() => const Type('EntitySystem');
 }

@@ -13,8 +13,8 @@ class EntityManager {
 
   final Bag<Component> _entityComponents; // Added for debug support.
 
-  EntityManager(this._world) : _activeEntities = new Bag<Entity>(), 
-                               _removedAndAvailable = new Bag<Entity>(), 
+  EntityManager(this._world) : _activeEntities = new Bag<Entity>(),
+                               _removedAndAvailable = new Bag<Entity>(),
                                _componentsByType = new Bag<Bag<Component>>(),
                                _entityComponents = new Bag<Component>();
 
@@ -64,7 +64,7 @@ class EntityManager {
   }
 
   void _addComponent(Entity e, Component component) {
-    ComponentType type = ComponentTypeManager.getTypeFor(component.type);
+    ComponentType type = ComponentTypeManager.getTypeFor(component.runtimeType.toString());
 
     if(type.id >= _componentsByType.capacity) {
       _componentsByType[type.id] = null;
@@ -90,7 +90,7 @@ class EntityManager {
   }
 
   void _removeComponent(Entity e, Component component) {
-    ComponentType type = ComponentTypeManager.getTypeFor(component.type);
+    ComponentType type = ComponentTypeManager.getTypeFor(component.runtimeType.toString());
     _removeComponentByType(e, type);
   }
 

@@ -3,7 +3,7 @@ abstract class DelayedEntityProcessingSystem extends DelayedEntitySystem {
   /**
    * Create a new [DelayedEntityProcessingSystem]. It requires at least one component.
    */
-  DelayedEntityProcessingSystem(Type requiredType, [List<Type> otherTypes]) : super(EntitySystem.getMergedTypes(requiredType, otherTypes));
+  DelayedEntityProcessingSystem(String requiredComponentName, [List<String> otherComponentNames]) : super(EntitySystem.getMergedTypes(requiredComponentName, otherComponentNames));
 
   /**
    * Process an [entity] this system is interested in.
@@ -16,5 +16,4 @@ abstract class DelayedEntityProcessingSystem extends DelayedEntitySystem {
     }
   }
 
-  Type get type() => const Type('DelayedEntityProcessingSystem');
 }

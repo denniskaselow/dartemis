@@ -1,6 +1,6 @@
 class FastMath {
 
-   static final  PI = Math.PI;
+   static final  PI = PI;
    static final  SQUARED_PI = PI * PI;
    static final  HALF_PI = 0.5 * PI;
    static final  TWO_PI = 2.0 * PI;
@@ -31,7 +31,7 @@ class FastMath {
   }
 
   static double asin(final double x) {
-    return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
+    return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - sqrt(1 - x * x));
   }
 
   static double acos(final double x) {
@@ -55,7 +55,7 @@ class FastMath {
 //
 
   // for now, this has to do
-  static double sqrt(num x) => Math.sqrt(x);
+  static double sqrt(num x) => sqrt(x);
 
   static double signum(num x) {
     return (x < 0) ? -1.0 : (x > 0) ? 1.0 : 0;

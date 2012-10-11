@@ -11,7 +11,7 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
   /**
    * Create a new [IntervalEntityProcessingSystem]. It requires at least one component.
    */
-  IntervalEntityProcessingSystem(int interval, Type requiredType, [List<Type> otherTypes]) : super(interval, EntitySystem.getMergedTypes(requiredType, otherTypes));
+  IntervalEntityProcessingSystem(int interval, String requiredType, [List<String> otherTypes]) : super(interval, EntitySystem.getMergedTypes(requiredType, otherTypes));
 
   /**
    * Process an [entity] this system is interested in.
@@ -24,5 +24,4 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
     }
   }
 
-  Type get type() => const Type('IntervalEntityProcessingSystem');
 }

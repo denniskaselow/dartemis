@@ -28,7 +28,7 @@ abstract class DelayedEntitySystem extends EntitySystem {
   bool _running;
   int _acc;
 
-  DelayedEntitySystem([List<Type> types]) : super(types);
+  DelayedEntitySystem([List<String> componentNames]) : super(componentNames);
 
   void processEntities(ImmutableBag<Entity> entities) {
     processEntitiesWithAccDelta(entities, _acc);
@@ -96,6 +96,5 @@ abstract class DelayedEntitySystem extends EntitySystem {
     _running = true;
   }
 
-  Type get type() => const Type('DelayedEntitySystem');
 
 }

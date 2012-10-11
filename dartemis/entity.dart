@@ -4,7 +4,7 @@ class Entity {
    * ID's are however reused so another entity may acquire this ID if the previous entity was deleted.
    */
   final int id;
-  
+
   int _uniqueId = 0;
   int _typeBits = 0;
   int _systemBits = 0;
@@ -75,7 +75,7 @@ class Entity {
    * This is the preferred method to use when retrieving a [Component] from an entity. It will provide good performance.
    *
    * In order to retrieve the component fast you must provide a [ComponentType] instance for the expected component.
-   * 
+   *
    * Returns the [Component].
    */
   Component getComponent(ComponentType type) {
@@ -85,20 +85,20 @@ class Entity {
   /**
    * Slower retrieval of a [Component] from this entity. Minimize usage of this, but is fine to use e.g. when creating new entities
    * and setting data in components.
-   * 
+   *
    * Returns [:null:] if none is found.
    */
-   Component getComponentByClass(Type typeOfClass) {
-     return getComponent(ComponentTypeManager.getTypeFor(typeOfClass));
+   Component getComponentByClass(String componentName) {
+     return getComponent(ComponentTypeManager.getTypeFor(componentName));
    }
 
   /**
    * Get all components belonging to this entity.
-   * 
-   * **WARNING:** 
-   * 
+   *
+   * **WARNING:**
+   *
    * Use only for debugging purposes, it is dead slow.
-   * 
+   *
    * The returned bag is only valid until this method is called again, then it is overwritten.
    */
   ImmutableBag<Component> getComponents() {

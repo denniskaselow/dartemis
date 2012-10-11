@@ -9,7 +9,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   int _acc;
   final int interval;
 
-  IntervalEntitySystem(this.interval, [List<Type> types]) : super(types);
+  IntervalEntitySystem(this.interval, [List<String> types]) : super(types);
 
   bool checkProcessing() {
     _acc += world.delta;
@@ -20,5 +20,4 @@ abstract class IntervalEntitySystem extends EntitySystem {
     return false;
   }
 
-  Type get type() => const Type('IntervalEntitySystem');
 }

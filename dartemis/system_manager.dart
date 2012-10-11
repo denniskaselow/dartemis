@@ -10,12 +10,12 @@ class SystemManager {
   EntitySystem setSystem(EntitySystem system) {
     system.world = _world;
 
-    _systemsByType[system.type] = system;
+    _systemsByType[system.runtimeType] = system;
 
     if(!systems.contains(system))
       systems.add(system);
 
-    system._systemBit = _SystemBitManager._getBitFor(system.type);
+    system._systemBit = _SystemBitManager._getBitFor(system.runtimeType);
 
     return system;
   }

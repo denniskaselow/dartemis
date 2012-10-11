@@ -28,13 +28,13 @@ class Utils {
     double B = 4 * (ax * bx + ay * by);
     double C = bx * bx + by * by;
 
-    double Sabc = 2.0 * Math.sqrt(A + B + C);
-    double A_2 = Math.sqrt(A);
+    double Sabc = 2.0 * sqrt(A + B + C);
+    double A_2 = sqrt(A);
     double A_32 = 2.0 * A * A_2;
-    double C_2 = 2.0 * Math.sqrt(C);
+    double C_2 = 2.0 * sqrt(C);
     double BA = B / A_2;
 
-    return (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4.0 * C * A - B * B) * Math.log((2 * A_2 + BA + Sabc) / (BA + C_2))) / (4 * A_32);
+    return (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4.0 * C * A - B * B) * log((2 * A_2 + BA + Sabc) / (BA + C_2))) / (4 * A_32);
   }
 
   static double lerp(double a, double b, double t) {
@@ -76,13 +76,13 @@ class Utils {
   }
 
   static double angleInDegrees(double originX, double originY, double targetX, double targetY) {
-    return toDegrees(Math.atan2(targetY - originY, targetX - originX));
+    return toDegrees(atan2(targetY - originY, targetX - originX));
   }
 
-  static double toDegrees(num rad) => rad * 180.0 / Math.PI;
+  static double toDegrees(num rad) => rad * 180.0 / PI;
 
   static double angleInRadians(double originX, double originY, double targetX, double targetY) {
-    return Math.atan2(targetY - originY, targetX - originX);
+    return atan2(targetY - originY, targetX - originX);
   }
 
   static bool shouldRotateCounterClockwise(double angleFrom, double angleTo) {

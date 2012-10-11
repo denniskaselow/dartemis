@@ -1,6 +1,7 @@
 #library('dartemis');
 
 #import('dart:coreimpl');
+#import('dart:math');
 
 #source('dartemis/utils/bag.dart');
 #source('dartemis/utils/fast_math.dart');
@@ -32,11 +33,3 @@
 #source('dartemis/group_manager.dart');
 
 #source('dartemis/world.dart');
-
-// TODO remove when this is implemented http://news.dartlang.org/2012/06/proposal-for-first-class-types-in-dart.html
-class Type implements Hashable {
-  final String classname;
-  const Type(this.classname);
-  int hashCode() => classname.hashCode();
-  bool operator==(other) => other is Type && classname == other.classname;
-}

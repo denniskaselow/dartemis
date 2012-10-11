@@ -7,11 +7,11 @@
 class ComponentMapper {
   ComponentType _type;
   EntityManager _em;
-  Type _classType;
+  String _componentName;
 
-  ComponentMapper(this._classType, World world) {
+  ComponentMapper(this._componentName, World world) {
     this._em = world.entityManager;
-    this._type = ComponentTypeManager.getTypeFor(_classType);
+    this._type = ComponentTypeManager.getTypeFor(_componentName);
   }
 
   Component getComponent(Entity e) {

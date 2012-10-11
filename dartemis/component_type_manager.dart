@@ -2,26 +2,26 @@ class ComponentTypeManager {
 
   static var _componentTypes;
 
-  static ComponentType getTypeFor(Type typeOfClass){
+  static ComponentType getTypeFor(String componentName){
     if (null == _componentTypes) {
-      _componentTypes = new Map<Type, ComponentType>();
+      _componentTypes = new Map<String, ComponentType>();
     }
-    ComponentType type = _componentTypes[typeOfClass];
+    ComponentType type = _componentTypes[componentName];
 
     if (type == null) {
       type = new ComponentType();
-      _componentTypes[typeOfClass] = type;
+      _componentTypes[componentName] = type;
     }
 
     return type;
   }
 
-  static int getBit(Type typeOfClass) {
-    return getTypeFor(typeOfClass).bit;
+  static int getBit(String componentName) {
+    return getTypeFor(componentName).bit;
   }
 
-  static int getId(Type typeOfClass) {
-    return getTypeFor(typeOfClass).id;
+  static int getId(String componentName) {
+    return getTypeFor(componentName).id;
   }
 
 
