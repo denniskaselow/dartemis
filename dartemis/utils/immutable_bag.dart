@@ -1,3 +1,5 @@
+part of dartemis;
+
 interface ImmutableBag<E> {
 
     E operator [](int index);

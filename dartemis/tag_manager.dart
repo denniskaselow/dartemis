@@ -1,3 +1,5 @@
+part of dartemis;
+
 class TagManager {
   World _world;
   final _entityByTag;

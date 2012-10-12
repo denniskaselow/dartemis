@@ -1,3 +1,5 @@
+part of dartemis;
+
 class FastMath {
 
    static final  PI = PI;

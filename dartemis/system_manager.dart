@@ -1,3 +1,5 @@
+part of dartemis;
+
 class SystemManager {
 
   World _world;

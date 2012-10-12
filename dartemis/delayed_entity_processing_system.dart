@@ -1,3 +1,5 @@
+part of dartemis;
+
 abstract class DelayedEntityProcessingSystem extends DelayedEntitySystem {
 
   /**

@@ -1,3 +1,5 @@
+part of dartemis;
+
 
 /**
  * The most raw entity system. It should not typically be used, but you can create your own

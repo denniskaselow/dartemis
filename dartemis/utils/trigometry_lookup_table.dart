@@ -1,3 +1,5 @@
+part of dartemis;
+
 /**
  * Math.sin() is slow. Using a lookup table for sin/cos is roughly 50x faster.
  * The loss of accuracy is minimal, maximum error is roughly 0,001.

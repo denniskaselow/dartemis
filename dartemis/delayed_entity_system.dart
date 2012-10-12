@@ -1,3 +1,5 @@
+part of dartemis;
+
 /**
  * The purpose of this class is to allow systems to execute at varying intervals.
  *

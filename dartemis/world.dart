@@ -1,9 +1,11 @@
+part of dartemis;
+
 class World {
 
   final Bag<Entity> _refreshed;
-  final Bag<Entity> _deleted;  
+  final Bag<Entity> _deleted;
   final Map<Type, Manager> _managers;
-  
+
   SystemManager _systemManager;
   EntityManager _entityManager;
   TagManager _tagManager;

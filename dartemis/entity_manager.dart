@@ -1,3 +1,5 @@
+part of dartemis;
+
 class EntityManager {
 
   World _world;

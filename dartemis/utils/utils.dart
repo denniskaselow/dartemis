@@ -1,3 +1,5 @@
+part of dartemis;
+
 class Utils {
 
   static double cubicInterpolation(double v0, double v1, double v2, double v3, double t) {

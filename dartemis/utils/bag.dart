@@ -1,4 +1,4 @@
-
+part of dartemis;
 
 class Bag<E> implements ImmutableBag<E> {
   List _data;

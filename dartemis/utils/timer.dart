@@ -1,3 +1,5 @@
+part of dartemis;
+
 abstract class Timer {
   final int delay;
   final bool repeat;

@@ -1,3 +1,5 @@
+part of dartemis;
+
 class ComponentTypeManager {
 
   static var _componentTypes;

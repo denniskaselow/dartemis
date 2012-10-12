@@ -1,3 +1,5 @@
+part of dartemis;
+
 class _SystemBitManager {
 
   static int _POS = 0;

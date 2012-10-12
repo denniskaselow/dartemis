@@ -1,3 +1,5 @@
+part of dartemis;
+
 class ComponentType {
   static var _nextBit = 1;
   static var _nextId = 0;

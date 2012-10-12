@@ -1,3 +1,5 @@
+part of dartemis;
+
 class Entity {
   /**
    * The internal id for this entity within the framework. No other entity will have the same ID, but
