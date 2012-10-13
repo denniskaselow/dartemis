@@ -13,18 +13,21 @@ part of dartemis;
  */
 abstract class EntitySystem {
 
+
   int _systemBit = 0;
-  int _typeFlags = 0;
   World world;
   Bag<Entity> _actives;
 
-  EntitySystem([List<String> componentTypes]) {
-    _actives = new Bag<Entity>();
+  int _all;
+  int _excluded;
+  int _one;
+  bool _dummy;
 
-    for (String type in componentTypes) {
-      ComponentType ct = ComponentTypeManager.getTypeFor(type);
-      _typeFlags |= ct.bit;
-    }
+  EntitySystem(Aspect aspect) : _actives = new Bag<Entity>(),
+                                            _all = aspect.all,
+                                            _excluded = aspect.excluded,
+                                            _one = aspect.one {
+    _dummy = _all == 0 && _one == 0;
   }
 
   /**
@@ -75,14 +78,23 @@ abstract class EntitySystem {
   void removed(Entity entity) {}
 
   void _change(Entity e) {
+    if (_dummy) {
+      return;
+    }
     bool contains = (_systemBit & e._systemBits) == _systemBit;
-    bool interest = (_typeFlags & e._typeBits) == _typeFlags;
+    bool interest = (_all & e._typeBits) == _all;
+    if (_one > 0 && interest) {
+      interest = (_one & e._typeBits) > 0;
+    }
+    if (_excluded > 0 && interest) {
+      interest = (_excluded & e._typeBits) == 0;
+    }
 
-    if (interest && !contains && _typeFlags > 0) {
+    if (interest && !contains) {
       _actives.add(e);
       e._addSystemBit(_systemBit);
       added(e);
-    } else if (!interest && contains && _typeFlags > 0) {
+    } else if (!interest && contains) {
       _remove(e);
     }
   }

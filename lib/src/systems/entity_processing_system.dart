@@ -12,7 +12,7 @@ abstract class EntityProcessingSystem extends EntitySystem {
   /**
    * Create a new [EntityProcessingSystem]. It requires at least one component.
    */
-  EntityProcessingSystem(String requiredType, [List<String> otherTypes]) : super(EntitySystem.getMergedTypes(requiredType, otherTypes));
+  EntityProcessingSystem(Aspect aspect) : super(aspect);
 
   /**
    * Process a [entity] this system is interested in.

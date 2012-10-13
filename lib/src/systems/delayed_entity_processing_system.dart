@@ -5,7 +5,7 @@ abstract class DelayedEntityProcessingSystem extends DelayedEntitySystem {
   /**
    * Create a new [DelayedEntityProcessingSystem]. It requires at least one component.
    */
-  DelayedEntityProcessingSystem(String requiredComponentName, [List<String> otherComponentNames]) : super(EntitySystem.getMergedTypes(requiredComponentName, otherComponentNames));
+  DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
 
   /**
    * Process an [entity] this system is interested in.

@@ -13,7 +13,7 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
   /**
    * Create a new [IntervalEntityProcessingSystem]. It requires at least one component.
    */
-  IntervalEntityProcessingSystem(int interval, String requiredType, [List<String> otherTypes]) : super(interval, EntitySystem.getMergedTypes(requiredType, otherTypes));
+  IntervalEntityProcessingSystem(int interval, Aspect aspect) : super(interval, aspect);
 
   /**
    * Process an [entity] this system is interested in.

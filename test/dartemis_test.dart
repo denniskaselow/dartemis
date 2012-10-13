@@ -65,4 +65,75 @@ main() {
       expect(aspect.one, 0);
     });
   });
+
+  group('integration tests', () {
+    World world;
+    SystemManager systemManager;
+    Entity entityAB;
+    Entity entityAC;
+    EntitySystemStarter systemStarter;
+    setUp(() {
+      world = new World();
+      systemManager = world.systemManager;
+      entityAB = world.createEntity();
+      entityAB.addComponent(new ComponentA());
+      entityAB.addComponent(new ComponentB());
+      entityAB.refresh();
+      entityAC = world.createEntity();
+      entityAC.addComponent(new ComponentA());
+      entityAC.addComponent(new ComponentC());
+      entityAC.refresh();
+      systemStarter = (EntitySystem es) {
+        es = systemManager.setSystem(es);
+        systemManager.initializeAll();
+
+        world.loopStart();
+        es.process();
+      };
+    });
+    test('EntitySystem which requires one Component processes Entity with this component', () {
+      List<Entity> expectedEntities = [entityAB, entityAC];
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      systemStarter(es);
+    });
+    test('EntitySystem which required multiple Components does not process Entity with a subset of those components', () {
+      List<Entity> expectedEntities = [entityAB];
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A, [COMPONENT_B]), expectedEntities);
+      systemStarter(es);
+    });
+    test('EntitySystem which requires one of multiple components processes Entity with a subset of those components', () {
+      List<Entity> expectedEntities = [entityAB, entityAC];
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForOneOf(COMPONENT_A, [COMPONENT_B]), expectedEntities);
+      systemStarter(es);
+    });
+    test('EntitySystem which excludes a component does not process Entity with one of those components', () {
+      List<Entity> expectedEntities = [entityAB];
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A).exclude(COMPONENT_C), expectedEntities);
+      systemStarter(es);
+    });
+  });
 }
+
+typedef void EntitySystemStarter(EntitySystem es);
+
+class ComponentA extends Component {}
+class ComponentB extends Component {}
+class ComponentC extends Component {}
+
+class TestEntitySystem extends EntitySystem {
+  var expectedEntities;
+  TestEntitySystem(Aspect aspect, this.expectedEntities):super(aspect) {}
+
+  void processEntities(ImmutableBag<Entity> entities) {
+    int length = expectedEntities.length;
+    expect(entities.size, length);
+    for (int i = 0; i < length; i++) {
+      expect(entities[i], isIn(expectedEntities));
+    }
+  }
+
+  bool checkProcessing() => true;
+
+
+}
+

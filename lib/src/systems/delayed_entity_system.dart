@@ -30,7 +30,7 @@ abstract class DelayedEntitySystem extends EntitySystem {
   bool _running;
   int _acc;
 
-  DelayedEntitySystem([List<String> componentNames]) : super(componentNames);
+  DelayedEntitySystem(Aspect aspect) : super(aspect);
 
   void processEntities(ImmutableBag<Entity> entities) {
     processEntitiesWithAccDelta(entities, _acc);
