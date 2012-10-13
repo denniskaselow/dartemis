@@ -15,6 +15,8 @@ part 'src/component_mapper.dart';
 part 'src/component_type.dart';
 part 'src/component_type_manager.dart';
 
+part 'src/aspect.dart';
+
 part 'src/entity.dart';
 part 'src/entity_manager.dart';
 
