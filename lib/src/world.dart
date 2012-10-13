@@ -31,7 +31,7 @@ class World {
    * Allows for setting a custom [manager].
    */
   void addManager(Manager manager) {
-    _managers[manager.type] = manager;
+    _managers[manager.runtimeType] = manager;
   }
 
   /**
