@@ -1,0 +1,375 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>GroupManager class / dartemis Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dartemis" data-type="GroupManager">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/GroupManager.html">GroupManager</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+<h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
+<li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
+<li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper</a></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
+<li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
+<li><a href="../dartemis/DelayedEntitySystem.html"><div class="icon-class"></div>DelayedEntitySystem</a></li>
+<li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
+<li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
+<li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
+<li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
+<li><div class="icon-class"></div><strong>GroupManager</strong></li>
+<li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
+<li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
+<li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-interface"></div>Manager</a></li>
+<li><a href="../dartemis/SystemManager.html"><div class="icon-class"></div>SystemManager</a></li>
+<li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
+<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
+<li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
+</ul>
+</div>
+<div class="content">
+        <h2><strong>GroupManager</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>If you need to group your entities together, e.g. tanks going into "units" group or explosions into "effects",
+then use this manager. You must retrieve it using world instance.</p>
+<p>An <a class="crossref" href="../dartemis/Entity.html">Entity</a> can only belong to one group at a time.</p>
+<p>@author Arni Arent</p>
+<pre class="source">
+class GroupManager {
+  final World _world;
+  final Bag&lt;Entity&gt; _EMPTY_BAG;
+  final Map&lt;String, Bag&lt;Entity&gt;&gt; _entitiesByGroup;
+  final Bag&lt;String&gt; _groupByEntity;
+
+  GroupManager(this._world) : _entitiesByGroup = new Map&lt;String, Bag&lt;Entity&gt;&gt;(),
+                              _groupByEntity = new Bag&lt;String&gt;(),
+                              _EMPTY_BAG = new Bag&lt;Entity&gt;();
+
+  /**
+   * Set the [group] of the [entity].
+   */
+  void addEntityToGroup(String group, Entity entity) {
+    remove(entity); // Entity can only belong to one group.
+
+    Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+    if(entities == null) {
+      entities = new Bag&lt;Entity&gt;();
+      _entitiesByGroup[group] = entities;
+    }
+    entities.add(entity);
+
+    _groupByEntity[entity.id] = group;
+  }
+
+  /**
+   * Get all entities that belong to the provided [group].
+   *
+   * Returns a read-only bag of entities belonging to the [group].
+   */
+  ImmutableBag&lt;Entity&gt; getEntities(String group) {
+    Bag&lt;Entity&gt; bag = _entitiesByGroup[group];
+    if(bag == null)
+      return _EMPTY_BAG;
+    return bag;
+  }
+
+  /**
+   * Removes the provided [entity] from the group it is assigned to, if any.
+   */
+  void remove(Entity entity) {
+    if(entity.id &lt; _groupByEntity.capacity) {
+      String group = _groupByEntity[entity.id];
+      if(group != null) {
+        _groupByEntity[entity.id] = null;
+
+        Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+        if(entities != null) {
+          entities.remove(entity);
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns the name of the group that this [entity] belongs to, [:null:] if none.
+   */
+  String getGroupOf(Entity entity) {
+    if(entity.id &lt; _groupByEntity.capacity) {
+      return _groupByEntity[entity.id];
+    }
+    return null;
+  }
+
+  /**
+   * Checks if the [entity] belongs to any group.
+   *
+   * Returns [:true:] if it is in any group, [:false:] if none.
+   */
+  bool isGrouped(Entity entity) {
+    return getGroupOf(entity) != null;
+  }
+}
+</pre>
+</div>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="GroupManager">
+<button class="show-code">Code</button>
+new <strong>GroupManager</strong>(<a href="../dartemis/World.html">World</a> _world) <a class="anchor-link" href="#GroupManager"
+              title="Permalink to GroupManager.GroupManager">#</a></h4>
+<div class="doc">
+<pre class="source">
+GroupManager(this._world) : _entitiesByGroup = new Map&lt;String, Bag&lt;Entity&gt;&gt;(),
+                            _groupByEntity = new Bag&lt;String&gt;(),
+                            _EMPTY_BAG = new Bag&lt;Entity&gt;();
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
+            href="#runtimeType"
+            title="Permalink to GroupManager.runtimeType">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method inherited"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
+              title="Permalink to GroupManager.operator ==">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and 
+<span class="param">other</span> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <code>hashCode</code> method as well to maintain consistency.</p>
+<pre class="source">
+bool operator ==(other) =&gt; identical(this, other);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="addEntityToGroup">
+<button class="show-code">Code</button>
+void <strong>addEntityToGroup</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> group, <a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#addEntityToGroup"
+              title="Permalink to GroupManager.addEntityToGroup">#</a></h4>
+<div class="doc">
+<p>Set the 
+<span class="param">group</span> of the 
+<span class="param">entity</span>.</p>
+<pre class="source">
+void addEntityToGroup(String group, Entity entity) {
+  remove(entity); // Entity can only belong to one group.
+
+  Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+  if(entities == null) {
+    entities = new Bag&lt;Entity&gt;();
+    _entitiesByGroup[group] = entities;
+  }
+  entities.add(entity);
+
+  _groupByEntity[entity.id] = group;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getEntities">
+<button class="show-code">Code</button>
+<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; <strong>getEntities</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#getEntities"
+              title="Permalink to GroupManager.getEntities">#</a></h4>
+<div class="doc">
+<p>Get all entities that belong to the provided 
+<span class="param">group</span>.</p>
+<p>Returns a read-only bag of entities belonging to the 
+<span class="param">group</span>.</p>
+<pre class="source">
+ImmutableBag&lt;Entity&gt; getEntities(String group) {
+  Bag&lt;Entity&gt; bag = _entitiesByGroup[group];
+  if(bag == null)
+    return _EMPTY_BAG;
+  return bag;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getGroupOf">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>getGroupOf</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#getGroupOf"
+              title="Permalink to GroupManager.getGroupOf">#</a></h4>
+<div class="doc">
+<p>Returns the name of the group that this 
+<span class="param">entity</span> belongs to, <code>null</code> if none.</p>
+<pre class="source">
+String getGroupOf(Entity entity) {
+  if(entity.id &lt; _groupByEntity.capacity) {
+    return _groupByEntity[entity.id];
+  }
+  return null;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="GroupManager">
+<button class="show-code">Code</button>
+new <strong>GroupManager</strong>(<a href="../dartemis/World.html">World</a> _world) <a class="anchor-link" href="#GroupManager"
+              title="Permalink to GroupManager.GroupManager">#</a></h4>
+<div class="doc">
+<pre class="source">
+GroupManager(this._world) : _entitiesByGroup = new Map&lt;String, Bag&lt;Entity&gt;&gt;(),
+                            _groupByEntity = new Bag&lt;String&gt;(),
+                            _EMPTY_BAG = new Bag&lt;Entity&gt;();
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="hashCode">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
+              title="Permalink to GroupManager.hashCode">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <code>hashCode</code> it should override the
+equality operator as well to maintain consistency.</p>
+<pre class="source">
+external int hashCode();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="isGrouped">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>isGrouped</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#isGrouped"
+              title="Permalink to GroupManager.isGrouped">#</a></h4>
+<div class="doc">
+<p>Checks if the 
+<span class="param">entity</span> belongs to any group.</p>
+<p>Returns <code>true</code> if it is in any group, <code>false</code> if none.</p>
+<pre class="source">
+bool isGrouped(Entity entity) {
+  return getGroupOf(entity) != null;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="noSuchMethod">
+<button class="show-code">Code</button>
+<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
+              title="Permalink to GroupManager.noSuchMethod">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
+on an object. The name of the method and the arguments of the
+invocation are passed to <code>noSuchMethod</code>. If <code>noSuchMethod</code>
+returns a value, that value becomes the result of the original
+invocation.</p>
+<p>The default behavior of <code>noSuchMethod</code> is to throw a
+<code>noSuchMethodError</code>.</p>
+<pre class="source">
+external Dynamic noSuchMethod(String name, List args);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="Object">
+<button class="show-code">Code</button>
+const <strong>Object</strong>() <a class="anchor-link" href="#Object"
+              title="Permalink to GroupManager.Object">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Creates a new <code>Object</code> instance.</p>
+<p><code>Object</code> instances have no meaningful state, and are only useful
+through their identity. An <code>Object</code> instance is equal to itself
+only.</p>
+<pre class="source">
+const Object();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="remove">
+<button class="show-code">Code</button>
+void <strong>remove</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#remove"
+              title="Permalink to GroupManager.remove">#</a></h4>
+<div class="doc">
+<p>Removes the provided 
+<span class="param">entity</span> from the group it is assigned to, if any.</p>
+<pre class="source">
+void remove(Entity entity) {
+  if(entity.id &lt; _groupByEntity.capacity) {
+    String group = _groupByEntity[entity.id];
+    if(group != null) {
+      _groupByEntity[entity.id] = null;
+
+      Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+      if(entities != null) {
+        entities.remove(entity);
+      }
+    }
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to GroupManager.toString">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Returns a string representation of this object.</p>
+<pre class="source">
+external String toString();
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-10-14 11:22:42.307</div>
+        </div>
+        <script async src="../client-static.js"></script>
+        </body></html>
+        

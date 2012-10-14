@@ -1,0 +1,475 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>World class / dartemis Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dartemis" data-type="World">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/World.html">World</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+<h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
+<li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
+<li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper</a></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
+<li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
+<li><a href="../dartemis/DelayedEntitySystem.html"><div class="icon-class"></div>DelayedEntitySystem</a></li>
+<li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
+<li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
+<li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
+<li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
+<li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
+<li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
+<li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
+<li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-interface"></div>Manager</a></li>
+<li><a href="../dartemis/SystemManager.html"><div class="icon-class"></div>SystemManager</a></li>
+<li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
+<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
+<li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><div class="icon-class"></div><strong>World</strong></li>
+</ul>
+</div>
+<div class="content">
+        <h2><strong>World</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<pre class="source">
+class World {
+
+  final Bag&lt;Entity&gt; _refreshed;
+  final Bag&lt;Entity&gt; _deleted;
+  final Map&lt;Type, Manager&gt; _managers;
+
+  SystemManager _systemManager;
+  EntityManager _entityManager;
+  TagManager _tagManager;
+  GroupManager _groupManager;
+
+  int delta;
+
+  World() : _refreshed = new Bag&lt;Entity&gt;(),
+            _deleted = new Bag&lt;Entity&gt;(),
+            _managers = new Map&lt;Type, Manager&gt;() {
+    _entityManager = new EntityManager(this);
+    _systemManager = new SystemManager(this);
+    _tagManager = new TagManager(this);
+    _groupManager = new GroupManager(this);
+  }
+
+  GroupManager get groupManager() =&gt; _groupManager;
+  SystemManager get systemManager() =&gt; _systemManager;
+  EntityManager get entityManager() =&gt; _entityManager;
+  TagManager get tagManager() =&gt; _tagManager;
+
+  /**
+   * Allows for setting a custom [manager].
+   */
+  void addManager(Manager manager) {
+    _managers[manager.runtimeType] = manager;
+  }
+
+  /**
+   * Returns a [Manager] of the specified [managerType].
+   */
+  Manager getManager(Type managerType) {
+    return _managers[managerType];
+  }
+
+  /**
+   * Delete the provided [entity] from the world.
+   */
+  void deleteEntity(Entity entity) {
+    if(!_deleted.contains(entity)) {
+      _deleted.add(entity);
+    }
+  }
+
+  /**
+   * Ensure all systems are notified of changes to this [entity].
+   */
+  void refreshEntity(Entity entity) {
+    _refreshed.add(entity);
+  }
+
+  /**
+   * Create and return a new or reused [Entity] instance.
+   */
+  Entity createEntity() {
+    return _entityManager._create();
+  }
+
+  /**
+   * Get an [Entity] having the specified [entityId].
+   */
+  Entity getEntity(int entityId) {
+    return _entityManager._getEntity(entityId);
+  }
+
+  /**
+   * Let framework take care of internal business.
+   */
+  void loopStart() {
+    if(!_refreshed.isEmpty()) {
+      for(int i = 0; _refreshed.size &gt; i; i++) {
+        _entityManager._refresh(_refreshed[i]);
+      }
+      _refreshed.clear();
+    }
+
+    if(!_deleted.isEmpty()) {
+      for(int i = 0; _deleted.size &gt; i; i++) {
+        Entity e = _deleted[i];
+        _groupManager.remove(e);
+        _entityManager._remove(e);
+        _tagManager.remove(e);
+      }
+      _deleted.clear();
+    }
+  }
+
+}
+</pre>
+</div>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="World">
+<button class="show-code">Code</button>
+new <strong>World</strong>() <a class="anchor-link" href="#World"
+              title="Permalink to World.World">#</a></h4>
+<div class="doc">
+<pre class="source">
+World() : _refreshed = new Bag&lt;Entity&gt;(),
+          _deleted = new Bag&lt;Entity&gt;(),
+          _managers = new Map&lt;Type, Manager&gt;() {
+  _entityManager = new EntityManager(this);
+  _systemManager = new SystemManager(this);
+  _tagManager = new TagManager(this);
+  _groupManager = new GroupManager(this);
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="delta">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>delta</strong> <a class="anchor-link"
+            href="#delta"
+            title="Permalink to World.delta">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+int delta;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="entityManager">
+<button class="show-code">Code</button>
+final <a href="../dartemis/EntityManager.html">EntityManager</a>         <strong>entityManager</strong> <a class="anchor-link"
+            href="#entityManager"
+            title="Permalink to World.entityManager">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+EntityManager get entityManager() =&gt; _entityManager;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="groupManager">
+<button class="show-code">Code</button>
+final <a href="../dartemis/GroupManager.html">GroupManager</a>         <strong>groupManager</strong> <a class="anchor-link"
+            href="#groupManager"
+            title="Permalink to World.groupManager">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+GroupManager get groupManager() =&gt; _groupManager;
+</pre>
+</div>
+</div>
+<div class="field inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
+            href="#runtimeType"
+            title="Permalink to World.runtimeType">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="systemManager">
+<button class="show-code">Code</button>
+final <a href="../dartemis/SystemManager.html">SystemManager</a>         <strong>systemManager</strong> <a class="anchor-link"
+            href="#systemManager"
+            title="Permalink to World.systemManager">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+SystemManager get systemManager() =&gt; _systemManager;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="tagManager">
+<button class="show-code">Code</button>
+final <a href="../dartemis/TagManager.html">TagManager</a>         <strong>tagManager</strong> <a class="anchor-link"
+            href="#tagManager"
+            title="Permalink to World.tagManager">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+TagManager get tagManager() =&gt; _tagManager;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method inherited"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
+              title="Permalink to World.operator ==">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and 
+<span class="param">other</span> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <code>hashCode</code> method as well to maintain consistency.</p>
+<pre class="source">
+bool operator ==(other) =&gt; identical(this, other);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="addManager">
+<button class="show-code">Code</button>
+void <strong>addManager</strong>(<a href="../dartemis/Manager.html">Manager</a> manager) <a class="anchor-link" href="#addManager"
+              title="Permalink to World.addManager">#</a></h4>
+<div class="doc">
+<p>Allows for setting a custom 
+<span class="param">manager</span>.</p>
+<pre class="source">
+void addManager(Manager manager) {
+  _managers[manager.runtimeType] = manager;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="createEntity">
+<button class="show-code">Code</button>
+<a href="../dartemis/Entity.html">Entity</a> <strong>createEntity</strong>() <a class="anchor-link" href="#createEntity"
+              title="Permalink to World.createEntity">#</a></h4>
+<div class="doc">
+<p>Create and return a new or reused <a class="crossref" href="../dartemis/Entity.html">Entity</a> instance.</p>
+<pre class="source">
+Entity createEntity() {
+  return _entityManager._create();
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="deleteEntity">
+<button class="show-code">Code</button>
+void <strong>deleteEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#deleteEntity"
+              title="Permalink to World.deleteEntity">#</a></h4>
+<div class="doc">
+<p>Delete the provided 
+<span class="param">entity</span> from the world.</p>
+<pre class="source">
+void deleteEntity(Entity entity) {
+  if(!_deleted.contains(entity)) {
+    _deleted.add(entity);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getEntity">
+<button class="show-code">Code</button>
+<a href="../dartemis/Entity.html">Entity</a> <strong>getEntity</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> entityId) <a class="anchor-link" href="#getEntity"
+              title="Permalink to World.getEntity">#</a></h4>
+<div class="doc">
+<p>Get an <a class="crossref" href="../dartemis/Entity.html">Entity</a> having the specified 
+<span class="param">entityId</span>.</p>
+<pre class="source">
+Entity getEntity(int entityId) {
+  return _entityManager._getEntity(entityId);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getManager">
+<button class="show-code">Code</button>
+<a href="../dartemis/Manager.html">Manager</a> <strong>getManager</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> managerType) <a class="anchor-link" href="#getManager"
+              title="Permalink to World.getManager">#</a></h4>
+<div class="doc">
+<p>Returns a <a class="crossref" href="../dartemis/Manager.html">Manager</a> of the specified 
+<span class="param">managerType</span>.</p>
+<pre class="source">
+Manager getManager(Type managerType) {
+  return _managers[managerType];
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="hashCode">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
+              title="Permalink to World.hashCode">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <code>hashCode</code> it should override the
+equality operator as well to maintain consistency.</p>
+<pre class="source">
+external int hashCode();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="loopStart">
+<button class="show-code">Code</button>
+void <strong>loopStart</strong>() <a class="anchor-link" href="#loopStart"
+              title="Permalink to World.loopStart">#</a></h4>
+<div class="doc">
+<p>Let framework take care of internal business.</p>
+<pre class="source">
+void loopStart() {
+  if(!_refreshed.isEmpty()) {
+    for(int i = 0; _refreshed.size &gt; i; i++) {
+      _entityManager._refresh(_refreshed[i]);
+    }
+    _refreshed.clear();
+  }
+
+  if(!_deleted.isEmpty()) {
+    for(int i = 0; _deleted.size &gt; i; i++) {
+      Entity e = _deleted[i];
+      _groupManager.remove(e);
+      _entityManager._remove(e);
+      _tagManager.remove(e);
+    }
+    _deleted.clear();
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="noSuchMethod">
+<button class="show-code">Code</button>
+<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
+              title="Permalink to World.noSuchMethod">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
+on an object. The name of the method and the arguments of the
+invocation are passed to <code>noSuchMethod</code>. If <code>noSuchMethod</code>
+returns a value, that value becomes the result of the original
+invocation.</p>
+<p>The default behavior of <code>noSuchMethod</code> is to throw a
+<code>noSuchMethodError</code>.</p>
+<pre class="source">
+external Dynamic noSuchMethod(String name, List args);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="Object">
+<button class="show-code">Code</button>
+const <strong>Object</strong>() <a class="anchor-link" href="#Object"
+              title="Permalink to World.Object">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Creates a new <code>Object</code> instance.</p>
+<p><code>Object</code> instances have no meaningful state, and are only useful
+through their identity. An <code>Object</code> instance is equal to itself
+only.</p>
+<pre class="source">
+const Object();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="refreshEntity">
+<button class="show-code">Code</button>
+void <strong>refreshEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#refreshEntity"
+              title="Permalink to World.refreshEntity">#</a></h4>
+<div class="doc">
+<p>Ensure all systems are notified of changes to this 
+<span class="param">entity</span>.</p>
+<pre class="source">
+void refreshEntity(Entity entity) {
+  _refreshed.add(entity);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to World.toString">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Returns a string representation of this object.</p>
+<pre class="source">
+external String toString();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="World">
+<button class="show-code">Code</button>
+new <strong>World</strong>() <a class="anchor-link" href="#World"
+              title="Permalink to World.World">#</a></h4>
+<div class="doc">
+<pre class="source">
+World() : _refreshed = new Bag&lt;Entity&gt;(),
+          _deleted = new Bag&lt;Entity&gt;(),
+          _managers = new Map&lt;Type, Manager&gt;() {
+  _entityManager = new EntityManager(this);
+  _systemManager = new SystemManager(this);
+  _tagManager = new TagManager(this);
+  _groupManager = new GroupManager(this);
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-10-14 11:22:42.054</div>
+        </div>
+        <script async src="../client-static.js"></script>
+        </body></html>
+        
