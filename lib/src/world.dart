@@ -94,6 +94,7 @@ class World {
 
 
   EntitySystem addSystem(EntitySystem system, [bool passive = false]) {
+    system._passive = passive;
     _systemsBag.add(system);
     return system;
   }
@@ -105,6 +106,10 @@ class World {
 
   void process() {
     _managerBag.forEach((manager) => manager.process());
-    _systemsBag.forEach((system) => system.process());
+    _systemsBag.forEach((system) {
+      if (!system.passive) {
+        system.process();
+      }
+    });
   }
 }

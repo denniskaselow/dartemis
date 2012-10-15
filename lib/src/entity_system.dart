@@ -21,6 +21,7 @@ abstract class EntitySystem {
   int _excluded;
   int _one;
   bool _dummy;
+  bool _passive = false;
 
   EntitySystem(Aspect aspect) : _actives = new Bag<Entity>(),
                                             _all = aspect.all,
@@ -29,6 +30,8 @@ abstract class EntitySystem {
     _dummy = _all == 0 && _one == 0;
     _systemBit = _SystemBitManager._getBitFor(runtimeType);
   }
+
+  get passive => _passive;
 
   /**
    * Called before processing of entities begins.
@@ -41,7 +44,6 @@ abstract class EntitySystem {
   void process() {
     if(checkProcessing()) {
       begin();
-      print('processing actives');
       processEntities(_actives);
       end();
     }
@@ -82,9 +84,7 @@ abstract class EntitySystem {
     if (_dummy) {
       return;
     }
-    print("contains = ($_systemBit & ${e._systemBits}) == $_systemBit");
     bool contains = (_systemBit & e._systemBits) == _systemBit;
-    print("interest = ($_all & ${e._typeBits}) == $_all;");
     bool interest = (_all & e._typeBits) == _all;
     if (_one > 0 && interest) {
       interest = (_one & e._typeBits) > 0;
