@@ -97,9 +97,9 @@ class Aspect {
   int _updateBitMask(int mask, String requiredComponentName, [List<String> componentNames]) {
     mask = mask | ComponentTypeManager.getBit(requiredComponentName);
     if (null != componentNames) {
-      for (String componentName in componentNames) {
+      componentNames.forEach((componentName) {
         mask = mask | ComponentTypeManager.getBit(componentName);
-      }
+      });
     }
     return mask;
   }

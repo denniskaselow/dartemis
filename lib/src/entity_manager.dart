@@ -50,12 +50,11 @@ class EntityManager {
   }
 
   void _removeComponentsOfEntity(Entity e) {
-    for(int a = 0; _componentsByType.size > a; a++) {
-      Bag<Component> components = _componentsByType[a];
+    _componentsByType.forEach((components) {
       if(components != null && e.id < components.size) {
         components[e.id] = null;
       }
-    }
+    });
   }
 
   /**
@@ -85,9 +84,7 @@ class EntityManager {
 
   void _refresh(Entity e) {
     Bag<EntitySystem> systems = _world._systemsBag;
-    for(int i = 0, s=systems.size; s > i; i++) {
-      systems[i]._change(e);
-    }
+    systems.forEach((system) => system._change(e));
   }
 
   void _removeComponent(Entity e, Component component) {
@@ -131,15 +128,14 @@ class EntityManager {
 
   ImmutableBag<Component> _getComponents(Entity e) {
     _entityComponents.clear();
-    for(int a = 0; _componentsByType.size > a; a++) {
-      Bag<Component> components = _componentsByType[a];
+    _componentsByType.forEach((components) {
       if(components != null && e.id < components.size) {
         Component component = components[e.id];
         if(component != null) {
           _entityComponents.add(component);
         }
       }
-    }
+    });
     return _entityComponents;
   }
 }

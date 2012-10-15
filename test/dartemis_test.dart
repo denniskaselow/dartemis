@@ -128,6 +128,13 @@ main() {
 
       system.getLogs(callsTo('process')).verify(happenedExactly(1));
     });
+    test('world does not process passive system', () {
+      MockEntitySystem system = new MockEntitySystem();
+      world.addSystem(system, true);
+      world.process();
+
+      system.getLogs(callsTo('process')).verify(happenedExactly(1));
+    });
     test('world initializes added managers', () {
       MockManager manager = new MockManager();
       world.addManager(manager);

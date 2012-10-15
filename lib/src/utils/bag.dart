@@ -29,6 +29,12 @@ class Bag<E> implements ImmutableBag<E> {
     return _size == 0;
   }
 
+  void forEach(void f(E element)) {
+    for (int i = 0; i < _size; i++) {
+      f(_data[i]);
+    }
+  }
+
   /**
    * Removes the element at the specified [index] in this bag. Does this by
    * overwriting with the last element and then removing the last element.

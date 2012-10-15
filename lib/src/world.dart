@@ -78,44 +78,33 @@ class World {
    */
   void loopStart() {
     if(!_refreshed.isEmpty()) {
-      for(int i = 0; _refreshed.size > i; i++) {
-        _entityManager._refresh(_refreshed[i]);
-      }
+      _refreshed.forEach((entity) => _entityManager._refresh(entity));
       _refreshed.clear();
     }
 
     if(!_deleted.isEmpty()) {
-      for(int i = 0; _deleted.size > i; i++) {
-        Entity e = _deleted[i];
-        _groupManager.remove(e);
-        _entityManager._remove(e);
-        _tagManager.remove(e);
-      }
+      _deleted.forEach((entity) {
+        _groupManager.remove(entity);
+        _entityManager._remove(entity);
+        _tagManager.remove(entity);
+      });
       _deleted.clear();
     }
   }
 
 
-  EntitySystem addSystem(EntitySystem system) {
+  EntitySystem addSystem(EntitySystem system, [bool passive = false]) {
     _systemsBag.add(system);
     return system;
   }
 
   void initialize() {
-    for (int i = 0; i < _managerBag.size; i++) {
-      _managerBag[i].initialize();
-    }
-    for (int i = 0; i < _systemsBag.size; i++) {
-      _systemsBag[i].initialize();
-    }
+    _managerBag.forEach((manager) => manager.initialize());
+    _systemsBag.forEach((system) => system.initialize());
   }
 
   void process() {
-    for (int i = 0; i < _managerBag.size; i++) {
-      _managerBag[i].process();
-    }
-    for (int i = 0; i < _systemsBag.size; i++) {
-      _systemsBag[i].process();
-    }
+    _managerBag.forEach((manager) => manager.process());
+    _systemsBag.forEach((system) => system.process());
   }
 }
