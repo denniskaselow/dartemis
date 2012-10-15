@@ -6,4 +6,7 @@ part of dartemis;
  * @author Arni Arent
  *
  */
-interface Manager {}
+interface Manager {
+  void initialize();
+  void process();
+}

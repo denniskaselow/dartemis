@@ -6,24 +6,25 @@ class World {
   final Bag<Entity> _deleted;
   final Map<Type, Manager> _managers;
 
-  SystemManager _systemManager;
   EntityManager _entityManager;
   TagManager _tagManager;
   GroupManager _groupManager;
+  Bag<EntitySystem> _systemsBag;
+  Bag<Manager> _managerBag;
 
   int delta;
 
   World() : _refreshed = new Bag<Entity>(),
             _deleted = new Bag<Entity>(),
-            _managers = new Map<Type, Manager>() {
+            _managers = new Map<Type, Manager>(),
+            _systemsBag = new Bag<EntitySystem>(),
+            _managerBag = new Bag<Manager>(){
     _entityManager = new EntityManager(this);
-    _systemManager = new SystemManager(this);
     _tagManager = new TagManager(this);
     _groupManager = new GroupManager(this);
   }
 
   GroupManager get groupManager() => _groupManager;
-  SystemManager get systemManager() => _systemManager;
   EntityManager get entityManager() => _entityManager;
   TagManager get tagManager() => _tagManager;
 
@@ -31,6 +32,7 @@ class World {
    * Allows for setting a custom [manager].
    */
   void addManager(Manager manager) {
+    _managerBag.add(manager);
     _managers[manager.runtimeType] = manager;
   }
 
@@ -93,4 +95,27 @@ class World {
     }
   }
 
+
+  EntitySystem addSystem(EntitySystem system) {
+    _systemsBag.add(system);
+    return system;
+  }
+
+  void initialize() {
+    for (int i = 0; i < _managerBag.size; i++) {
+      _managerBag[i].initialize();
+    }
+    for (int i = 0; i < _systemsBag.size; i++) {
+      _systemsBag[i].initialize();
+    }
+  }
+
+  void process() {
+    for (int i = 0; i < _managerBag.size; i++) {
+      _managerBag[i].process();
+    }
+    for (int i = 0; i < _systemsBag.size; i++) {
+      _systemsBag[i].process();
+    }
+  }
 }

@@ -66,15 +66,13 @@ main() {
     });
   });
 
-  group('integration tests', () {
+  group('integration tests for EntitySystems', () {
     World world;
-    SystemManager systemManager;
     Entity entityAB;
     Entity entityAC;
     EntitySystemStarter systemStarter;
     setUp(() {
       world = new World();
-      systemManager = world.systemManager;
       entityAB = world.createEntity();
       entityAB.addComponent(new ComponentA());
       entityAB.addComponent(new ComponentB());
@@ -84,11 +82,10 @@ main() {
       entityAC.addComponent(new ComponentC());
       entityAC.refresh();
       systemStarter = (EntitySystem es) {
-        es = systemManager.setSystem(es);
-        systemManager.initializeAll();
-
+        es = world.addSystem(es);
+        world.initialize();
         world.loopStart();
-        es.process();
+        world.process();
       };
     });
     test('EntitySystem which requires one Component processes Entity with this component', () {
@@ -112,6 +109,40 @@ main() {
       systemStarter(es);
     });
   });
+  group('World tests', () {
+    World world;
+    setUp(() {
+      world = new World();
+    });
+    test('world initializes added system', () {
+      MockEntitySystem system = new MockEntitySystem();
+      world.addSystem(system);
+      world.initialize();
+
+      system.getLogs(callsTo('initialize')).verify(happenedExactly(1));
+    });
+    test('world processes added system', () {
+      MockEntitySystem system = new MockEntitySystem();
+      world.addSystem(system);
+      world.process();
+
+      system.getLogs(callsTo('process')).verify(happenedExactly(1));
+    });
+    test('world initializes added managers', () {
+      MockManager manager = new MockManager();
+      world.addManager(manager);
+      world.initialize();
+
+      manager.getLogs(callsTo('initialize')).verify(happenedExactly(1));
+    });
+    test('world processes added managers', () {
+      MockManager manager = new MockManager();
+      world.addManager(manager);
+      world.process();
+
+      manager.getLogs(callsTo('process')).verify(happenedExactly(1));
+    });
+  });
 }
 
 typedef void EntitySystemStarter(EntitySystem es);
@@ -119,6 +150,8 @@ typedef void EntitySystemStarter(EntitySystem es);
 class ComponentA extends Component {}
 class ComponentB extends Component {}
 class ComponentC extends Component {}
+class MockEntitySystem extends Mock implements EntitySystem {}
+class MockManager extends Mock implements Manager {}
 
 class TestEntitySystem extends EntitySystem {
   var expectedEntities;

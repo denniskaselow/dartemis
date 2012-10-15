@@ -84,8 +84,7 @@ class EntityManager {
   }
 
   void _refresh(Entity e) {
-    SystemManager systemManager = _world.systemManager;
-    Bag<EntitySystem> systems = systemManager.systems;
+    Bag<EntitySystem> systems = _world._systemsBag;
     for(int i = 0, s=systems.size; s > i; i++) {
       systems[i]._change(e);
     }

@@ -19,6 +19,7 @@ part 'src/aspect.dart';
 
 part 'src/entity.dart';
 part 'src/entity_manager.dart';
+part 'src/entity_observer.dart';
 
 part 'src/entity_system.dart';
 part 'src/systems/entity_processing_system.dart';
@@ -29,8 +30,8 @@ part 'src/systems/interval_entity_processing_system.dart';
 
 part 'src/manager.dart';
 
-part 'src/system_manager.dart';
 part 'src/system_bit_manager.dart';
+
 part 'src/managers/tag_manager.dart';
 part 'src/managers/group_manager.dart';
 

@@ -1,6 +1,5 @@
 part of dartemis;
 
-
 /**
  * The most raw entity system. It should not typically be used, but you can create your own
  * entity system handling by extending this. It is recommended that you use the other provided
@@ -28,6 +27,7 @@ abstract class EntitySystem {
                                             _excluded = aspect.excluded,
                                             _one = aspect.one {
     _dummy = _all == 0 && _one == 0;
+    _systemBit = _SystemBitManager._getBitFor(runtimeType);
   }
 
   /**
@@ -41,6 +41,7 @@ abstract class EntitySystem {
   void process() {
     if(checkProcessing()) {
       begin();
+      print('processing actives');
       processEntities(_actives);
       end();
     }
@@ -81,7 +82,9 @@ abstract class EntitySystem {
     if (_dummy) {
       return;
     }
+    print("contains = ($_systemBit & ${e._systemBits}) == $_systemBit");
     bool contains = (_systemBit & e._systemBits) == _systemBit;
+    print("interest = ($_all & ${e._typeBits}) == $_all;");
     bool interest = (_all & e._typeBits) == _all;
     if (_one > 0 && interest) {
       interest = (_one & e._typeBits) > 0;
@@ -89,8 +92,10 @@ abstract class EntitySystem {
     if (_excluded > 0 && interest) {
       interest = (_excluded & e._typeBits) == 0;
     }
+    print("$interest && $contains");
 
     if (interest && !contains) {
+      print('adding to actives');
       _actives.add(e);
       e._addSystemBit(_systemBit);
       added(e);
@@ -103,15 +108,6 @@ abstract class EntitySystem {
     _actives.remove(e);
     e._removeSystemBit(_systemBit);
     removed(e);
-  }
-
-  /**
-   * Merge together a [requiredType] and a array of [otherTypes]. Used in derived systems.
-   */
-  static List<String> getMergedTypes(String requiredComponentName, [List<String> otherComponentNames]) {
-    List<String> mergedList = [requiredComponentName];
-    mergedList.addAll(otherComponentNames);
-    return mergedList;
   }
 
 }
