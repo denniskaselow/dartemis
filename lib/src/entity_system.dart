@@ -21,7 +21,7 @@ abstract class EntitySystem {
   int _excluded;
   int _one;
   bool _dummy;
-  bool _passive = false;
+  bool _passive;
 
   EntitySystem(Aspect aspect) : _actives = new Bag<Entity>(),
                                             _all = aspect.all,
@@ -95,7 +95,6 @@ abstract class EntitySystem {
     print("$interest && $contains");
 
     if (interest && !contains) {
-      print('adding to actives');
       _actives.add(e);
       e._addSystemBit(_systemBit);
       added(e);
