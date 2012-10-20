@@ -1,11 +1,23 @@
 part of dartemis;
 
 /**
- * Tag class for Manager. (may evolve into something more later)
+ * Manager.
  *
  * @author Arni Arent
  *
  */
 abstract class Manager implements EntityObserver {
+  World _world;
+
   abstract void initialize();
+
+  void added(Entity e) {}
+
+  void changed(Entity e) {}
+
+  void deleted(Entity e) {}
+
+  void disabled(Entity e) {}
+
+  void enabled(Entity e) {}
 }

@@ -6,18 +6,40 @@ part of dartemis;
  *
  * @author Arni Arent
  */
-class ComponentMapper {
+class ComponentMapper<A extends Component> {
   ComponentType _type;
-  EntityManager _em;
-  String _componentName;
+  Bag<A> _components;
 
-  ComponentMapper(this._componentName, World world) {
-    this._em = world.entityManager;
-    this._type = ComponentTypeManager.getTypeFor(_componentName);
+  ComponentMapper(String componentName, World world) {
+    this._type = ComponentTypeManager.getTypeFor(componentName);
+    _components = world.componentManager.getComponentsByType(this._type);
   }
 
-  Component getComponent(Entity e) {
-    return _em._getComponent(e, _type);
+  /**
+   * Fast but unsafe retrieval of a component for this entity.
+   * No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
+   * however in most scenarios you already know the entity possesses this component.
+   */
+  A get(Entity e) {
+    return _components[e.id];
+  }
+
+  /**
+   * Fast and safe retrieval of a component for this entity.
+   * If the entity does not have this component then null is returned.
+   */
+  A getSafe(Entity e) {
+    if(_components.isIndexWithinBounds(e.id)) {
+      return _components[e.id];
+    }
+    return null;
+  }
+
+  /**
+   * Checks if the entity has this type of component.
+   */
+  bool has(Entity e) {
+    return getSafe(e) != null;
   }
 
 }

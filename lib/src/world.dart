@@ -1,46 +1,35 @@
 part of dartemis;
 
 class World {
+  final Bag<Entity> _added = new Bag<Entity>();
+  final Bag<Entity> _changed = new Bag<Entity>();
+  final Bag<Entity> _deleted = new Bag<Entity>();
+  final Bag<Entity> _enable = new Bag<Entity>();
+  final Bag<Entity> _disable = new Bag<Entity>();
+  final Map<Type, Manager> _managers = new Map<Type, Manager>();
 
-
-  final Bag<Entity> _added;
-  final Bag<Entity> _changed;
-  final Bag<Entity> _deleted;
-  final Bag<Entity> _enable;
-  final Bag<Entity> _disable;
-  final Map<Type, Manager> _managers;
-
-  EntityManager _entityManager;
-  TagManager _tagManager;
-  GroupManager _groupManager;
-  Bag<EntitySystem> _systemsBag;
-  Bag<Manager> _managerBag;
+  final EntityManager _entityManager = new EntityManager();
+  final ComponentManager _componentManager = new ComponentManager();
+  final Bag<EntitySystem> _systemsBag= new Bag<EntitySystem>();
+  final Bag<Manager> _managerBag = new Bag<Manager>();
 
   int delta;
 
-  World() : _added = new Bag<Entity>(),
-            _changed = new Bag<Entity>(),
-            _deleted = new Bag<Entity>(),
-            _enable = new Bag<Entity>(),
-            _disable = new Bag<Entity>(),
-            _managers = new Map<Type, Manager>(),
-            _systemsBag = new Bag<EntitySystem>(),
-            _managerBag = new Bag<Manager>(){
-    _entityManager = new EntityManager(this);
-    _tagManager = new TagManager(this);
-    _groupManager = new GroupManager(this);
+  World() {
+    addManager(_entityManager);
+    addManager(_componentManager);
   }
 
-  GroupManager get groupManager() => _groupManager;
   EntityManager get entityManager() => _entityManager;
-  TagManager get tagManager() => _tagManager;
+  ComponentManager get componentManager => _componentManager;
 
   /**
    * Allows for setting a custom [manager].
    */
   void addManager(Manager manager) {
-    _managerBag.add(manager);
     _managers[manager.runtimeType] = manager;
+    _managerBag.add(manager);
+    manager._world = this;
   }
 
   /**
@@ -54,7 +43,7 @@ class World {
    * Create and return a new or reused [Entity] instance.
    */
   Entity createEntity() {
-    return _entityManager._create();
+    return _entityManager._createEntityInstance();
   }
 
   /**
@@ -89,6 +78,8 @@ class World {
     _check(_disable, (observer, entity) => observer.disabled(entity));
     _check(_enable, (observer, entity) => observer.enabled(entity));
     _check(_deleted, (observer, entity) => observer.deleted(entity));
+
+    _componentManager.clean();
 
     _systemsBag.forEach((system) {
       if (!system.passive) {
@@ -137,4 +128,6 @@ class World {
   void disable(Entity e) {
     _disable.add(e);
   }
+
+
 }

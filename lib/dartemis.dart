@@ -12,6 +12,7 @@ part 'src/utils/utils.dart';
 
 part 'src/component.dart';
 part 'src/component_mapper.dart';
+part 'src/component_manager.dart';
 part 'src/component_type.dart';
 part 'src/component_type_manager.dart';
 

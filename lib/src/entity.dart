@@ -13,9 +13,11 @@ class Entity {
 
   World _world;
   EntityManager _entityManager;
+  ComponentManager _componentManager;
 
   Entity(this._world, this.id) {
     _entityManager = _world.entityManager;
+    _componentManager = _world.componentManager;
   }
 
   /**
@@ -50,21 +52,21 @@ class Entity {
    * Add a [component] to this entity.
    */
   void addComponent(Component component){
-    _entityManager._addComponent(this, component);
+    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType.toString()), component);
   }
 
   /**
    * Removes the [component] from this entity.
    */
   void removeComponent(Component component){
-    _entityManager._removeComponent(this, component);
+    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType.toString()));
   }
 
   /**
    * Faster removal of components by [type] from a entity.
    */
   void removeComponentByType(ComponentType type){
-    _entityManager._removeComponentByType(this, type);
+    _componentManager._removeComponent(this, type);
   }
 
   /**
@@ -81,7 +83,7 @@ class Entity {
    * Returns the [Component].
    */
   Component getComponent(ComponentType type) {
-    return _entityManager._getComponent(this, type);
+    return _componentManager._getComponent(this, type);
   }
 
   /**
@@ -96,15 +98,12 @@ class Entity {
 
   /**
    * Get all components belonging to this entity.
-   *
-   * **WARNING:**
-   *
-   * Use only for debugging purposes, it is dead slow.
-   *
-   * The returned bag is only valid until this method is called again, then it is overwritten.
    */
-  ImmutableBag<Component> getComponents() {
-    return _entityManager._getComponents(this);
+  Bag<Component> getComponents([Bag<Component> fillBag]) {
+    if (null == fillBag) {
+      fillBag = new Bag<Component>();
+    }
+    return _componentManager.getComponentsFor(this, fillBag);
   }
 
   /**
@@ -112,20 +111,6 @@ class Entity {
    */
   void delete() {
     _world.deleteEntity(this);
-  }
-
-  /**
-   * Set the [group] of the entity.
-   */
-  void setGroup(String group) {
-    _world.groupManager.addEntityToGroup(group, this);
-  }
-
-  /**
-   * Assign a [tag] to this entity.
-   */
-  void setTag(String tag) {
-    _world.tagManager.register(tag, this);
   }
 
   /**

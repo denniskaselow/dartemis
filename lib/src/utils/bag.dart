@@ -198,4 +198,7 @@ class Bag<E> implements ImmutableBag<E> {
     return Collections.collectionToString(_data);
   }
 
+  bool isIndexWithinBounds(int index) {
+    return index < capacity;
+  }
 }

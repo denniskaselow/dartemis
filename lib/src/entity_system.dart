@@ -92,7 +92,6 @@ abstract class EntitySystem implements EntityObserver {
     if (_excluded > 0 && interest) {
       interest = (_excluded & e._typeBits) == 0;
     }
-    print("$interest && $contains");
 
     if (interest && !contains) {
       _insertToSystem(e);
