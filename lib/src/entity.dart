@@ -23,7 +23,7 @@ class Entity {
   /**
    * Get the unique ID of this entity. Because entity instances are reused internally use this to identify between different instances.
    */
-  int get uniqueId() => _uniqueId;
+  int get uniqueId => _uniqueId;
 
   void _addTypeBit(int bit) {
     _typeBits |= bit;
@@ -73,7 +73,7 @@ class Entity {
    * Checks if the entity has been deleted from somewhere.
    * Returns [:true:] if it's active.
    */
-  bool get active()=> _entityManager.isActive(id);
+  bool get active=> _entityManager.isActive(id);
 
   /**
    * This is the preferred method to use when retrieving a [Component] from an entity. It will provide good performance.

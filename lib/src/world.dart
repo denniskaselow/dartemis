@@ -20,7 +20,7 @@ class World {
     addManager(_componentManager);
   }
 
-  EntityManager get entityManager() => _entityManager;
+  EntityManager get entityManager => _entityManager;
   ComponentManager get componentManager => _componentManager;
 
   /**

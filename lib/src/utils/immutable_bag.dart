@@ -4,7 +4,7 @@ interface ImmutableBag<E> {
 
     E operator [](int index);
 
-    int get size();
+    int get size;
 
     bool isEmpty();
 

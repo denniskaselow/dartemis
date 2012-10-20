@@ -40,8 +40,9 @@ class Utils {
   }
 
   static double lerp(double a, double b, double t) {
-    if (t < 0)
+    if (t < 0) {
       return a;
+    }
     return a + t * (b - a);
   }
 

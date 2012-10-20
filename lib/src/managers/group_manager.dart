@@ -42,8 +42,9 @@ class GroupManager {
    */
   ImmutableBag<Entity> getEntities(String group) {
     Bag<Entity> bag = _entitiesByGroup[group];
-    if(bag == null)
+    if(bag == null) {
       return _EMPTY_BAG;
+    }
     return bag;
   }
 

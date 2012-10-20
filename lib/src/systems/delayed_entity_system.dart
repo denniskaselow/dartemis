@@ -67,9 +67,9 @@ abstract class DelayedEntitySystem extends EntitySystem {
   /**
    * Get the initial [:delay:] as set by [startDelayedRun].
    */
-  int get initialTimeDelay() => _delay;
+  int get initialTimeDelay => _delay;
 
-  int get remainingTimeUntilProcessing() {
+  int get remainingTimeUntilProcessing {
     if(_running) {
       return _delay - _acc;
     }
@@ -81,7 +81,7 @@ abstract class DelayedEntitySystem extends EntitySystem {
    *
    * Return [:true:] if it's counting down, [:false:] if it's not running.
    */
-  bool get running() => _running;
+  bool get running => _running;
 
   /**
    * Aborts running the system in the future and stops it. Call [delayedRun] to start it again.

@@ -18,7 +18,7 @@ class Bag<E> implements ImmutableBag<E> {
   /**
    * Returns the number of elements in this bag.
    */
-  int get size() {
+  int get size {
     return _size;
   }
 
@@ -131,7 +131,7 @@ class Bag<E> implements ImmutableBag<E> {
   /**
    * Returns the number of elements the bag can hold without growing.
    */
-  int get capacity() {
+  int get capacity {
     return _data.length;
   }
 
