@@ -10,7 +10,7 @@ part of dartemis;
  * @author Arni Arent
  *
  */
-abstract class EntitySystem {
+abstract class EntitySystem implements EntityObserver {
 
 
   int _systemBit = 0;
@@ -73,18 +73,18 @@ abstract class EntitySystem {
   /**
    * Called if the system has received an [entity] it is interested in, e.g. created or a component was added to it.
    */
-  void added(Entity entity) {}
+  void inserted(Entity entity) {}
 
   /**
    * Called if an [entity] was removed from this system, e.g. deleted or had one of it's components removed.
    */
   void removed(Entity entity) {}
 
-  void _change(Entity e) {
+  void _check(Entity e) {
     if (_dummy) {
       return;
     }
-    bool contains = (_systemBit & e._systemBits) == _systemBit;
+    bool contains = _contains(e);
     bool interest = (_all & e._typeBits) == _all;
     if (_one > 0 && interest) {
       interest = (_one & e._typeBits) > 0;
@@ -95,18 +95,48 @@ abstract class EntitySystem {
     print("$interest && $contains");
 
     if (interest && !contains) {
-      _actives.add(e);
-      e._addSystemBit(_systemBit);
-      added(e);
+      _insertToSystem(e);
     } else if (!interest && contains) {
-      _remove(e);
+      _removeFromSystem(e);
     }
   }
 
-  void _remove(Entity e) {
+  bool _contains(Entity e) => (_systemBit & e._systemBits) == _systemBit;
+
+  void _insertToSystem(Entity e) {
+    _actives.add(e);
+    e._addSystemBit(_systemBit);
+    inserted(e);
+  }
+
+  void _removeFromSystem(Entity e) {
     _actives.remove(e);
     e._removeSystemBit(_systemBit);
     removed(e);
+  }
+
+  void added(Entity e) {
+    _check(e);
+  }
+
+  void changed(Entity e) {
+    _check(e);
+  }
+
+  void enabled(Entity e) {
+    _check(e);
+  }
+
+  void deleted(Entity e) {
+    if (_contains(e)) {
+      _removeFromSystem(e);
+    }
+  }
+
+  void disabled(Entity e) {
+    if (_contains(e)) {
+      _removeFromSystem(e);
+    }
   }
 
 }

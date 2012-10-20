@@ -66,7 +66,7 @@ main() {
     });
   });
 
-  group('integration tests for EntitySystems', () {
+  group('integration tests for World.process()', () {
     World world;
     Entity entityAB;
     Entity entityAC;
@@ -76,15 +76,14 @@ main() {
       entityAB = world.createEntity();
       entityAB.addComponent(new ComponentA());
       entityAB.addComponent(new ComponentB());
-      entityAB.refresh();
+      entityAB.addToWorld();
       entityAC = world.createEntity();
       entityAC.addComponent(new ComponentA());
       entityAC.addComponent(new ComponentC());
-      entityAC.refresh();
+      entityAC.addToWorld();
       systemStarter = (EntitySystem es) {
         es = world.addSystem(es);
         world.initialize();
-        world.loopStart();
         world.process();
       };
     });
@@ -107,6 +106,49 @@ main() {
       List<Entity> expectedEntities = [entityAB];
       EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A).exclude(COMPONENT_C), expectedEntities);
       systemStarter(es);
+    });
+    test('A removed entity will not get processed', () {
+      entityAB.deleteFromWorld();
+      List<Entity> expectedEntities = [entityAC];
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      systemStarter(es);
+    });
+    test('A disabled entity will not get processed', () {
+      entityAB.disable();
+      List<Entity> expectedEntities = [entityAC];
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      systemStarter(es);
+    });
+    test('Adding a component will not get the entity processed if the world is not notified of the change', () {
+      List<Entity> expectedEntities = [entityAC];
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_C), expectedEntities);
+      es = world.addSystem(es);
+      world.initialize();
+      world.process();
+      entityAB.addComponent(new ComponentC());
+      world.process();
+    });
+    test('Adding a component will get the entity processed if the world is notified of the change', () {
+      List<Entity> expectedEntities = [entityAC];
+      TestEntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_C), expectedEntities);
+      es = world.addSystem(es);
+      world.initialize();
+      world.process();
+      es.expectedEntities = [entityAB, entityAC];
+      entityAB.addComponent(new ComponentC());
+      entityAB.changedInWorld();
+      world.process();
+    });
+    test('Enabling a disabled component will get the entity processed', () {
+      entityAB.disable();
+      List<Entity> expectedEntities = [entityAC];
+      TestEntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      es = world.addSystem(es);
+      world.initialize();
+      world.process();
+      es.expectedEntities = [entityAB, entityAC];
+      entityAB.enable();
+      world.process();
     });
   });
   group('World tests', () {
@@ -145,13 +187,6 @@ main() {
       world.initialize();
 
       manager.getLogs(callsTo('initialize')).verify(happenedExactly(1));
-    });
-    test('world processes added managers', () {
-      MockManager manager = new MockManager();
-      world.addManager(manager);
-      world.process();
-
-      manager.getLogs(callsTo('process')).verify(happenedExactly(1));
     });
   });
 }

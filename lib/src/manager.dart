@@ -6,7 +6,6 @@ part of dartemis;
  * @author Arni Arent
  *
  */
-interface Manager {
-  void initialize();
-  void process();
+abstract class Manager implements EntityObserver {
+  abstract void initialize();
 }

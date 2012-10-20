@@ -108,15 +108,6 @@ class Entity {
   }
 
   /**
-   * Refresh all changes to [Component]s for this entity. After adding or removing [Component]s, you must call
-   * this method. It will update all relevant [EntitySystem]s.
-   * It is typical to call this after adding [Component]s to a newly created entity.
-   */
-  void refresh() {
-    _world.refreshEntity(this);
-  }
-
-  /**
    * Delete this entity from the [World].
    */
   void delete() {
@@ -135,5 +126,28 @@ class Entity {
    */
   void setTag(String tag) {
     _world.tagManager.register(tag, this);
+  }
+
+  /**
+   * Adds the entity to the world.
+   */
+  void addToWorld() {
+    _world.addEntity(this);
+  }
+
+  void deleteFromWorld() {
+    _world.deleteEntity(this);
+  }
+
+  void disable() {
+    _world.disable(this);
+  }
+
+  void changedInWorld() {
+    _world.changedEntity(this);
+  }
+
+  void enable() {
+    _world.enable(this);
   }
 }

@@ -84,7 +84,7 @@ class EntityManager {
 
   void _refresh(Entity e) {
     Bag<EntitySystem> systems = _world._systemsBag;
-    systems.forEach((system) => system._change(e));
+    systems.forEach((system) => system._check(e));
   }
 
   void _removeComponent(Entity e, Component component) {
