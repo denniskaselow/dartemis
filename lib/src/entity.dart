@@ -13,15 +13,17 @@ class Entity {
 
   World _world;
   EntityManager _entityManager;
+  ComponentManager _componentManager;
 
   Entity(this._world, this.id) {
     _entityManager = _world.entityManager;
+    _componentManager = _world.componentManager;
   }
 
   /**
    * Get the unique ID of this entity. Because entity instances are reused internally use this to identify between different instances.
    */
-  int get uniqueId() => _uniqueId;
+  int get uniqueId => _uniqueId;
 
   void _addTypeBit(int bit) {
     _typeBits |= bit;
@@ -50,28 +52,28 @@ class Entity {
    * Add a [component] to this entity.
    */
   void addComponent(Component component){
-    _entityManager._addComponent(this, component);
+    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType), component);
   }
 
   /**
    * Removes the [component] from this entity.
    */
   void removeComponent(Component component){
-    _entityManager._removeComponent(this, component);
+    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType));
   }
 
   /**
    * Faster removal of components by [type] from a entity.
    */
   void removeComponentByType(ComponentType type){
-    _entityManager._removeComponentByType(this, type);
+    _componentManager._removeComponent(this, type);
   }
 
   /**
    * Checks if the entity has been deleted from somewhere.
    * Returns [:true:] if it's active.
    */
-  bool get active()=> _entityManager.isActive(id);
+  bool get active=> _entityManager.isActive(id);
 
   /**
    * This is the preferred method to use when retrieving a [Component] from an entity. It will provide good performance.
@@ -81,7 +83,7 @@ class Entity {
    * Returns the [Component].
    */
   Component getComponent(ComponentType type) {
-    return _entityManager._getComponent(this, type);
+    return _componentManager._getComponent(this, type);
   }
 
   /**
@@ -90,30 +92,18 @@ class Entity {
    *
    * Returns [:null:] if none is found.
    */
-   Component getComponentByClass(String componentName) {
-     return getComponent(ComponentTypeManager.getTypeFor(componentName));
+   Component getComponentByClass(Type componentType) {
+     return getComponent(ComponentTypeManager.getTypeFor(componentType));
    }
 
   /**
    * Get all components belonging to this entity.
-   *
-   * **WARNING:**
-   *
-   * Use only for debugging purposes, it is dead slow.
-   *
-   * The returned bag is only valid until this method is called again, then it is overwritten.
    */
-  ImmutableBag<Component> getComponents() {
-    return _entityManager._getComponents(this);
-  }
-
-  /**
-   * Refresh all changes to [Component]s for this entity. After adding or removing [Component]s, you must call
-   * this method. It will update all relevant [EntitySystem]s.
-   * It is typical to call this after adding [Component]s to a newly created entity.
-   */
-  void refresh() {
-    _world.refreshEntity(this);
+  Bag<Component> getComponents([Bag<Component> fillBag]) {
+    if (null == fillBag) {
+      fillBag = new Bag<Component>();
+    }
+    return _componentManager.getComponentsFor(this, fillBag);
   }
 
   /**
@@ -124,16 +114,25 @@ class Entity {
   }
 
   /**
-   * Set the [group] of the entity.
+   * Adds the entity to the world.
    */
-  void setGroup(String group) {
-    _world.groupManager.addEntityToGroup(group, this);
+  void addToWorld() {
+    _world.addEntity(this);
   }
 
-  /**
-   * Assign a [tag] to this entity.
-   */
-  void setTag(String tag) {
-    _world.tagManager.register(tag, this);
+  void deleteFromWorld() {
+    _world.deleteEntity(this);
+  }
+
+  void disable() {
+    _world.disable(this);
+  }
+
+  void changedInWorld() {
+    _world.changedEntity(this);
+  }
+
+  void enable() {
+    _world.enable(this);
   }
 }

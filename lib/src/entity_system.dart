@@ -1,6 +1,5 @@
 part of dartemis;
 
-
 /**
  * The most raw entity system. It should not typically be used, but you can create your own
  * entity system handling by extending this. It is recommended that you use the other provided
@@ -11,21 +10,28 @@ part of dartemis;
  * @author Arni Arent
  *
  */
-abstract class EntitySystem {
+abstract class EntitySystem implements EntityObserver {
+
 
   int _systemBit = 0;
-  int _typeFlags = 0;
   World world;
   Bag<Entity> _actives;
 
-  EntitySystem([List<String> componentTypes]) {
-    _actives = new Bag<Entity>();
+  int _all;
+  int _excluded;
+  int _one;
+  bool _dummy;
+  bool _passive;
 
-    for (String type in componentTypes) {
-      ComponentType ct = ComponentTypeManager.getTypeFor(type);
-      _typeFlags |= ct.bit;
-    }
+  EntitySystem(Aspect aspect) : _actives = new Bag<Entity>(),
+                                            _all = aspect.all,
+                                            _excluded = aspect.excluded,
+                                            _one = aspect.one {
+    _dummy = _all == 0 && _one == 0;
+    _systemBit = _SystemBitManager._getBitFor(runtimeType);
   }
+
+  get passive => _passive;
 
   /**
    * Called before processing of entities begins.
@@ -67,39 +73,69 @@ abstract class EntitySystem {
   /**
    * Called if the system has received an [entity] it is interested in, e.g. created or a component was added to it.
    */
-  void added(Entity entity) {}
+  void inserted(Entity entity) {}
 
   /**
    * Called if an [entity] was removed from this system, e.g. deleted or had one of it's components removed.
    */
   void removed(Entity entity) {}
 
-  void _change(Entity e) {
-    bool contains = (_systemBit & e._systemBits) == _systemBit;
-    bool interest = (_typeFlags & e._typeBits) == _typeFlags;
+  void _check(Entity e) {
+    if (_dummy) {
+      return;
+    }
+    bool contains = _contains(e);
+    bool interest = (_all & e._typeBits) == _all;
+    if (_one > 0 && interest) {
+      interest = (_one & e._typeBits) > 0;
+    }
+    if (_excluded > 0 && interest) {
+      interest = (_excluded & e._typeBits) == 0;
+    }
 
-    if (interest && !contains && _typeFlags > 0) {
-      _actives.add(e);
-      e._addSystemBit(_systemBit);
-      added(e);
-    } else if (!interest && contains && _typeFlags > 0) {
-      _remove(e);
+    if (interest && !contains) {
+      _insertToSystem(e);
+    } else if (!interest && contains) {
+      _removeFromSystem(e);
     }
   }
 
-  void _remove(Entity e) {
+  bool _contains(Entity e) => (_systemBit & e._systemBits) == _systemBit;
+
+  void _insertToSystem(Entity e) {
+    _actives.add(e);
+    e._addSystemBit(_systemBit);
+    inserted(e);
+  }
+
+  void _removeFromSystem(Entity e) {
     _actives.remove(e);
     e._removeSystemBit(_systemBit);
     removed(e);
   }
 
-  /**
-   * Merge together a [requiredType] and a array of [otherTypes]. Used in derived systems.
-   */
-  static List<String> getMergedTypes(String requiredComponentName, [List<String> otherComponentNames]) {
-    List<String> mergedList = [requiredComponentName];
-    mergedList.addAll(otherComponentNames);
-    return mergedList;
+  void added(Entity e) {
+    _check(e);
+  }
+
+  void changed(Entity e) {
+    _check(e);
+  }
+
+  void enabled(Entity e) {
+    _check(e);
+  }
+
+  void deleted(Entity e) {
+    if (_contains(e)) {
+      _removeFromSystem(e);
+    }
+  }
+
+  void disabled(Entity e) {
+    if (_contains(e)) {
+      _removeFromSystem(e);
+    }
   }
 
 }

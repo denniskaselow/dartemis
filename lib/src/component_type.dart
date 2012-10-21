@@ -17,7 +17,7 @@ class ComponentType {
     _id = _nextId++;
   }
 
-  int get bit() => _bit;
+  int get bit => _bit;
 
-  int get id() => _id;
+  int get id => _id;
 }

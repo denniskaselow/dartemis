@@ -1,0 +1,390 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>ComponentManager class / dartemis Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dartemis" data-type="ComponentManager">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ComponentManager.html">ComponentManager</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+<h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
+<li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
+<li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
+<li><div class="icon-class"></div><strong>ComponentManager</strong></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
+<li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
+<li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
+<li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
+<li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
+<li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
+<li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
+<li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
+<li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
+<li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
+<li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
+<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
+<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
+<li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
+<li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
+</ul>
+</div>
+<div class="content">
+        <h2><strong>ComponentManager</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<pre class="source">
+class ComponentManager extends Manager {
+  Bag&lt;Bag&lt;Component&gt;&gt; _componentsByType;
+  Bag&lt;Entity&gt; _deleted;
+
+  ComponentManager() : _componentsByType = new Bag&lt;Bag&lt;Component&gt;&gt;(),
+                       _deleted = new Bag&lt;Entity&gt;();
+
+  void initialize() {}
+
+  void _removeComponentsOfEntity(Entity e) {
+    _forComponentsOfEntity(e, (components) =&gt; components[e.id] = null);
+    e._typeBits = 0;
+  }
+
+  void _addComponent(Entity e, ComponentType type, Component component) {
+    int index = type.id;
+    Bag&lt;Component&gt; components = _componentsByType[index];
+    if(components == null) {
+      components = new Bag&lt;Component&gt;();
+      _componentsByType[index] = components;
+    }
+
+    components[e.id] = component;
+
+    e._addTypeBit(type.bit);
+  }
+
+  void _removeComponent(Entity e, ComponentType type) {
+    if((e._typeBits &amp; type.bit) != 0) {
+      _componentsByType[type.id][e.id] = null;
+      e._removeTypeBit(type.bit);
+    }
+  }
+
+  Bag&lt;Component&gt; getComponentsByType(ComponentType type) {
+    int index = type.id;
+    Bag&lt;Component&gt; components = _componentsByType[index];
+    if(components == null) {
+      components = new Bag&lt;Component&gt;();
+      _componentsByType[index] = components;
+    }
+    return components;
+  }
+
+  Component _getComponent(Entity e, ComponentType type) {
+    int index = type.id;
+    Bag&lt;Component&gt; components = _componentsByType[index];
+    if(components != null) {
+      return components[e.id];
+    }
+    return null;
+  }
+
+  Bag&lt;Component&gt; getComponentsFor(Entity e, Bag&lt;Component&gt; fillBag) {
+    _forComponentsOfEntity(e, (components) =&gt; fillBag.add(components[e.id]));
+
+    return fillBag;
+  }
+
+  void _forComponentsOfEntity(Entity e, void f(Bag&lt;Component&gt; components)) {
+    int componentBits = e._typeBits;
+    int index = 0;
+    while (componentBits &gt; 0) {
+      if ((componentBits &amp; 1) == 1) {
+        f(_componentsByType[index]);
+      }
+      index++;
+      componentBits = componentBits &gt;&gt; 1;
+    }
+  }
+
+  void deleted(Entity e) {
+    _deleted.add(e);
+  }
+
+  void clean() {
+    _deleted.forEach((entity) =&gt; _removeComponentsOfEntity(entity));
+    _deleted.clear();
+  }
+
+}
+</pre>
+</div>
+<h3>Extends</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dartemis/Manager.html">Manager</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>ComponentManager</strong></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="ComponentManager">
+<button class="show-code">Code</button>
+new <strong>ComponentManager</strong>() <a class="anchor-link" href="#ComponentManager"
+              title="Permalink to ComponentManager.ComponentManager">#</a></h4>
+<div class="doc">
+<pre class="source">
+ComponentManager() : _componentsByType = new Bag&lt;Bag&lt;Component&gt;&gt;(),
+                     _deleted = new Bag&lt;Entity&gt;();
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
+            href="#runtimeType"
+            title="Permalink to ComponentManager.runtimeType">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method inherited"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
+              title="Permalink to ComponentManager.operator ==">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and 
+<span class="param">other</span> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <code>hashCode</code> method as well to maintain consistency.</p>
+<pre class="source">
+bool operator ==(other) =&gt; identical(this, other);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method inherited"><h4 id="added">
+<button class="show-code">Code</button>
+void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#added"
+              title="Permalink to ComponentManager.added">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void added(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="changed">
+<button class="show-code">Code</button>
+void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#changed"
+              title="Permalink to ComponentManager.changed">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void changed(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="clean">
+<button class="show-code">Code</button>
+void <strong>clean</strong>() <a class="anchor-link" href="#clean"
+              title="Permalink to ComponentManager.clean">#</a></h4>
+<div class="doc">
+<pre class="source">
+void clean() {
+  _deleted.forEach((entity) =&gt; _removeComponentsOfEntity(entity));
+  _deleted.clear();
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="ComponentManager">
+<button class="show-code">Code</button>
+new <strong>ComponentManager</strong>() <a class="anchor-link" href="#ComponentManager"
+              title="Permalink to ComponentManager.ComponentManager">#</a></h4>
+<div class="doc">
+<pre class="source">
+ComponentManager() : _componentsByType = new Bag&lt;Bag&lt;Component&gt;&gt;(),
+                     _deleted = new Bag&lt;Entity&gt;();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="deleted">
+<button class="show-code">Code</button>
+void <strong>deleted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#deleted"
+              title="Permalink to ComponentManager.deleted">#</a></h4>
+<div class="doc">
+<pre class="source">
+void deleted(Entity e) {
+  _deleted.add(e);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="disabled">
+<button class="show-code">Code</button>
+void <strong>disabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#disabled"
+              title="Permalink to ComponentManager.disabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void disabled(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="enabled">
+<button class="show-code">Code</button>
+void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#enabled"
+              title="Permalink to ComponentManager.enabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void enabled(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getComponentsByType">
+<button class="show-code">Code</button>
+<a href="../dartemis/Bag.html">Bag</a>&lt;<a href="../dartemis/Component.html">Component</a>&gt; <strong>getComponentsByType</strong>(<a href="../dartemis/ComponentType.html">ComponentType</a> type) <a class="anchor-link" href="#getComponentsByType"
+              title="Permalink to ComponentManager.getComponentsByType">#</a></h4>
+<div class="doc">
+<pre class="source">
+Bag&lt;Component&gt; getComponentsByType(ComponentType type) {
+  int index = type.id;
+  Bag&lt;Component&gt; components = _componentsByType[index];
+  if(components == null) {
+    components = new Bag&lt;Component&gt;();
+    _componentsByType[index] = components;
+  }
+  return components;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getComponentsFor">
+<button class="show-code">Code</button>
+<a href="../dartemis/Bag.html">Bag</a>&lt;<a href="../dartemis/Component.html">Component</a>&gt; <strong>getComponentsFor</strong>(<a href="../dartemis/Entity.html">Entity</a> e, <a href="../dartemis/Bag.html">Bag</a>&lt;<a href="../dartemis/Component.html">Component</a>&gt; fillBag) <a class="anchor-link" href="#getComponentsFor"
+              title="Permalink to ComponentManager.getComponentsFor">#</a></h4>
+<div class="doc">
+<pre class="source">
+Bag&lt;Component&gt; getComponentsFor(Entity e, Bag&lt;Component&gt; fillBag) {
+  _forComponentsOfEntity(e, (components) =&gt; fillBag.add(components[e.id]));
+
+  return fillBag;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="hashCode">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
+              title="Permalink to ComponentManager.hashCode">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <code>hashCode</code> it should override the
+equality operator as well to maintain consistency.</p>
+<pre class="source">
+external int hashCode();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="initialize">
+<button class="show-code">Code</button>
+void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
+              title="Permalink to ComponentManager.initialize">#</a></h4>
+<div class="doc">
+<pre class="source">
+void initialize() {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="noSuchMethod">
+<button class="show-code">Code</button>
+<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
+              title="Permalink to ComponentManager.noSuchMethod">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
+on an object. The name of the method and the arguments of the
+invocation are passed to <code>noSuchMethod</code>. If <code>noSuchMethod</code>
+returns a value, that value becomes the result of the original
+invocation.</p>
+<p>The default behavior of <code>noSuchMethod</code> is to throw a
+<code>noSuchMethodError</code>.</p>
+<pre class="source">
+external Dynamic noSuchMethod(String name, List args);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="Object">
+<button class="show-code">Code</button>
+const <strong>Object</strong>() <a class="anchor-link" href="#Object"
+              title="Permalink to ComponentManager.Object">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Creates a new <code>Object</code> instance.</p>
+<p><code>Object</code> instances have no meaningful state, and are only useful
+through their identity. An <code>Object</code> instance is equal to itself
+only.</p>
+<pre class="source">
+const Object();
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to ComponentManager.toString">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Returns a string representation of this object.</p>
+<pre class="source">
+external String toString();
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-10-21 15:45:50.427</div>
+        </div>
+        <script async src="../client-static.js"></script>
+        </body></html>
+        

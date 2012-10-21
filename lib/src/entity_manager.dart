@@ -1,146 +1,118 @@
 part of dartemis;
 
-class EntityManager {
+class EntityManager extends Manager {
 
-  World _world;
-  final Bag<Entity> _activeEntities;
-  final Bag<Entity> _removedAndAvailable;
-  var _nextAvailableId = 0;
-  var _count = 0;
-  var _uniqueEntityId = 0;
-  var _totalCreated = 0;
-  var _totalRemoved = 0;
+  Bag<Entity> _entities;
+  Bag<bool> _disabled;
 
-  final Bag<Bag<Component>> _componentsByType;
+  int _active = 0;
+  int _added = 0;
+  int _created = 0;
+  int _deleted = 0;
 
-  final Bag<Component> _entityComponents; // Added for debug support.
+  _IdentifierPool _identifierPool;
 
-  EntityManager(this._world) : _activeEntities = new Bag<Entity>(),
-                               _removedAndAvailable = new Bag<Entity>(),
-                               _componentsByType = new Bag<Bag<Component>>(),
-                               _entityComponents = new Bag<Component>();
+  EntityManager() : _entities = new Bag<Entity>(),
+                    _disabled = new Bag<bool>(),
+                    _identifierPool = new _IdentifierPool();
 
-  Entity _create() {
-    Entity e = _removedAndAvailable.removeLast();
-    if (e == null) {
-      e = new Entity(_world, _nextAvailableId++);
-    } else {
-      e._reset();
-    }
-    e._uniqueId = _uniqueEntityId++;
-    _activeEntities[e.id] = e;
-    _count++;
-    _totalCreated++;
+  void initialize() {}
+
+  Entity _createEntityInstance() {
+    Entity e = new Entity(_world, _identifierPool.checkOut());
+    _created++;
     return e;
   }
 
-  void _remove(Entity e) {
-    _activeEntities[e.id] = null;
-
-    e._typeBits = 0;
-
-    _refresh(e);
-
-    _removeComponentsOfEntity(e);
-
-    _count--;
-    _totalRemoved++;
-
-    _removedAndAvailable.add(e);
+  void added(Entity e) {
+    _active++;
+    _added++;
+    _entities[e.id] = e;
   }
 
-  void _removeComponentsOfEntity(Entity e) {
-    for(int a = 0; _componentsByType.size > a; a++) {
-      Bag<Component> components = _componentsByType[a];
-      if(components != null && e.id < components.size) {
-        components[e.id] = null;
-      }
-    }
+  void enabled(Entity e) {
+    _disabled[e.id] = false;
   }
+
+  void disabled(Entity e) {
+    _disabled[e.id] = true;
+  }
+
+  void deleted(Entity e) {
+    _entities[e.id] = null;
+
+    _disabled[e.id] = false;
+
+    _identifierPool.checkIn(e.id);
+
+    _active--;
+    _deleted++;
+  }
+
 
   /**
-   * Check if this entity is active, or has been deleted, within the framework.
+   * Check if this entity is active.
+   * Active means the entity is being actively processed.
    */
   bool isActive(int entityId) {
-    return _activeEntities[entityId] != null;
+    return _entities[entityId] != null;
   }
 
-  void _addComponent(Entity e, Component component) {
-    ComponentType type = ComponentTypeManager.getTypeFor(component.runtimeType.toString());
-
-    if(type.id >= _componentsByType.capacity) {
-      _componentsByType[type.id] = null;
-    }
-
-    Bag<Component> components = _componentsByType[type.id];
-    if(components == null) {
-      components = new Bag<Component>();
-      _componentsByType[type.id] = components;
-    }
-
-    components[e.id] = component;
-
-    e._addTypeBit(type.bit);
+  /**
+   * Check if the specified entityId is enabled.
+   */
+  bool isEnabled(int entityId) {
+    return !_disabled[entityId];
   }
 
-  void _refresh(Entity e) {
-    SystemManager systemManager = _world.systemManager;
-    Bag<EntitySystem> systems = systemManager.systems;
-    for(int i = 0, s=systems.size; s > i; i++) {
-      systems[i]._change(e);
-    }
-  }
-
-  void _removeComponent(Entity e, Component component) {
-    ComponentType type = ComponentTypeManager.getTypeFor(component.runtimeType.toString());
-    _removeComponentByType(e, type);
-  }
-
-  void _removeComponentByType(Entity e, ComponentType type) {
-    Bag<Component> components = _componentsByType[type.id];
-    components[e.id] = null;
-    e._removeTypeBit(type.bit);
-  }
-
-  Component _getComponent(Entity e, ComponentType type) {
-    Bag<Component> bag = _componentsByType[type.id];
-    if(bag != null && e.id < bag.capacity)
-      return bag[e.id];
-    return null;
-  }
-
+  /**
+   * Get a entity with this id.
+   */
   Entity _getEntity(int entityId) {
-    return _activeEntities[entityId];
+    return _entities[entityId];
   }
 
   /**
-   * Returns how many entities are currently active.
+   * Get how many entities are active in this world.
    */
-  int get entityCount() => _count;
+  int get activeEntityCount => _active;
 
   /**
-   * Returns how many entities have been created since start.
+   * Get how many entities have been created in the world since start.
+   * Note: A created entity may not have been added to the world, thus
+   * created count is always equal or larger than added count.
    */
-  int get totalCreated() => _totalCreated;
+  int get totalCreated => _created;
 
   /**
-   * Returns how many entities have been removed since start.
+   * Get how many entities have been added to the world since start.
    */
-  int get totalRemoved() => _totalRemoved;
+  int get totalAdded => _added;
 
+  /**
+   * Get how many entities have been deleted from the world since start.
+   */
+  int get totalDeleted => _deleted;
+}
 
+/**
+ * Used only internally to generate distinct ids for entities and reuse them.
+ */
+class _IdentifierPool {
 
-  ImmutableBag<Component> _getComponents(Entity e) {
-    _entityComponents.clear();
-    for(int a = 0; _componentsByType.size > a; a++) {
-      Bag<Component> components = _componentsByType[a];
-      if(components != null && e.id < components.size) {
-        Component component = components[e.id];
-        if(component != null) {
-          _entityComponents.add(component);
-        }
-      }
+  Bag<int> _ids;
+  int _nextAvailableId = 0;
+
+  _IdentifierPool() : _ids = new Bag<int>();
+
+  int checkOut() {
+    if(_ids.size > 0) {
+      return _ids.removeLast();
     }
-    return _entityComponents;
+    return _nextAvailableId++;
+  }
+
+  void checkIn(int id) {
+    _ids.add(id);
   }
 }
