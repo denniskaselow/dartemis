@@ -1,37 +1,56 @@
 part of dartemis;
 
 class World {
+  final EntityManager _entityManager = new EntityManager();
+  final ComponentManager _componentManager = new ComponentManager();
 
-  final Bag<Entity> _refreshed;
-  final Bag<Entity> _deleted;
-  final Map<Type, Manager> _managers;
+  final Bag<Entity> _added = new Bag<Entity>();
+  final Bag<Entity> _changed = new Bag<Entity>();
+  final Bag<Entity> _deleted = new Bag<Entity>();
+  final Bag<Entity> _enable = new Bag<Entity>();
+  final Bag<Entity> _disable = new Bag<Entity>();
 
-  SystemManager _systemManager;
-  EntityManager _entityManager;
-  TagManager _tagManager;
-  GroupManager _groupManager;
+  final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
+  final Bag<EntitySystem> _systemsBag= new Bag<EntitySystem>();
 
-  int delta;
+  final Map<Type, Manager> _managers = new Map<Type, Manager>();
+  final Bag<Manager> _managersBag = new Bag<Manager>();
 
-  World() : _refreshed = new Bag<Entity>(),
-            _deleted = new Bag<Entity>(),
-            _managers = new Map<Type, Manager>() {
-    _entityManager = new EntityManager(this);
-    _systemManager = new SystemManager(this);
-    _tagManager = new TagManager(this);
-    _groupManager = new GroupManager(this);
+  num delta;
+
+  World() {
+    addManager(_entityManager);
+    addManager(_componentManager);
   }
 
-  GroupManager get groupManager() => _groupManager;
-  SystemManager get systemManager() => _systemManager;
-  EntityManager get entityManager() => _entityManager;
-  TagManager get tagManager() => _tagManager;
+  /**
+   * Makes sure all managers systems are initialized in the order they were
+   * added.
+   */
+  void initialize() {
+    _managersBag.forEach((manager) => manager.initialize());
+    _systemsBag.forEach((system) => system.initialize());
+  }
 
   /**
-   * Allows for setting a custom [manager].
+   * Returns a manager that takes care of all the entities in the world.
+   * entities of this world.
+   */
+  EntityManager get entityManager => _entityManager;
+
+  /**
+   * Returns a manager that takes care of all the components in the world.
+   */
+  ComponentManager get componentManager => _componentManager;
+
+  /**
+   * Add a manager into this world. It can be retrieved later. World will
+   * notify this manager of changes to entity.
    */
   void addManager(Manager manager) {
-    _managers[manager.type] = manager;
+    _managers[manager.runtimeType] = manager;
+    _managersBag.add(manager);
+    manager._world = this;
   }
 
   /**
@@ -42,26 +61,18 @@ class World {
   }
 
   /**
-   * Delete the provided [entity] from the world.
+   * Deletes the manager from this world.
    */
-  void deleteEntity(Entity entity) {
-    if(!_deleted.contains(entity)) {
-      _deleted.add(entity);
-    }
-  }
-
-  /**
-   * Ensure all systems are notified of changes to this [entity].
-   */
-  void refreshEntity(Entity entity) {
-    _refreshed.add(entity);
+  void deleteManager(Manager manager) {
+    _managers.remove(manager.runtimeType);
+    _managersBag.remove(manager);
   }
 
   /**
    * Create and return a new or reused [Entity] instance.
    */
   Entity createEntity() {
-    return _entityManager._create();
+    return _entityManager._createEntityInstance();
   }
 
   /**
@@ -72,25 +83,109 @@ class World {
   }
 
   /**
-   * Let framework take care of internal business.
+   * Gives you all the systems in this world for possible iteration.
    */
-  void loopStart() {
-    if(!_refreshed.isEmpty()) {
-      for(int i = 0; _refreshed.size > i; i++) {
-        _entityManager._refresh(_refreshed[i]);
-      }
-      _refreshed.clear();
-    }
+  ImmutableBag<EntitySystem> get systems => _systemsBag;
 
-    if(!_deleted.isEmpty()) {
-      for(int i = 0; _deleted.size > i; i++) {
-        Entity e = _deleted[i];
-        _groupManager.remove(e);
-        _entityManager._remove(e);
-        _tagManager.remove(e);
+  /**
+   * Adds a system to this world that will be processed by World.process().
+   * If [passive] is set to true the system will not be processed by the world.
+   */
+  EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
+    system.world = this;
+    system._passive = passive;
+
+    _systems[system.runtimeType] = system;
+    _systemsBag.add(system);
+
+    return system;
+  }
+
+  /**
+   * Removed the specified system from the world.
+   */
+  void deleteSystem(EntitySystem system) {
+    _systems.remove(system.runtimeType);
+    _systemsBag.remove(system);
+  }
+
+  /**
+   * Retrieve a system for specified system type.
+   */
+  EntitySystem getSystem(Type type) {
+    return _systems[type];
+  }
+
+  /**
+   * Performs an action on each entity.
+   */
+  void _check(Bag<Entity> entities, void perform(EntityObserver, Entity)) {
+    entities.forEach((entity) {
+      _managersBag.forEach((manager) => perform(manager, entity));
+      _systemsBag.forEach((system) => perform(system, entity));
+    });
+    entities.clear();
+  }
+
+  /**
+   * Process all non-passive systems.
+   */
+  void process() {
+    _check(_added, (observer, entity) => observer.added(entity));
+    _check(_changed, (observer, entity) => observer.changed(entity));
+    _check(_disable, (observer, entity) => observer.disabled(entity));
+    _check(_enable, (observer, entity) => observer.enabled(entity));
+    _check(_deleted, (observer, entity) => observer.deleted(entity));
+
+    _componentManager.clean();
+
+    _systemsBag.forEach((system) {
+      if (!system.passive) {
+        system.process();
       }
-      _deleted.clear();
+    });
+  }
+
+  /**
+   * Adds a [Entity e] to this world.
+   */
+  void addEntity(Entity e) {
+    _added.add(e);
+  }
+
+  /**
+   * Ensure all systems are notified of changes to this [Entity e]. If you're
+   * adding a [Component] to an [Entity] after it's been added to the world, then
+   * you need to invoke this method.
+   */
+  void changedEntity(Entity e) {
+    _changed.add(e);
+  }
+
+  /**
+   * Delete the [Entity e] from the world.
+   */
+  void deleteEntity(Entity e) {
+    if (!_deleted.contains(e)) {
+      _deleted.add(e);
     }
   }
+
+  /**
+   * (Re)enable the [Entity e] in the world, after it having being disabled. Won't
+   * do anything unless it was already disabled.
+   */
+  void enable(Entity e) {
+    _enable.add(e);
+  }
+
+  /**
+   * Disable the [Entity e] from being processed. Won't delete it, it will
+   * continue to exist but won't get processed.
+   */
+  void disable(Entity e) {
+    _disable.add(e);
+  }
+
 
 }

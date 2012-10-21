@@ -11,7 +11,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   int _acc;
   final int interval;
 
-  IntervalEntitySystem(this.interval, [List<String> types]) : super(types);
+  IntervalEntitySystem(this.interval, Aspect aspect) : super(aspect);
 
   bool checkProcessing() {
     _acc += world.delta;

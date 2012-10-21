@@ -33,11 +33,11 @@ abstract class Timer {
     _acc = 0;
   }
 
-  bool get done() {
+  bool get done {
     return _done;
   }
 
-  bool get running() {
+  bool get running {
     return !_done && _acc < delay && !_stopped;
   }
 
@@ -49,12 +49,13 @@ abstract class Timer {
   abstract void execute();
 
   double getPercentageRemaining() {
-    if (_done)
+    if (_done) {
       return 100.0;
-    else if (_stopped)
+    } else if (_stopped) {
       return 0.0;
-    else
+    } else {
       return 1 - (delay - _acc) / delay;
+    }
   }
 
 }

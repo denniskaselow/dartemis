@@ -1,0 +1,719 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>DelayedEntityProcessingSystem abstract class / dartemis Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dartemis" data-type="DelayedEntityProcessingSystem">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/DelayedEntityProcessingSystem.html">DelayedEntityProcessingSystem</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+<h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
+<li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
+<li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
+<li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><div class="icon-class"></div><strong>DelayedEntityProcessingSystem</strong></li>
+<li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
+<li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
+<li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
+<li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
+<li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
+<li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
+<li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
+<li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
+<li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
+<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
+<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
+<li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
+<li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
+</ul>
+</div>
+<div class="content">
+        <h2><strong>DelayedEntityProcessingSystem</strong>
+          abstract class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>The purpose of this class is to allow systems to execute at varying intervals.</p>
+<p>An example system would be an ExpirationSystem, that deletes entities after a certain
+lifetime. Instead of running a system that decrements a timeLeft value for each
+entity, you can simply use this system to execute in a future at a time of the shortest
+lived entity, and then reset the system to run at a time in a future at a time of the
+shortest lived entity, etc.</p>
+<p>Another example system would be an AnimationSystem. You know when you have to animate
+a certain entity, e.g. in 300 milliseconds. So you can set the system to run in 300 ms.
+to perform the animation.</p>
+<p>This will save CPU cycles in some scenarios.</p>
+<p>Implementation notes:
+In order to start the system you need to override the inserted(Entity e) method,
+look up the delay time from that entity and offer it to the system by using the
+offerDelay(num delay) method.
+Also, when processing the entities you must also call offerDelay(num delay)
+for all valid entities.</p>
+<p>@author Arni Arent</p>
+<pre class="source">
+abstract class DelayedEntityProcessingSystem extends EntitySystem {
+  num delay;
+  bool running;
+  num acc;
+
+  DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
+
+  /**
+   * Return the delay until this entity should be processed.
+   */
+  abstract num getRemainingDelay(Entity e);
+
+  /**
+   * Process a entity this system is interested in. Substract the accumulatedDelta
+   * from the entities defined delay.
+   */
+  abstract void processDelta(Entity e, num accumulatedDelta);
+
+  abstract void processExpired(Entity e);
+
+  void processEntities(ImmutableBag&lt;Entity&gt; entities) {
+    entities.forEach((entity) {
+      processDelta(entity, acc);
+      num remaining = getRemainingDelay(entity);
+      if(remaining &lt;= 0) {
+        processExpired(entity);
+      } else {
+        offerDelay(remaining);
+      }
+    });
+    stop();
+  }
+
+  void inserted(Entity e) {
+    num delay = getRemainingDelay(e);
+    if(delay &gt; 0) {
+      offerDelay(delay);
+    }
+  }
+
+  bool checkProcessing() {
+    if(running) {
+      acc += world.delta;
+
+      if(acc &gt;= delay) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Start processing of entities after a certain amount of delta time.
+   *
+   * Cancels current delayed run and starts a new one.
+   */
+  void restart(num delay) {
+    this.delay = delay;
+    this.acc = 0;
+    running = true;
+  }
+
+  /**
+   * Restarts the system only if the delay offered is shorter than the
+   * time that the system is currently scheduled to execute at.
+   *
+   * If the system is already stopped (not running) then the offered
+   * delay will be used to restart the system with no matter its value.
+   *
+   * If the system is already counting down, and the offered delay is
+   * larger than the time remaining, the system will ignore it. If the
+   * offered delay is shorter than the time remaining, the system will
+   * restart itself to run at the offered delay.
+   */
+  void offerDelay(num delay) {
+    if(!running || delay &lt; getRemainingTimeUntilProcessing()) {
+      restart(delay);
+    }
+  }
+
+  /**
+   * Get the initial delay that the system was ordered to process entities after.
+   */
+  num getInitialTimeDelay() {
+    return delay;
+  }
+
+  /**
+   * Get the time until the system is scheduled to run at.
+   * Returns zero (0) if the system is not running.
+   * Use isRunning() before checking this value.
+   */
+  num getRemainingTimeUntilProcessing() {
+    if(running) {
+      return delay-acc;
+    }
+    return 0;
+  }
+
+  /**
+   * Check if the system is counting down towards processing.
+   */
+  bool isRunning() {
+    return running;
+  }
+
+  /**
+   * Stops the system from running, aborts current countdown.
+   * Call offerDelay or restart to run it again.
+   */
+  void stop() {
+    this.running = false;
+    this.acc = 0;
+  }
+
+}
+</pre>
+</div>
+<h3>Extends</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dartemis/EntitySystem.html">EntitySystem</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>DelayedEntityProcessingSystem</strong></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="DelayedEntityProcessingSystem">
+<button class="show-code">Code</button>
+new <strong>DelayedEntityProcessingSystem</strong>(<a href="../dartemis/Aspect.html">Aspect</a> aspect) <a class="anchor-link" href="#DelayedEntityProcessingSystem"
+              title="Permalink to DelayedEntityProcessingSystem.DelayedEntityProcessingSystem">#</a></h4>
+<div class="doc">
+<pre class="source">
+DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="acc">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/num.html">num</a>         <strong>acc</strong> <a class="anchor-link"
+            href="#acc"
+            title="Permalink to DelayedEntityProcessingSystem.acc">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+num acc;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="delay">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/num.html">num</a>         <strong>delay</strong> <a class="anchor-link"
+            href="#delay"
+            title="Permalink to DelayedEntityProcessingSystem.delay">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+num delay;
+</pre>
+</div>
+</div>
+<div class="field inherited"><h4 id="passive">
+<button class="show-code">Code</button>
+final         <strong>passive</strong> <a class="anchor-link"
+            href="#passive"
+            title="Permalink to DelayedEntityProcessingSystem.passive">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+get passive =&gt; _passive;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="running">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>running</strong> <a class="anchor-link"
+            href="#running"
+            title="Permalink to DelayedEntityProcessingSystem.running">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+bool running;
+</pre>
+</div>
+</div>
+<div class="field inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
+            href="#runtimeType"
+            title="Permalink to DelayedEntityProcessingSystem.runtimeType">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+<div class="field inherited"><h4 id="world">
+<button class="show-code">Code</button>
+<a href="../dartemis/World.html">World</a>         <strong>world</strong> <a class="anchor-link"
+            href="#world"
+            title="Permalink to DelayedEntityProcessingSystem.world">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+World world;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method inherited"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
+              title="Permalink to DelayedEntityProcessingSystem.operator ==">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and 
+<span class="param">other</span> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <code>hashCode</code> method as well to maintain consistency.</p>
+<pre class="source">
+bool operator ==(other) =&gt; identical(this, other);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method inherited"><h4 id="added">
+<button class="show-code">Code</button>
+void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#added"
+              title="Permalink to DelayedEntityProcessingSystem.added">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void added(Entity e) {
+  _check(e);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="begin">
+<button class="show-code">Code</button>
+void <strong>begin</strong>() <a class="anchor-link" href="#begin"
+              title="Permalink to DelayedEntityProcessingSystem.begin">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<p>Called before processing of entities begins.</p>
+<pre class="source">
+void begin() {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="changed">
+<button class="show-code">Code</button>
+void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#changed"
+              title="Permalink to DelayedEntityProcessingSystem.changed">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void changed(Entity e) {
+  _check(e);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="checkProcessing">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>checkProcessing</strong>() <a class="anchor-link" href="#checkProcessing"
+              title="Permalink to DelayedEntityProcessingSystem.checkProcessing">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Returns true if the system should be processed, false if not.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div></div>
+<pre class="source">
+bool checkProcessing() {
+  if(running) {
+    acc += world.delta;
+
+    if(acc &gt;= delay) {
+      return true;
+    }
+  }
+  return false;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="DelayedEntityProcessingSystem">
+<button class="show-code">Code</button>
+new <strong>DelayedEntityProcessingSystem</strong>(<a href="../dartemis/Aspect.html">Aspect</a> aspect) <a class="anchor-link" href="#DelayedEntityProcessingSystem"
+              title="Permalink to DelayedEntityProcessingSystem.DelayedEntityProcessingSystem">#</a></h4>
+<div class="doc">
+<pre class="source">
+DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="deleted">
+<button class="show-code">Code</button>
+void <strong>deleted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#deleted"
+              title="Permalink to DelayedEntityProcessingSystem.deleted">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void deleted(Entity e) {
+  if (_contains(e)) {
+    _removeFromSystem(e);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="disabled">
+<button class="show-code">Code</button>
+void <strong>disabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#disabled"
+              title="Permalink to DelayedEntityProcessingSystem.disabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void disabled(Entity e) {
+  if (_contains(e)) {
+    _removeFromSystem(e);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="enabled">
+<button class="show-code">Code</button>
+void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#enabled"
+              title="Permalink to DelayedEntityProcessingSystem.enabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void enabled(Entity e) {
+  _check(e);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="end">
+<button class="show-code">Code</button>
+void <strong>end</strong>() <a class="anchor-link" href="#end"
+              title="Permalink to DelayedEntityProcessingSystem.end">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<p>Called after the processing of entities ends.</p>
+<pre class="source">
+void end() {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="EntitySystem">
+<button class="show-code">Code</button>
+new <strong>EntitySystem</strong>(<a href="../dartemis/Aspect.html">Aspect</a> aspect) <a class="anchor-link" href="#EntitySystem"
+              title="Permalink to DelayedEntityProcessingSystem.EntitySystem">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+EntitySystem(Aspect aspect) : _actives = new Bag&lt;Entity&gt;(),
+                                          _all = aspect.all,
+                                          _excluded = aspect.excluded,
+                                          _one = aspect.one {
+  _dummy = _all == 0 &amp;&amp; _one == 0;
+  _systemBit = _SystemBitManager._getBitFor(runtimeType);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getInitialTimeDelay">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/num.html">num</a> <strong>getInitialTimeDelay</strong>() <a class="anchor-link" href="#getInitialTimeDelay"
+              title="Permalink to DelayedEntityProcessingSystem.getInitialTimeDelay">#</a></h4>
+<div class="doc">
+<p>Get the initial delay that the system was ordered to process entities after.</p>
+<pre class="source">
+num getInitialTimeDelay() {
+  return delay;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getRemainingDelay">
+abstract <a href="http://api.dartlang.org/dart_core/num.html">num</a> <strong>getRemainingDelay</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#getRemainingDelay"
+              title="Permalink to DelayedEntityProcessingSystem.getRemainingDelay">#</a></h4>
+<div class="doc">
+<p>Return the delay until this entity should be processed.</p>
+</div>
+</div>
+<div class="method"><h4 id="getRemainingTimeUntilProcessing">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/num.html">num</a> <strong>getRemainingTimeUntilProcessing</strong>() <a class="anchor-link" href="#getRemainingTimeUntilProcessing"
+              title="Permalink to DelayedEntityProcessingSystem.getRemainingTimeUntilProcessing">#</a></h4>
+<div class="doc">
+<p>Get the time until the system is scheduled to run at.
+Returns zero (0) if the system is not running.
+Use isRunning() before checking this value.</p>
+<pre class="source">
+num getRemainingTimeUntilProcessing() {
+  if(running) {
+    return delay-acc;
+  }
+  return 0;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="hashCode">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
+              title="Permalink to DelayedEntityProcessingSystem.hashCode">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <code>hashCode</code> it should override the
+equality operator as well to maintain consistency.</p>
+<pre class="source">
+external int hashCode();
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="initialize">
+<button class="show-code">Code</button>
+void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
+              title="Permalink to DelayedEntityProcessingSystem.initialize">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<p>Override to implement code that gets executed when systems are initialized.</p>
+<pre class="source">
+void initialize() {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="inserted">
+<button class="show-code">Code</button>
+void <strong>inserted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#inserted"
+              title="Permalink to DelayedEntityProcessingSystem.inserted">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Called if the system has received an <code>entity</code> it is interested in, e.g. created or a component was added to it.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div></div>
+<pre class="source">
+void inserted(Entity e) {
+  num delay = getRemainingDelay(e);
+  if(delay &gt; 0) {
+    offerDelay(delay);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="isRunning">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>isRunning</strong>() <a class="anchor-link" href="#isRunning"
+              title="Permalink to DelayedEntityProcessingSystem.isRunning">#</a></h4>
+<div class="doc">
+<p>Check if the system is counting down towards processing.</p>
+<pre class="source">
+bool isRunning() {
+  return running;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="noSuchMethod">
+<button class="show-code">Code</button>
+<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
+              title="Permalink to DelayedEntityProcessingSystem.noSuchMethod">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
+on an object. The name of the method and the arguments of the
+invocation are passed to <code>noSuchMethod</code>. If <code>noSuchMethod</code>
+returns a value, that value becomes the result of the original
+invocation.</p>
+<p>The default behavior of <code>noSuchMethod</code> is to throw a
+<code>noSuchMethodError</code>.</p>
+<pre class="source">
+external Dynamic noSuchMethod(String name, List args);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="Object">
+<button class="show-code">Code</button>
+const <strong>Object</strong>() <a class="anchor-link" href="#Object"
+              title="Permalink to DelayedEntityProcessingSystem.Object">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Creates a new <code>Object</code> instance.</p>
+<p><code>Object</code> instances have no meaningful state, and are only useful
+through their identity. An <code>Object</code> instance is equal to itself
+only.</p>
+<pre class="source">
+const Object();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="offerDelay">
+<button class="show-code">Code</button>
+void <strong>offerDelay</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> delay) <a class="anchor-link" href="#offerDelay"
+              title="Permalink to DelayedEntityProcessingSystem.offerDelay">#</a></h4>
+<div class="doc">
+<p>Restarts the system only if the delay offered is shorter than the
+time that the system is currently scheduled to execute at.</p>
+<p>If the system is already stopped (not running) then the offered
+delay will be used to restart the system with no matter its value.</p>
+<p>If the system is already counting down, and the offered delay is
+larger than the time remaining, the system will ignore it. If the
+offered delay is shorter than the time remaining, the system will
+restart itself to run at the offered delay.</p>
+<pre class="source">
+void offerDelay(num delay) {
+  if(!running || delay &lt; getRemainingTimeUntilProcessing()) {
+    restart(delay);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="process">
+<button class="show-code">Code</button>
+void <strong>process</strong>() <a class="anchor-link" href="#process"
+              title="Permalink to DelayedEntityProcessingSystem.process">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<p>This is the only method that is supposed to be called from outside the library,</p>
+<pre class="source">
+void process() {
+  if(checkProcessing()) {
+    begin();
+    processEntities(_actives);
+    end();
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="processDelta">
+abstract void <strong>processDelta</strong>(<a href="../dartemis/Entity.html">Entity</a> e, <a href="http://api.dartlang.org/dart_core/num.html">num</a> accumulatedDelta) <a class="anchor-link" href="#processDelta"
+              title="Permalink to DelayedEntityProcessingSystem.processDelta">#</a></h4>
+<div class="doc">
+<p>Process a entity this system is interested in. Substract the accumulatedDelta
+from the entities defined delay.</p>
+</div>
+</div>
+<div class="method"><h4 id="processEntities">
+<button class="show-code">Code</button>
+void <strong>processEntities</strong>(<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; entities) <a class="anchor-link" href="#processEntities"
+              title="Permalink to DelayedEntityProcessingSystem.processEntities">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Any implementing entity system must implement this method and the logic
+to process the given 
+<span class="param">entities</span> of the system.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div></div>
+<pre class="source">
+void processEntities(ImmutableBag&lt;Entity&gt; entities) {
+  entities.forEach((entity) {
+    processDelta(entity, acc);
+    num remaining = getRemainingDelay(entity);
+    if(remaining &lt;= 0) {
+      processExpired(entity);
+    } else {
+      offerDelay(remaining);
+    }
+  });
+  stop();
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="processExpired">
+abstract void <strong>processExpired</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#processExpired"
+              title="Permalink to DelayedEntityProcessingSystem.processExpired">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method inherited"><h4 id="removed">
+<button class="show-code">Code</button>
+void <strong>removed</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#removed"
+              title="Permalink to DelayedEntityProcessingSystem.removed">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<p>Called if an 
+<span class="param">entity</span> was removed from this system, e.g. deleted or had one of it's components removed.</p>
+<pre class="source">
+void removed(Entity entity) {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="restart">
+<button class="show-code">Code</button>
+void <strong>restart</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> delay) <a class="anchor-link" href="#restart"
+              title="Permalink to DelayedEntityProcessingSystem.restart">#</a></h4>
+<div class="doc">
+<p>Start processing of entities after a certain amount of delta time.</p>
+<p>Cancels current delayed run and starts a new one.</p>
+<pre class="source">
+void restart(num delay) {
+  this.delay = delay;
+  this.acc = 0;
+  running = true;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="stop">
+<button class="show-code">Code</button>
+void <strong>stop</strong>() <a class="anchor-link" href="#stop"
+              title="Permalink to DelayedEntityProcessingSystem.stop">#</a></h4>
+<div class="doc">
+<p>Stops the system from running, aborts current countdown.
+Call offerDelay or restart to run it again.</p>
+<pre class="source">
+void stop() {
+  this.running = false;
+  this.acc = 0;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to DelayedEntityProcessingSystem.toString">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Returns a string representation of this object.</p>
+<pre class="source">
+external String toString();
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-10-21 15:45:50.118</div>
+        </div>
+        <script async src="../client-static.js"></script>
+        </body></html>
+        

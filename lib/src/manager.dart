@@ -1,14 +1,23 @@
 part of dartemis;
 
 /**
- * Tag class for Manager. (may evolve into something more later)
+ * Manager.
  *
  * @author Arni Arent
  *
  */
-interface Manager {
+abstract class Manager implements EntityObserver {
+  World _world;
 
-  // TODO remove when this is implemented http://news.dartlang.org/2012/06/proposal-for-first-class-types-in-dart.html
-  Type get type();
+  abstract void initialize();
 
+  void added(Entity e) {}
+
+  void changed(Entity e) {}
+
+  void deleted(Entity e) {}
+
+  void disabled(Entity e) {}
+
+  void enabled(Entity e) {}
 }

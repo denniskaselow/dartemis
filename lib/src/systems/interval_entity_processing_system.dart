@@ -13,7 +13,7 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
   /**
    * Create a new [IntervalEntityProcessingSystem]. It requires at least one component.
    */
-  IntervalEntityProcessingSystem(int interval, String requiredType, [List<String> otherTypes]) : super(interval, EntitySystem.getMergedTypes(requiredType, otherTypes));
+  IntervalEntityProcessingSystem(int interval, Aspect aspect) : super(interval, aspect);
 
   /**
    * Process an [entity] this system is interested in.
@@ -21,9 +21,7 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
   abstract void processEntity(Entity entity);
 
   void processEntities(ImmutableBag<Entity> entities) {
-    for (int i = 0, s = entities.size; s > i; i++) {
-      processEntity(entities[i]);
-    }
+    entities.forEach((entity) => processEntity(entity));
   }
 
 }
