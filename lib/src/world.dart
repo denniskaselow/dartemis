@@ -1,34 +1,55 @@
 part of dartemis;
 
 class World {
+  final EntityManager _entityManager = new EntityManager();
+  final ComponentManager _componentManager = new ComponentManager();
+
   final Bag<Entity> _added = new Bag<Entity>();
   final Bag<Entity> _changed = new Bag<Entity>();
   final Bag<Entity> _deleted = new Bag<Entity>();
   final Bag<Entity> _enable = new Bag<Entity>();
   final Bag<Entity> _disable = new Bag<Entity>();
-  final Map<Type, Manager> _managers = new Map<Type, Manager>();
 
-  final EntityManager _entityManager = new EntityManager();
-  final ComponentManager _componentManager = new ComponentManager();
+  final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
   final Bag<EntitySystem> _systemsBag= new Bag<EntitySystem>();
-  final Bag<Manager> _managerBag = new Bag<Manager>();
 
-  int delta;
+  final Map<Type, Manager> _managers = new Map<Type, Manager>();
+  final Bag<Manager> _managersBag = new Bag<Manager>();
+
+  num delta;
 
   World() {
     addManager(_entityManager);
     addManager(_componentManager);
   }
 
+  /**
+   * Makes sure all managers systems are initialized in the order they were
+   * added.
+   */
+  void initialize() {
+    _managersBag.forEach((manager) => manager.initialize());
+    _systemsBag.forEach((system) => system.initialize());
+  }
+
+  /**
+   * Returns a manager that takes care of all the entities in the world.
+   * entities of this world.
+   */
   EntityManager get entityManager => _entityManager;
+
+  /**
+   * Returns a manager that takes care of all the components in the world.
+   */
   ComponentManager get componentManager => _componentManager;
 
   /**
-   * Allows for setting a custom [manager].
+   * Add a manager into this world. It can be retrieved later. World will
+   * notify this manager of changes to entity.
    */
   void addManager(Manager manager) {
     _managers[manager.runtimeType] = manager;
-    _managerBag.add(manager);
+    _managersBag.add(manager);
     manager._world = this;
   }
 
@@ -37,6 +58,14 @@ class World {
    */
   Manager getManager(Type managerType) {
     return _managers[managerType];
+  }
+
+  /**
+   * Deletes the manager from this world.
+   */
+  void deleteManager(Manager manager) {
+    _managers.remove(manager.runtimeType);
+    _managersBag.remove(manager);
   }
 
   /**
@@ -53,25 +82,54 @@ class World {
     return _entityManager._getEntity(entityId);
   }
 
-  EntitySystem addSystem(EntitySystem system, [bool passive = false]) {
+  /**
+   * Gives you all the systems in this world for possible iteration.
+   */
+  ImmutableBag<EntitySystem> get systems => _systemsBag;
+
+  /**
+   * Adds a system to this world that will be processed by World.process().
+   * If [passive] is set to true the system will not be processed by the world.
+   */
+  EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
+    system.world = this;
     system._passive = passive;
+
+    _systems[system.runtimeType] = system;
     _systemsBag.add(system);
+
     return system;
   }
 
-  void initialize() {
-    _managerBag.forEach((manager) => manager.initialize());
-    _systemsBag.forEach((system) => system.initialize());
+  /**
+   * Removed the specified system from the world.
+   */
+  void deleteSystem(EntitySystem system) {
+    _systems.remove(system.runtimeType);
+    _systemsBag.remove(system);
   }
 
+  /**
+   * Retrieve a system for specified system type.
+   */
+  EntitySystem getSystem(Type type) {
+    return _systems[type];
+  }
+
+  /**
+   * Performs an action on each entity.
+   */
   void _check(Bag<Entity> entities, void perform(EntityObserver, Entity)) {
     entities.forEach((entity) {
-      _managerBag.forEach((manager) => perform(manager, entity));
+      _managersBag.forEach((manager) => perform(manager, entity));
       _systemsBag.forEach((system) => perform(system, entity));
     });
     entities.clear();
   }
 
+  /**
+   * Process all non-passive systems.
+   */
   void process() {
     _check(_added, (observer, entity) => observer.added(entity));
     _check(_changed, (observer, entity) => observer.changed(entity));

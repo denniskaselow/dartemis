@@ -250,7 +250,7 @@ main() {
       MockEntitySystem system = new MockEntitySystem();
       system.when(callsTo('get passive')).alwaysReturn(true);
 
-      world.addSystem(system, true);
+      world.addSystem(system, passive : true);
       world.process();
 
       system.getLogs(callsTo('process')).verify(neverHappened);
