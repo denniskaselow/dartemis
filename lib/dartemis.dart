@@ -28,6 +28,7 @@ part 'src/systems/delayed_entity_system.dart';
 part 'src/systems/delayed_entity_processing_system.dart';
 part 'src/systems/interval_entity_system.dart';
 part 'src/systems/interval_entity_processing_system.dart';
+part 'src/systems/void_entity_system.dart';
 
 part 'src/manager.dart';
 
