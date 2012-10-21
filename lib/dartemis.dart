@@ -24,7 +24,6 @@ part 'src/entity_observer.dart';
 
 part 'src/entity_system.dart';
 part 'src/systems/entity_processing_system.dart';
-part 'src/systems/delayed_entity_system.dart';
 part 'src/systems/delayed_entity_processing_system.dart';
 part 'src/systems/interval_entity_system.dart';
 part 'src/systems/interval_entity_processing_system.dart';
