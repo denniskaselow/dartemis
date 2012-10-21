@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>ComponentMapper&lt;A&gt; class / dartemis Library / Dart Documentation</title>
+        <title>TeamManager class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dartemis" data-type="ComponentMapper&amp;lt;A&amp;gt;">
+        <body data-library="dartemis" data-type="TeamManager">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ComponentMapper.html">ComponentMapper&lt;A&gt;</a>        <div id="search-box">
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/TeamManager.html">TeamManager</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -29,7 +29,7 @@
 <li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
-<li><div class="icon-class"></div><strong>ComponentMapper&lt;A&gt;</strong></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
@@ -46,7 +46,7 @@
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
-<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
+<li><div class="icon-class"></div><strong>TeamManager</strong></li>
 <li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
 <li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -55,66 +55,77 @@
 </ul>
 </div>
 <div class="content">
-        <h2><strong>ComponentMapper&lt;A extends Component&gt;</strong>
+        <h2><strong>TeamManager</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>High performance component retrieval from entities. Use this wherever you need
-to retrieve components from entities often and fast.</p>
+<p>Use this class together with PlayerManager.</p>
+<p>You may sometimes want to create teams in your game, so that
+some players are team mates.</p>
+<p>A player can only belong to a single team.</p>
 <p>@author Arni Arent</p>
 <pre class="source">
-class ComponentMapper&lt;A extends Component&gt; {
-  ComponentType _type;
-  Bag&lt;A&gt; _components;
+class TeamManager extends Manager {
+  Map&lt;String, Bag&lt;String&gt;&gt; _playersByTeam;
+  Map&lt;String, String&gt; _teamByPlayer;
 
-  ComponentMapper(Type componentType, World world) {
-    this._type = ComponentTypeManager.getTypeFor(componentType);
-    _components = world.componentManager.getComponentsByType(this._type);
+  TeamManager() {
+    _playersByTeam = new Map&lt;String, Bag&lt;String&gt;&gt;();
+    _teamByPlayer = new Map&lt;String, String&gt;();
   }
 
-  /**
-   * Fast but unsafe retrieval of a component for this entity.
-   * No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
-   * however in most scenarios you already know the entity possesses this component.
-   */
-  A get(Entity e) {
-    return _components[e.id];
+  void initialize() {}
+
+  String getTeam(String player) {
+    return _teamByPlayer[player];
   }
 
-  /**
-   * Fast and safe retrieval of a component for this entity.
-   * If the entity does not have this component then null is returned.
-   */
-  A getSafe(Entity e) {
-    if(_components.isIndexWithinBounds(e.id)) {
-      return _components[e.id];
+  void setTeam(String player, String team) {
+    removeFromTeam(player);
+
+    _teamByPlayer[player] = team;
+
+    Bag&lt;String&gt; players = _playersByTeam[team];
+    if(players == null) {
+      players = new Bag&lt;String&gt;();
+      _playersByTeam[team] = players;
     }
-    return null;
+    players.add(player);
   }
 
-  /**
-   * Checks if the entity has this type of component.
-   */
-  bool has(Entity e) {
-    return getSafe(e) != null;
+  ImmutableBag&lt;String&gt; getPlayers(String team) {
+    return _playersByTeam[team];
+  }
+
+  void removeFromTeam(String player) {
+    String team = _teamByPlayer.remove(player);
+    if(team != null) {
+      Bag&lt;String&gt; players = _playersByTeam[team];
+      if(players != null) {
+        players.remove(player);
+      }
+    }
   }
 
 }
 </pre>
 </div>
+<h3>Extends</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dartemis/Manager.html">Manager</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>TeamManager</strong></span></p>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="ComponentMapper">
+<div class="method"><h4 id="TeamManager">
 <button class="show-code">Code</button>
-new <strong>ComponentMapper</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType, <a href="../dartemis/World.html">World</a> world) <a class="anchor-link" href="#ComponentMapper"
-              title="Permalink to ComponentMapper&lt;A&gt;.ComponentMapper">#</a></h4>
+new <strong>TeamManager</strong>() <a class="anchor-link" href="#TeamManager"
+              title="Permalink to TeamManager.TeamManager">#</a></h4>
 <div class="doc">
 <pre class="source">
-ComponentMapper(Type componentType, World world) {
-  this._type = ComponentTypeManager.getTypeFor(componentType);
-  _components = world.componentManager.getComponentsByType(this._type);
+TeamManager() {
+  _playersByTeam = new Map&lt;String, Bag&lt;String&gt;&gt;();
+  _teamByPlayer = new Map&lt;String, String&gt;();
 }
 </pre>
 </div>
@@ -126,7 +137,7 @@ ComponentMapper(Type componentType, World world) {
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
             href="#runtimeType"
-            title="Permalink to ComponentMapper&lt;A&gt;.runtimeType">#</a>
+            title="Permalink to TeamManager.runtimeType">#</a>
         </h4>
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
 <p>A representation of the runtime type of the object.</p>
@@ -141,7 +152,7 @@ external Type get runtimeType;
 <div class="method inherited"><h4 id="==">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
-              title="Permalink to ComponentMapper&lt;A&gt;.operator ==">#</a></h4>
+              title="Permalink to TeamManager.operator ==">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
 <p>The equality operator.</p>
 <p>The default behavior for all <code>Object</code>s is to return true if and
@@ -157,60 +168,76 @@ bool operator ==(other) =&gt; identical(this, other);
 </div>
 <div>
 <h3>Methods</h3>
-<div class="method"><h4 id="ComponentMapper">
+<div class="method inherited"><h4 id="added">
 <button class="show-code">Code</button>
-new <strong>ComponentMapper</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType, <a href="../dartemis/World.html">World</a> world) <a class="anchor-link" href="#ComponentMapper"
-              title="Permalink to ComponentMapper&lt;A&gt;.ComponentMapper">#</a></h4>
+void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#added"
+              title="Permalink to TeamManager.added">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void added(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="changed">
+<button class="show-code">Code</button>
+void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#changed"
+              title="Permalink to TeamManager.changed">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void changed(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="deleted">
+<button class="show-code">Code</button>
+void <strong>deleted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#deleted"
+              title="Permalink to TeamManager.deleted">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void deleted(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="disabled">
+<button class="show-code">Code</button>
+void <strong>disabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#disabled"
+              title="Permalink to TeamManager.disabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void disabled(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="enabled">
+<button class="show-code">Code</button>
+void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#enabled"
+              title="Permalink to TeamManager.enabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void enabled(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getPlayers">
+<button class="show-code">Code</button>
+<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; <strong>getPlayers</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> team) <a class="anchor-link" href="#getPlayers"
+              title="Permalink to TeamManager.getPlayers">#</a></h4>
 <div class="doc">
 <pre class="source">
-ComponentMapper(Type componentType, World world) {
-  this._type = ComponentTypeManager.getTypeFor(componentType);
-  _components = world.componentManager.getComponentsByType(this._type);
+ImmutableBag&lt;String&gt; getPlayers(String team) {
+  return _playersByTeam[team];
 }
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="get">
+<div class="method"><h4 id="getTeam">
 <button class="show-code">Code</button>
-<a href="../dartemis/ComponentMapper.html">A</a> <strong>get</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#get"
-              title="Permalink to ComponentMapper&lt;A&gt;.get">#</a></h4>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>getTeam</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> player) <a class="anchor-link" href="#getTeam"
+              title="Permalink to TeamManager.getTeam">#</a></h4>
 <div class="doc">
-<p>Fast but unsafe retrieval of a component for this entity.
-No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
-however in most scenarios you already know the entity possesses this component.</p>
 <pre class="source">
-A get(Entity e) {
-  return _components[e.id];
-}
-</pre>
-</div>
-</div>
-<div class="method"><h4 id="getSafe">
-<button class="show-code">Code</button>
-<a href="../dartemis/ComponentMapper.html">A</a> <strong>getSafe</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#getSafe"
-              title="Permalink to ComponentMapper&lt;A&gt;.getSafe">#</a></h4>
-<div class="doc">
-<p>Fast and safe retrieval of a component for this entity.
-If the entity does not have this component then null is returned.</p>
-<pre class="source">
-A getSafe(Entity e) {
-  if(_components.isIndexWithinBounds(e.id)) {
-    return _components[e.id];
-  }
-  return null;
-}
-</pre>
-</div>
-</div>
-<div class="method"><h4 id="has">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>has</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#has"
-              title="Permalink to ComponentMapper&lt;A&gt;.has">#</a></h4>
-<div class="doc">
-<p>Checks if the entity has this type of component.</p>
-<pre class="source">
-bool has(Entity e) {
-  return getSafe(e) != null;
+String getTeam(String player) {
+  return _teamByPlayer[player];
 }
 </pre>
 </div>
@@ -218,7 +245,7 @@ bool has(Entity e) {
 <div class="method inherited"><h4 id="hashCode">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
-              title="Permalink to ComponentMapper&lt;A&gt;.hashCode">#</a></h4>
+              title="Permalink to TeamManager.hashCode">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
 <p>Get a hash code for this object.</p>
 <p>All objects have hash codes. Hash codes are guaranteed to be the
@@ -233,10 +260,20 @@ external int hashCode();
 </pre>
 </div>
 </div>
+<div class="method"><h4 id="initialize">
+<button class="show-code">Code</button>
+void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
+              title="Permalink to TeamManager.initialize">#</a></h4>
+<div class="doc">
+<pre class="source">
+void initialize() {}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="noSuchMethod">
 <button class="show-code">Code</button>
 <strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
-              title="Permalink to ComponentMapper&lt;A&gt;.noSuchMethod">#</a></h4>
+              title="Permalink to TeamManager.noSuchMethod">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
 <p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
 on an object. The name of the method and the arguments of the
@@ -253,7 +290,7 @@ external Dynamic noSuchMethod(String name, List args);
 <div class="method inherited"><h4 id="Object">
 <button class="show-code">Code</button>
 const <strong>Object</strong>() <a class="anchor-link" href="#Object"
-              title="Permalink to ComponentMapper&lt;A&gt;.Object">#</a></h4>
+              title="Permalink to TeamManager.Object">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
 <p>Creates a new <code>Object</code> instance.</p>
 <p><code>Object</code> instances have no meaningful state, and are only useful
@@ -264,10 +301,62 @@ const Object();
 </pre>
 </div>
 </div>
+<div class="method"><h4 id="removeFromTeam">
+<button class="show-code">Code</button>
+void <strong>removeFromTeam</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> player) <a class="anchor-link" href="#removeFromTeam"
+              title="Permalink to TeamManager.removeFromTeam">#</a></h4>
+<div class="doc">
+<pre class="source">
+void removeFromTeam(String player) {
+  String team = _teamByPlayer.remove(player);
+  if(team != null) {
+    Bag&lt;String&gt; players = _playersByTeam[team];
+    if(players != null) {
+      players.remove(player);
+    }
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="setTeam">
+<button class="show-code">Code</button>
+void <strong>setTeam</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> player, <a href="http://api.dartlang.org/dart_core/String.html">String</a> team) <a class="anchor-link" href="#setTeam"
+              title="Permalink to TeamManager.setTeam">#</a></h4>
+<div class="doc">
+<pre class="source">
+void setTeam(String player, String team) {
+  removeFromTeam(player);
+
+  _teamByPlayer[player] = team;
+
+  Bag&lt;String&gt; players = _playersByTeam[team];
+  if(players == null) {
+    players = new Bag&lt;String&gt;();
+    _playersByTeam[team] = players;
+  }
+  players.add(player);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="TeamManager">
+<button class="show-code">Code</button>
+new <strong>TeamManager</strong>() <a class="anchor-link" href="#TeamManager"
+              title="Permalink to TeamManager.TeamManager">#</a></h4>
+<div class="doc">
+<pre class="source">
+TeamManager() {
+  _playersByTeam = new Map&lt;String, Bag&lt;String&gt;&gt;();
+  _teamByPlayer = new Map&lt;String, String&gt;();
+}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="toString">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
-              title="Permalink to ComponentMapper&lt;A&gt;.toString">#</a></h4>
+              title="Permalink to TeamManager.toString">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
 <p>Returns a string representation of this object.</p>
 <pre class="source">
@@ -281,7 +370,7 @@ external String toString();
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-21 15:45:50.090</div>
+          <div>This page was generated at 2012-10-21 15:45:50.408</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

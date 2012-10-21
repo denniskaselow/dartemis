@@ -28,13 +28,14 @@
 <li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
 <li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
-<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
-<li><a href="../dartemis/DelayedEntitySystem.html"><div class="icon-class"></div>DelayedEntitySystem</a></li>
 <li><div class="icon-class"></div><strong>Entity</strong></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
 <li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
@@ -42,12 +43,14 @@
 <li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
-<li><a href="../dartemis/Manager.html"><div class="icon-interface"></div>Manager</a></li>
-<li><a href="../dartemis/SystemManager.html"><div class="icon-class"></div>SystemManager</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
 <li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
 </ul>
 </div>
@@ -72,15 +75,17 @@ class Entity {
 
   World _world;
   EntityManager _entityManager;
+  ComponentManager _componentManager;
 
   Entity(this._world, this.id) {
     _entityManager = _world.entityManager;
+    _componentManager = _world.componentManager;
   }
 
   /**
    * Get the unique ID of this entity. Because entity instances are reused internally use this to identify between different instances.
    */
-  int get uniqueId() =&gt; _uniqueId;
+  int get uniqueId =&gt; _uniqueId;
 
   void _addTypeBit(int bit) {
     _typeBits |= bit;
@@ -109,28 +114,28 @@ class Entity {
    * Add a [component] to this entity.
    */
   void addComponent(Component component){
-    _entityManager._addComponent(this, component);
+    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType), component);
   }
 
   /**
    * Removes the [component] from this entity.
    */
   void removeComponent(Component component){
-    _entityManager._removeComponent(this, component);
+    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType));
   }
 
   /**
    * Faster removal of components by [type] from a entity.
    */
   void removeComponentByType(ComponentType type){
-    _entityManager._removeComponentByType(this, type);
+    _componentManager._removeComponent(this, type);
   }
 
   /**
    * Checks if the entity has been deleted from somewhere.
    * Returns [:true:] if it's active.
    */
-  bool get active()=&gt; _entityManager.isActive(id);
+  bool get active=&gt; _entityManager.isActive(id);
 
   /**
    * This is the preferred method to use when retrieving a [Component] from an entity. It will provide good performance.
@@ -140,7 +145,7 @@ class Entity {
    * Returns the [Component].
    */
   Component getComponent(ComponentType type) {
-    return _entityManager._getComponent(this, type);
+    return _componentManager._getComponent(this, type);
   }
 
   /**
@@ -149,30 +154,18 @@ class Entity {
    *
    * Returns [:null:] if none is found.
    */
-   Component getComponentByClass(String componentName) {
-     return getComponent(ComponentTypeManager.getTypeFor(componentName));
+   Component getComponentByClass(Type componentType) {
+     return getComponent(ComponentTypeManager.getTypeFor(componentType));
    }
 
   /**
    * Get all components belonging to this entity.
-   *
-   * **WARNING:**
-   *
-   * Use only for debugging purposes, it is dead slow.
-   *
-   * The returned bag is only valid until this method is called again, then it is overwritten.
    */
-  ImmutableBag&lt;Component&gt; getComponents() {
-    return _entityManager._getComponents(this);
-  }
-
-  /**
-   * Refresh all changes to [Component]s for this entity. After adding or removing [Component]s, you must call
-   * this method. It will update all relevant [EntitySystem]s.
-   * It is typical to call this after adding [Component]s to a newly created entity.
-   */
-  void refresh() {
-    _world.refreshEntity(this);
+  Bag&lt;Component&gt; getComponents([Bag&lt;Component&gt; fillBag]) {
+    if (null == fillBag) {
+      fillBag = new Bag&lt;Component&gt;();
+    }
+    return _componentManager.getComponentsFor(this, fillBag);
   }
 
   /**
@@ -183,17 +176,26 @@ class Entity {
   }
 
   /**
-   * Set the [group] of the entity.
+   * Adds the entity to the world.
    */
-  void setGroup(String group) {
-    _world.groupManager.addEntityToGroup(group, this);
+  void addToWorld() {
+    _world.addEntity(this);
   }
 
-  /**
-   * Assign a [tag] to this entity.
-   */
-  void setTag(String tag) {
-    _world.tagManager.register(tag, this);
+  void deleteFromWorld() {
+    _world.deleteEntity(this);
+  }
+
+  void disable() {
+    _world.disable(this);
+  }
+
+  void changedInWorld() {
+    _world.changedEntity(this);
+  }
+
+  void enable() {
+    _world.enable(this);
   }
 }
 </pre>
@@ -208,6 +210,7 @@ new <strong>Entity</strong>(<a href="../dartemis/World.html">World</a> _world, <
 <pre class="source">
 Entity(this._world, this.id) {
   _entityManager = _world.entityManager;
+  _componentManager = _world.componentManager;
 }
 </pre>
 </div>
@@ -225,7 +228,7 @@ final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <st
 <p>Checks if the entity has been deleted from somewhere.
 Returns <code>true</code> if it's active.</p>
 <pre class="source">
-bool get active()=&gt; _entityManager.isActive(id);
+bool get active=&gt; _entityManager.isActive(id);
 </pre>
 </div>
 </div>
@@ -265,7 +268,7 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
         <div class="doc">
 <p>Get the unique ID of this entity. Because entity instances are reused internally use this to identify between different instances.</p>
 <pre class="source">
-int get uniqueId() =&gt; _uniqueId;
+int get uniqueId =&gt; _uniqueId;
 </pre>
 </div>
 </div>
@@ -300,7 +303,32 @@ void <strong>addComponent</strong>(<a href="../dartemis/Component.html">Componen
 <span class="param">component</span> to this entity.</p>
 <pre class="source">
 void addComponent(Component component){
-  _entityManager._addComponent(this, component);
+  _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType), component);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="addToWorld">
+<button class="show-code">Code</button>
+void <strong>addToWorld</strong>() <a class="anchor-link" href="#addToWorld"
+              title="Permalink to Entity.addToWorld">#</a></h4>
+<div class="doc">
+<p>Adds the entity to the world.</p>
+<pre class="source">
+void addToWorld() {
+  _world.addEntity(this);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="changedInWorld">
+<button class="show-code">Code</button>
+void <strong>changedInWorld</strong>() <a class="anchor-link" href="#changedInWorld"
+              title="Permalink to Entity.changedInWorld">#</a></h4>
+<div class="doc">
+<pre class="source">
+void changedInWorld() {
+  _world.changedEntity(this);
 }
 </pre>
 </div>
@@ -318,6 +346,42 @@ void delete() {
 </pre>
 </div>
 </div>
+<div class="method"><h4 id="deleteFromWorld">
+<button class="show-code">Code</button>
+void <strong>deleteFromWorld</strong>() <a class="anchor-link" href="#deleteFromWorld"
+              title="Permalink to Entity.deleteFromWorld">#</a></h4>
+<div class="doc">
+<pre class="source">
+void deleteFromWorld() {
+  _world.deleteEntity(this);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="disable">
+<button class="show-code">Code</button>
+void <strong>disable</strong>() <a class="anchor-link" href="#disable"
+              title="Permalink to Entity.disable">#</a></h4>
+<div class="doc">
+<pre class="source">
+void disable() {
+  _world.disable(this);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="enable">
+<button class="show-code">Code</button>
+void <strong>enable</strong>() <a class="anchor-link" href="#enable"
+              title="Permalink to Entity.enable">#</a></h4>
+<div class="doc">
+<pre class="source">
+void enable() {
+  _world.enable(this);
+}
+</pre>
+</div>
+</div>
 <div class="method"><h4 id="Entity">
 <button class="show-code">Code</button>
 new <strong>Entity</strong>(<a href="../dartemis/World.html">World</a> _world, <a href="http://api.dartlang.org/dart_core/int.html">int</a> id) <a class="anchor-link" href="#Entity"
@@ -326,6 +390,7 @@ new <strong>Entity</strong>(<a href="../dartemis/World.html">World</a> _world, <
 <pre class="source">
 Entity(this._world, this.id) {
   _entityManager = _world.entityManager;
+  _componentManager = _world.componentManager;
 }
 </pre>
 </div>
@@ -340,38 +405,38 @@ Entity(this._world, this.id) {
 <p>Returns the <a class="crossref" href="../dartemis/Component.html">Component</a>.</p>
 <pre class="source">
 Component getComponent(ComponentType type) {
-  return _entityManager._getComponent(this, type);
+  return _componentManager._getComponent(this, type);
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="getComponentByClass">
 <button class="show-code">Code</button>
-<a href="../dartemis/Component.html">Component</a> <strong>getComponentByClass</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> componentName) <a class="anchor-link" href="#getComponentByClass"
+<a href="../dartemis/Component.html">Component</a> <strong>getComponentByClass</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getComponentByClass"
               title="Permalink to Entity.getComponentByClass">#</a></h4>
 <div class="doc">
 <p>Slower retrieval of a <a class="crossref" href="../dartemis/Component.html">Component</a> from this entity. Minimize usage of this, but is fine to use e.g. when creating new entities
 and setting data in components.</p>
 <p>Returns <code>null</code> if none is found.</p>
 <pre class="source">
-Component getComponentByClass(String componentName) {
-  return getComponent(ComponentTypeManager.getTypeFor(componentName));
+Component getComponentByClass(Type componentType) {
+  return getComponent(ComponentTypeManager.getTypeFor(componentType));
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="getComponents">
 <button class="show-code">Code</button>
-<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/Component.html">Component</a>&gt; <strong>getComponents</strong>() <a class="anchor-link" href="#getComponents"
+<a href="../dartemis/Bag.html">Bag</a>&lt;<a href="../dartemis/Component.html">Component</a>&gt; <strong>getComponents</strong>([<a href="../dartemis/Bag.html">Bag</a>&lt;<a href="../dartemis/Component.html">Component</a>&gt; fillBag]) <a class="anchor-link" href="#getComponents"
               title="Permalink to Entity.getComponents">#</a></h4>
 <div class="doc">
 <p>Get all components belonging to this entity.</p>
-<p><strong>WARNING:</strong></p>
-<p>Use only for debugging purposes, it is dead slow.</p>
-<p>The returned bag is only valid until this method is called again, then it is overwritten.</p>
 <pre class="source">
-ImmutableBag&lt;Component&gt; getComponents() {
-  return _entityManager._getComponents(this);
+Bag&lt;Component&gt; getComponents([Bag&lt;Component&gt; fillBag]) {
+  if (null == fillBag) {
+    fillBag = new Bag&lt;Component&gt;();
+  }
+  return _componentManager.getComponentsFor(this, fillBag);
 }
 </pre>
 </div>
@@ -425,21 +490,6 @@ const Object();
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="refresh">
-<button class="show-code">Code</button>
-void <strong>refresh</strong>() <a class="anchor-link" href="#refresh"
-              title="Permalink to Entity.refresh">#</a></h4>
-<div class="doc">
-<p>Refresh all changes to <a class="crossref" href="../dartemis/Component.html">Component</a>s for this entity. After adding or removing <a class="crossref" href="../dartemis/Component.html">Component</a>s, you must call
-this method. It will update all relevant <a class="crossref" href="../dartemis/EntitySystem.html">EntitySystem</a>s.
-It is typical to call this after adding <a class="crossref" href="../dartemis/Component.html">Component</a>s to a newly created entity.</p>
-<pre class="source">
-void refresh() {
-  _world.refreshEntity(this);
-}
-</pre>
-</div>
-</div>
 <div class="method"><h4 id="removeComponent">
 <button class="show-code">Code</button>
 void <strong>removeComponent</strong>(<a href="../dartemis/Component.html">Component</a> component) <a class="anchor-link" href="#removeComponent"
@@ -449,7 +499,7 @@ void <strong>removeComponent</strong>(<a href="../dartemis/Component.html">Compo
 <span class="param">component</span> from this entity.</p>
 <pre class="source">
 void removeComponent(Component component){
-  _entityManager._removeComponent(this, component);
+  _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType));
 }
 </pre>
 </div>
@@ -463,35 +513,7 @@ void <strong>removeComponentByType</strong>(<a href="../dartemis/ComponentType.h
 <span class="param">type</span> from a entity.</p>
 <pre class="source">
 void removeComponentByType(ComponentType type){
-  _entityManager._removeComponentByType(this, type);
-}
-</pre>
-</div>
-</div>
-<div class="method"><h4 id="setGroup">
-<button class="show-code">Code</button>
-void <strong>setGroup</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#setGroup"
-              title="Permalink to Entity.setGroup">#</a></h4>
-<div class="doc">
-<p>Set the 
-<span class="param">group</span> of the entity.</p>
-<pre class="source">
-void setGroup(String group) {
-  _world.groupManager.addEntityToGroup(group, this);
-}
-</pre>
-</div>
-</div>
-<div class="method"><h4 id="setTag">
-<button class="show-code">Code</button>
-void <strong>setTag</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> tag) <a class="anchor-link" href="#setTag"
-              title="Permalink to Entity.setTag">#</a></h4>
-<div class="doc">
-<p>Assign a 
-<span class="param">tag</span> to this entity.</p>
-<pre class="source">
-void setTag(String tag) {
-  _world.tagManager.register(tag, this);
+  _componentManager._removeComponent(this, type);
 }
 </pre>
 </div>
@@ -515,7 +537,7 @@ String toString() =&gt; "Entity[$id]";
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-14 11:22:42.267</div>
+          <div>This page was generated at 2012-10-21 15:45:50.391</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

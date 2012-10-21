@@ -28,13 +28,14 @@
 <li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
 <li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
-<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
-<li><a href="../dartemis/DelayedEntitySystem.html"><div class="icon-class"></div>DelayedEntitySystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
 <li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
@@ -42,12 +43,14 @@
 <li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><div class="icon-class"></div><strong>IntervalEntityProcessingSystem</strong></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
-<li><a href="../dartemis/Manager.html"><div class="icon-interface"></div>Manager</a></li>
-<li><a href="../dartemis/SystemManager.html"><div class="icon-class"></div>SystemManager</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
 <li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
 </ul>
 </div>
@@ -76,9 +79,7 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
   abstract void processEntity(Entity entity);
 
   void processEntities(ImmutableBag&lt;Entity&gt; entities) {
-    for (int i = 0, s = entities.size; s &gt; i; i++) {
-      processEntity(entities[i]);
-    }
+    entities.forEach((entity) =&gt; processEntity(entity));
   }
 
 }
@@ -112,6 +113,18 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
         <div class="inherited-from">inherited from <a href="../dartemis/IntervalEntitySystem.html">IntervalEntitySystem</a> </div><div class="doc">
 <pre class="source">
 final int interval;
+</pre>
+</div>
+</div>
+<div class="field inherited"><h4 id="passive">
+<button class="show-code">Code</button>
+final         <strong>passive</strong> <a class="anchor-link"
+            href="#passive"
+            title="Permalink to IntervalEntityProcessingSystem.passive">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+get passive =&gt; _passive;
 </pre>
 </div>
 </div>
@@ -164,13 +177,13 @@ bool operator ==(other) =&gt; identical(this, other);
 <h3>Methods</h3>
 <div class="method inherited"><h4 id="added">
 <button class="show-code">Code</button>
-void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#added"
+void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#added"
               title="Permalink to IntervalEntityProcessingSystem.added">#</a></h4>
 <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
-<p>Called if the system has received an 
-<span class="param">entity</span> it is interested in, e.g. created or a component was added to it.</p>
 <pre class="source">
-void added(Entity entity) {}
+void added(Entity e) {
+  _check(e);
+}
 </pre>
 </div>
 </div>
@@ -182,6 +195,18 @@ void <strong>begin</strong>() <a class="anchor-link" href="#begin"
 <p>Called before processing of entities begins.</p>
 <pre class="source">
 void begin() {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="changed">
+<button class="show-code">Code</button>
+void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#changed"
+              title="Permalink to IntervalEntityProcessingSystem.changed">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void changed(Entity e) {
+  _check(e);
+}
 </pre>
 </div>
 </div>
@@ -201,6 +226,46 @@ bool checkProcessing() {
     return true;
   }
   return false;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="deleted">
+<button class="show-code">Code</button>
+void <strong>deleted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#deleted"
+              title="Permalink to IntervalEntityProcessingSystem.deleted">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void deleted(Entity e) {
+  if (_contains(e)) {
+    _removeFromSystem(e);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="disabled">
+<button class="show-code">Code</button>
+void <strong>disabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#disabled"
+              title="Permalink to IntervalEntityProcessingSystem.disabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void disabled(Entity e) {
+  if (_contains(e)) {
+    _removeFromSystem(e);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="enabled">
+<button class="show-code">Code</button>
+void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#enabled"
+              title="Permalink to IntervalEntityProcessingSystem.enabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<pre class="source">
+void enabled(Entity e) {
+  _check(e);
 }
 </pre>
 </div>
@@ -227,6 +292,7 @@ EntitySystem(Aspect aspect) : _actives = new Bag&lt;Entity&gt;(),
                                           _excluded = aspect.excluded,
                                           _one = aspect.one {
   _dummy = _all == 0 &amp;&amp; _one == 0;
+  _systemBit = _SystemBitManager._getBitFor(runtimeType);
 }
 </pre>
 </div>
@@ -257,6 +323,18 @@ void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
 <p>Override to implement code that gets executed when systems are initialized.</p>
 <pre class="source">
 void initialize() {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="inserted">
+<button class="show-code">Code</button>
+void <strong>inserted</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#inserted"
+              title="Permalink to IntervalEntityProcessingSystem.inserted">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
+<p>Called if the system has received an 
+<span class="param">entity</span> it is interested in, e.g. created or a component was added to it.</p>
+<pre class="source">
+void inserted(Entity entity) {}
 </pre>
 </div>
 </div>
@@ -341,9 +419,7 @@ to process the given
 <div class="docs-inherited-from">docs inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div></div>
 <pre class="source">
 void processEntities(ImmutableBag&lt;Entity&gt; entities) {
-  for (int i = 0, s = entities.size; s &gt; i; i++) {
-    processEntity(entities[i]);
-  }
+  entities.forEach((entity) =&gt; processEntity(entity));
 }
 </pre>
 </div>
@@ -385,7 +461,7 @@ external String toString();
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-14 11:22:42.103</div>
+          <div>This page was generated at 2012-10-21 15:45:50.191</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

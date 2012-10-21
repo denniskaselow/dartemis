@@ -28,13 +28,14 @@
 <li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
 <li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
-<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
-<li><a href="../dartemis/DelayedEntitySystem.html"><div class="icon-class"></div>DelayedEntitySystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
 <li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
@@ -42,12 +43,14 @@
 <li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
-<li><a href="../dartemis/Manager.html"><div class="icon-interface"></div>Manager</a></li>
-<li><a href="../dartemis/SystemManager.html"><div class="icon-class"></div>SystemManager</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
 <li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><div class="icon-class"></div><strong>World</strong></li>
 </ul>
 </div>
@@ -60,37 +63,56 @@
 <div class="doc">
 <pre class="source">
 class World {
+  final EntityManager _entityManager = new EntityManager();
+  final ComponentManager _componentManager = new ComponentManager();
 
-  final Bag&lt;Entity&gt; _refreshed;
-  final Bag&lt;Entity&gt; _deleted;
-  final Map&lt;Type, Manager&gt; _managers;
+  final Bag&lt;Entity&gt; _added = new Bag&lt;Entity&gt;();
+  final Bag&lt;Entity&gt; _changed = new Bag&lt;Entity&gt;();
+  final Bag&lt;Entity&gt; _deleted = new Bag&lt;Entity&gt;();
+  final Bag&lt;Entity&gt; _enable = new Bag&lt;Entity&gt;();
+  final Bag&lt;Entity&gt; _disable = new Bag&lt;Entity&gt;();
 
-  SystemManager _systemManager;
-  EntityManager _entityManager;
-  TagManager _tagManager;
-  GroupManager _groupManager;
+  final Map&lt;Type, EntitySystem&gt; _systems = new Map&lt;Type, EntitySystem&gt;();
+  final Bag&lt;EntitySystem&gt; _systemsBag= new Bag&lt;EntitySystem&gt;();
 
-  int delta;
+  final Map&lt;Type, Manager&gt; _managers = new Map&lt;Type, Manager&gt;();
+  final Bag&lt;Manager&gt; _managersBag = new Bag&lt;Manager&gt;();
 
-  World() : _refreshed = new Bag&lt;Entity&gt;(),
-            _deleted = new Bag&lt;Entity&gt;(),
-            _managers = new Map&lt;Type, Manager&gt;() {
-    _entityManager = new EntityManager(this);
-    _systemManager = new SystemManager(this);
-    _tagManager = new TagManager(this);
-    _groupManager = new GroupManager(this);
+  num delta;
+
+  World() {
+    addManager(_entityManager);
+    addManager(_componentManager);
   }
 
-  GroupManager get groupManager() =&gt; _groupManager;
-  SystemManager get systemManager() =&gt; _systemManager;
-  EntityManager get entityManager() =&gt; _entityManager;
-  TagManager get tagManager() =&gt; _tagManager;
+  /**
+   * Makes sure all managers systems are initialized in the order they were
+   * added.
+   */
+  void initialize() {
+    _managersBag.forEach((manager) =&gt; manager.initialize());
+    _systemsBag.forEach((system) =&gt; system.initialize());
+  }
 
   /**
-   * Allows for setting a custom [manager].
+   * Returns a manager that takes care of all the entities in the world.
+   * entities of this world.
+   */
+  EntityManager get entityManager =&gt; _entityManager;
+
+  /**
+   * Returns a manager that takes care of all the components in the world.
+   */
+  ComponentManager get componentManager =&gt; _componentManager;
+
+  /**
+   * Add a manager into this world. It can be retrieved later. World will
+   * notify this manager of changes to entity.
    */
   void addManager(Manager manager) {
     _managers[manager.runtimeType] = manager;
+    _managersBag.add(manager);
+    manager._world = this;
   }
 
   /**
@@ -101,26 +123,18 @@ class World {
   }
 
   /**
-   * Delete the provided [entity] from the world.
+   * Deletes the manager from this world.
    */
-  void deleteEntity(Entity entity) {
-    if(!_deleted.contains(entity)) {
-      _deleted.add(entity);
-    }
-  }
-
-  /**
-   * Ensure all systems are notified of changes to this [entity].
-   */
-  void refreshEntity(Entity entity) {
-    _refreshed.add(entity);
+  void deleteManager(Manager manager) {
+    _managers.remove(manager.runtimeType);
+    _managersBag.remove(manager);
   }
 
   /**
    * Create and return a new or reused [Entity] instance.
    */
   Entity createEntity() {
-    return _entityManager._create();
+    return _entityManager._createEntityInstance();
   }
 
   /**
@@ -131,26 +145,110 @@ class World {
   }
 
   /**
-   * Let framework take care of internal business.
+   * Gives you all the systems in this world for possible iteration.
    */
-  void loopStart() {
-    if(!_refreshed.isEmpty()) {
-      for(int i = 0; _refreshed.size &gt; i; i++) {
-        _entityManager._refresh(_refreshed[i]);
-      }
-      _refreshed.clear();
-    }
+  ImmutableBag&lt;EntitySystem&gt; get systems =&gt; _systemsBag;
 
-    if(!_deleted.isEmpty()) {
-      for(int i = 0; _deleted.size &gt; i; i++) {
-        Entity e = _deleted[i];
-        _groupManager.remove(e);
-        _entityManager._remove(e);
-        _tagManager.remove(e);
+  /**
+   * Adds a system to this world that will be processed by World.process().
+   * If [passive] is set to true the system will not be processed by the world.
+   */
+  EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
+    system.world = this;
+    system._passive = passive;
+
+    _systems[system.runtimeType] = system;
+    _systemsBag.add(system);
+
+    return system;
+  }
+
+  /**
+   * Removed the specified system from the world.
+   */
+  void deleteSystem(EntitySystem system) {
+    _systems.remove(system.runtimeType);
+    _systemsBag.remove(system);
+  }
+
+  /**
+   * Retrieve a system for specified system type.
+   */
+  EntitySystem getSystem(Type type) {
+    return _systems[type];
+  }
+
+  /**
+   * Performs an action on each entity.
+   */
+  void _check(Bag&lt;Entity&gt; entities, void perform(EntityObserver, Entity)) {
+    entities.forEach((entity) {
+      _managersBag.forEach((manager) =&gt; perform(manager, entity));
+      _systemsBag.forEach((system) =&gt; perform(system, entity));
+    });
+    entities.clear();
+  }
+
+  /**
+   * Process all non-passive systems.
+   */
+  void process() {
+    _check(_added, (observer, entity) =&gt; observer.added(entity));
+    _check(_changed, (observer, entity) =&gt; observer.changed(entity));
+    _check(_disable, (observer, entity) =&gt; observer.disabled(entity));
+    _check(_enable, (observer, entity) =&gt; observer.enabled(entity));
+    _check(_deleted, (observer, entity) =&gt; observer.deleted(entity));
+
+    _componentManager.clean();
+
+    _systemsBag.forEach((system) {
+      if (!system.passive) {
+        system.process();
       }
-      _deleted.clear();
+    });
+  }
+
+  /**
+   * Adds a [Entity e] to this world.
+   */
+  void addEntity(Entity e) {
+    _added.add(e);
+  }
+
+  /**
+   * Ensure all systems are notified of changes to this [Entity e]. If you're
+   * adding a [Component] to an [Entity] after it's been added to the world, then
+   * you need to invoke this method.
+   */
+  void changedEntity(Entity e) {
+    _changed.add(e);
+  }
+
+  /**
+   * Delete the [Entity e] from the world.
+   */
+  void deleteEntity(Entity e) {
+    if (!_deleted.contains(e)) {
+      _deleted.add(e);
     }
   }
+
+  /**
+   * (Re)enable the [Entity e] in the world, after it having being disabled. Won't
+   * do anything unless it was already disabled.
+   */
+  void enable(Entity e) {
+    _enable.add(e);
+  }
+
+  /**
+   * Disable the [Entity e] from being processed. Won't delete it, it will
+   * continue to exist but won't get processed.
+   */
+  void disable(Entity e) {
+    _disable.add(e);
+  }
+
 
 }
 </pre>
@@ -163,13 +261,9 @@ new <strong>World</strong>() <a class="anchor-link" href="#World"
               title="Permalink to World.World">#</a></h4>
 <div class="doc">
 <pre class="source">
-World() : _refreshed = new Bag&lt;Entity&gt;(),
-          _deleted = new Bag&lt;Entity&gt;(),
-          _managers = new Map&lt;Type, Manager&gt;() {
-  _entityManager = new EntityManager(this);
-  _systemManager = new SystemManager(this);
-  _tagManager = new TagManager(this);
-  _groupManager = new GroupManager(this);
+World() {
+  addManager(_entityManager);
+  addManager(_componentManager);
 }
 </pre>
 </div>
@@ -177,15 +271,28 @@ World() : _refreshed = new Bag&lt;Entity&gt;(),
 </div>
 <div>
 <h3>Properties</h3>
+<div class="field"><h4 id="componentManager">
+<button class="show-code">Code</button>
+final <a href="../dartemis/ComponentManager.html">ComponentManager</a>         <strong>componentManager</strong> <a class="anchor-link"
+            href="#componentManager"
+            title="Permalink to World.componentManager">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns a manager that takes care of all the components in the world.</p>
+<pre class="source">
+ComponentManager get componentManager =&gt; _componentManager;
+</pre>
+</div>
+</div>
 <div class="field"><h4 id="delta">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>delta</strong> <a class="anchor-link"
+<a href="http://api.dartlang.org/dart_core/num.html">num</a>         <strong>delta</strong> <a class="anchor-link"
             href="#delta"
             title="Permalink to World.delta">#</a>
         </h4>
         <div class="doc">
 <pre class="source">
-int delta;
+num delta;
 </pre>
 </div>
 </div>
@@ -196,20 +303,10 @@ final <a href="../dartemis/EntityManager.html">EntityManager</a>         <strong
             title="Permalink to World.entityManager">#</a>
         </h4>
         <div class="doc">
+<p>Returns a manager that takes care of all the entities in the world.
+entities of this world.</p>
 <pre class="source">
-EntityManager get entityManager() =&gt; _entityManager;
-</pre>
-</div>
-</div>
-<div class="field"><h4 id="groupManager">
-<button class="show-code">Code</button>
-final <a href="../dartemis/GroupManager.html">GroupManager</a>         <strong>groupManager</strong> <a class="anchor-link"
-            href="#groupManager"
-            title="Permalink to World.groupManager">#</a>
-        </h4>
-        <div class="doc">
-<pre class="source">
-GroupManager get groupManager() =&gt; _groupManager;
+EntityManager get entityManager =&gt; _entityManager;
 </pre>
 </div>
 </div>
@@ -226,27 +323,16 @@ external Type get runtimeType;
 </pre>
 </div>
 </div>
-<div class="field"><h4 id="systemManager">
+<div class="field"><h4 id="systems">
 <button class="show-code">Code</button>
-final <a href="../dartemis/SystemManager.html">SystemManager</a>         <strong>systemManager</strong> <a class="anchor-link"
-            href="#systemManager"
-            title="Permalink to World.systemManager">#</a>
+final <a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/EntitySystem.html">EntitySystem</a>&gt;         <strong>systems</strong> <a class="anchor-link"
+            href="#systems"
+            title="Permalink to World.systems">#</a>
         </h4>
         <div class="doc">
+<p>Gives you all the systems in this world for possible iteration.</p>
 <pre class="source">
-SystemManager get systemManager() =&gt; _systemManager;
-</pre>
-</div>
-</div>
-<div class="field"><h4 id="tagManager">
-<button class="show-code">Code</button>
-final <a href="../dartemis/TagManager.html">TagManager</a>         <strong>tagManager</strong> <a class="anchor-link"
-            href="#tagManager"
-            title="Permalink to World.tagManager">#</a>
-        </h4>
-        <div class="doc">
-<pre class="source">
-TagManager get tagManager() =&gt; _tagManager;
+ImmutableBag&lt;EntitySystem&gt; get systems =&gt; _systemsBag;
 </pre>
 </div>
 </div>
@@ -272,16 +358,67 @@ bool operator ==(other) =&gt; identical(this, other);
 </div>
 <div>
 <h3>Methods</h3>
+<div class="method"><h4 id="addEntity">
+<button class="show-code">Code</button>
+void <strong>addEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#addEntity"
+              title="Permalink to World.addEntity">#</a></h4>
+<div class="doc">
+<p>Adds a <code>Entity e</code> to this world.</p>
+<pre class="source">
+void addEntity(Entity e) {
+  _added.add(e);
+}
+</pre>
+</div>
+</div>
 <div class="method"><h4 id="addManager">
 <button class="show-code">Code</button>
 void <strong>addManager</strong>(<a href="../dartemis/Manager.html">Manager</a> manager) <a class="anchor-link" href="#addManager"
               title="Permalink to World.addManager">#</a></h4>
 <div class="doc">
-<p>Allows for setting a custom 
-<span class="param">manager</span>.</p>
+<p>Add a manager into this world. It can be retrieved later. World will
+notify this manager of changes to entity.</p>
 <pre class="source">
 void addManager(Manager manager) {
   _managers[manager.runtimeType] = manager;
+  _managersBag.add(manager);
+  manager._world = this;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="addSystem">
+<button class="show-code">Code</button>
+<a href="../dartemis/EntitySystem.html">EntitySystem</a> <strong>addSystem</strong>(<a href="../dartemis/EntitySystem.html">EntitySystem</a> system, [<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> passive = false]) <a class="anchor-link" href="#addSystem"
+              title="Permalink to World.addSystem">#</a></h4>
+<div class="doc">
+<p>Adds a system to this world that will be processed by World.process().
+If 
+<span class="param">passive</span> is set to true the system will not be processed by the world.</p>
+<pre class="source">
+EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
+  system.world = this;
+  system._passive = passive;
+
+  _systems[system.runtimeType] = system;
+  _systemsBag.add(system);
+
+  return system;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="changedEntity">
+<button class="show-code">Code</button>
+void <strong>changedEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#changedEntity"
+              title="Permalink to World.changedEntity">#</a></h4>
+<div class="doc">
+<p>Ensure all systems are notified of changes to this <code>Entity e</code>. If you're
+adding a <a class="crossref" href="../dartemis/Component.html">Component</a> to an <a class="crossref" href="../dartemis/Entity.html">Entity</a> after it's been added to the world, then
+you need to invoke this method.</p>
+<pre class="source">
+void changedEntity(Entity e) {
+  _changed.add(e);
 }
 </pre>
 </div>
@@ -294,23 +431,78 @@ void addManager(Manager manager) {
 <p>Create and return a new or reused <a class="crossref" href="../dartemis/Entity.html">Entity</a> instance.</p>
 <pre class="source">
 Entity createEntity() {
-  return _entityManager._create();
+  return _entityManager._createEntityInstance();
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="deleteEntity">
 <button class="show-code">Code</button>
-void <strong>deleteEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#deleteEntity"
+void <strong>deleteEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#deleteEntity"
               title="Permalink to World.deleteEntity">#</a></h4>
 <div class="doc">
-<p>Delete the provided 
-<span class="param">entity</span> from the world.</p>
+<p>Delete the <code>Entity e</code> from the world.</p>
 <pre class="source">
-void deleteEntity(Entity entity) {
-  if(!_deleted.contains(entity)) {
-    _deleted.add(entity);
+void deleteEntity(Entity e) {
+  if (!_deleted.contains(e)) {
+    _deleted.add(e);
   }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="deleteManager">
+<button class="show-code">Code</button>
+void <strong>deleteManager</strong>(<a href="../dartemis/Manager.html">Manager</a> manager) <a class="anchor-link" href="#deleteManager"
+              title="Permalink to World.deleteManager">#</a></h4>
+<div class="doc">
+<p>Deletes the manager from this world.</p>
+<pre class="source">
+void deleteManager(Manager manager) {
+  _managers.remove(manager.runtimeType);
+  _managersBag.remove(manager);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="deleteSystem">
+<button class="show-code">Code</button>
+void <strong>deleteSystem</strong>(<a href="../dartemis/EntitySystem.html">EntitySystem</a> system) <a class="anchor-link" href="#deleteSystem"
+              title="Permalink to World.deleteSystem">#</a></h4>
+<div class="doc">
+<p>Removed the specified system from the world.</p>
+<pre class="source">
+void deleteSystem(EntitySystem system) {
+  _systems.remove(system.runtimeType);
+  _systemsBag.remove(system);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="disable">
+<button class="show-code">Code</button>
+void <strong>disable</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#disable"
+              title="Permalink to World.disable">#</a></h4>
+<div class="doc">
+<p>Disable the <code>Entity e</code> from being processed. Won't delete it, it will
+continue to exist but won't get processed.</p>
+<pre class="source">
+void disable(Entity e) {
+  _disable.add(e);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="enable">
+<button class="show-code">Code</button>
+void <strong>enable</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#enable"
+              title="Permalink to World.enable">#</a></h4>
+<div class="doc">
+<p>(Re)enable the <code>Entity e</code> in the world, after it having being disabled. Won't
+do anything unless it was already disabled.</p>
+<pre class="source">
+void enable(Entity e) {
+  _enable.add(e);
 }
 </pre>
 </div>
@@ -343,6 +535,19 @@ Manager getManager(Type managerType) {
 </pre>
 </div>
 </div>
+<div class="method"><h4 id="getSystem">
+<button class="show-code">Code</button>
+<a href="../dartemis/EntitySystem.html">EntitySystem</a> <strong>getSystem</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> type) <a class="anchor-link" href="#getSystem"
+              title="Permalink to World.getSystem">#</a></h4>
+<div class="doc">
+<p>Retrieve a system for specified system type.</p>
+<pre class="source">
+EntitySystem getSystem(Type type) {
+  return _systems[type];
+}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="hashCode">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
@@ -361,30 +566,17 @@ external int hashCode();
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="loopStart">
+<div class="method"><h4 id="initialize">
 <button class="show-code">Code</button>
-void <strong>loopStart</strong>() <a class="anchor-link" href="#loopStart"
-              title="Permalink to World.loopStart">#</a></h4>
+void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
+              title="Permalink to World.initialize">#</a></h4>
 <div class="doc">
-<p>Let framework take care of internal business.</p>
+<p>Makes sure all managers systems are initialized in the order they were
+added.</p>
 <pre class="source">
-void loopStart() {
-  if(!_refreshed.isEmpty()) {
-    for(int i = 0; _refreshed.size &gt; i; i++) {
-      _entityManager._refresh(_refreshed[i]);
-    }
-    _refreshed.clear();
-  }
-
-  if(!_deleted.isEmpty()) {
-    for(int i = 0; _deleted.size &gt; i; i++) {
-      Entity e = _deleted[i];
-      _groupManager.remove(e);
-      _entityManager._remove(e);
-      _tagManager.remove(e);
-    }
-    _deleted.clear();
-  }
+void initialize() {
+  _managersBag.forEach((manager) =&gt; manager.initialize());
+  _systemsBag.forEach((system) =&gt; system.initialize());
 }
 </pre>
 </div>
@@ -420,16 +612,27 @@ const Object();
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="refreshEntity">
+<div class="method"><h4 id="process">
 <button class="show-code">Code</button>
-void <strong>refreshEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#refreshEntity"
-              title="Permalink to World.refreshEntity">#</a></h4>
+void <strong>process</strong>() <a class="anchor-link" href="#process"
+              title="Permalink to World.process">#</a></h4>
 <div class="doc">
-<p>Ensure all systems are notified of changes to this 
-<span class="param">entity</span>.</p>
+<p>Process all non-passive systems.</p>
 <pre class="source">
-void refreshEntity(Entity entity) {
-  _refreshed.add(entity);
+void process() {
+  _check(_added, (observer, entity) =&gt; observer.added(entity));
+  _check(_changed, (observer, entity) =&gt; observer.changed(entity));
+  _check(_disable, (observer, entity) =&gt; observer.disabled(entity));
+  _check(_enable, (observer, entity) =&gt; observer.enabled(entity));
+  _check(_deleted, (observer, entity) =&gt; observer.deleted(entity));
+
+  _componentManager.clean();
+
+  _systemsBag.forEach((system) {
+    if (!system.passive) {
+      system.process();
+    }
+  });
 }
 </pre>
 </div>
@@ -451,13 +654,9 @@ new <strong>World</strong>() <a class="anchor-link" href="#World"
               title="Permalink to World.World">#</a></h4>
 <div class="doc">
 <pre class="source">
-World() : _refreshed = new Bag&lt;Entity&gt;(),
-          _deleted = new Bag&lt;Entity&gt;(),
-          _managers = new Map&lt;Type, Manager&gt;() {
-  _entityManager = new EntityManager(this);
-  _systemManager = new SystemManager(this);
-  _tagManager = new TagManager(this);
-  _groupManager = new GroupManager(this);
+World() {
+  addManager(_entityManager);
+  addManager(_componentManager);
 }
 </pre>
 </div>
@@ -468,7 +667,7 @@ World() : _refreshed = new Bag&lt;Entity&gt;(),
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-14 11:22:42.054</div>
+          <div>This page was generated at 2012-10-21 15:45:50.157</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

@@ -28,13 +28,14 @@
 <li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
 <li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
-<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
-<li><a href="../dartemis/DelayedEntitySystem.html"><div class="icon-class"></div>DelayedEntitySystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
 <li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
 <li><div class="icon-class"></div><strong>EntitySystem</strong></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
@@ -42,12 +43,14 @@
 <li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
-<li><a href="../dartemis/Manager.html"><div class="icon-interface"></div>Manager</a></li>
-<li><a href="../dartemis/SystemManager.html"><div class="icon-class"></div>SystemManager</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
 <li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
 </ul>
 </div>
@@ -64,7 +67,7 @@ entity system implementations.</p>
 <p>There is no need to ever call any other method than process on objects of this class.</p>
 <p>@author Arni Arent</p>
 <pre class="source">
-abstract class EntitySystem {
+abstract class EntitySystem implements EntityObserver {
 
 
   int _systemBit = 0;
@@ -75,13 +78,17 @@ abstract class EntitySystem {
   int _excluded;
   int _one;
   bool _dummy;
+  bool _passive;
 
   EntitySystem(Aspect aspect) : _actives = new Bag&lt;Entity&gt;(),
                                             _all = aspect.all,
                                             _excluded = aspect.excluded,
                                             _one = aspect.one {
     _dummy = _all == 0 &amp;&amp; _one == 0;
+    _systemBit = _SystemBitManager._getBitFor(runtimeType);
   }
+
+  get passive =&gt; _passive;
 
   /**
    * Called before processing of entities begins.
@@ -123,18 +130,18 @@ abstract class EntitySystem {
   /**
    * Called if the system has received an [entity] it is interested in, e.g. created or a component was added to it.
    */
-  void added(Entity entity) {}
+  void inserted(Entity entity) {}
 
   /**
    * Called if an [entity] was removed from this system, e.g. deleted or had one of it's components removed.
    */
   void removed(Entity entity) {}
 
-  void _change(Entity e) {
+  void _check(Entity e) {
     if (_dummy) {
       return;
     }
-    bool contains = (_systemBit &amp; e._systemBits) == _systemBit;
+    bool contains = _contains(e);
     bool interest = (_all &amp; e._typeBits) == _all;
     if (_one &gt; 0 &amp;&amp; interest) {
       interest = (_one &amp; e._typeBits) &gt; 0;
@@ -144,27 +151,48 @@ abstract class EntitySystem {
     }
 
     if (interest &amp;&amp; !contains) {
-      _actives.add(e);
-      e._addSystemBit(_systemBit);
-      added(e);
+      _insertToSystem(e);
     } else if (!interest &amp;&amp; contains) {
-      _remove(e);
+      _removeFromSystem(e);
     }
   }
 
-  void _remove(Entity e) {
+  bool _contains(Entity e) =&gt; (_systemBit &amp; e._systemBits) == _systemBit;
+
+  void _insertToSystem(Entity e) {
+    _actives.add(e);
+    e._addSystemBit(_systemBit);
+    inserted(e);
+  }
+
+  void _removeFromSystem(Entity e) {
     _actives.remove(e);
     e._removeSystemBit(_systemBit);
     removed(e);
   }
 
-  /**
-   * Merge together a [requiredType] and a array of [otherTypes]. Used in derived systems.
-   */
-  static List&lt;String&gt; getMergedTypes(String requiredComponentName, [List&lt;String&gt; otherComponentNames]) {
-    List&lt;String&gt; mergedList = [requiredComponentName];
-    mergedList.addAll(otherComponentNames);
-    return mergedList;
+  void added(Entity e) {
+    _check(e);
+  }
+
+  void changed(Entity e) {
+    _check(e);
+  }
+
+  void enabled(Entity e) {
+    _check(e);
+  }
+
+  void deleted(Entity e) {
+    if (_contains(e)) {
+      _removeFromSystem(e);
+    }
+  }
+
+  void disabled(Entity e) {
+    if (_contains(e)) {
+      _removeFromSystem(e);
+    }
   }
 
 }
@@ -172,7 +200,10 @@ abstract class EntitySystem {
 </div>
 <h3>Subclasses</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../dartemis/DelayedEntitySystem.html">DelayedEntitySystem</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../dartemis/EntityProcessingSystem.html">EntityProcessingSystem</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../dartemis/IntervalEntitySystem.html">IntervalEntitySystem</a></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../dartemis/DelayedEntityProcessingSystem.html">DelayedEntityProcessingSystem</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../dartemis/EntityProcessingSystem.html">EntityProcessingSystem</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../dartemis/IntervalEntitySystem.html">IntervalEntitySystem</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../dartemis/VoidEntitySystem.html">VoidEntitySystem</a></span></p>
+<h3>Implements</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dartemis/EntityObserver.html">EntityObserver</a></span></p>
 <div>
 <h3>Constructors</h3>
 <div class="method"><h4 id="EntitySystem">
@@ -186,24 +217,7 @@ EntitySystem(Aspect aspect) : _actives = new Bag&lt;Entity&gt;(),
                                           _excluded = aspect.excluded,
                                           _one = aspect.one {
   _dummy = _all == 0 &amp;&amp; _one == 0;
-}
-</pre>
-</div>
-</div>
-</div>
-<div>
-<h3>Static Methods</h3>
-<div class="method"><h4 id="getMergedTypes">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; <strong>getMergedTypes</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> requiredComponentName, [<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; otherComponentNames]) <a class="anchor-link" href="#getMergedTypes"
-              title="Permalink to EntitySystem.getMergedTypes">#</a></h4>
-<div class="doc">
-<p>Merge together a <code>requiredType</code> and a array of <code>otherTypes</code>. Used in derived systems.</p>
-<pre class="source">
-static List&lt;String&gt; getMergedTypes(String requiredComponentName, [List&lt;String&gt; otherComponentNames]) {
-  List&lt;String&gt; mergedList = [requiredComponentName];
-  mergedList.addAll(otherComponentNames);
-  return mergedList;
+  _systemBit = _SystemBitManager._getBitFor(runtimeType);
 }
 </pre>
 </div>
@@ -211,6 +225,18 @@ static List&lt;String&gt; getMergedTypes(String requiredComponentName, [List&lt;
 </div>
 <div>
 <h3>Properties</h3>
+<div class="field"><h4 id="passive">
+<button class="show-code">Code</button>
+final         <strong>passive</strong> <a class="anchor-link"
+            href="#passive"
+            title="Permalink to EntitySystem.passive">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+get passive =&gt; _passive;
+</pre>
+</div>
+</div>
 <div class="field inherited"><h4 id="runtimeType">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
@@ -260,13 +286,13 @@ bool operator ==(other) =&gt; identical(this, other);
 <h3>Methods</h3>
 <div class="method"><h4 id="added">
 <button class="show-code">Code</button>
-void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#added"
+void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#added"
               title="Permalink to EntitySystem.added">#</a></h4>
 <div class="doc">
-<p>Called if the system has received an 
-<span class="param">entity</span> it is interested in, e.g. created or a component was added to it.</p>
 <pre class="source">
-void added(Entity entity) {}
+void added(Entity e) {
+  _check(e);
+}
 </pre>
 </div>
 </div>
@@ -281,11 +307,63 @@ void begin() {}
 </pre>
 </div>
 </div>
+<div class="method"><h4 id="changed">
+<button class="show-code">Code</button>
+void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#changed"
+              title="Permalink to EntitySystem.changed">#</a></h4>
+<div class="doc">
+<pre class="source">
+void changed(Entity e) {
+  _check(e);
+}
+</pre>
+</div>
+</div>
 <div class="method"><h4 id="checkProcessing">
 abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>checkProcessing</strong>() <a class="anchor-link" href="#checkProcessing"
               title="Permalink to EntitySystem.checkProcessing">#</a></h4>
 <div class="doc">
 <p>Returns true if the system should be processed, false if not.</p>
+</div>
+</div>
+<div class="method"><h4 id="deleted">
+<button class="show-code">Code</button>
+void <strong>deleted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#deleted"
+              title="Permalink to EntitySystem.deleted">#</a></h4>
+<div class="doc">
+<pre class="source">
+void deleted(Entity e) {
+  if (_contains(e)) {
+    _removeFromSystem(e);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="disabled">
+<button class="show-code">Code</button>
+void <strong>disabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#disabled"
+              title="Permalink to EntitySystem.disabled">#</a></h4>
+<div class="doc">
+<pre class="source">
+void disabled(Entity e) {
+  if (_contains(e)) {
+    _removeFromSystem(e);
+  }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="enabled">
+<button class="show-code">Code</button>
+void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#enabled"
+              title="Permalink to EntitySystem.enabled">#</a></h4>
+<div class="doc">
+<pre class="source">
+void enabled(Entity e) {
+  _check(e);
+}
+</pre>
 </div>
 </div>
 <div class="method"><h4 id="end">
@@ -310,6 +388,7 @@ EntitySystem(Aspect aspect) : _actives = new Bag&lt;Entity&gt;(),
                                           _excluded = aspect.excluded,
                                           _one = aspect.one {
   _dummy = _all == 0 &amp;&amp; _one == 0;
+  _systemBit = _SystemBitManager._getBitFor(runtimeType);
 }
 </pre>
 </div>
@@ -340,6 +419,18 @@ void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
 <p>Override to implement code that gets executed when systems are initialized.</p>
 <pre class="source">
 void initialize() {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="inserted">
+<button class="show-code">Code</button>
+void <strong>inserted</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#inserted"
+              title="Permalink to EntitySystem.inserted">#</a></h4>
+<div class="doc">
+<p>Called if the system has received an 
+<span class="param">entity</span> it is interested in, e.g. created or a component was added to it.</p>
+<pre class="source">
+void inserted(Entity entity) {}
 </pre>
 </div>
 </div>
@@ -429,7 +520,7 @@ external String toString();
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-14 11:22:42.149</div>
+          <div>This page was generated at 2012-10-21 15:45:50.243</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

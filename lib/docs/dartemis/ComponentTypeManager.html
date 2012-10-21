@@ -28,13 +28,14 @@
 <li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
 <li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
-<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><div class="icon-class"></div><strong>ComponentTypeManager</strong></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
-<li><a href="../dartemis/DelayedEntitySystem.html"><div class="icon-class"></div>DelayedEntitySystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
 <li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
@@ -42,12 +43,14 @@
 <li><a href="../dartemis/ImmutableBag.html"><div class="icon-interface"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
-<li><a href="../dartemis/Manager.html"><div class="icon-interface"></div>Manager</a></li>
-<li><a href="../dartemis/SystemManager.html"><div class="icon-class"></div>SystemManager</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
 <li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
 </ul>
 </div>
@@ -63,26 +66,26 @@ class ComponentTypeManager {
 
   static var _componentTypes;
 
-  static ComponentType getTypeFor(String componentName){
+  static ComponentType getTypeFor(Type componentType){
     if (null == _componentTypes) {
-      _componentTypes = new Map&lt;String, ComponentType&gt;();
+      _componentTypes = new Map&lt;Type, ComponentType&gt;();
     }
-    ComponentType type = _componentTypes[componentName];
+    ComponentType type = _componentTypes[componentType];
 
     if (type == null) {
       type = new ComponentType();
-      _componentTypes[componentName] = type;
+      _componentTypes[componentType] = type;
     }
 
     return type;
   }
 
-  static int getBit(String componentName) {
-    return getTypeFor(componentName).bit;
+  static int getBit(Type componentType) {
+    return getTypeFor(componentType).bit;
   }
 
-  static int getId(String componentName) {
-    return getTypeFor(componentName).id;
+  static int getId(Type componentType) {
+    return getTypeFor(componentType).id;
   }
 
 
@@ -93,19 +96,19 @@ class ComponentTypeManager {
 <h3>Static Methods</h3>
 <div class="method"><h4 id="getTypeFor">
 <button class="show-code">Code</button>
-<a href="../dartemis/ComponentType.html">ComponentType</a> <strong>getTypeFor</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> componentName) <a class="anchor-link" href="#getTypeFor"
+<a href="../dartemis/ComponentType.html">ComponentType</a> <strong>getTypeFor</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getTypeFor"
               title="Permalink to ComponentTypeManager.getTypeFor">#</a></h4>
 <div class="doc">
 <pre class="source">
-static ComponentType getTypeFor(String componentName){
+static ComponentType getTypeFor(Type componentType){
   if (null == _componentTypes) {
-    _componentTypes = new Map&lt;String, ComponentType&gt;();
+    _componentTypes = new Map&lt;Type, ComponentType&gt;();
   }
-  ComponentType type = _componentTypes[componentName];
+  ComponentType type = _componentTypes[componentType];
 
   if (type == null) {
     type = new ComponentType();
-    _componentTypes[componentName] = type;
+    _componentTypes[componentType] = type;
   }
 
   return type;
@@ -115,24 +118,24 @@ static ComponentType getTypeFor(String componentName){
 </div>
 <div class="method"><h4 id="getBit">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>getBit</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> componentName) <a class="anchor-link" href="#getBit"
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>getBit</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getBit"
               title="Permalink to ComponentTypeManager.getBit">#</a></h4>
 <div class="doc">
 <pre class="source">
-static int getBit(String componentName) {
-  return getTypeFor(componentName).bit;
+static int getBit(Type componentType) {
+  return getTypeFor(componentType).bit;
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="getId">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>getId</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> componentName) <a class="anchor-link" href="#getId"
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>getId</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getId"
               title="Permalink to ComponentTypeManager.getId">#</a></h4>
 <div class="doc">
 <pre class="source">
-static int getId(String componentName) {
-  return getTypeFor(componentName).id;
+static int getId(Type componentType) {
+  return getTypeFor(componentType).id;
 }
 </pre>
 </div>
@@ -241,7 +244,7 @@ external String toString();
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-14 11:22:42.295</div>
+          <div>This page was generated at 2012-10-21 15:45:50.443</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>
