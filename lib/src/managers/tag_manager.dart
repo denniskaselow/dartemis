@@ -1,29 +1,41 @@
 part of dartemis;
 
-class TagManager {
-  World _world;
-  final _entityByTag;
+class TagManager extends Manager {
+  final Map<String, Entity> _entitiesByTag;
+  final Map<Entity, String> _tagsByEntity;
 
-  TagManager(this._world) : _entityByTag = new Map<String, Entity>();
+  TagManager() : _entitiesByTag = new Map<String, Entity>(),
+                 _tagsByEntity = new Map<Entity, String>();
+
+
 
   void register(String tag, Entity e) {
-    _entityByTag[tag] = e;
+    _entitiesByTag[tag] = e;
+    _tagsByEntity[e] = tag;
   }
 
   void unregister(String tag) {
-    _entityByTag.remove(tag);
+    _tagsByEntity.remove(_entitiesByTag.remove(tag));
   }
 
   bool isRegistered(String tag) {
-    return _entityByTag.containsKey(tag);
+    return _entitiesByTag.containsKey(tag);
   }
 
   Entity getEntity(String tag) {
-    return _entityByTag[tag];
+    return _entitiesByTag[tag];
   }
 
-  void remove(Entity e) {
-//     TODO
-//    _entityByTag.getValues().remove(e);
+  Collection<String> getRegisteredTags() {
+    return _tagsByEntity.getValues();
   }
+
+  void deleted(Entity e) {
+    String removedTag = _tagsByEntity.remove(e);
+    if(removedTag != null) {
+      _entitiesByTag.remove(removedTag);
+    }
+  }
+
+  void initialize() {}
 }
