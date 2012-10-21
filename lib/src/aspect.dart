@@ -6,20 +6,18 @@ part of dartemis;
  * possess, or not possess.
  *
  * This creates an aspect where an entity must possess A and B and C:
- *     Aspect.getAspectForAllOf("A", "B", "C")
+ *     Aspect.getAspectForAllOf(A, B, C)
  *
  * This creates an aspect where an entity must possess A and B and C, but must not possess U or V.
- *     Aspect.getAspectForAllOf("A", "B", "C").exclude("U", "V")
+ *     Aspect.getAspectForAllOf(A, B, C).exclude(U, V)
  *
  * This creates an aspect where an entity must possess A and B and C, but must not possess U or V, but must possess one of X or Y or Z.
- *     Aspect.getAspectForAllOf("A", "B", "C").exclude("U", "V").oneOf("X", "Y", "Z")
+ *     Aspect.getAspectForAllOf(A, B, C).exclude(U, V).oneOf(X, Y, Z)
  *
  * You can create and compose aspects in many ways:
- *     Aspect.getEmpty().oneOf("X", "Y", "Z").allOf("A", "B", "C").exclude("U", "V")
+ *     Aspect.getEmpty().oneOf(X, Y, Z).allOf(A, B, C).exclude(U, V)
  * is the same as:
- *     Aspect.getAspectForAllOf("A", "B", "C").exclude("U", "V").oneOf("X", "Y", "Z")
- *
- * The name of the component must alsways be the same as the name of the [Component] class.
+ *     Aspect.getAspectForAllOf(A, B, C).exclude(U, V).oneOf(X, Y, Z)
  *
  * @author Arni Arent
  *
@@ -33,8 +31,8 @@ class Aspect {
   /**
    * Returns an aspect where an entity must possess all of the specified components.
    */
-  Aspect allOf(String requiredComponentName, [List<String> componentNames]) {
-    _all = _updateBitMask(_all, requiredComponentName, componentNames);
+  Aspect allOf(Type requiredComponentType, [List<Type> componentTypes]) {
+    _all = _updateBitMask(_all, requiredComponentType, componentTypes);
     return this;
   }
 
@@ -44,34 +42,34 @@ class Aspect {
    *
    * Returns an aspect that can be matched against entities.
    */
-  Aspect exclude(String requiredComponentName, [List<String> componentNames]) {
-    _excluded = _updateBitMask(_excluded, requiredComponentName, componentNames);
+  Aspect exclude(Type requiredComponentType, [List<Type> componentTypes]) {
+    _excluded = _updateBitMask(_excluded, requiredComponentType, componentTypes);
     return this;
   }
 
   /**
    * Returns an aspect where an entity must possess one of the specified components.
    */
-  Aspect oneOf(String requiredComponentName, [List<String> componentNames]) {
-    _one = _updateBitMask(_one, requiredComponentName, componentNames);
+  Aspect oneOf(Type requiredComponentType, [List<Type> componentTypes]) {
+    _one = _updateBitMask(_one, requiredComponentType, componentTypes);
     return this;
   }
 
   /**
    * Creates an aspect where an entity must possess all of the specified components.
    */
-  static Aspect getAspectForAllOf(String requiredComponentName, [List<String> componentNames]) {
+  static Aspect getAspectForAllOf(Type requiredComponentType, [List<Type> componentTypes]) {
     Aspect aspect = new Aspect();
-    aspect.allOf(requiredComponentName, componentNames);
+    aspect.allOf(requiredComponentType, componentTypes);
     return aspect;
   }
 
   /**
    * Creates an aspect where an entity must possess one of the specified componens.
    */
-  static getAspectForOneOf(String requiredComponentName, [List<String> componentNames]) {
+  static getAspectForOneOf(Type requiredComponentType, [List<Type> componentTypes]) {
     Aspect aspect = new Aspect();
-    aspect.oneOf(requiredComponentName, componentNames);
+    aspect.oneOf(requiredComponentType, componentTypes);
     return aspect;
   }
 
@@ -94,11 +92,11 @@ class Aspect {
   int get excluded => _excluded;
   int get one => _one;
 
-  int _updateBitMask(int mask, String requiredComponentName, [List<String> componentNames]) {
-    mask = mask | ComponentTypeManager.getBit(requiredComponentName);
-    if (null != componentNames) {
-      componentNames.forEach((componentName) {
-        mask = mask | ComponentTypeManager.getBit(componentName);
+  int _updateBitMask(int mask, Type requiredComponentType, [List<Type> componentTypes]) {
+    mask = mask | ComponentTypeManager.getBit(requiredComponentType);
+    if (null != componentTypes) {
+      componentTypes.forEach((componentType) {
+        mask = mask | ComponentTypeManager.getBit(componentType);
       });
     }
     return mask;

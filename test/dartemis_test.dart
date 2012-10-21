@@ -1,9 +1,9 @@
 import "package:unittest/unittest.dart";
 import "package:dartemis/dartemis.dart";
 
-final String COMPONENT_A = "ComponentA";
-final String COMPONENT_B = "ComponentB";
-final String COMPONENT_C = "ComponentC";
+final Type COMPONENT_A = new ComponentA().runtimeType;
+final Type COMPONENT_B = new ComponentB().runtimeType;
+final Type COMPONENT_C = new ComponentC().runtimeType;
 
 final int COMPONENT_A_BIT = 0x0001;
 final int COMPONENT_B_BIT = 0x0002;

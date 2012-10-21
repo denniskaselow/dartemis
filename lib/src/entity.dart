@@ -52,14 +52,14 @@ class Entity {
    * Add a [component] to this entity.
    */
   void addComponent(Component component){
-    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType.toString()), component);
+    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType), component);
   }
 
   /**
    * Removes the [component] from this entity.
    */
   void removeComponent(Component component){
-    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType.toString()));
+    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType));
   }
 
   /**
@@ -92,8 +92,8 @@ class Entity {
    *
    * Returns [:null:] if none is found.
    */
-   Component getComponentByClass(String componentName) {
-     return getComponent(ComponentTypeManager.getTypeFor(componentName));
+   Component getComponentByClass(Type componentType) {
+     return getComponent(ComponentTypeManager.getTypeFor(componentType));
    }
 
   /**
