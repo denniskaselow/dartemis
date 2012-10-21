@@ -9,78 +9,100 @@ part of dartemis;
  * @author Arni Arent
  *
  */
-class GroupManager {
-  final World _world;
-  final Bag<Entity> _EMPTY_BAG;
+class GroupManager extends Manager {
   final Map<String, Bag<Entity>> _entitiesByGroup;
-  final Bag<String> _groupByEntity;
+  final Map<Entity, Bag<String>> _groupsByEntity;
 
-  GroupManager(this._world) : _entitiesByGroup = new Map<String, Bag<Entity>>(),
-                              _groupByEntity = new Bag<String>(),
-                              _EMPTY_BAG = new Bag<Entity>();
+  GroupManager() : _entitiesByGroup = new Map<String, Bag<Entity>>(),
+                   _groupsByEntity = new Map<Entity, Bag<String>>();
+
+  void initialize() {}
+
+
 
   /**
-   * Set the [group] of the [entity].
+   * Set the group of the entity.
    */
-  void addEntityToGroup(String group, Entity entity) {
-    remove(entity); // Entity can only belong to one group.
+  void add(Entity e, String group) {
+    Bag<Entity> entities = _entitiesByGroup[group];
+    if (entities == null) {
+      entities = new Bag<Entity>();
+      _entitiesByGroup[group] = entities;
+    }
+    entities.add(e);
 
+    Bag<String> groups = _groupsByEntity[e];
+    if(groups == null) {
+      groups = new Bag<String>();
+      _groupsByEntity[e] = groups;
+    }
+    groups.add(group);
+  }
+
+  /**
+   * Remove the entity from the specified group.
+   */
+  void remove(Entity e, String group) {
+    Bag<Entity> entities = _entitiesByGroup[group];
+    if(entities != null) {
+      entities.remove(e);
+    }
+
+    Bag<String> groups = _groupsByEntity[e];
+    if(groups != null) {
+      groups.remove(group);
+    }
+  }
+
+  void removeFromAllGroups(Entity e) {
+    Bag<String> groups = _groupsByEntity[e];
+    if(groups != null) {
+      groups.forEach((group) {
+        Bag<Entity> entities = _entitiesByGroup[group];
+        if(entities != null) {
+          entities.remove(e);
+        }
+      });
+      groups.clear();
+    }
+  }
+
+  /**
+   * Get all entities that belong to the provided group.
+   */
+  ImmutableBag<Entity> getEntities(String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if(entities == null) {
       entities = new Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
-    entities.add(entity);
-
-    _groupByEntity[entity.id] = group;
+    return entities;
   }
 
   /**
-   * Get all entities that belong to the provided [group].
-   *
-   * Returns a read-only bag of entities belonging to the [group].
+   * Returns the groups the entity belongs to, null if none.
    */
-  ImmutableBag<Entity> getEntities(String group) {
-    Bag<Entity> bag = _entitiesByGroup[group];
-    if(bag == null) {
-      return _EMPTY_BAG;
-    }
-    return bag;
+  ImmutableBag<String> getGroups(Entity e) {
+    return _groupsByEntity[e];
   }
 
   /**
-   * Removes the provided [entity] from the group it is assigned to, if any.
+   * Checks if the entity belongs to any group.
    */
-  void remove(Entity entity) {
-    if(entity.id < _groupByEntity.capacity) {
-      String group = _groupByEntity[entity.id];
-      if(group != null) {
-        _groupByEntity[entity.id] = null;
-
-        Bag<Entity> entities = _entitiesByGroup[group];
-        if(entities != null) {
-          entities.remove(entity);
-        }
-      }
-    }
+  bool isInAnyGroup(Entity e) {
+    return getGroups(e) != null;
   }
 
   /**
-   * Returns the name of the group that this [entity] belongs to, [:null:] if none.
+   * Check if the entity is in the supplied group.
    */
-  String getGroupOf(Entity entity) {
-    if(entity.id < _groupByEntity.capacity) {
-      return _groupByEntity[entity.id];
-    }
-    return null;
+  bool inInGroup(Entity e, String group) {
+    Bag<String> groups = _groupsByEntity[e];
+    return groups.contains(group);
   }
 
-  /**
-   * Checks if the [entity] belongs to any group.
-   *
-   * Returns [:true:] if it is in any group, [:false:] if none.
-   */
-  bool isGrouped(Entity entity) {
-    return getGroupOf(entity) != null;
+  void deleted(Entity e) {
+    removeFromAllGroups(e);
   }
+
 }
