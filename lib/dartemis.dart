@@ -33,7 +33,8 @@ part 'src/manager.dart';
 
 part 'src/system_bit_manager.dart';
 
-part 'src/managers/tag_manager.dart';
 part 'src/managers/group_manager.dart';
+part 'src/managers/player_manager.dart';
+part 'src/managers/tag_manager.dart';
 
 part 'src/world.dart';
