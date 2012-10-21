@@ -13,9 +13,7 @@ abstract class DelayedEntityProcessingSystem extends DelayedEntitySystem {
   abstract void processEntity(Entity entity, int accumulatedDelta);
 
   void processEntitiesWithAccDelta(ImmutableBag<Entity> entities, int accumulatedDelta) {
-    for (int i = 0, s = entities.size; s > i; i++) {
-      processEntity(entities[i], accumulatedDelta);
-    }
+    entities.forEach((entity) => processEntity(entity, accumulatedDelta));
   }
 
 }

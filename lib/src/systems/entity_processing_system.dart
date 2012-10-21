@@ -19,11 +19,8 @@ abstract class EntityProcessingSystem extends EntitySystem {
    */
   abstract void processEntity(Entity entity);
 
-
   void processEntities(ImmutableBag<Entity> entities) {
-    for (int i = 0, s = entities.size; s > i; i++) {
-      processEntity(entities[i]);
-    }
+    entities.forEach((entity) => processEntity(entity));
   }
 
   bool checkProcessing() => true;
