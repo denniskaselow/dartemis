@@ -58,12 +58,12 @@ abstract class EntitySystem implements EntityObserver {
    * Any implementing entity system must implement this method and the logic
    * to process the given [entities] of the system.
    */
-  abstract void processEntities(ImmutableBag<Entity> entities);
+  void processEntities(ImmutableBag<Entity> entities);
 
   /**
    * Returns true if the system should be processed, false if not.
    */
-  abstract bool checkProcessing();
+  bool checkProcessing();
 
   /**
    * Override to implement code that gets executed when systems are initialized.

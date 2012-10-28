@@ -1,6 +1,6 @@
 part of dartemis;
 
-interface ImmutableBag<E> {
+abstract class ImmutableBag<E> {
 
     E operator [](int index);
 

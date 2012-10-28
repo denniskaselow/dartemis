@@ -4,7 +4,7 @@ class Bag<E> implements ImmutableBag<E> {
   List _data;
   int _size = 0;
 
-  Bag([int capacity = 16]) {
+  Bag({int capacity: 16}) {
     _data = new List(capacity);
   }
 

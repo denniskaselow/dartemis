@@ -9,7 +9,7 @@ part of dartemis;
 abstract class Manager implements EntityObserver {
   World _world;
 
-  abstract void initialize();
+  void initialize();
 
   void added(Entity e) {}
 

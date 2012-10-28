@@ -35,15 +35,15 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /**
    * Return the delay until this entity should be processed.
    */
-  abstract num getRemainingDelay(Entity e);
+  num getRemainingDelay(Entity e);
 
   /**
    * Process a entity this system is interested in. Substract the accumulatedDelta
    * from the entities defined delay.
    */
-  abstract void processDelta(Entity e, num accumulatedDelta);
+  void processDelta(Entity e, num accumulatedDelta);
 
-  abstract void processExpired(Entity e);
+  void processExpired(Entity e);
 
   void processEntities(ImmutableBag<Entity> entities) {
     entities.forEach((entity) {

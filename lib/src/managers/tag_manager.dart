@@ -27,7 +27,7 @@ class TagManager extends Manager {
   }
 
   Collection<String> getRegisteredTags() {
-    return _tagsByEntity.getValues();
+    return _tagsByEntity.values;
   }
 
   void deleted(Entity e) {

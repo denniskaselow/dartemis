@@ -1,5 +1,5 @@
 name: dartemis
 description: Entity System Framework based on Artemis
-version: 0.2.0
+version: 0.2.1
 dependencies:
   unittest: {sdk : unittest}

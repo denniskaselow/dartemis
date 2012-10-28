@@ -16,7 +16,7 @@ abstract class VoidEntitySystem extends EntitySystem {
     processSystem();
   }
 
-  abstract void processSystem();
+  void processSystem();
 
   bool checkProcessing() {
     return true;

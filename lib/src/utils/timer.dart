@@ -46,7 +46,7 @@ abstract class Timer {
   }
 
 
-  abstract void execute();
+  void execute();
 
   double getPercentageRemaining() {
     if (_done) {
