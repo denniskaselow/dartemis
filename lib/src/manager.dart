@@ -2,9 +2,6 @@ part of dartemis;
 
 /**
  * Manager.
- *
- * @author Arni Arent
- *
  */
 abstract class Manager implements EntityObserver {
   World _world;

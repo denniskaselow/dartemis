@@ -1,5 +1,9 @@
 part of dartemis;
 
+/**
+ * Collection type a bit like List but does not preserve the order of its
+ * entities, speedwise it is very good, especially suited for games.
+ */
 class Bag<E> implements ImmutableBag<E> {
   List _data;
   int _size = 0;

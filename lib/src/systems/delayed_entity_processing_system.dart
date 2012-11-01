@@ -21,9 +21,6 @@ part of dartemis;
  * offerDelay(num delay) method.
  * Also, when processing the entities you must also call offerDelay(num delay)
  * for all valid entities.
- *
- * @author Arni Arent
- *
  */
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
   num delay;

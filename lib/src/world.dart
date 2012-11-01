@@ -1,5 +1,12 @@
 part of dartemis;
 
+/**
+ * The primary instance for the framework. It contains all the managers.
+ *
+ * You must use this to create, delete and retrieve entities.
+ *
+ * It is also important to set the delta each game loop iteration, and initialize before game loop.
+ */
 class World {
   final EntityManager _entityManager = new EntityManager();
   final ComponentManager _componentManager = new ComponentManager();

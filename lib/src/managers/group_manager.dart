@@ -5,9 +5,6 @@ part of dartemis;
  * then use this manager. You must retrieve it using world instance.
  *
  * An [Entity] can only belong to one group at a time.
- *
- * @author Arni Arent
- *
  */
 class GroupManager extends Manager {
   final Map<String, Bag<Entity>> _entitiesByGroup;

@@ -1,5 +1,9 @@
 part of dartemis;
 
+/**
+ * The entity class. Cannot be instantiated outside the framework, you must
+ * create new entities using World.
+ */
 class Entity {
   /**
    * The internal id for this entity within the framework. No other entity will have the same ID, but

@@ -6,9 +6,6 @@ part of dartemis;
  * entity system implementations.
  *
  * There is no need to ever call any other method than process on objects of this class.
- *
- * @author Arni Arent
- *
  */
 abstract class EntitySystem implements EntityObserver {
 

@@ -3,8 +3,6 @@ part of dartemis;
 /**
  * High performance component retrieval from entities. Use this wherever you need
  * to retrieve components from entities often and fast.
- *
- * @author Arni Arent
  */
 class ComponentMapper<A extends Component> {
   ComponentType _type;

@@ -18,9 +18,6 @@ part of dartemis;
  *     Aspect.getEmpty().oneOf(X, Y, Z).allOf(A, B, C).exclude(U, V)
  * is the same as:
  *     Aspect.getAspectForAllOf(A, B, C).exclude(U, V).oneOf(X, Y, Z)
- *
- * @author Arni Arent
- *
  */
 class Aspect {
 

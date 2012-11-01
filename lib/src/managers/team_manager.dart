@@ -7,9 +7,6 @@ part of dartemis;
  * some players are team mates.
  *
  * A player can only belong to a single team.
- *
- * @author Arni Arent
- *
  */
 class TeamManager extends Manager {
   Map<String, Bag<String>> _playersByTeam;
