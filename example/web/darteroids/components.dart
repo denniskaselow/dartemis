@@ -32,3 +32,16 @@ class Velocity extends Component {
 
   Velocity([this.x = 0, this.y = 0]);
 }
+
+class PlayerDestroyer extends Component {
+  PlayerDestroyer.hack();
+  PlayerDestroyer();
+}
+
+class Lives extends Component {
+  Lives.hack();
+
+  int amount;
+
+  Lives(this.amount);
+}

@@ -43,6 +43,7 @@ class Darteroids {
     player.addComponent(new Position(MAXWIDTH~/2, MAXHEIGHT~/2));
     player.addComponent(new Velocity());
     player.addComponent(new PhysicalBody(20, "white"));
+    player.addComponent(new Lives(3));
     player.addToWorld();
 
     addAsteroids();
@@ -53,6 +54,7 @@ class Darteroids {
 
     world.addSystem(new PlayerControlSystem());
     world.addSystem(new MovementSystem());
+    world.addSystem(new PlayerCollisionDetectionSystem());
     world.addSystem(new BackgroundRenderSystem(context2d));
     world.addSystem(new RenderSystem(context2d));
     world.addSystem(new HudRenderSystem(context2d));
@@ -71,6 +73,7 @@ class Darteroids {
       num vy = generateRandomVelocity();
       darteroid.addComponent(new Velocity(vx, vy));
       darteroid.addComponent(new PhysicalBody(10 + 20 * random.nextDouble(), "#AAA"));
+      darteroid.addComponent(new PlayerDestroyer());
       darteroid.addToWorld();
     }
   }

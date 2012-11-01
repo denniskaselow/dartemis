@@ -90,3 +90,43 @@ class MovementSystem extends EntityProcessingSystem {
     pos.y += vel.y;
   }
 }
+
+class PlayerCollisionDetectionSystem extends EntitySystem {
+  TagManager tagManager;
+  ComponentMapper<Lives> livesMapper;
+  ComponentMapper<Position> positionMapper;
+  ComponentMapper<PhysicalBody> bodyMapper;
+
+  PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf(new PlayerDestroyer.hack().runtimeType, [new Position.hack().runtimeType]));
+
+  void initialize() {
+    tagManager = world.getManager(new TagManager().runtimeType);
+    livesMapper = new ComponentMapper(new Lives.hack().runtimeType, world);
+    positionMapper = new ComponentMapper(new Position.hack().runtimeType, world);
+    bodyMapper = new ComponentMapper(new PhysicalBody.hack().runtimeType, world);
+  }
+
+  void processEntities(ImmutableBag<Entity> entities) {
+    Entity player = tagManager.getEntity(PLAYER);
+    Position playerPos = positionMapper.get(player);
+    Lives playerLives = livesMapper.get(player);
+    PhysicalBody playerBody = bodyMapper.get(player);
+
+    entities.forEach((entity) {
+      Position pos = positionMapper.get(entity);
+      PhysicalBody body = bodyMapper.get(entity);
+
+      num minDistance = playerBody.radius + body.radius;
+      num distance = sqrt(pow((playerPos.x - pos.x), 2) + pow((playerPos.y - pos.y), 2));
+      if (distance < minDistance) {
+        print('minDistance = $minDistance, distance = $distance');
+        playerLives.amount--;
+        playerPos.x = MAXWIDTH~/2;
+        playerPos.y = MAXHEIGHT~/2;
+        return;
+      }
+    });
+  }
+
+  bool checkProcessing() => true;
+}

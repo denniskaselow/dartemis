@@ -78,8 +78,15 @@ class BackgroundRenderSystem extends VoidEntitySystem {
 
 class HudRenderSystem extends VoidEntitySystem {
   CanvasRenderingContext2D context2d;
+  TagManager tagManager;
+  ComponentMapper<Lives> livesMapper;
 
   HudRenderSystem(this.context2d);
+
+  void initialize() {
+    tagManager = world.getManager(new TagManager().runtimeType);
+    livesMapper = new ComponentMapper(new Lives.hack().runtimeType, world);
+  }
 
   void processSystem() {
     context2d.save();
@@ -91,6 +98,20 @@ class HudRenderSystem extends VoidEntitySystem {
       context2d.closePath();
 
       context2d.fill();
+
+      Entity player = tagManager.getEntity(PLAYER);
+      Lives lives = livesMapper.get(player);
+
+      context2d.fillStyle = "green";
+      for (int i = 0; i < lives.amount; i++) {
+
+        context2d.beginPath();
+        context2d.arc(50 + i * 50, MAXHEIGHT + HUDHEIGHT~/2, 15, 0, PI * 2, false);
+        context2d.closePath();
+
+        context2d.fill();
+      }
+
     } finally {
       context2d.restore();
     }
