@@ -5,8 +5,8 @@ part of dartemis;
  * A typical usage would be a collision system or physics system.
  */
 abstract class IntervalEntitySystem extends EntitySystem {
-  int _acc;
-  final int interval;
+  num _acc = 0;
+  final num interval;
 
   IntervalEntitySystem(this.interval, Aspect aspect) : super(aspect);
 
