@@ -1,0 +1,11 @@
+canvas {
+  border: solid 1px black;
+}
+
+div#canvascontainer {
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+}
