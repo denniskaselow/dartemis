@@ -36,6 +36,11 @@ class PlayerDestroyer extends Component {
   PlayerDestroyer();
 }
 
+class AsteroidDestroyer extends Component {
+  AsteroidDestroyer.hack();
+  AsteroidDestroyer();
+}
+
 class Cannon extends Component {
   Cannon.hack();
 

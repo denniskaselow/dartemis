@@ -107,7 +107,7 @@ class HudRenderSystem extends VoidEntitySystem {
 
       context2d.fill();
 
-      Entity player = tagManager.getEntity(PLAYER);
+      Entity player = tagManager.getEntity(TAG_PLAYER);
       Status status = statusMapper.get(player);
 
       context2d.fillStyle = PLAYER_COLOR;

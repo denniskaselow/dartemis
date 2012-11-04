@@ -61,6 +61,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
     bullet.addComponent(new Velocity(velX, velY));
     bullet.addComponent(new CircularBody(2, "red"));
     bullet.addComponent(new Decay(5000));
+    bullet.addComponent(new AsteroidDestroyer());
     bullet.addToWorld();
   }
 }
@@ -86,23 +87,71 @@ class DecaySystem extends EntityProcessingSystem {
   }
 }
 
+class AsteroidDestructionSystem extends EntityProcessingSystem {
+  GroupManager groupManager;
+  ComponentMapper<Position> positionMapper;
+  ComponentMapper<CircularBody> bodyMapper;
+
+  AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf(new AsteroidDestroyer.hack().runtimeType, [new Position.hack().runtimeType]));
+
+  void initialize() {
+    groupManager = world.getManager(new GroupManager().runtimeType);
+    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
+    bodyMapper = new ComponentMapper<CircularBody>(new CircularBody.hack().runtimeType, world);
+  }
+
+  void processEntity(Entity entity) {
+    Position destroyerPos = positionMapper.get(entity);
+
+    groupManager.getEntities(GROUP_ASTEROIDS).forEach((Entity asteroid) {
+      Position asteroidPos = positionMapper.get(asteroid);
+      CircularBody asteroidBody = bodyMapper.get(asteroid);
+
+      num distance = sqrt(pow((destroyerPos.x - asteroidPos.x), 2) + pow((destroyerPos.y - asteroidPos.y), 2));
+      if (distance < asteroidBody.radius) {
+        asteroid.deleteFromWorld();
+        entity.deleteFromWorld();
+        if (asteroidBody.radius > 10) {
+          createNewAsteroids(asteroidPos, asteroidBody);
+          createNewAsteroids(asteroidPos, asteroidBody);
+        }
+      }
+    });
+  }
+
+  void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
+    Entity asteroid = world.createEntity();
+    asteroid.addComponent(new Position(asteroidPos.x, asteroidPos.y));
+    num vx = generateRandomVelocity();
+    num vy = generateRandomVelocity();
+    asteroid.addComponent(new Velocity(vx, vy));
+    num area = PI * pow(asteroidBody.radius, 2);
+    num radius = sqrt(area/(2 * PI));
+    asteroid.addComponent(new CircularBody(radius, ASTEROID_COLOR));
+    asteroid.addComponent(new PlayerDestroyer());
+    asteroid.addToWorld();
+    groupManager.add(asteroid, GROUP_ASTEROIDS);
+  }
+
+}
+
 class PlayerCollisionDetectionSystem extends EntitySystem {
   TagManager tagManager;
   ComponentMapper<Status> statusMapper;
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
 
-  PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf(new PlayerDestroyer.hack().runtimeType, [new Position.hack().runtimeType]));
+  PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf(new PlayerDestroyer.hack().runtimeType, [new Position.hack().runtimeType, new CircularBody.hack().runtimeType]));
 
   void initialize() {
     tagManager = world.getManager(new TagManager().runtimeType);
     statusMapper = new ComponentMapper(new Status.hack().runtimeType, world);
-    positionMapper = new ComponentMapper(new Position.hack().runtimeType, world);
-    bodyMapper = new ComponentMapper(new CircularBody.hack().runtimeType, world);
+    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
+    bodyMapper = new ComponentMapper<CircularBody>(new CircularBody.hack().runtimeType, world);
   }
 
   void processEntities(ImmutableBag<Entity> entities) {
-    Entity player = tagManager.getEntity(PLAYER);
+    Entity player = tagManager.getEntity(TAG_PLAYER);
     Position playerPos = positionMapper.get(player);
     Status playerStatus = statusMapper.get(player);
     CircularBody playerBody = bodyMapper.get(player);

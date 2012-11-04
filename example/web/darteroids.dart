@@ -10,12 +10,15 @@ part 'darteroids/gamelogic_systems.dart';
 part 'darteroids/input_systems.dart';
 part 'darteroids/render_systems.dart';
 
-const String PLAYER = "player";
+const String TAG_PLAYER = "player";
+const String GROUP_ASTEROIDS = "ASTEROIDS";
 const String PLAYER_COLOR = "#ff0000";
 const String ASTEROID_COLOR = "#BBB";
 const int MAXWIDTH = 600;
 const int MAXHEIGHT = 600;
 const int HUDHEIGHT = 100;
+
+final Random random = new Random();
 
 void main() {
   CanvasElement canvas = query('#gamecontainer');
@@ -33,7 +36,6 @@ class Darteroids {
   CanvasRenderingContext2D context2d;
   num lastTime = 0;
   World world;
-  Random random = new Random();
 
   Darteroids(this.canvas) {
     context2d = canvas.context2d;
@@ -50,16 +52,19 @@ class Darteroids {
     player.addComponent(new Status(lifes : 3, invisiblityTimer : 5000));
     player.addToWorld();
 
-    addAsteroids();
+    TagManager tagManager = new TagManager();
+    tagManager.register(TAG_PLAYER, player);
+    world.addManager(tagManager);
+    GroupManager groupManager = new GroupManager();
+    world.addManager(groupManager);
 
-    TagManager manager = new TagManager();
-    manager.register(PLAYER, player);
-    world.addManager(manager);
+    addAsteroids(groupManager);
 
     world.addSystem(new PlayerControlSystem(canvas));
     world.addSystem(new BulletSpawningSystem());
     world.addSystem(new DecaySystem());
     world.addSystem(new MovementSystem());
+    world.addSystem(new AsteroidDestructionSystem());
     world.addSystem(new PlayerCollisionDetectionSystem());
     world.addSystem(new BackgroundRenderSystem(context2d));
     world.addSystem(new CirleRenderingSystem(context2d));
@@ -70,24 +75,19 @@ class Darteroids {
     gameLoop(0);
   }
 
-  void addAsteroids() {
+  void addAsteroids(GroupManager groupManager) {
 
     for (int i = 0; i < 10; i++) {
-      Entity darteroid = world.createEntity();
-      darteroid.addComponent(new Position(MAXWIDTH * random.nextDouble(), MAXHEIGHT * random.nextDouble()));
+      Entity asteroid = world.createEntity();
+      asteroid.addComponent(new Position(MAXWIDTH * random.nextDouble(), MAXHEIGHT * random.nextDouble()));
       num vx = generateRandomVelocity();
       num vy = generateRandomVelocity();
-      darteroid.addComponent(new Velocity(vx, vy));
-      darteroid.addComponent(new CircularBody(10 + 20 * random.nextDouble(), ASTEROID_COLOR));
-      darteroid.addComponent(new PlayerDestroyer());
-      darteroid.addToWorld();
+      asteroid.addComponent(new Velocity(vx, vy));
+      asteroid.addComponent(new CircularBody(10 + 20 * random.nextDouble(), ASTEROID_COLOR));
+      asteroid.addComponent(new PlayerDestroyer());
+      asteroid.addToWorld();
+      groupManager.add(asteroid, GROUP_ASTEROIDS);
     }
-  }
-
-  num generateRandomVelocity() {
-    num velocity = 0.5 + 1.5 * random.nextDouble();
-    velocity = velocity * (random.nextBool() ? 1 : -1);
-    return velocity;
   }
 
   void gameLoop(num time) {
@@ -101,4 +101,10 @@ class Darteroids {
   void requestRedraw() {
     window.requestAnimationFrame(gameLoop);
   }
+}
+
+num generateRandomVelocity() {
+  num velocity = 0.5 + 1.5 * random.nextDouble();
+  velocity = velocity * (random.nextBool() ? 1 : -1);
+  return velocity;
 }

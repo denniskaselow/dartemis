@@ -35,7 +35,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   }
 
   void processEntities(ImmutableBag<Entity> entities) {
-    Entity player = tagManager.getEntity(PLAYER);
+    Entity player = tagManager.getEntity(TAG_PLAYER);
     Velocity velocity = velocityMapper.get(player);
     Cannon cannon = cannonMapper.get(player);
 
