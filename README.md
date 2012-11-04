@@ -15,3 +15,12 @@ Some useful links about what an Entity System/Entity Component System is:
 * http://piemaster.net/2011/07/entity-component-artemis/
 * http://t-machine.org/index.php/2007/09/03/entity-systems-are-the-future-of-mmog-development-part-1/ 
 
+
+Documentation
+=============
+http://denniskaselow.github.com/dartemis/docs/dartemis.html
+
+darteroids
+==========
+Probably the first "game" that has been implemented using dartemis
+http://denniskaselow.github.com/dartemis/example/darteroids/darteroids.html
