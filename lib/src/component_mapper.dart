@@ -6,7 +6,7 @@ part of dartemis;
  */
 class ComponentMapper<A extends Component> {
   ComponentType _type;
-  Bag<A> _components;
+  Bag<Component> _components;
 
   ComponentMapper(Type componentType, World world) {
     this._type = ComponentTypeManager.getTypeFor(componentType);
@@ -19,7 +19,7 @@ class ComponentMapper<A extends Component> {
    * however in most scenarios you already know the entity possesses this component.
    */
   A get(Entity e) {
-    return _components[e.id];
+    return _components[e.id] as A;
   }
 
   /**
@@ -28,7 +28,7 @@ class ComponentMapper<A extends Component> {
    */
   A getSafe(Entity e) {
     if(_components.isIndexWithinBounds(e.id)) {
-      return _components[e.id];
+      return _components[e.id] as A;
     }
     return null;
   }

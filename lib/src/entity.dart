@@ -111,13 +111,6 @@ class Entity {
   }
 
   /**
-   * Delete this entity from the [World].
-   */
-  void delete() {
-    _world.deleteEntity(this);
-  }
-
-  /**
    * Adds the entity to the world.
    */
   void addToWorld() {
