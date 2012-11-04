@@ -88,6 +88,7 @@ class DecaySystem extends EntityProcessingSystem {
 }
 
 class AsteroidDestructionSystem extends EntityProcessingSystem {
+  static final num sqrtOf2 = sqrt(2);
   GroupManager groupManager;
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
@@ -125,8 +126,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
     num vx = generateRandomVelocity();
     num vy = generateRandomVelocity();
     asteroid.addComponent(new Velocity(vx, vy));
-    num area = PI * pow(asteroidBody.radius, 2);
-    num radius = sqrt(area/(2 * PI));
+    num radius = asteroidBody.radius / sqrtOf2;
     asteroid.addComponent(new CircularBody(radius, ASTEROID_COLOR));
     asteroid.addComponent(new PlayerDestroyer());
     asteroid.addToWorld();
