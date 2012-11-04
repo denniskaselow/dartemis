@@ -1,0 +1,313 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Aspect class / dartemis Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dartemis" data-type="Aspect">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/Aspect.html">Aspect</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+<h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
+<li><div class="icon-class"></div><strong>Aspect</strong></li>
+<li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
+<li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
+<li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
+<li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
+<li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
+<li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
+<li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
+<li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
+<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
+<li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
+<li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
+<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
+<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
+<li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
+<li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
+</ul>
+</div>
+<div class="content">
+        <h2><strong>Aspect</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>An Aspect is used by systems as a matcher against entities, to check if a system is
+interested in an entity. Aspects define what sort of component types an entity must
+possess, or not possess.</p>
+<p>This creates an aspect where an entity must possess A and B and C:</p>
+<pre><code>Aspect.getAspectForAllOf(A, B, C)
+</code></pre>
+<p>This creates an aspect where an entity must possess A and B and C, but must not possess U or V.</p>
+<pre><code>Aspect.getAspectForAllOf(A, B, C).exclude(U, V)
+</code></pre>
+<p>This creates an aspect where an entity must possess A and B and C, but must not possess U or V, but must possess one of X or Y or Z.</p>
+<pre><code>Aspect.getAspectForAllOf(A, B, C).exclude(U, V).oneOf(X, Y, Z)
+</code></pre>
+<p>You can create and compose aspects in many ways:</p>
+<pre><code>Aspect.getEmpty().oneOf(X, Y, Z).allOf(A, B, C).exclude(U, V)
+</code></pre>
+<p>is the same as:</p>
+<pre><code>Aspect.getAspectForAllOf(A, B, C).exclude(U, V).oneOf(X, Y, Z)
+</code></pre>
+<pre class="source">
+class Aspect {
+
+ int _all = 0;
+ int _excluded = 0;
+ int _one = 0;
+
+ /**
+  * Returns an aspect where an entity must possess all of the specified components.
+  */
+ Aspect allOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+   _all = _updateBitMask(_all, requiredComponentType, componentTypes);
+   return this;
+ }
+
+ /**
+  * Excludes all of the specified components from the aspect. A system will not be
+  * interested in an entity that possesses one of the specified excluded components.
+  *
+  * Returns an aspect that can be matched against entities.
+  */
+ Aspect exclude(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+   _excluded = _updateBitMask(_excluded, requiredComponentType, componentTypes);
+   return this;
+ }
+
+ /**
+  * Returns an aspect where an entity must possess one of the specified components.
+  */
+ Aspect oneOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+   _one = _updateBitMask(_one, requiredComponentType, componentTypes);
+   return this;
+ }
+
+ /**
+  * Creates an aspect where an entity must possess all of the specified components.
+  */
+ static Aspect getAspectForAllOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+   Aspect aspect = new Aspect();
+   aspect.allOf(requiredComponentType, componentTypes);
+   return aspect;
+ }
+
+ /**
+  * Creates an aspect where an entity must possess one of the specified componens.
+  */
+ static getAspectForOneOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+   Aspect aspect = new Aspect();
+   aspect.oneOf(requiredComponentType, componentTypes);
+   return aspect;
+ }
+
+ /**
+  * Creates and returns an empty aspect. This can be used if you want a system that processes no entities, but
+  * still gets invoked. Typical usages is when you need to create special purpose systems for debug rendering,
+  * like rendering FPS, how many entities are active in the world, etc.
+  *
+  * You can also use the all, one and exclude methods on this aspect, so if you wanted to create a system that
+  * processes only entities possessing just one of the components A or B or C, then you can do:
+  * Aspect.getEmpty().one("A", "B", "C");
+  *
+  * Returns an empty Aspect that will reject all entities.
+  */
+ static Aspect getEmpty() {
+   return new Aspect();
+ }
+
+ int get all =&gt; _all;
+ int get excluded =&gt; _excluded;
+ int get one =&gt; _one;
+
+ int _updateBitMask(int mask, Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+   mask = mask | ComponentTypeManager.getBit(requiredComponentType);
+   if (null != componentTypes) {
+     componentTypes.forEach((componentType) {
+       mask = mask | ComponentTypeManager.getBit(componentType);
+     });
+   }
+   return mask;
+ }
+
+}
+</pre>
+</div>
+<div>
+<h3>Static Methods</h3>
+<div class="method"><h4 id="getAspectForAllOf">
+<button class="show-code">Code</button>
+<a href="../dartemis/Aspect.html">Aspect</a> <strong>getAspectForAllOf</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> requiredComponentType, [<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/Type.html">Type</a>&gt; componentTypes]) <a class="anchor-link" href="#getAspectForAllOf"
+              title="Permalink to Aspect.getAspectForAllOf">#</a></h4>
+<div class="doc">
+<p>Creates an aspect where an entity must possess all of the specified components.</p>
+<pre class="source">
+static Aspect getAspectForAllOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+ Aspect aspect = new Aspect();
+ aspect.allOf(requiredComponentType, componentTypes);
+ return aspect;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getAspectForOneOf">
+<button class="show-code">Code</button>
+<strong>getAspectForOneOf</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> requiredComponentType, [<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/Type.html">Type</a>&gt; componentTypes]) <a class="anchor-link" href="#getAspectForOneOf"
+              title="Permalink to Aspect.getAspectForOneOf">#</a></h4>
+<div class="doc">
+<p>Creates an aspect where an entity must possess one of the specified componens.</p>
+<pre class="source">
+static getAspectForOneOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+ Aspect aspect = new Aspect();
+ aspect.oneOf(requiredComponentType, componentTypes);
+ return aspect;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getEmpty">
+<button class="show-code">Code</button>
+<a href="../dartemis/Aspect.html">Aspect</a> <strong>getEmpty</strong>() <a class="anchor-link" href="#getEmpty"
+              title="Permalink to Aspect.getEmpty">#</a></h4>
+<div class="doc">
+<p>Creates and returns an empty aspect. This can be used if you want a system that processes no entities, but
+still gets invoked. Typical usages is when you need to create special purpose systems for debug rendering,
+like rendering FPS, how many entities are active in the world, etc.</p>
+<p>You can also use the all, one and exclude methods on this aspect, so if you wanted to create a system that
+processes only entities possessing just one of the components A or B or C, then you can do:
+Aspect.getEmpty().one("A", "B", "C");</p>
+<p>Returns an empty Aspect that will reject all entities.</p>
+<pre class="source">
+static Aspect getEmpty() {
+ return new Aspect();
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="all">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>all</strong> <a class="anchor-link"
+            href="#all"
+            title="Permalink to Aspect.all">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+int get all =&gt; _all;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="excluded">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>excluded</strong> <a class="anchor-link"
+            href="#excluded"
+            title="Permalink to Aspect.excluded">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+int get excluded =&gt; _excluded;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="one">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>one</strong> <a class="anchor-link"
+            href="#one"
+            title="Permalink to Aspect.one">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+int get one =&gt; _one;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="allOf">
+<button class="show-code">Code</button>
+<a href="../dartemis/Aspect.html">Aspect</a> <strong>allOf</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> requiredComponentType, [<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/Type.html">Type</a>&gt; componentTypes]) <a class="anchor-link" href="#allOf"
+              title="Permalink to Aspect.allOf">#</a></h4>
+<div class="doc">
+<p>Returns an aspect where an entity must possess all of the specified components.</p>
+<pre class="source">
+Aspect allOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+ _all = _updateBitMask(_all, requiredComponentType, componentTypes);
+ return this;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="exclude">
+<button class="show-code">Code</button>
+<a href="../dartemis/Aspect.html">Aspect</a> <strong>exclude</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> requiredComponentType, [<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/Type.html">Type</a>&gt; componentTypes]) <a class="anchor-link" href="#exclude"
+              title="Permalink to Aspect.exclude">#</a></h4>
+<div class="doc">
+<p>Excludes all of the specified components from the aspect. A system will not be
+interested in an entity that possesses one of the specified excluded components.</p>
+<p>Returns an aspect that can be matched against entities.</p>
+<pre class="source">
+Aspect exclude(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+ _excluded = _updateBitMask(_excluded, requiredComponentType, componentTypes);
+ return this;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="oneOf">
+<button class="show-code">Code</button>
+<a href="../dartemis/Aspect.html">Aspect</a> <strong>oneOf</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> requiredComponentType, [<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/Type.html">Type</a>&gt; componentTypes]) <a class="anchor-link" href="#oneOf"
+              title="Permalink to Aspect.oneOf">#</a></h4>
+<div class="doc">
+<p>Returns an aspect where an entity must possess one of the specified components.</p>
+<pre class="source">
+Aspect oneOf(Type requiredComponentType, [List&lt;Type&gt; componentTypes]) {
+ _one = _updateBitMask(_one, requiredComponentType, componentTypes);
+ return this;
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-11-04 19:28:49.126</div>
+        </div>
+        <script async src="../client-static.js"></script>
+        </body></html>
+        

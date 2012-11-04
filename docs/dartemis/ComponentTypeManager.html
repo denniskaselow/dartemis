@@ -1,0 +1,153 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>ComponentTypeManager class / dartemis Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dartemis" data-type="ComponentTypeManager">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ComponentTypeManager.html">ComponentTypeManager</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+<h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
+<li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
+<li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
+<li><div class="icon-class"></div><strong>ComponentTypeManager</strong></li>
+<li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
+<li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
+<li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
+<li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
+<li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
+<li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
+<li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
+<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
+<li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
+<li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
+<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
+<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
+<li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
+<li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
+</ul>
+</div>
+<div class="content">
+        <h2><strong>ComponentTypeManager</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<pre class="source">
+class ComponentTypeManager {
+
+ static var _componentTypes;
+
+ static ComponentType getTypeFor(Type componentType){
+   if (null == _componentTypes) {
+     _componentTypes = new Map&lt;Type, ComponentType&gt;();
+   }
+   ComponentType type = _componentTypes[componentType];
+
+   if (type == null) {
+     type = new ComponentType();
+     _componentTypes[componentType] = type;
+   }
+
+   return type;
+ }
+
+ static int getBit(Type componentType) {
+   return getTypeFor(componentType).bit;
+ }
+
+ static int getId(Type componentType) {
+   return getTypeFor(componentType).id;
+ }
+
+
+}
+</pre>
+</div>
+<div>
+<h3>Static Methods</h3>
+<div class="method"><h4 id="getTypeFor">
+<button class="show-code">Code</button>
+<a href="../dartemis/ComponentType.html">ComponentType</a> <strong>getTypeFor</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getTypeFor"
+              title="Permalink to ComponentTypeManager.getTypeFor">#</a></h4>
+<div class="doc">
+<pre class="source">
+static ComponentType getTypeFor(Type componentType){
+ if (null == _componentTypes) {
+   _componentTypes = new Map&lt;Type, ComponentType&gt;();
+ }
+ ComponentType type = _componentTypes[componentType];
+
+ if (type == null) {
+   type = new ComponentType();
+   _componentTypes[componentType] = type;
+ }
+
+ return type;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getBit">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>getBit</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getBit"
+              title="Permalink to ComponentTypeManager.getBit">#</a></h4>
+<div class="doc">
+<pre class="source">
+static int getBit(Type componentType) {
+ return getTypeFor(componentType).bit;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getId">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>getId</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getId"
+              title="Permalink to ComponentTypeManager.getId">#</a></h4>
+<div class="doc">
+<pre class="source">
+static int getId(Type componentType) {
+ return getTypeFor(componentType).id;
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-11-04 19:28:49.132</div>
+        </div>
+        <script async src="../client-static.js"></script>
+        </body></html>
+        

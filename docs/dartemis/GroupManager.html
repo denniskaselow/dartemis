@@ -1,0 +1,383 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>GroupManager class / dartemis Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dartemis" data-type="GroupManager">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/GroupManager.html">GroupManager</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+<h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
+<li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
+<li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
+<li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
+<li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
+<li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
+<li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
+<li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
+<li><a href="../dartemis/EntityObserver.html"><div class="icon-class"></div>EntityObserver</a></li>
+<li><a href="../dartemis/EntityProcessingSystem.html"><div class="icon-class"></div>EntityProcessingSystem</a></li>
+<li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
+<li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
+<li><div class="icon-class"></div><strong>GroupManager</strong></li>
+<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
+<li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
+<li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
+<li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
+<li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
+<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
+<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
+<li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
+<li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
+<li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
+</ul>
+</div>
+<div class="content">
+        <h2><strong>GroupManager</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>If you need to group your entities together, e.g. tanks going into "units" group or explosions into "effects",
+then use this manager. You must retrieve it using world instance.</p>
+<p>An <a class="crossref" href="../dartemis/Entity.html">Entity</a> can only belong to one group at a time.</p>
+<pre class="source">
+class GroupManager extends Manager {
+ final Map&lt;String, Bag&lt;Entity&gt;&gt; _entitiesByGroup;
+ final Map&lt;Entity, Bag&lt;String&gt;&gt; _groupsByEntity;
+
+ GroupManager() : _entitiesByGroup = new Map&lt;String, Bag&lt;Entity&gt;&gt;(),
+                  _groupsByEntity = new Map&lt;Entity, Bag&lt;String&gt;&gt;();
+
+ void initialize() {}
+
+
+
+ /**
+  * Set the group of the entity.
+  */
+ void add(Entity e, String group) {
+   Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+   if (entities == null) {
+     entities = new Bag&lt;Entity&gt;();
+     _entitiesByGroup[group] = entities;
+   }
+   entities.add(e);
+
+   Bag&lt;String&gt; groups = _groupsByEntity[e];
+   if(groups == null) {
+     groups = new Bag&lt;String&gt;();
+     _groupsByEntity[e] = groups;
+   }
+   groups.add(group);
+ }
+
+ /**
+  * Remove the entity from the specified group.
+  */
+ void remove(Entity e, String group) {
+   Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+   if(entities != null) {
+     entities.remove(e);
+   }
+
+   Bag&lt;String&gt; groups = _groupsByEntity[e];
+   if(groups != null) {
+     groups.remove(group);
+   }
+ }
+
+ void removeFromAllGroups(Entity e) {
+   Bag&lt;String&gt; groups = _groupsByEntity[e];
+   if(groups != null) {
+     groups.forEach((group) {
+       Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+       if(entities != null) {
+         entities.remove(e);
+       }
+     });
+     groups.clear();
+   }
+ }
+
+ /**
+  * Get all entities that belong to the provided group.
+  */
+ ImmutableBag&lt;Entity&gt; getEntities(String group) {
+   Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+   if(entities == null) {
+     entities = new Bag&lt;Entity&gt;();
+     _entitiesByGroup[group] = entities;
+   }
+   return entities;
+ }
+
+ /**
+  * Returns the groups the entity belongs to, null if none.
+  */
+ ImmutableBag&lt;String&gt; getGroups(Entity e) {
+   return _groupsByEntity[e];
+ }
+
+ /**
+  * Checks if the entity belongs to any group.
+  */
+ bool isInAnyGroup(Entity e) {
+   return getGroups(e) != null;
+ }
+
+ /**
+  * Check if the entity is in the supplied group.
+  */
+ bool inInGroup(Entity e, String group) {
+   Bag&lt;String&gt; groups = _groupsByEntity[e];
+   return groups.contains(group);
+ }
+
+ void deleted(Entity e) {
+   removeFromAllGroups(e);
+ }
+
+}
+</pre>
+</div>
+<h3>Extends</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dartemis/Manager.html">Manager</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>GroupManager</strong></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="GroupManager">
+<button class="show-code">Code</button>
+new <strong>GroupManager</strong>() <a class="anchor-link" href="#GroupManager"
+              title="Permalink to GroupManager.GroupManager">#</a></h4>
+<div class="doc">
+<pre class="source">
+GroupManager() : _entitiesByGroup = new Map&lt;String, Bag&lt;Entity&gt;&gt;(),
+                _groupsByEntity = new Map&lt;Entity, Bag&lt;String&gt;&gt;();
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="add">
+<button class="show-code">Code</button>
+void <strong>add</strong>(<a href="../dartemis/Entity.html">Entity</a> e, <a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#add"
+              title="Permalink to GroupManager.add">#</a></h4>
+<div class="doc">
+<p>Set the group of the entity.</p>
+<pre class="source">
+void add(Entity e, String group) {
+ Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+ if (entities == null) {
+   entities = new Bag&lt;Entity&gt;();
+   _entitiesByGroup[group] = entities;
+ }
+ entities.add(e);
+
+ Bag&lt;String&gt; groups = _groupsByEntity[e];
+ if(groups == null) {
+   groups = new Bag&lt;String&gt;();
+   _groupsByEntity[e] = groups;
+ }
+ groups.add(group);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="added">
+<button class="show-code">Code</button>
+void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#added"
+              title="Permalink to GroupManager.added">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void added(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="changed">
+<button class="show-code">Code</button>
+void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#changed"
+              title="Permalink to GroupManager.changed">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void changed(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="deleted">
+<button class="show-code">Code</button>
+void <strong>deleted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#deleted"
+              title="Permalink to GroupManager.deleted">#</a></h4>
+<div class="doc">
+<pre class="source">
+void deleted(Entity e) {
+ removeFromAllGroups(e);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="disabled">
+<button class="show-code">Code</button>
+void <strong>disabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#disabled"
+              title="Permalink to GroupManager.disabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void disabled(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="enabled">
+<button class="show-code">Code</button>
+void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#enabled"
+              title="Permalink to GroupManager.enabled">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dartemis/Manager.html">Manager</a> </div><div class="doc">
+<pre class="source">
+void enabled(Entity e) {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getEntities">
+<button class="show-code">Code</button>
+<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; <strong>getEntities</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#getEntities"
+              title="Permalink to GroupManager.getEntities">#</a></h4>
+<div class="doc">
+<p>Get all entities that belong to the provided group.</p>
+<pre class="source">
+ImmutableBag&lt;Entity&gt; getEntities(String group) {
+ Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+ if(entities == null) {
+   entities = new Bag&lt;Entity&gt;();
+   _entitiesByGroup[group] = entities;
+ }
+ return entities;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="getGroups">
+<button class="show-code">Code</button>
+<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; <strong>getGroups</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#getGroups"
+              title="Permalink to GroupManager.getGroups">#</a></h4>
+<div class="doc">
+<p>Returns the groups the entity belongs to, null if none.</p>
+<pre class="source">
+ImmutableBag&lt;String&gt; getGroups(Entity e) {
+ return _groupsByEntity[e];
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="inInGroup">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>inInGroup</strong>(<a href="../dartemis/Entity.html">Entity</a> e, <a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#inInGroup"
+              title="Permalink to GroupManager.inInGroup">#</a></h4>
+<div class="doc">
+<p>Check if the entity is in the supplied group.</p>
+<pre class="source">
+bool inInGroup(Entity e, String group) {
+ Bag&lt;String&gt; groups = _groupsByEntity[e];
+ return groups.contains(group);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="initialize">
+<button class="show-code">Code</button>
+void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
+              title="Permalink to GroupManager.initialize">#</a></h4>
+<div class="doc">
+<pre class="source">
+void initialize() {}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="isInAnyGroup">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>isInAnyGroup</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#isInAnyGroup"
+              title="Permalink to GroupManager.isInAnyGroup">#</a></h4>
+<div class="doc">
+<p>Checks if the entity belongs to any group.</p>
+<pre class="source">
+bool isInAnyGroup(Entity e) {
+ return getGroups(e) != null;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="remove">
+<button class="show-code">Code</button>
+void <strong>remove</strong>(<a href="../dartemis/Entity.html">Entity</a> e, <a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#remove"
+              title="Permalink to GroupManager.remove">#</a></h4>
+<div class="doc">
+<p>Remove the entity from the specified group.</p>
+<pre class="source">
+void remove(Entity e, String group) {
+ Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+ if(entities != null) {
+   entities.remove(e);
+ }
+
+ Bag&lt;String&gt; groups = _groupsByEntity[e];
+ if(groups != null) {
+   groups.remove(group);
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="removeFromAllGroups">
+<button class="show-code">Code</button>
+void <strong>removeFromAllGroups</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#removeFromAllGroups"
+              title="Permalink to GroupManager.removeFromAllGroups">#</a></h4>
+<div class="doc">
+<pre class="source">
+void removeFromAllGroups(Entity e) {
+ Bag&lt;String&gt; groups = _groupsByEntity[e];
+ if(groups != null) {
+   groups.forEach((group) {
+     Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
+     if(entities != null) {
+       entities.remove(e);
+     }
+   });
+   groups.clear();
+ }
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-11-04 19:28:49.012</div>
+        </div>
+        <script async src="../client-static.js"></script>
+        </body></html>
+        
