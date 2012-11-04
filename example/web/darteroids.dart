@@ -55,6 +55,7 @@ class Darteroids {
 
     world.addSystem(new PlayerControlSystem(canvas));
     world.addSystem(new BulletSpawningSystem());
+    world.addSystem(new DecaySystem());
     world.addSystem(new MovementSystem());
     world.addSystem(new PlayerCollisionDetectionSystem());
     world.addSystem(new BackgroundRenderSystem(context2d));

@@ -123,32 +123,61 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   ComponentMapper<Position> positionMapper;
   ComponentMapper<Cannon> cannonMapper;
+  ComponentMapper<Velocity> velocityMapper;
 
-  BulletSpawningSystem() : super(Aspect.getAspectForAllOf(new Cannon.hack().runtimeType, [new Position.hack().runtimeType]));
+  BulletSpawningSystem() : super(Aspect.getAspectForAllOf(new Cannon.hack().runtimeType, [new Position.hack().runtimeType, new Velocity.hack().runtimeType]));
 
   void initialize() {
     positionMapper = new ComponentMapper(new Position.hack().runtimeType, world);
+    velocityMapper = new ComponentMapper(new Velocity.hack().runtimeType, world);
     cannonMapper = new ComponentMapper(new Cannon.hack().runtimeType, world);
   }
 
   void processEntity(Entity entity) {
-    Position pos = positionMapper.get(entity);
     Cannon cannon = cannonMapper.get(entity);
 
     if (cannon.canShoot) {
-      cannon.cooldown = 1000;
-      Entity bullet = world.createEntity();
-      bullet.addComponent(new Position(pos.x, pos.y));
-      num dirX = cannon.targetX - pos.x;
-      num dirY = cannon.targetY - pos.y;
-      num distance = sqrt(pow(dirX, 2) + pow(dirY, 2));
-      num velX = dirX / distance;
-      num velY = dirY / distance;
-      bullet.addComponent(new Velocity(bulletSpeed * velX, bulletSpeed * velY));
-      bullet.addComponent(new CircularBody(2, "red"));
-      bullet.addToWorld();
+      Position pos = positionMapper.get(entity);
+      Velocity vel = velocityMapper.get(entity);
+      fireBullet(pos, vel, cannon);
     } else if (cannon.cooldown > 0){
       cannon.cooldown -= world.delta;
+    }
+  }
+
+  void fireBullet(Position shooterPos, Velocity shooterVel, Cannon cannon) {
+    cannon.cooldown = 1000;
+    Entity bullet = world.createEntity();
+    bullet.addComponent(new Position(shooterPos.x, shooterPos.y));
+    num dirX = cannon.targetX - shooterPos.x;
+    num dirY = cannon.targetY - shooterPos.y;
+    num distance = sqrt(pow(dirX, 2) + pow(dirY, 2));
+    num velX = shooterVel.x + bulletSpeed * (dirX / distance);
+    num velY = shooterVel.y + bulletSpeed * (dirY / distance);
+    bullet.addComponent(new Velocity(velX, velY));
+    bullet.addComponent(new CircularBody(2, "red"));
+    bullet.addComponent(new Decay(5000));
+    bullet.addToWorld();
+  }
+}
+
+class DecaySystem extends EntityProcessingSystem {
+
+  ComponentMapper<Decay> decayMapper;
+
+  DecaySystem() : super(Aspect.getAspectForAllOf(new Decay.hack().runtimeType));
+
+  void initialize() {
+    decayMapper = new ComponentMapper<Decay>(new Decay.hack().runtimeType, world);
+  }
+
+  void processEntity(Entity entity) {
+    Decay decay = decayMapper.get(entity);
+
+    if (decay.timer < 0) {
+      entity.deleteFromWorld();
+    } else {
+      decay.timer -= world.delta;
     }
   }
 }

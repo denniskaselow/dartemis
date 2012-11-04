@@ -63,3 +63,11 @@ class Cannon extends Component {
     return false;
   }
 }
+
+class Decay extends Component {
+  Decay.hack();
+
+  num timer;
+
+  Decay(this.timer);
+}
