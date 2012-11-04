@@ -6,10 +6,13 @@ import 'dart:html' hide Entity;
 import 'package:dartemis/dartemis.dart';
 
 part 'darteroids/components.dart';
-part 'darteroids/render_systems.dart';
 part 'darteroids/gamelogic_systems.dart';
+part 'darteroids/input_systems.dart';
+part 'darteroids/render_systems.dart';
 
 const String PLAYER = "player";
+const String PLAYER_COLOR = "#ff0000";
+const String ASTEROID_COLOR = "#BBB";
 const int MAXWIDTH = 600;
 const int MAXHEIGHT = 600;
 const int HUDHEIGHT = 100;
@@ -42,9 +45,9 @@ class Darteroids {
     Entity player = world.createEntity();
     player.addComponent(new Position(MAXWIDTH~/2, MAXHEIGHT~/2));
     player.addComponent(new Velocity());
-    player.addComponent(new CircularBody(20, "white"));
-    player.addComponent(new Lives(3));
+    player.addComponent(new CircularBody(20, PLAYER_COLOR));
     player.addComponent(new Cannon());
+    player.addComponent(new Status(lifes : 3, invisiblityTimer : 5000));
     player.addToWorld();
 
     addAsteroids();
@@ -75,7 +78,7 @@ class Darteroids {
       num vx = generateRandomVelocity();
       num vy = generateRandomVelocity();
       darteroid.addComponent(new Velocity(vx, vy));
-      darteroid.addComponent(new CircularBody(10 + 20 * random.nextDouble(), "#AAA"));
+      darteroid.addComponent(new CircularBody(10 + 20 * random.nextDouble(), ASTEROID_COLOR));
       darteroid.addComponent(new PlayerDestroyer());
       darteroid.addToWorld();
     }

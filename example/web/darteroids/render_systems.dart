@@ -6,17 +6,20 @@ class CirleRenderingSystem extends EntityProcessingSystem {
 
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
+  ComponentMapper<Status> statusMapper;
 
   CirleRenderingSystem(this.context2d) : super(Aspect.getAspectForAllOf(new Position.hack().runtimeType, [new CircularBody.hack().runtimeType]));
 
   void initialize() {
-    positionMapper = new ComponentMapper(new Position.hack().runtimeType, world);
-    bodyMapper = new ComponentMapper(new CircularBody.hack().runtimeType, world);
+    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
+    bodyMapper = new ComponentMapper<CircularBody>(new CircularBody.hack().runtimeType, world);
+    statusMapper = new ComponentMapper<Status>(new Status.hack().runtimeType, world);
   }
 
   void processEntity(Entity entity) {
     Position pos = positionMapper.get(entity);
     CircularBody body = bodyMapper.get(entity);
+    Status status = statusMapper.getSafe(entity);
 
     context2d.save();
 
@@ -24,6 +27,11 @@ class CirleRenderingSystem extends EntityProcessingSystem {
       context2d.lineWidth = 0.5;
       context2d.fillStyle = body.color;
       context2d.strokeStyle = body.color;
+      if (null != status && status.invisible) {
+        if (status.invisiblityTimer % 600 < 300) {
+          context2d.globalAlpha = 0.4;
+        }
+      }
 
       drawCirle(pos, body);
 
@@ -79,13 +87,13 @@ class BackgroundRenderSystem extends VoidEntitySystem {
 class HudRenderSystem extends VoidEntitySystem {
   CanvasRenderingContext2D context2d;
   TagManager tagManager;
-  ComponentMapper<Lives> livesMapper;
+  ComponentMapper<Status> statusMapper;
 
   HudRenderSystem(this.context2d);
 
   void initialize() {
     tagManager = world.getManager(new TagManager().runtimeType);
-    livesMapper = new ComponentMapper(new Lives.hack().runtimeType, world);
+    statusMapper = new ComponentMapper<Status>(new Status.hack().runtimeType, world);
   }
 
   void processSystem() {
@@ -100,10 +108,10 @@ class HudRenderSystem extends VoidEntitySystem {
       context2d.fill();
 
       Entity player = tagManager.getEntity(PLAYER);
-      Lives lives = livesMapper.get(player);
+      Status status = statusMapper.get(player);
 
-      context2d.fillStyle = "green";
-      for (int i = 0; i < lives.amount; i++) {
+      context2d.fillStyle = PLAYER_COLOR;
+      for (int i = 0; i < status.lifes; i++) {
 
         context2d.beginPath();
         context2d.arc(50 + i * 50, MAXHEIGHT + HUDHEIGHT~/2, 15, 0, PI * 2, false);

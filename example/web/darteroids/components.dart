@@ -36,14 +36,6 @@ class PlayerDestroyer extends Component {
   PlayerDestroyer();
 }
 
-class Lives extends Component {
-  Lives.hack();
-
-  int amount;
-
-  Lives(this.amount);
-}
-
 class Cannon extends Component {
   Cannon.hack();
 
@@ -70,4 +62,15 @@ class Decay extends Component {
   num timer;
 
   Decay(this.timer);
+}
+
+class Status extends Component {
+  Status.hack();
+
+  int lifes;
+  num invisiblityTimer;
+
+  Status({this.lifes : 1, this.invisiblityTimer : 0});
+
+  bool get invisible => invisiblityTimer > 0;
 }
