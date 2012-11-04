@@ -1,19 +1,18 @@
 part of darteroids;
 
-class PhysicalBody extends Component {
-  PhysicalBody.hack();
+class CircularBody extends Component {
+  CircularBody.hack();
 
   num radius;
   String color;
 
-  PhysicalBody(this.radius, this.color);
+  CircularBody(this.radius, this.color);
 }
 
 class Position extends Component {
   Position.hack();
 
-  num _x;
-  num _y;
+  num _x, _y;
 
   Position(this._x, this._y);
 
@@ -27,8 +26,7 @@ class Position extends Component {
 class Velocity extends Component {
   Velocity.hack();
 
-  num x;
-  num y;
+  num x, y;
 
   Velocity([this.x = 0, this.y = 0]);
 }
@@ -44,4 +42,24 @@ class Lives extends Component {
   int amount;
 
   Lives(this.amount);
+}
+
+class Cannon extends Component {
+  Cannon.hack();
+
+  bool shoot = false;
+  num targetX, targetY;
+  num cooldown = 0;
+
+  Cannon();
+
+  void target(num targetX, num targetY) {
+    this.targetX = targetX;
+    this.targetY = targetY;
+  }
+
+  bool get canShoot {
+    if (shoot && cooldown <= 0) return true;
+    return false;
+  }
 }

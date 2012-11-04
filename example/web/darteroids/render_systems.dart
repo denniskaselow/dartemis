@@ -1,22 +1,22 @@
 part of darteroids;
 
-class RenderSystem extends EntityProcessingSystem {
+class CirleRenderingSystem extends EntityProcessingSystem {
 
   CanvasRenderingContext2D context2d;
 
   ComponentMapper<Position> positionMapper;
-  ComponentMapper<PhysicalBody> bodyMapper;
+  ComponentMapper<CircularBody> bodyMapper;
 
-  RenderSystem(this.context2d) : super(Aspect.getAspectForAllOf(new Position.hack().runtimeType, [new PhysicalBody.hack().runtimeType]));
+  CirleRenderingSystem(this.context2d) : super(Aspect.getAspectForAllOf(new Position.hack().runtimeType, [new CircularBody.hack().runtimeType]));
 
   void initialize() {
     positionMapper = new ComponentMapper(new Position.hack().runtimeType, world);
-    bodyMapper = new ComponentMapper(new PhysicalBody.hack().runtimeType, world);
+    bodyMapper = new ComponentMapper(new CircularBody.hack().runtimeType, world);
   }
 
   void processEntity(Entity entity) {
     Position pos = positionMapper.get(entity);
-    PhysicalBody body = bodyMapper.get(entity);
+    CircularBody body = bodyMapper.get(entity);
 
     context2d.save();
 
@@ -45,7 +45,7 @@ class RenderSystem extends EntityProcessingSystem {
     }
   }
 
-  void drawCirle(Position pos, PhysicalBody body, {int offsetX : 0, int offsetY : 0}) {
+  void drawCirle(Position pos, CircularBody body, {int offsetX : 0, int offsetY : 0}) {
     context2d.beginPath();
 
     context2d.arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, PI * 2, false);
