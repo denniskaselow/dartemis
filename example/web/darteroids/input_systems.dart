@@ -86,8 +86,8 @@ class PlayerControlSystem extends IntervalEntitySystem {
   }
 
   void handleMouseDown(MouseEvent e) {
-    targetX = e.layerX;
-    targetY = e.layerY;
+    targetX = e.offsetX;
+    targetY = e.offsetY;
     shoot = true;
   }
 
