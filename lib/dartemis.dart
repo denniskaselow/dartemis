@@ -2,6 +2,7 @@ library dartemis;
 
 import 'dart:coreimpl';
 import 'dart:math';
+import 'dart:collection';
 
 part 'src/utils/bag.dart';
 part 'src/utils/fast_math.dart';

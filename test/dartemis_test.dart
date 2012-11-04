@@ -1,4 +1,5 @@
 import "package:unittest/unittest.dart";
+import "package:unittest/mock.dart";
 import "package:dartemis/dartemis.dart";
 
 final Type COMPONENT_A = new ComponentA().runtimeType;
