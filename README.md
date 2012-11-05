@@ -22,5 +22,6 @@ http://denniskaselow.github.com/dartemis/docs/dartemis.html
 
 darteroids
 ==========
-Probably the first "game" that has been implemented using dartemis
+An example game that has been implemented using dartemis:
+
 http://denniskaselow.github.com/dartemis/example/darteroids/darteroids.html
