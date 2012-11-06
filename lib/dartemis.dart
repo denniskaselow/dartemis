@@ -1,7 +1,7 @@
 library dartemis;
 
 import 'dart:coreimpl';
-import 'dart:math';
+import 'dart:math' as Math;
 import 'dart:collection';
 
 part 'src/utils/bag.dart';

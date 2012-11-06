@@ -24,12 +24,12 @@ class TrigUtil {
     return _cos((deg * _degToIndex).toInt() & _SIN_MASK);
   }
 
-  static final _RAD = PI / 180.0;
-  static final _DEG = 180.0 / PI;
+  static final _RAD = Math.PI / 180.0;
+  static final _DEG = 180.0 / Math.PI;
   static final _SIN_BITS = 12;
   static final _SIN_MASK = 4095; // ~(-1 << _SIN_BITS);
   static final _SIN_COUNT = _SIN_MASK + 1;
-  static final _radFull = PI * 2.0;
+  static final _radFull = Math.PI * 2.0;
   static final _radToIndex = _SIN_COUNT / _radFull;
   static final _degFull = 360.0;
   static final _degToIndex = _SIN_COUNT / _degFull;

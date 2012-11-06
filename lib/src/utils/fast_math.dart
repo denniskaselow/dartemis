@@ -2,7 +2,7 @@ part of dartemis;
 
 class FastMath {
 
-   static final  PI = PI;
+   static final  PI = Math.PI;
    static final  SQUARED_PI = PI * PI;
    static final  HALF_PI = 0.5 * PI;
    static final  TWO_PI = 2.0 * PI;
@@ -57,7 +57,7 @@ class FastMath {
 //
 
   // for now, this has to do
-  static double sqrt(num x) => sqrt(x);
+  static double sqrt(num x) => Math.sqrt(x);
 
   static double signum(num x) {
     return (x < 0) ? -1.0 : (x > 0) ? 1.0 : 0;
