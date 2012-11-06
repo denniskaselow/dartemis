@@ -108,8 +108,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
       Position asteroidPos = positionMapper.get(asteroid);
       CircularBody asteroidBody = bodyMapper.get(asteroid);
 
-      num distance = sqrt(pow((destroyerPos.x - asteroidPos.x), 2) + pow((destroyerPos.y - asteroidPos.y), 2));
-      if (distance < asteroidBody.radius) {
+      if (Utils.doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x, asteroidPos.y, asteroidBody.radius)) {
         asteroid.deleteFromWorld();
         entity.deleteFromWorld();
         if (asteroidBody.radius > 10) {
@@ -161,9 +160,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
         Position pos = positionMapper.get(entity);
         CircularBody body = bodyMapper.get(entity);
 
-        num minDistance = playerBody.radius + body.radius;
-        num distance = sqrt(pow((playerPos.x - pos.x), 2) + pow((playerPos.y - pos.y), 2));
-        if (distance < minDistance) {
+        if (Utils.doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x, playerPos.y, playerBody.radius)) {
           playerStatus.lifes--;
           playerStatus.invisiblityTimer = 5000;
           playerPos.x = MAXWIDTH~/2;
