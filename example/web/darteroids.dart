@@ -22,7 +22,7 @@ final Random random = new Random();
 
 void main() {
   CanvasElement canvas = query('#gamecontainer');
-  canvas.parent.rect.then((ElementRect rect) {
+  window.requestLayoutFrame(() {
     canvas.width = MAXWIDTH;
     canvas.height = MAXHEIGHT + HUDHEIGHT;
 
