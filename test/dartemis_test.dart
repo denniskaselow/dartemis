@@ -1,6 +1,6 @@
-import "package:unittest/unittest.dart";
-import "package:unittest/mock.dart";
 import "package:dartemis/dartemis.dart";
+import "package:unittest/mock.dart";
+import "package:unittest/unittest.dart";
 
 final Type COMPONENT_A = new ComponentA().runtimeType;
 final Type COMPONENT_B = new ComponentB().runtimeType;

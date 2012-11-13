@@ -1,9 +1,9 @@
 library darteroids;
 
-import 'dart:math';
 import 'dart:html' hide Entity;
-
+import 'dart:math';
 import 'package:dartemis/dartemis.dart';
+
 
 part 'darteroids/components.dart';
 part 'darteroids/gamelogic_systems.dart';
