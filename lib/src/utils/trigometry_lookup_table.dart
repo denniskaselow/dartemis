@@ -8,19 +8,19 @@ part of dartemis;
  * Thanks to [Riven](http://riven8192.blogspot.com/2009/08/fastmath-sincos-lookup-tables.html "FastMath :: sin/cos lookup")
  */
 class TrigUtil {
-  static double sin(num rad) {
+  static num sin(num rad) {
     return _sin((rad * _radToIndex).toInt() & _SIN_MASK);
   }
 
-  static double cos(num rad) {
+  static num cos(num rad) {
     return _cos((rad * _radToIndex).toInt() & _SIN_MASK);
   }
 
-  static double sinDeg(num deg) {
+  static num sinDeg(num deg) {
     return _sin((deg * _degToIndex).toInt() & _SIN_MASK);
   }
 
-  static double cosDeg(num deg) {
+  static num cosDeg(num deg) {
     return _cos((deg * _degToIndex).toInt() & _SIN_MASK);
   }
 
@@ -38,24 +38,24 @@ class TrigUtil {
 
 
   // lazy initialization because of: "initializer must be a compile time constant"
-  static double _sin(index) {
+  static num _sin(index) {
     if (null == _sinLookUpTable) {
-      _sinLookUpTable = _createLookUpTable(sin);
+      _sinLookUpTable = _createLookUpTable(Math.sin);
     }
     return _sinLookUpTable[index];
   }
 
-  static double _cos(index) {
+  static num _cos(index) {
     if (null == _cosLookUpTable) {
-      _cosLookUpTable = _createLookUpTable(cos);
+      _cosLookUpTable = _createLookUpTable(Math.cos);
     }
     return _cosLookUpTable[index];
   }
 
-  static _createLookUpTable(Function function) {
-    var lookUpTable = new List<double>(_SIN_COUNT);
+  static _createLookUpTable(num f(num x)) {
+    var lookUpTable = new List<num>(_SIN_COUNT);
     for (int i = 0; i < _SIN_COUNT; i++) {
-      lookUpTable[i] = function((i + 0.5) / _SIN_COUNT * _radFull);
+      lookUpTable[i] = f((i + 0.5) / _SIN_COUNT * _radFull);
     }
     return lookUpTable;
   }
