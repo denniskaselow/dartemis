@@ -16,7 +16,10 @@ class ComponentManager extends Manager {
 
   void _addComponent(Entity e, ComponentType type, Component component) {
     int index = type.id;
-    Bag<Component> components = _componentsByType[index];
+    Bag<Component> components = null;
+    if (index < _componentsByType.size) {
+      components = _componentsByType[index];
+    }
     if(components == null) {
       components = new Bag<Component>();
       _componentsByType[index] = components;
