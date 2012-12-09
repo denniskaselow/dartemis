@@ -16,10 +16,7 @@ class ComponentManager extends Manager {
 
   void _addComponent(Entity e, ComponentType type, Component component) {
     int index = type.id;
-    Bag<Component> components = null;
-    if (index < _componentsByType.size) {
-      components = _componentsByType[index];
-    }
+    Bag<Component> components = _getComponents(index);
     if(components == null) {
       components = new Bag<Component>();
       _componentsByType[index] = components;
@@ -39,7 +36,7 @@ class ComponentManager extends Manager {
 
   Bag<Component> getComponentsByType(ComponentType type) {
     int index = type.id;
-    Bag<Component> components = _componentsByType[index];
+    Bag<Component> components = _getComponents(index);
     if(components == null) {
       components = new Bag<Component>();
       _componentsByType[index] = components;
@@ -49,7 +46,7 @@ class ComponentManager extends Manager {
 
   Component _getComponent(Entity e, ComponentType type) {
     int index = type.id;
-    Bag<Component> components = _componentsByType[index];
+    Bag<Component> components = _getComponents(index);
     if(components != null) {
       return components[e.id];
     }
@@ -72,6 +69,14 @@ class ComponentManager extends Manager {
       index++;
       componentBits = componentBits >> 1;
     }
+  }
+
+  Bag<Component> _getComponents(int index) {
+    Bag<Component> components = null;
+    if (index < _componentsByType.size) {
+      components = _componentsByType[index];
+    }
+    return components;
   }
 
   void deleted(Entity e) {
