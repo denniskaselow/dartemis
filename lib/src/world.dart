@@ -140,8 +140,6 @@ class World {
   void process() {
     processEntityChanges();
 
-    _componentManager.clean();
-
     _systemsBag.forEach((system) {
       if (!system.passive) {
         system.process();
@@ -155,6 +153,8 @@ class World {
     _check(_disable, (observer, entity) => observer.disabled(entity));
     _check(_enable, (observer, entity) => observer.enabled(entity));
     _check(_deleted, (observer, entity) => observer.deleted(entity));
+
+    _componentManager.clean();
   }
 
   /**
