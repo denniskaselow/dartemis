@@ -7,53 +7,45 @@ part of dartemis;
  *
  * Thanks to [Riven](http://riven8192.blogspot.com/2009/08/fastmath-sincos-lookup-tables.html "FastMath :: sin/cos lookup")
  */
-class TrigUtil {
-  static num sin(num rad) {
+class _TrigUtil {
+  static double sin(num rad) {
     return _sin((rad * _radToIndex).toInt() & _SIN_MASK);
   }
 
-  static num cos(num rad) {
+  static double cos(num rad) {
     return _cos((rad * _radToIndex).toInt() & _SIN_MASK);
   }
 
-  static num sinDeg(num deg) {
+  static double sinDeg(num deg) {
     return _sin((deg * _degToIndex).toInt() & _SIN_MASK);
   }
 
-  static num cosDeg(num deg) {
+  static double cosDeg(num deg) {
     return _cos((deg * _degToIndex).toInt() & _SIN_MASK);
   }
 
-  static final _RAD = Math.PI / 180.0;
-  static final _DEG = 180.0 / Math.PI;
-  static final _SIN_BITS = 12;
-  static final _SIN_MASK = 4095; // ~(-1 << _SIN_BITS);
-  static final _SIN_COUNT = _SIN_MASK + 1;
-  static final _radFull = Math.PI * 2.0;
-  static final _radToIndex = _SIN_COUNT / _radFull;
-  static final _degFull = 360.0;
-  static final _degToIndex = _SIN_COUNT / _degFull;
-  static var _sinLookUpTable; // = _createLookUpTable(Math.sin);
-  static var _cosLookUpTable; // = _createLookUpTable(Math.cos);
+  static final double _RAD = Math.PI / 180.0;
+  static final double _DEG = 180.0 / Math.PI;
+  static final int _SIN_BITS = 12;
+  static final int _SIN_MASK = ~(-1 << _SIN_BITS);
+  static final int _SIN_COUNT = _SIN_MASK + 1;
+  static final double _radFull = Math.PI * 2.0;
+  static final double _radToIndex = _SIN_COUNT / _radFull;
+  static final double _degFull = 360.0;
+  static final double _degToIndex = _SIN_COUNT / _degFull;
+  static final List<double> _sinLookUpTable = _createLookUpTable(Math.sin);
+  static final List<double> _cosLookUpTable = _createLookUpTable(Math.cos);
 
-
-  // lazy initialization because of: "initializer must be a compile time constant"
-  static num _sin(index) {
-    if (null == _sinLookUpTable) {
-      _sinLookUpTable = _createLookUpTable(Math.sin);
-    }
+  static double _sin(index) {
     return _sinLookUpTable[index];
   }
 
-  static num _cos(index) {
-    if (null == _cosLookUpTable) {
-      _cosLookUpTable = _createLookUpTable(Math.cos);
-    }
+  static double _cos(index) {
     return _cosLookUpTable[index];
   }
 
-  static _createLookUpTable(num f(num x)) {
-    var lookUpTable = new List<num>(_SIN_COUNT);
+  static _createLookUpTable(double f(num x)) {
+    var lookUpTable = new List<double>(_SIN_COUNT);
     for (int i = 0; i < _SIN_COUNT; i++) {
       lookUpTable[i] = f((i + 0.5) / _SIN_COUNT * _radFull);
     }

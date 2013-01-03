@@ -71,7 +71,7 @@ class Utils {
     num a = x1 - x2;
     num b = y1 - y2;
 
-    return FastMath.sqrt(a * a + b * b);
+    return Math.sqrt(a * a + b * b);
   }
 
   static num angleInDegreesWithOwnerRotation(num ownerRotation, num x1, num y1, num x2, num y2) {
@@ -96,23 +96,23 @@ class Utils {
   static num getRotatedX(num currentX, num currentY, num pivotX, num pivotY, num angleDegrees) {
     num x = currentX - pivotX;
     num y = currentY - pivotY;
-    num xr = (x * TrigUtil.cosDeg(angleDegrees)) - (y * TrigUtil.sinDeg(angleDegrees));
+    num xr = (x * _TrigUtil.cosDeg(angleDegrees)) - (y * _TrigUtil.sinDeg(angleDegrees));
     return xr + pivotX;
   }
 
   static num getRotatedY(num currentX, num currentY, num pivotX, num pivotY, num angleDegrees) {
     num x = currentX - pivotX;
     num y = currentY - pivotY;
-    num yr = (x * TrigUtil.sinDeg(angleDegrees)) + (y * TrigUtil.cosDeg(angleDegrees));
+    num yr = (x * _TrigUtil.sinDeg(angleDegrees)) + (y * _TrigUtil.cosDeg(angleDegrees));
     return yr + pivotY;
   }
 
   static num getXAtEndOfRotatedLineByOrigin(num x, num lineLength, num angleDegrees) {
-    return x + TrigUtil.cosDeg(angleDegrees) * lineLength;
+    return x + _TrigUtil.cosDeg(angleDegrees) * lineLength;
   }
 
   static num getYAtEndOfRotatedLineByOrigin(num y, num lineLength, num angleDegrees) {
-    return y + TrigUtil.sinDeg(angleDegrees) * lineLength;
+    return y + _TrigUtil.sinDeg(angleDegrees) * lineLength;
   }
 
   static bool collides(num x1, num y1, num radius1, num x2, num y2, num radius2) {
