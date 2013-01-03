@@ -118,7 +118,6 @@ class Entity {
   }
 
   void deleteFromWorld() {
-    print("delete from World ${id}");
     _world.deleteEntity(this);
   }
 

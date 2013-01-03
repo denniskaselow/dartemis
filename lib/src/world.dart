@@ -177,9 +177,7 @@ class World {
    * Delete the [Entity e] from the world.
    */
   void deleteEntity(Entity e) {
-    print("delete ${e.id}");
     if (!_deleted.contains(e)) {
-      print("add to deleted ${e.id}");
       _deleted.add(e);
     }
   }

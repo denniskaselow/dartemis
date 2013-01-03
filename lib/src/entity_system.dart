@@ -106,7 +106,6 @@ abstract class EntitySystem implements EntityObserver {
   }
 
   void _removeFromSystem(Entity e) {
-    print("remove ${e.id}");
     _actives.remove(e);
     e._removeSystemBit(_systemBit);
     removed(e);
@@ -125,7 +124,6 @@ abstract class EntitySystem implements EntityObserver {
   }
 
   void deleted(Entity e) {
-    print("delete ${e.id}");
     if (_contains(e)) {
       _removeFromSystem(e);
     }
