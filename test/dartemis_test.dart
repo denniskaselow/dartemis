@@ -6,10 +6,12 @@ import "dart:math" as Math;
 final Type COMPONENT_A = new ComponentA().runtimeType;
 final Type COMPONENT_B = new ComponentB().runtimeType;
 final Type COMPONENT_C = new ComponentC().runtimeType;
+final Type COMPONENT_D = new ComponentD().runtimeType;
 
-final int COMPONENT_A_BIT = 0x0001;
-final int COMPONENT_B_BIT = 0x0002;
-final int COMPONENT_C_BIT = 0x0004;
+const int COMPONENT_A_BIT = 0x0001;
+const int COMPONENT_B_BIT = 0x0002;
+const int COMPONENT_C_BIT = 0x0004;
+const int DEFAULT_BAG_SIZE = 16;
 
 main() {
   test('ComponentType Test', () {
@@ -224,7 +226,14 @@ main() {
 
       Bag<Component> fillBag = entity.getComponents();
       expect(fillBag.size, equals(0));
-
+    });
+    test('ComponentManager can be created for unused Component', () {
+      ComponentType type = new ComponentType();
+      for (int i = 0; i < DEFAULT_BAG_SIZE; i++) {
+        type = new ComponentType();
+      }
+      Bag<Component> componentsByType = world.componentManager.getComponentsByType(type);
+      expect(componentsByType.size, equals(0));
     });
   });
   group('World tests', () {
@@ -300,6 +309,7 @@ typedef void EntitySystemStarter(EntitySystem es);
 class ComponentA extends Component {}
 class ComponentB extends Component {}
 class ComponentC extends Component {}
+class ComponentD extends Component {}
 class MockEntitySystem extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
 

@@ -38,6 +38,8 @@ class ComponentManager extends Manager {
 
   Bag<Component> getComponentsByType(ComponentType type) {
     int index = type.id;
+    _componentsByType._ensureCapacity(index);
+
     Bag<Component> components = _componentsByType[index];
     if(components == null) {
       components = new Bag<Component>();
