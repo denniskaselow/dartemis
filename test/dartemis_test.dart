@@ -1,6 +1,7 @@
-import "package:unittest/unittest.dart";
-import "package:unittest/mock.dart";
 import "package:dartemis/dartemis.dart";
+import "package:unittest/mock.dart";
+import "package:unittest/unittest.dart";
+import "dart:math" as Math;
 
 final Type COMPONENT_A = new ComponentA().runtimeType;
 final Type COMPONENT_B = new ComponentB().runtimeType;
@@ -262,6 +263,20 @@ main() {
       world.initialize();
 
       manager.getLogs(callsTo('initialize')).verify(happenedExactly(1));
+    });
+  });
+  group('Util tests', () {
+    test('TrigUtil.sin is close to Math.sin', () {
+      num diff = Math.sin(Math.PI) - TrigUtil.sin(Math.PI);
+      expect(diff.abs(), lessThan(0.001));
+      diff = Math.sin(1) - TrigUtil.sin(1);
+      expect(diff.abs(), lessThan(0.001));
+    });
+    test('FastMath.sin is close to Math.sin', () {
+      num diff = Math.sin(Math.PI) - FastMath.sin(Math.PI);
+      expect(diff.abs(), lessThan(0.001));
+      diff = Math.sin(1) - FastMath.sin(1);
+      expect(diff.abs(), lessThan(0.001));
     });
   });
 }

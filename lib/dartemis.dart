@@ -1,8 +1,8 @@
 library dartemis;
 
-import 'dart:coreimpl';
-import 'dart:math' as Math;
 import 'dart:collection';
+import 'dart:core';
+import 'dart:math' as Math;
 
 part 'src/utils/bag.dart';
 part 'src/utils/fast_math.dart';
