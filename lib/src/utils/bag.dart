@@ -158,10 +158,8 @@ class Bag<E> implements ImmutableBag<E> {
   void operator []=(int index, E o) {
     if(index >= _data.length) {
       _growTo(index*2);
-      _size = index+1;
-    } else if(index >= _size) {
-      _size = index+1;
     }
+    _size = index+1;
     _data[index] = o;
   }
 
@@ -175,6 +173,13 @@ class Bag<E> implements ImmutableBag<E> {
     _data = new List(newCapacity);
     Arrays.copy(oldData, 0, _data, 0, oldData.length);
   }
+
+  void _ensureCapacity(int index) {
+    if (index >= _data.length) {
+      _growTo(index*2);
+    }
+  }
+
 
   /**
    * Removes all of the elements from this bag. The bag will be empty after
