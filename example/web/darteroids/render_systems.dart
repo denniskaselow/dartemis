@@ -8,7 +8,7 @@ class CirleRenderingSystem extends EntityProcessingSystem {
   ComponentMapper<CircularBody> bodyMapper;
   ComponentMapper<Status> statusMapper;
 
-  CirleRenderingSystem(this.context2d) : super(Aspect.getAspectForAllOf(new Position.hack().runtimeType, [new CircularBody.hack().runtimeType]));
+  CirleRenderingSystem(this.context2d) : super(Aspect.getAspectForAllOf([new Position.hack().runtimeType, new CircularBody.hack().runtimeType]));
 
   void initialize() {
     positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);

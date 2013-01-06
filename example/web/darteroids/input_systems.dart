@@ -21,7 +21,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   CanvasElement canvas;
 
-  PlayerControlSystem(this.canvas) : super(20, Aspect.getAspectForAllOf(new Velocity.hack().runtimeType, [new Cannon.hack().runtimeType]));
+  PlayerControlSystem(this.canvas) : super(20, Aspect.getAspectForAllOf([new Velocity.hack().runtimeType, new Cannon.hack().runtimeType]));
 
   void initialize() {
     velocityMapper = new ComponentMapper<Velocity>(new Velocity.hack().runtimeType, world);

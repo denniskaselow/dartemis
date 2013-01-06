@@ -47,14 +47,14 @@ A Component is a pretty simple structure and should not contain any logic:
       Position(this.x, this.y);
   }
   ```
-5. Define a systems that should process your entities. The `Apsect` defines which components an entity needs to have in order to be processed by the system:
+5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
   ```dart
   class MovementSystem extends EntityProcessingSystem {
       ComponentMapper<Position> positionMapper;
       ComponentMapper<Velocity> velocityMapper;
     
-      MovementSystem() : super(Aspect.getAspectForAllOf(Position, [Velocity]));
+      MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
     
       void initialize() {
         positionMapper = new ComponentMapper<Position>(Position, world);
@@ -72,7 +72,7 @@ A Component is a pretty simple structure and should not contain any logic:
   
   **CAUTION**: These lines:
   ```dart
-  MovementSystem() : super(Aspect.getAspectForAllOf(Position, [Velocity]));
+  MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
   positionMapper = new ComponentMapper<Position>(Position, world);
   ```
   currently won't work in in the Dart VM. They do work if they are compiled to javascript and the editor does not mark them as warnings or errors. It will work once the Dart VM support [literal types as expressions](https://code.google.com/p/dart/issues/detail?id=6282).

@@ -5,7 +5,7 @@ class MovementSystem extends EntityProcessingSystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<Velocity> velocityMapper;
 
-  MovementSystem() : super(Aspect.getAspectForAllOf(new Position.hack().runtimeType, [new Velocity.hack().runtimeType]));
+  MovementSystem() : super(Aspect.getAspectForAllOf([new Position.hack().runtimeType, new Velocity.hack().runtimeType]));
 
   void initialize() {
     positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
@@ -29,7 +29,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   ComponentMapper<Cannon> cannonMapper;
   ComponentMapper<Velocity> velocityMapper;
 
-  BulletSpawningSystem() : super(Aspect.getAspectForAllOf(new Cannon.hack().runtimeType, [new Position.hack().runtimeType, new Velocity.hack().runtimeType]));
+  BulletSpawningSystem() : super(Aspect.getAspectForAllOf([new Cannon.hack().runtimeType, new Position.hack().runtimeType, new Velocity.hack().runtimeType]));
 
   void initialize() {
     positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
@@ -70,7 +70,7 @@ class DecaySystem extends EntityProcessingSystem {
 
   ComponentMapper<Decay> decayMapper;
 
-  DecaySystem() : super(Aspect.getAspectForAllOf(new Decay.hack().runtimeType));
+  DecaySystem() : super(Aspect.getAspectForAllOf([new Decay.hack().runtimeType]));
 
   void initialize() {
     decayMapper = new ComponentMapper<Decay>(new Decay.hack().runtimeType, world);
@@ -93,7 +93,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
 
-  AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf(new AsteroidDestroyer.hack().runtimeType, [new Position.hack().runtimeType]));
+  AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([new AsteroidDestroyer.hack().runtimeType, new Position.hack().runtimeType]));
 
   void initialize() {
     groupManager = world.getManager(new GroupManager().runtimeType);
@@ -140,7 +140,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
 
-  PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf(new PlayerDestroyer.hack().runtimeType, [new Position.hack().runtimeType, new CircularBody.hack().runtimeType]));
+  PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([new PlayerDestroyer.hack().runtimeType, new Position.hack().runtimeType, new CircularBody.hack().runtimeType]));
 
   void initialize() {
     tagManager = world.getManager(new TagManager().runtimeType);

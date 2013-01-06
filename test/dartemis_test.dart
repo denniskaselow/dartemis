@@ -6,7 +6,6 @@ import "dart:math" as Math;
 final Type COMPONENT_A = new ComponentA().runtimeType;
 final Type COMPONENT_B = new ComponentB().runtimeType;
 final Type COMPONENT_C = new ComponentC().runtimeType;
-final Type COMPONENT_D = new ComponentD().runtimeType;
 
 const int COMPONENT_A_BIT = 0x0001;
 const int COMPONENT_B_BIT = 0x0002;
@@ -21,43 +20,43 @@ main() {
   });
   group('Aspect Tests', () {
     test('getAspectForAll with one component', () {
-      Aspect aspect = Aspect.getAspectForAllOf(COMPONENT_C);
+      Aspect aspect = Aspect.getAspectForAllOf([COMPONENT_C]);
       expect(aspect.all, COMPONENT_C_BIT);
       expect(aspect.excluded, 0);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with all components', () {
-      Aspect aspect = Aspect.getAspectForAllOf(COMPONENT_A, [COMPONENT_B, COMPONENT_C]);
+      Aspect aspect = Aspect.getAspectForAllOf([COMPONENT_A, COMPONENT_B, COMPONENT_C]);
       expect(aspect.all, COMPONENT_A_BIT | COMPONENT_B_BIT | COMPONENT_C_BIT);
       expect(aspect.excluded, 0);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with one component, excluding another one', () {
-      Aspect aspect = Aspect.getAspectForAllOf(COMPONENT_C).exclude(COMPONENT_A);
+      Aspect aspect = Aspect.getAspectForAllOf([COMPONENT_C]).exclude([COMPONENT_A]);
       expect(aspect.all, COMPONENT_C_BIT);
       expect(aspect.excluded, COMPONENT_A_BIT);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with one component, excluding another two', () {
-      Aspect aspect = Aspect.getAspectForAllOf(COMPONENT_C).exclude(COMPONENT_A, [COMPONENT_B]);
+      Aspect aspect = Aspect.getAspectForAllOf([COMPONENT_C]).exclude([COMPONENT_A, COMPONENT_B]);
       expect(aspect.all, COMPONENT_C_BIT);
       expect(aspect.excluded, COMPONENT_A_BIT | COMPONENT_B_BIT);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with one component, and one of two', () {
-      Aspect aspect = Aspect.getAspectForAllOf(COMPONENT_C).oneOf(COMPONENT_A, [COMPONENT_B]);
+      Aspect aspect = Aspect.getAspectForAllOf([COMPONENT_C]).oneOf([COMPONENT_A, COMPONENT_B]);
       expect(aspect.all, COMPONENT_C_BIT);
       expect(aspect.excluded, 0);
       expect(aspect.one, COMPONENT_A_BIT | COMPONENT_B_BIT);
     });
     test('getAspectForOne with all components', () {
-      Aspect aspect = Aspect.getAspectForOneOf(COMPONENT_A, [COMPONENT_B, COMPONENT_C]);
+      Aspect aspect = Aspect.getAspectForOneOf([COMPONENT_A, COMPONENT_B, COMPONENT_C]);
       expect(aspect.all, 0);
       expect(aspect.excluded, 0);
       expect(aspect.one, COMPONENT_A_BIT | COMPONENT_B_BIT | COMPONENT_C_BIT);
     });
     test('getAspectForOne with chaining each component', () {
-      Aspect aspect = Aspect.getAspectForOneOf(COMPONENT_A).oneOf(COMPONENT_B).oneOf(COMPONENT_C);
+      Aspect aspect = Aspect.getAspectForOneOf([COMPONENT_A]).oneOf([COMPONENT_B]).oneOf([COMPONENT_C]);
       expect(aspect.all, 0);
       expect(aspect.excluded, 0);
       expect(aspect.one, COMPONENT_A_BIT | COMPONENT_B_BIT | COMPONENT_C_BIT);
@@ -93,39 +92,39 @@ main() {
     });
     test('EntitySystem which requires one Component processes Entity with this component', () {
       List<Entity> expectedEntities = [entityAB, entityAC];
-      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_A]), expectedEntities);
       systemStarter(es);
     });
     test('EntitySystem which required multiple Components does not process Entity with a subset of those components', () {
       List<Entity> expectedEntities = [entityAB];
-      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A, [COMPONENT_B]), expectedEntities);
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_A, COMPONENT_B]), expectedEntities);
       systemStarter(es);
     });
     test('EntitySystem which requires one of multiple components processes Entity with a subset of those components', () {
       List<Entity> expectedEntities = [entityAB, entityAC];
-      EntitySystem es = new TestEntitySystem(Aspect.getAspectForOneOf(COMPONENT_A, [COMPONENT_B]), expectedEntities);
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForOneOf([COMPONENT_A, COMPONENT_B]), expectedEntities);
       systemStarter(es);
     });
     test('EntitySystem which excludes a component does not process Entity with one of those components', () {
       List<Entity> expectedEntities = [entityAB];
-      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A).exclude(COMPONENT_C), expectedEntities);
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_A]).exclude([COMPONENT_C]), expectedEntities);
       systemStarter(es);
     });
     test('A removed entity will not get processed', () {
       entityAB.deleteFromWorld();
       List<Entity> expectedEntities = [entityAC];
-      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_A]), expectedEntities);
       systemStarter(es);
     });
     test('A disabled entity will not get processed', () {
       entityAB.disable();
       List<Entity> expectedEntities = [entityAC];
-      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_A]), expectedEntities);
       systemStarter(es);
     });
     test('Adding a component will not get the entity processed if the world is not notified of the change', () {
       List<Entity> expectedEntities = [entityAC];
-      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_C), expectedEntities);
+      EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_C]), expectedEntities);
       es = world.addSystem(es);
       world.initialize();
       world.process();
@@ -134,7 +133,7 @@ main() {
     });
     test('Adding a component will get the entity processed if the world is notified of the change', () {
       List<Entity> expectedEntities = [entityAC];
-      TestEntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_C), expectedEntities);
+      TestEntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_C]), expectedEntities);
       es = world.addSystem(es);
       world.initialize();
       world.process();
@@ -146,7 +145,7 @@ main() {
     test('Enabling a disabled component will get the entity processed', () {
       entityAB.disable();
       List<Entity> expectedEntities = [entityAC];
-      TestEntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf(COMPONENT_A), expectedEntities);
+      TestEntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_A]), expectedEntities);
       es = world.addSystem(es);
       world.initialize();
       world.process();
