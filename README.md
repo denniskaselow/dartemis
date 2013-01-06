@@ -57,15 +57,15 @@ A Component is a pretty simple structure and should not contain any logic:
       MovementSystem() : super(Aspect.getAspectForAllOf(Position, [Velocity]));
     
       void initialize() {
-        positionMapper = new ComponentMapper<Transform>(Transform, world);
+        positionMapper = new ComponentMapper<Position>(Position, world);
         velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
       }
     
       void processEntity(Entity entity) {
-        Transform transform = positionMapper.get(entity);
+        Position position = positionMapper.get(entity);
         Velocity vel = velocityMapper.get(entity);  
-        transform.x += vel.x;
-        transform.y += vel.y;
+        position.x += vel.x;
+        position.y += vel.y;
       }
   }
   ```
