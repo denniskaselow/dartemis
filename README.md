@@ -91,7 +91,7 @@ A Component is a pretty simple structure and should not contain any logic:
   world.initialize();
   ```
 
-8. In your game loop you the process tour systems:
+8. In your game loop you then process your systems:
   ```dart
   world.process();
   ```
