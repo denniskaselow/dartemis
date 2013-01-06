@@ -47,8 +47,6 @@
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
-<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
-<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
 <li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
@@ -61,69 +59,56 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
+<p>Using these function will save you some time if you are doing A LOT of calculation.</p>
 <pre class="source">
 class FastMath {
 
-  static final  PI = PI;
-  static final  SQUARED_PI = PI * PI;
-  static final  HALF_PI = 0.5 * PI;
-  static final  TWO_PI = 2.0 * PI;
-  static final  THREE_PI_HALVES = TWO_PI - HALF_PI;
+ static const double PI = Math.PI;
+ static const double SQUARED_PI = PI * PI;
+ static const double HALF_PI = 0.5 * PI;
+ static const double TWO_PI = 2.0 * PI;
+ static const double THREE_PI_HALVES = TWO_PI - HALF_PI;
 
-  static final  _sin_a = -4 / SQUARED_PI;
-  static final  _sin_b = 4 / PI;
-  static final  _sin_p = 9.0 / 40;
+ static const double _sin_a = -4 / SQUARED_PI;
+ static const double _sin_b = 4 / PI;
+ static const double _sin_p = 9 / 40;
 
-  static final _asin_a = -0.0481295276831013447;
-  static final _asin_b = -0.343835993947915197;
-  static final _asin_c = 0.962761848425913169;
-  static final _asin_d = 1.00138940860107040;
+ static const double _asin_a = -0.0481295276831013447;
+ static const double _asin_b = -0.343835993947915197;
+ static const double _asin_c = 0.962761848425913169;
+ static const double _asin_d = 1.00138940860107040;
 
-  static final _atan_a = 0.280872;
+ static const double _atan_a = 0.280872;
 
-  static double cos(final double x) {
-   return sin(x + ((x &gt; HALF_PI) ? -THREE_PI_HALVES : HALF_PI));
+ static double cos(final num x) {
+   return _TrigUtil.cos(x);
  }
 
- static double sin(double x) {
-   x = _sin_a * x * x.abs() + _sin_b * x;
-   return _sin_p * (x * x.abs() - x) + x;
+ static double sin(num x) {
+   return _TrigUtil.sin(x);
  }
 
- static double tan(final double x) {
+ static double tan(final num x) {
    return sin(x) / cos(x);
  }
 
- static double asin(final double x) {
-   return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - sqrt(1 - x * x));
+ static double asin(num x) {
+   x = x.toDouble();
+   return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
  }
 
- static double acos(final double x) {
+ static double acos(num x) {
    return HALF_PI - asin(x);
  }
 
- static double atan(final double x) {
+ static double atan(num x) {
+   x = x.toDouble();
    return (x.abs() &lt; 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
  }
 
- // find a way to do this in dart
-//  static double inverseSqrt(double x) {
-//    final double xhalves = 0.5 * x;
-//    x = Double.longBitsToDouble(0x5FE6EB50C7B537AAl - (Double.doubleToRawLongBits(x) &gt;&gt; 1));
-//    return x * (1.5 - xhalves * x * x); // more iterations possible
-//  }
-//
-//  static double sqrt(final double x) {
-//    return x * inverseSqrt(x);
-//  }
-//
-
- // for now, this has to do
- static double sqrt(num x) =&gt; sqrt(x);
-
- static double signum(num x) {
-   return (x &lt; 0) ? -1.0 : (x &gt; 0) ? 1.0 : 0;
-}
+ static int signum(num x) {
+   return (x &lt; 0) ? -1 : (x &gt; 0) ? 1 : 0;
+ }
 
 }
 </pre>
@@ -132,61 +117,61 @@ class FastMath {
 <h3>Static Properties</h3>
 <div class="field"><h4 id="HALF_PI">
 <button class="show-code">Code</button>
-final         <strong>HALF_PI</strong> <a class="anchor-link"
+const <a href="http://api.dartlang.org/dart_core/double.html">double</a>         <strong>HALF_PI</strong> <a class="anchor-link"
             href="#HALF_PI"
             title="Permalink to FastMath.HALF_PI">#</a>
         </h4>
         <div class="doc">
 <pre class="source">
-static final  HALF_PI = 0.5 * PI;
+static const double HALF_PI = 0.5 * PI;
 </pre>
 </div>
 </div>
 <div class="field"><h4 id="PI">
 <button class="show-code">Code</button>
-final         <strong>PI</strong> <a class="anchor-link"
+const <a href="http://api.dartlang.org/dart_core/double.html">double</a>         <strong>PI</strong> <a class="anchor-link"
             href="#PI"
             title="Permalink to FastMath.PI">#</a>
         </h4>
         <div class="doc">
 <pre class="source">
-static final  PI = PI;
+static const double PI = Math.PI;
 </pre>
 </div>
 </div>
 <div class="field"><h4 id="SQUARED_PI">
 <button class="show-code">Code</button>
-final         <strong>SQUARED_PI</strong> <a class="anchor-link"
+const <a href="http://api.dartlang.org/dart_core/double.html">double</a>         <strong>SQUARED_PI</strong> <a class="anchor-link"
             href="#SQUARED_PI"
             title="Permalink to FastMath.SQUARED_PI">#</a>
         </h4>
         <div class="doc">
 <pre class="source">
-static final  SQUARED_PI = PI * PI;
+static const double SQUARED_PI = PI * PI;
 </pre>
 </div>
 </div>
 <div class="field"><h4 id="THREE_PI_HALVES">
 <button class="show-code">Code</button>
-final         <strong>THREE_PI_HALVES</strong> <a class="anchor-link"
+const <a href="http://api.dartlang.org/dart_core/double.html">double</a>         <strong>THREE_PI_HALVES</strong> <a class="anchor-link"
             href="#THREE_PI_HALVES"
             title="Permalink to FastMath.THREE_PI_HALVES">#</a>
         </h4>
         <div class="doc">
 <pre class="source">
-static final  THREE_PI_HALVES = TWO_PI - HALF_PI;
+static const double THREE_PI_HALVES = TWO_PI - HALF_PI;
 </pre>
 </div>
 </div>
 <div class="field"><h4 id="TWO_PI">
 <button class="show-code">Code</button>
-final         <strong>TWO_PI</strong> <a class="anchor-link"
+const <a href="http://api.dartlang.org/dart_core/double.html">double</a>         <strong>TWO_PI</strong> <a class="anchor-link"
             href="#TWO_PI"
             title="Permalink to FastMath.TWO_PI">#</a>
         </h4>
         <div class="doc">
 <pre class="source">
-static final  TWO_PI = 2.0 * PI;
+static const double TWO_PI = 2.0 * PI;
 </pre>
 </div>
 </div>
@@ -195,36 +180,35 @@ static final  TWO_PI = 2.0 * PI;
 <h3>Static Methods</h3>
 <div class="method"><h4 id="cos">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>cos</strong>(<a href="http://api.dartlang.org/dart_core/double.html">double</a> x) <a class="anchor-link" href="#cos"
+<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>cos</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#cos"
               title="Permalink to FastMath.cos">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double cos(final double x) {
-return sin(x + ((x &gt; HALF_PI) ? -THREE_PI_HALVES : HALF_PI));
+static double cos(final num x) {
+ return _TrigUtil.cos(x);
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="sin">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>sin</strong>(<a href="http://api.dartlang.org/dart_core/double.html">double</a> x) <a class="anchor-link" href="#sin"
+<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>sin</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#sin"
               title="Permalink to FastMath.sin">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double sin(double x) {
- x = _sin_a * x * x.abs() + _sin_b * x;
- return _sin_p * (x * x.abs() - x) + x;
+static double sin(num x) {
+ return _TrigUtil.sin(x);
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="tan">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>tan</strong>(<a href="http://api.dartlang.org/dart_core/double.html">double</a> x) <a class="anchor-link" href="#tan"
+<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>tan</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#tan"
               title="Permalink to FastMath.tan">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double tan(final double x) {
+static double tan(final num x) {
  return sin(x) / cos(x);
 }
 </pre>
@@ -232,23 +216,24 @@ static double tan(final double x) {
 </div>
 <div class="method"><h4 id="asin">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>asin</strong>(<a href="http://api.dartlang.org/dart_core/double.html">double</a> x) <a class="anchor-link" href="#asin"
+<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>asin</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#asin"
               title="Permalink to FastMath.asin">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double asin(final double x) {
- return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - sqrt(1 - x * x));
+static double asin(num x) {
+ x = x.toDouble();
+ return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="acos">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>acos</strong>(<a href="http://api.dartlang.org/dart_core/double.html">double</a> x) <a class="anchor-link" href="#acos"
+<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>acos</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#acos"
               title="Permalink to FastMath.acos">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double acos(final double x) {
+static double acos(num x) {
  return HALF_PI - asin(x);
 }
 </pre>
@@ -256,34 +241,25 @@ static double acos(final double x) {
 </div>
 <div class="method"><h4 id="atan">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>atan</strong>(<a href="http://api.dartlang.org/dart_core/double.html">double</a> x) <a class="anchor-link" href="#atan"
+<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>atan</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#atan"
               title="Permalink to FastMath.atan">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double atan(final double x) {
+static double atan(num x) {
+ x = x.toDouble();
  return (x.abs() &lt; 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
 }
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="sqrt">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>sqrt</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#sqrt"
-              title="Permalink to FastMath.sqrt">#</a></h4>
-<div class="doc">
-<pre class="source">
-static double sqrt(num x) =&gt; sqrt(x);
-</pre>
-</div>
-</div>
 <div class="method"><h4 id="signum">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/double.html">double</a> <strong>signum</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#signum"
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>signum</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> x) <a class="anchor-link" href="#signum"
               title="Permalink to FastMath.signum">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double signum(num x) {
- return (x &lt; 0) ? -1.0 : (x &gt; 0) ? 1.0 : 0;
+static int signum(num x) {
+ return (x &lt; 0) ? -1 : (x &gt; 0) ? 1 : 0;
 }
 </pre>
 </div>
@@ -294,7 +270,7 @@ static double signum(num x) {
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-04 19:28:49.193</div>
+          <div>This page was generated at 2013-01-06 21:02:41.950</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

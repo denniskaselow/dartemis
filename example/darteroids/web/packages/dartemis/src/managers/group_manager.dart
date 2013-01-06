@@ -93,7 +93,7 @@ class GroupManager extends Manager {
   /**
    * Check if the entity is in the supplied group.
    */
-  bool inInGroup(Entity e, String group) {
+  bool isInGroup(Entity e, String group) {
     Bag<String> groups = _groupsByEntity[e];
     return groups.contains(group);
   }

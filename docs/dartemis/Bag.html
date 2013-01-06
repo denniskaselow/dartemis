@@ -47,8 +47,6 @@
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
-<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
-<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
 <li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
@@ -218,10 +216,8 @@ class Bag&lt;E&gt; implements ImmutableBag&lt;E&gt; {
  void operator []=(int index, E o) {
    if(index &gt;= _data.length) {
      _growTo(index*2);
-     _size = index+1;
-   } else if(index &gt;= _size) {
-     _size = index+1;
    }
+   _size = index+1;
    _data[index] = o;
  }
 
@@ -235,6 +231,13 @@ class Bag&lt;E&gt; implements ImmutableBag&lt;E&gt; {
    _data = new List(newCapacity);
    Arrays.copy(oldData, 0, _data, 0, oldData.length);
  }
+
+ void _ensureCapacity(int index) {
+   if (index &gt;= _data.length) {
+     _growTo(index*2);
+   }
+ }
+
 
  /**
   * Removes all of the elements from this bag. The bag will be empty after
@@ -347,10 +350,8 @@ void <strong>operator []=</strong>(<a href="http://api.dartlang.org/dart_core/in
 void operator []=(int index, E o) {
  if(index &gt;= _data.length) {
    _growTo(index*2);
-   _size = index+1;
- } else if(index &gt;= _size) {
-   _size = index+1;
  }
+ _size = index+1;
  _data[index] = o;
 }
 </pre>
@@ -598,7 +599,7 @@ String toString() {
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-04 19:28:49.206</div>
+          <div>This page was generated at 2013-01-06 21:02:41.975</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

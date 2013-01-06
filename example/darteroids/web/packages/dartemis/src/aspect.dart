@@ -6,18 +6,18 @@ part of dartemis;
  * possess, or not possess.
  *
  * This creates an aspect where an entity must possess A and B and C:
- *     Aspect.getAspectForAllOf(A, B, C)
+ *     Aspect.getAspectForAllOf([A, B, C])
  *
  * This creates an aspect where an entity must possess A and B and C, but must not possess U or V.
- *     Aspect.getAspectForAllOf(A, B, C).exclude(U, V)
+ *     Aspect.getAspectForAllOf([A, B, C]).exclude([U, V])
  *
  * This creates an aspect where an entity must possess A and B and C, but must not possess U or V, but must possess one of X or Y or Z.
- *     Aspect.getAspectForAllOf(A, B, C).exclude(U, V).oneOf(X, Y, Z)
+ *     Aspect.getAspectForAllOf([A, B, C]).exclude([U, V]).oneOf([X, Y, Z])
  *
  * You can create and compose aspects in many ways:
- *     Aspect.getEmpty().oneOf(X, Y, Z).allOf(A, B, C).exclude(U, V)
+ *     Aspect.getEmpty().oneOf([X, Y, Z]).allOf([A, B, C]).exclude([U, V])
  * is the same as:
- *     Aspect.getAspectForAllOf(A, B, C).exclude(U, V).oneOf(X, Y, Z)
+ *     Aspect.getAspectForAllOf([A, B, C]).exclude([U, V]).oneOf([X, Y, Z])
  */
 class Aspect {
 
@@ -28,8 +28,8 @@ class Aspect {
   /**
    * Returns an aspect where an entity must possess all of the specified components.
    */
-  Aspect allOf(Type requiredComponentType, [List<Type> componentTypes]) {
-    _all = _updateBitMask(_all, requiredComponentType, componentTypes);
+  Aspect allOf(List<Type> componentTypes) {
+    _all = _updateBitMask(_all, componentTypes);
     return this;
   }
 
@@ -39,34 +39,34 @@ class Aspect {
    *
    * Returns an aspect that can be matched against entities.
    */
-  Aspect exclude(Type requiredComponentType, [List<Type> componentTypes]) {
-    _excluded = _updateBitMask(_excluded, requiredComponentType, componentTypes);
+  Aspect exclude(List<Type> componentTypes) {
+    _excluded = _updateBitMask(_excluded, componentTypes);
     return this;
   }
 
   /**
    * Returns an aspect where an entity must possess one of the specified components.
    */
-  Aspect oneOf(Type requiredComponentType, [List<Type> componentTypes]) {
-    _one = _updateBitMask(_one, requiredComponentType, componentTypes);
+  Aspect oneOf(List<Type> componentTypes) {
+    _one = _updateBitMask(_one, componentTypes);
     return this;
   }
 
   /**
    * Creates an aspect where an entity must possess all of the specified components.
    */
-  static Aspect getAspectForAllOf(Type requiredComponentType, [List<Type> componentTypes]) {
+  static Aspect getAspectForAllOf(List<Type> componentTypes) {
     Aspect aspect = new Aspect();
-    aspect.allOf(requiredComponentType, componentTypes);
+    aspect.allOf(componentTypes);
     return aspect;
   }
 
   /**
    * Creates an aspect where an entity must possess one of the specified componens.
    */
-  static getAspectForOneOf(Type requiredComponentType, [List<Type> componentTypes]) {
+  static getAspectForOneOf(List<Type> componentTypes) {
     Aspect aspect = new Aspect();
-    aspect.oneOf(requiredComponentType, componentTypes);
+    aspect.oneOf(componentTypes);
     return aspect;
   }
 
@@ -89,8 +89,7 @@ class Aspect {
   int get excluded => _excluded;
   int get one => _one;
 
-  int _updateBitMask(int mask, Type requiredComponentType, [List<Type> componentTypes]) {
-    mask = mask | ComponentTypeManager.getBit(requiredComponentType);
+  int _updateBitMask(int mask, List<Type> componentTypes) {
     if (null != componentTypes) {
       componentTypes.forEach((componentType) {
         mask = mask | ComponentTypeManager.getBit(componentType);

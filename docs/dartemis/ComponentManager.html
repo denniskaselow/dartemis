@@ -47,8 +47,6 @@
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
-<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
-<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
 <li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><a href="../dartemis/World.html"><div class="icon-class"></div>World</a></li>
@@ -78,6 +76,8 @@ class ComponentManager extends Manager {
 
  void _addComponent(Entity e, ComponentType type, Component component) {
    int index = type.id;
+   _componentsByType._ensureCapacity(index);
+
    Bag&lt;Component&gt; components = _componentsByType[index];
    if(components == null) {
      components = new Bag&lt;Component&gt;();
@@ -98,6 +98,8 @@ class ComponentManager extends Manager {
 
  Bag&lt;Component&gt; getComponentsByType(ComponentType type) {
    int index = type.id;
+   _componentsByType._ensureCapacity(index);
+
    Bag&lt;Component&gt; components = _componentsByType[index];
    if(components == null) {
      components = new Bag&lt;Component&gt;();
@@ -237,6 +239,8 @@ void enabled(Entity e) {}
 <pre class="source">
 Bag&lt;Component&gt; getComponentsByType(ComponentType type) {
  int index = type.id;
+ _componentsByType._ensureCapacity(index);
+
  Bag&lt;Component&gt; components = _componentsByType[index];
  if(components == null) {
    components = new Bag&lt;Component&gt;();
@@ -277,7 +281,7 @@ void initialize() {}
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-04 19:28:49.143</div>
+          <div>This page was generated at 2013-01-06 21:02:41.920</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

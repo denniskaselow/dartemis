@@ -138,6 +138,16 @@ class World {
    * Process all non-passive systems.
    */
   void process() {
+    processEntityChanges();
+
+    _systemsBag.forEach((system) {
+      if (!system.passive) {
+        system.process();
+      }
+    });
+  }
+
+  void processEntityChanges() {
     _check(_added, (observer, entity) => observer.added(entity));
     _check(_changed, (observer, entity) => observer.changed(entity));
     _check(_disable, (observer, entity) => observer.disabled(entity));
@@ -145,12 +155,6 @@ class World {
     _check(_deleted, (observer, entity) => observer.deleted(entity));
 
     _componentManager.clean();
-
-    _systemsBag.forEach((system) {
-      if (!system.passive) {
-        system.process();
-      }
-    });
   }
 
   /**

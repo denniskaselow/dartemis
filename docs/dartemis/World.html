@@ -47,8 +47,6 @@
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
-<li><a href="../dartemis/Timer.html"><div class="icon-class"></div>Timer</a></li>
-<li><a href="../dartemis/TrigUtil.html"><div class="icon-class"></div>TrigUtil</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
 <li><a href="../dartemis/VoidEntitySystem.html"><div class="icon-class"></div>VoidEntitySystem</a></li>
 <li><div class="icon-class"></div><strong>World</strong></li>
@@ -196,6 +194,16 @@ class World {
   * Process all non-passive systems.
   */
  void process() {
+   processEntityChanges();
+
+   _systemsBag.forEach((system) {
+     if (!system.passive) {
+       system.process();
+     }
+   });
+ }
+
+ void processEntityChanges() {
    _check(_added, (observer, entity) =&gt; observer.added(entity));
    _check(_changed, (observer, entity) =&gt; observer.changed(entity));
    _check(_disable, (observer, entity) =&gt; observer.disabled(entity));
@@ -203,12 +211,6 @@ class World {
    _check(_deleted, (observer, entity) =&gt; observer.deleted(entity));
 
    _componentManager.clean();
-
-   _systemsBag.forEach((system) {
-     if (!system.passive) {
-       system.process();
-     }
-   });
  }
 
  /**
@@ -542,13 +544,7 @@ void <strong>process</strong>() <a class="anchor-link" href="#process"
 <p>Process all non-passive systems.</p>
 <pre class="source">
 void process() {
- _check(_added, (observer, entity) =&gt; observer.added(entity));
- _check(_changed, (observer, entity) =&gt; observer.changed(entity));
- _check(_disable, (observer, entity) =&gt; observer.disabled(entity));
- _check(_enable, (observer, entity) =&gt; observer.enabled(entity));
- _check(_deleted, (observer, entity) =&gt; observer.deleted(entity));
-
- _componentManager.clean();
+ processEntityChanges();
 
  _systemsBag.forEach((system) {
    if (!system.passive) {
@@ -559,13 +555,31 @@ void process() {
 </pre>
 </div>
 </div>
+<div class="method"><h4 id="processEntityChanges">
+<button class="show-code">Code</button>
+void <strong>processEntityChanges</strong>() <a class="anchor-link" href="#processEntityChanges"
+              title="Permalink to World.processEntityChanges">#</a></h4>
+<div class="doc">
+<pre class="source">
+void processEntityChanges() {
+ _check(_added, (observer, entity) =&gt; observer.added(entity));
+ _check(_changed, (observer, entity) =&gt; observer.changed(entity));
+ _check(_disable, (observer, entity) =&gt; observer.disabled(entity));
+ _check(_enable, (observer, entity) =&gt; observer.enabled(entity));
+ _check(_deleted, (observer, entity) =&gt; observer.deleted(entity));
+
+ _componentManager.clean();
+}
+</pre>
+</div>
+</div>
 </div>
         </div>
         <div class="clear"></div>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-04 19:28:48.884</div>
+          <div>This page was generated at 2013-01-06 21:02:41.748</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>
