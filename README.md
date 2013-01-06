@@ -78,7 +78,7 @@ A Component is a pretty simple structure and should not contain any logic:
   currently won't work in in the Dart VM. They do work if they are compiled to javascript and the editor does not mark them as warnings or errors. It will work once the Dart VM support [literal types as expressions](https://code.google.com/p/dart/issues/detail?id=6282).
   To workaround this you have to create an instance of your component and use the runtimeType of that object instead:
   ```dart
-  positionMapper = new ComponentMapper<Position>(new Position(runtimeType, world);
+  positionMapper = new ComponentMapper<Position>(new Position().runtimeType, world);
   ```
   
 6. Add your system to the world:
