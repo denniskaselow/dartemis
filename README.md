@@ -110,12 +110,12 @@ Example Games using dartemis
 ============================
 darteroids
 ----------
-An very simple example included in the example folder of dartemis:
-[Source Code](https://github.com/denniskaselow/dartemis/tree/master/example/web)
+An very simple example included in the example folder of dartemis:  
+[Source Code](https://github.com/denniskaselow/dartemis/tree/master/example/web)  
 [Playable version](http://denniskaselow.github.com/dartemis/example/darteroids/darteroids.html)
 
 GitHub Space Off
 ----------------
-A game originally created for the GitHub Game Off 2012
-[Source Code](https://github.com/denniskaselow/game-off-2012)
+A game originally created for the GitHub Game Off 2012  
+[Source Code](https://github.com/denniskaselow/game-off-2012)  
 [Playable version](http://denniskaselow.github.com/game-off-2012/)
