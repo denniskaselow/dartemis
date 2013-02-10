@@ -1,20 +1,30 @@
 part of darteroids;
 
-class CircularBody extends Component {
-  CircularBody.hack();
-
+class CircularBody implements Component {
   num radius;
   String color;
 
-  CircularBody(this.radius, this.color);
+  CircularBody._();
+  factory CircularBody(World world, num radius, String color) {
+    CircularBody body = new Component(world, CircularBody, _constructor);
+    body.radius = radius;
+    body.color = color;
+    return body;
+  }
+  static CircularBody _constructor() => new CircularBody._();
 }
 
-class Position extends Component {
-  Position.hack();
-
+class Position implements Component {
   num _x, _y;
 
-  Position(this._x, this._y);
+  Position._();
+  factory Position(World world, num x, num y) {
+    Position position = new Component(world, Position, _constructor);
+    position.x = x;
+    position.y = y;
+    return position;
+  }
+  static Position _constructor() => new Position._();
 
   set x(num x) => _x = x % MAXWIDTH;
   get x => _x;
@@ -23,32 +33,39 @@ class Position extends Component {
   get y => _y;
 }
 
-class Velocity extends Component {
-  Velocity.hack();
-
+class Velocity implements Component {
   num x, y;
 
-  Velocity([this.x = 0, this.y = 0]);
+  Velocity._();
+  factory Velocity(World world, [num x = 0, num y = 0]) {
+    Velocity velocity = new Component(world, Velocity, _constructor);
+    velocity.x = x;
+    velocity.y = y;
+    return velocity;
+  }
+  static Velocity _constructor() => new Velocity._();
 }
 
-class PlayerDestroyer extends Component {
-  PlayerDestroyer.hack();
-  PlayerDestroyer();
+class PlayerDestroyer implements Component {
+  PlayerDestroyer._();
+  factory PlayerDestroyer(World world) => new Component(world, PlayerDestroyer, _constructor);
+  static PlayerDestroyer _constructor() => new PlayerDestroyer._();
 }
 
-class AsteroidDestroyer extends Component {
-  AsteroidDestroyer.hack();
-  AsteroidDestroyer();
+class AsteroidDestroyer implements Component {
+  AsteroidDestroyer._();
+  factory AsteroidDestroyer(World world) => new Component(world, AsteroidDestroyer, _constructor);
+  static AsteroidDestroyer _constructor() => new AsteroidDestroyer._();
 }
 
-class Cannon extends Component {
-  Cannon.hack();
-
+class Cannon implements Component {
   bool shoot = false;
   num targetX, targetY;
   num cooldown = 0;
 
-  Cannon();
+  Cannon._();
+  factory Cannon(World world) => new Component(world, Cannon, _constructor);
+  static Cannon _constructor() => new Cannon._();
 
   void target(num targetX, num targetY) {
     this.targetX = targetX;
@@ -61,21 +78,30 @@ class Cannon extends Component {
   }
 }
 
-class Decay extends Component {
-  Decay.hack();
-
+class Decay implements Component {
   num timer;
 
-  Decay(this.timer);
+  Decay._();
+  factory Decay(World world, num timer) {
+    Decay decay = new Component(world, Decay, _constructor);
+    decay.timer = timer;
+    return decay;
+  }
+  static Decay _constructor() => new Decay._();
 }
 
-class Status extends Component {
-  Status.hack();
-
+class Status implements Component {
   int lifes;
   num invisiblityTimer;
 
-  Status({this.lifes : 1, this.invisiblityTimer : 0});
+  Status._();
+  factory Status(world, {int lifes : 1, num invisiblityTimer : 0}) {
+    Status status = new Component(world, Status, _constructor);
+    status.lifes = lifes;
+    status.invisiblityTimer = invisiblityTimer;
+    return status;
+  }
+  static Status _constructor() => new Status._();
 
   bool get invisible => invisiblityTimer > 0;
 }

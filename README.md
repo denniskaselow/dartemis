@@ -35,18 +35,28 @@ Getting started
 
   ```dart
   Entity entity  = world.createEntity();
-  entity.addComponent(new Position(0, 0));
-  entity.addComponent(new Velocity(1, 1));
+  entity.addComponent(new Position(world, 0, 0));
+  entity.addComponent(new Velocity(world, 1, 1));
   entity.addToWorld();
   ```
-A Component is a pretty simple structure and should not contain any logic:
+A `Component` is a pretty simple structure and should not contain any logic:
 
   ```dart
   class Position extends Component {
-      num x,y;
-      Position(this.x, this.y);
+      num x, y;
+
+      Position._();
+      factory Position(World world, num x, num y) {
+          Position position = new Component(world, Position, _constructor);
+          position.x = x;
+          position.y = y;
+          return position;
+      }
+      static Position _constructor() => new Position._();
   }
-  ```
+  ```  
+  
+By using a factory constructor and calling the factory constructor in `Component` the system is able to reuse destroyed components and no garbage collection will occur as long as the world exists. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/) 
 5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
   ```dart
@@ -68,19 +78,7 @@ A Component is a pretty simple structure and should not contain any logic:
         position.y += vel.y;
       }
   }
-  ```
-  
-  **CAUTION**: These lines:
-  ```dart
-  MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
-  positionMapper = new ComponentMapper<Position>(Position, world);
-  ```
-  currently won't work in in the Dart VM. They do work if they are compiled to javascript and the editor does not mark them as warnings or errors. It will work once the Dart VM support [literal types as expressions](https://code.google.com/p/dart/issues/detail?id=6282).
-  To workaround this you have to create an instance of your component and use the runtimeType of that object instead:
-  ```dart
-  positionMapper = new ComponentMapper<Position>(new Position().runtimeType, world);
-  ```
-  
+  ```  
 6. Add your system to the world:
   ```dart  
   world.addSystem(new MovementSystem());

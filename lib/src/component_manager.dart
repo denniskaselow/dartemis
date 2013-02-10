@@ -1,16 +1,25 @@
 part of dartemis;
 
+typedef Component ComponentConstructor();
+
 class ComponentManager extends Manager {
   Bag<Bag<Component>> _componentsByType;
   Bag<Entity> _deleted;
+  Bag<Bag<Component>> _freeLists;
 
   ComponentManager() : _componentsByType = new Bag<Bag<Component>>(),
-                       _deleted = new Bag<Entity>();
+                       _deleted = new Bag<Entity>(),
+                       _freeLists = new Bag<Bag<Component>>();
 
   void initialize() {}
 
   void _removeComponentsOfEntity(Entity e) {
-    _forComponentsOfEntity(e, (components) => components[e.id] = null);
+    _forComponentsOfEntity(e, (components) {
+      Component component = components[e.id];
+      int typeId = ComponentTypeManager.getId(component.runtimeType);
+      _addToFreeList(typeId, component);
+      components[e.id] = null;
+    });
     e._typeBits = 0;
   }
 
@@ -31,9 +40,16 @@ class ComponentManager extends Manager {
 
   void _removeComponent(Entity e, ComponentType type) {
     if((e._typeBits & type.bit) != 0) {
-      _componentsByType[type.id][e.id] = null;
+      int typeId = type.id;
+      Component component = _componentsByType[typeId][e.id];
+      _addToFreeList(typeId, component);
+      _componentsByType[typeId][e.id] = null;
       e._removeTypeBit(type.bit);
     }
+  }
+
+  void _addToFreeList(int typeId, Component component) {
+    _freeLists[typeId].add(component);
   }
 
   Bag<Component> getComponentsByType(ComponentType type) {
@@ -84,5 +100,19 @@ class ComponentManager extends Manager {
     _deleted.clear();
   }
 
+  Component _createComponentInstance(ComponentType componentType, ComponentConstructor componentConstructor) {
+    var index = componentType.id;
+    _freeLists._ensureCapacity(index);
+    var freeList = _freeLists[index];
+    if (null == freeList) {
+      freeList = new Bag();
+      _freeLists[index] = freeList;
+    }
+    var component = freeList.removeLast();
+    if (null == component) {
+      component = componentConstructor();
+    }
+    return component;
+  }
 }
 

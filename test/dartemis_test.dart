@@ -305,10 +305,10 @@ main() {
 
 typedef void EntitySystemStarter(EntitySystem es);
 
-class ComponentA extends Component {}
-class ComponentB extends Component {}
-class ComponentC extends Component {}
-class ComponentD extends Component {}
+class ComponentA implements Component {}
+class ComponentB implements Component {}
+class ComponentC implements Component {}
+class ComponentD implements Component {}
 class MockEntitySystem extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
 

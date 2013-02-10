@@ -8,12 +8,12 @@ class CirleRenderingSystem extends EntityProcessingSystem {
   ComponentMapper<CircularBody> bodyMapper;
   ComponentMapper<Status> statusMapper;
 
-  CirleRenderingSystem(this.context2d) : super(Aspect.getAspectForAllOf([new Position.hack().runtimeType, new CircularBody.hack().runtimeType]));
+  CirleRenderingSystem(this.context2d) : super(Aspect.getAspectForAllOf([Position, CircularBody]));
 
   void initialize() {
-    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
-    bodyMapper = new ComponentMapper<CircularBody>(new CircularBody.hack().runtimeType, world);
-    statusMapper = new ComponentMapper<Status>(new Status.hack().runtimeType, world);
+    positionMapper = new ComponentMapper<Position>(Position, world);
+    bodyMapper = new ComponentMapper<CircularBody>(CircularBody, world);
+    statusMapper = new ComponentMapper<Status>(Status, world);
   }
 
   void processEntity(Entity entity) {
@@ -93,7 +93,7 @@ class HudRenderSystem extends VoidEntitySystem {
 
   void initialize() {
     tagManager = world.getManager(new TagManager().runtimeType);
-    statusMapper = new ComponentMapper<Status>(new Status.hack().runtimeType, world);
+    statusMapper = new ComponentMapper<Status>(Status, world);
   }
 
   void processSystem() {

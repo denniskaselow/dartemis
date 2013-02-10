@@ -3,6 +3,7 @@ part of dartemis;
 class EntityManager extends Manager {
 
   Bag<Entity> _entities;
+  Bag<Entity> _deletedEntities;
   Bag<bool> _disabled;
 
   int _active = 0;
@@ -13,13 +14,17 @@ class EntityManager extends Manager {
   _IdentifierPool _identifierPool;
 
   EntityManager() : _entities = new Bag<Entity>(),
+                    _deletedEntities = new Bag<Entity>(),
                     _disabled = new Bag<bool>(),
                     _identifierPool = new _IdentifierPool();
 
   void initialize() {}
 
   Entity _createEntityInstance() {
-    Entity e = new Entity(_world, _identifierPool.checkOut());
+    Entity e = _deletedEntities.removeLast();
+    if (null == e) {
+      e = new Entity(_world, _identifierPool.checkOut());
+    }
     _created++;
     return e;
   }
@@ -43,7 +48,7 @@ class EntityManager extends Manager {
 
     _disabled[e.id] = false;
 
-    _identifierPool.checkIn(e.id);
+    _deletedEntities.add(e);
 
     _active--;
     _deleted++;

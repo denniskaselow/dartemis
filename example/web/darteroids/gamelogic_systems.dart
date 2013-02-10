@@ -5,11 +5,11 @@ class MovementSystem extends EntityProcessingSystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<Velocity> velocityMapper;
 
-  MovementSystem() : super(Aspect.getAspectForAllOf([new Position.hack().runtimeType, new Velocity.hack().runtimeType]));
+  MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
 
   void initialize() {
-    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
-    velocityMapper = new ComponentMapper<Velocity>(new Velocity.hack().runtimeType, world);
+    positionMapper = new ComponentMapper<Position>(Position, world);
+    velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
   }
 
   void processEntity(Entity entity) {
@@ -29,12 +29,12 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   ComponentMapper<Cannon> cannonMapper;
   ComponentMapper<Velocity> velocityMapper;
 
-  BulletSpawningSystem() : super(Aspect.getAspectForAllOf([new Cannon.hack().runtimeType, new Position.hack().runtimeType, new Velocity.hack().runtimeType]));
+  BulletSpawningSystem() : super(Aspect.getAspectForAllOf([Cannon, Position, Velocity]));
 
   void initialize() {
-    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
-    velocityMapper = new ComponentMapper<Velocity>(new Velocity.hack().runtimeType, world);
-    cannonMapper = new ComponentMapper<Cannon>(new Cannon.hack().runtimeType, world);
+    positionMapper = new ComponentMapper<Position>(Position, world);
+    velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
+    cannonMapper = new ComponentMapper<Cannon>(Cannon, world);
   }
 
   void processEntity(Entity entity) {
@@ -52,16 +52,16 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   void fireBullet(Position shooterPos, Velocity shooterVel, Cannon cannon) {
     cannon.cooldown = 1000;
     Entity bullet = world.createEntity();
-    bullet.addComponent(new Position(shooterPos.x, shooterPos.y));
+    bullet.addComponent(new Position(world, shooterPos.x, shooterPos.y));
     num dirX = cannon.targetX - shooterPos.x;
     num dirY = cannon.targetY - shooterPos.y;
     num distance = sqrt(pow(dirX, 2) + pow(dirY, 2));
     num velX = shooterVel.x + bulletSpeed * (dirX / distance);
     num velY = shooterVel.y + bulletSpeed * (dirY / distance);
-    bullet.addComponent(new Velocity(velX, velY));
-    bullet.addComponent(new CircularBody(2, "red"));
-    bullet.addComponent(new Decay(5000));
-    bullet.addComponent(new AsteroidDestroyer());
+    bullet.addComponent(new Velocity(world, velX, velY));
+    bullet.addComponent(new CircularBody(world, 2, "red"));
+    bullet.addComponent(new Decay(world, 5000));
+    bullet.addComponent(new AsteroidDestroyer(world));
     bullet.addToWorld();
   }
 }
@@ -70,10 +70,10 @@ class DecaySystem extends EntityProcessingSystem {
 
   ComponentMapper<Decay> decayMapper;
 
-  DecaySystem() : super(Aspect.getAspectForAllOf([new Decay.hack().runtimeType]));
+  DecaySystem() : super(Aspect.getAspectForAllOf([Decay]));
 
   void initialize() {
-    decayMapper = new ComponentMapper<Decay>(new Decay.hack().runtimeType, world);
+    decayMapper = new ComponentMapper<Decay>(Decay, world);
   }
 
   void processEntity(Entity entity) {
@@ -93,12 +93,12 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
 
-  AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([new AsteroidDestroyer.hack().runtimeType, new Position.hack().runtimeType]));
+  AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([AsteroidDestroyer, Position]));
 
   void initialize() {
     groupManager = world.getManager(new GroupManager().runtimeType);
-    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
-    bodyMapper = new ComponentMapper<CircularBody>(new CircularBody.hack().runtimeType, world);
+    positionMapper = new ComponentMapper<Position>(Position, world);
+    bodyMapper = new ComponentMapper<CircularBody>(CircularBody, world);
   }
 
   void processEntity(Entity entity) {
@@ -121,13 +121,13 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
 
   void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
     Entity asteroid = world.createEntity();
-    asteroid.addComponent(new Position(asteroidPos.x, asteroidPos.y));
+    asteroid.addComponent(new Position(world, asteroidPos.x, asteroidPos.y));
     num vx = generateRandomVelocity();
     num vy = generateRandomVelocity();
-    asteroid.addComponent(new Velocity(vx, vy));
+    asteroid.addComponent(new Velocity(world, vx, vy));
     num radius = asteroidBody.radius / sqrtOf2;
-    asteroid.addComponent(new CircularBody(radius, ASTEROID_COLOR));
-    asteroid.addComponent(new PlayerDestroyer());
+    asteroid.addComponent(new CircularBody(world, radius, ASTEROID_COLOR));
+    asteroid.addComponent(new PlayerDestroyer(world));
     asteroid.addToWorld();
     groupManager.add(asteroid, GROUP_ASTEROIDS);
   }
@@ -140,13 +140,13 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
 
-  PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([new PlayerDestroyer.hack().runtimeType, new Position.hack().runtimeType, new CircularBody.hack().runtimeType]));
+  PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
 
   void initialize() {
     tagManager = world.getManager(new TagManager().runtimeType);
-    statusMapper = new ComponentMapper(new Status.hack().runtimeType, world);
-    positionMapper = new ComponentMapper<Position>(new Position.hack().runtimeType, world);
-    bodyMapper = new ComponentMapper<CircularBody>(new CircularBody.hack().runtimeType, world);
+    statusMapper = new ComponentMapper(Status, world);
+    positionMapper = new ComponentMapper<Position>(Position, world);
+    bodyMapper = new ComponentMapper<CircularBody>(CircularBody, world);
   }
 
   void processEntities(ImmutableBag<Entity> entities) {

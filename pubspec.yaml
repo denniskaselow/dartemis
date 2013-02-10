@@ -1,6 +1,6 @@
 name: dartemis
 description: Entity System Framework based on Artemis
-version: 0.2.7
+version: 0.3.0-dev
 author: Dennis Kaselow <Dennis.Kaselow+dartemis@gmail.com>
 homepage: https://github.com/denniskaselow/dartemis
 dependencies:

@@ -21,17 +21,17 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   CanvasElement canvas;
 
-  PlayerControlSystem(this.canvas) : super(20, Aspect.getAspectForAllOf([new Velocity.hack().runtimeType, new Cannon.hack().runtimeType]));
+  PlayerControlSystem(this.canvas) : super(20, Aspect.getAspectForAllOf([Velocity, Cannon]));
 
   void initialize() {
-    velocityMapper = new ComponentMapper<Velocity>(new Velocity.hack().runtimeType, world);
-    cannonMapper = new ComponentMapper<Cannon>(new Cannon.hack().runtimeType, world);
+    velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
+    cannonMapper = new ComponentMapper<Cannon>(Cannon, world);
 
     tagManager = world.getManager(new TagManager().runtimeType);
-    window.on.keyDown.add(handleKeyDown);
-    window.on.keyUp.add(handleKeyUp);
-    canvas.on.mouseDown.add(handleMouseDown);
-    canvas.on.mouseUp.add(handleMouseUp);
+    window.onKeyDown.listen(handleKeyDown);
+    window.onKeyUp.listen(handleKeyUp);
+    canvas.onMouseDown.listen(handleMouseDown);
+    canvas.onMouseUp.listen(handleMouseUp);
   }
 
   void processEntities(ImmutableBag<Entity> entities) {
