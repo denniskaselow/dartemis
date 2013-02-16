@@ -2,12 +2,9 @@ part of dartemis;
 
 class ComponentTypeManager {
 
-  static var _componentTypes;
+  static var _componentTypes = new Map<Type, ComponentType>();
 
   static ComponentType getTypeFor(Type componentType){
-    if (null == _componentTypes) {
-      _componentTypes = new Map<Type, ComponentType>();
-    }
     ComponentType type = _componentTypes[componentType];
 
     if (type == null) {

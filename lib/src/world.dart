@@ -82,10 +82,6 @@ class World {
     return _entityManager._createEntityInstance();
   }
 
-  Component createComponent(Type componentType, ComponentConstructor componentConstructor) {
-    return _componentManager._createComponentInstance(ComponentTypeManager.getTypeFor(componentType), componentConstructor);
-  }
-
   /**
    * Get an [Entity] having the specified [entityId].
    */

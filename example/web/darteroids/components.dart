@@ -5,8 +5,8 @@ class CircularBody implements Component {
   String color;
 
   CircularBody._();
-  factory CircularBody(World world, num radius, String color) {
-    CircularBody body = new Component(world, CircularBody, _constructor);
+  factory CircularBody(num radius, String color) {
+    CircularBody body = new Component(CircularBody, _constructor);
     body.radius = radius;
     body.color = color;
     return body;
@@ -18,8 +18,8 @@ class Position implements Component {
   num _x, _y;
 
   Position._();
-  factory Position(World world, num x, num y) {
-    Position position = new Component(world, Position, _constructor);
+  factory Position(num x, num y) {
+    Position position = new Component(Position, _constructor);
     position.x = x;
     position.y = y;
     return position;
@@ -37,8 +37,8 @@ class Velocity implements Component {
   num x, y;
 
   Velocity._();
-  factory Velocity(World world, [num x = 0, num y = 0]) {
-    Velocity velocity = new Component(world, Velocity, _constructor);
+  factory Velocity([num x = 0, num y = 0]) {
+    Velocity velocity = new Component(Velocity, _constructor);
     velocity.x = x;
     velocity.y = y;
     return velocity;
@@ -48,13 +48,13 @@ class Velocity implements Component {
 
 class PlayerDestroyer implements Component {
   PlayerDestroyer._();
-  factory PlayerDestroyer(World world) => new Component(world, PlayerDestroyer, _constructor);
+  factory PlayerDestroyer() => new Component(PlayerDestroyer, _constructor);
   static PlayerDestroyer _constructor() => new PlayerDestroyer._();
 }
 
 class AsteroidDestroyer implements Component {
   AsteroidDestroyer._();
-  factory AsteroidDestroyer(World world) => new Component(world, AsteroidDestroyer, _constructor);
+  factory AsteroidDestroyer() => new Component(AsteroidDestroyer, _constructor);
   static AsteroidDestroyer _constructor() => new AsteroidDestroyer._();
 }
 
@@ -64,7 +64,7 @@ class Cannon implements Component {
   num cooldown = 0;
 
   Cannon._();
-  factory Cannon(World world) => new Component(world, Cannon, _constructor);
+  factory Cannon() => new Component(Cannon, _constructor);
   static Cannon _constructor() => new Cannon._();
 
   void target(num targetX, num targetY) {
@@ -82,8 +82,8 @@ class Decay implements Component {
   num timer;
 
   Decay._();
-  factory Decay(World world, num timer) {
-    Decay decay = new Component(world, Decay, _constructor);
+  factory Decay(num timer) {
+    Decay decay = new Component(Decay, _constructor);
     decay.timer = timer;
     return decay;
   }
@@ -95,8 +95,8 @@ class Status implements Component {
   num invisiblityTimer;
 
   Status._();
-  factory Status(world, {int lifes : 1, num invisiblityTimer : 0}) {
-    Status status = new Component(world, Status, _constructor);
+  factory Status({int lifes : 1, num invisiblityTimer : 0}) {
+    Status status = new Component(Status, _constructor);
     status.lifes = lifes;
     status.invisiblityTimer = invisiblityTimer;
     return status;

@@ -45,11 +45,11 @@ class Darteroids {
     world = new World();
 
     Entity player = world.createEntity();
-    player.addComponent(new Position(world, MAXWIDTH~/2, MAXHEIGHT~/2));
-    player.addComponent(new Velocity(world));
-    player.addComponent(new CircularBody(world, 20, PLAYER_COLOR));
-    player.addComponent(new Cannon(world));
-    player.addComponent(new Status(world, lifes : 3, invisiblityTimer : 5000));
+    player.addComponent(new Position(MAXWIDTH~/2, MAXHEIGHT~/2));
+    player.addComponent(new Velocity());
+    player.addComponent(new CircularBody(20, PLAYER_COLOR));
+    player.addComponent(new Cannon());
+    player.addComponent(new Status(lifes : 3, invisiblityTimer : 5000));
     player.addToWorld();
 
     TagManager tagManager = new TagManager();
@@ -79,12 +79,12 @@ class Darteroids {
 
     for (int i = 0; i < 10; i++) {
       Entity asteroid = world.createEntity();
-      asteroid.addComponent(new Position(world, MAXWIDTH * random.nextDouble(), MAXHEIGHT * random.nextDouble()));
+      asteroid.addComponent(new Position(MAXWIDTH * random.nextDouble(), MAXHEIGHT * random.nextDouble()));
       num vx = generateRandomVelocity();
       num vy = generateRandomVelocity();
-      asteroid.addComponent(new Velocity(world, vx, vy));
-      asteroid.addComponent(new CircularBody(world, 10 + 20 * random.nextDouble(), ASTEROID_COLOR));
-      asteroid.addComponent(new PlayerDestroyer(world));
+      asteroid.addComponent(new Velocity(vx, vy));
+      asteroid.addComponent(new CircularBody(10 + 20 * random.nextDouble(), ASTEROID_COLOR));
+      asteroid.addComponent(new PlayerDestroyer());
       asteroid.addToWorld();
       groupManager.add(asteroid, GROUP_ASTEROIDS);
     }

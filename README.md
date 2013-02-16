@@ -46,8 +46,8 @@ A `Component` is a pretty simple structure and should not contain any logic:
       num x, y;
 
       Position._();
-      factory Position(World world, num x, num y) {
-          Position position = new Component(world, Position, _constructor);
+      factory Position(num x, num y) {
+          Position position = new Component(Position, _constructor);
           position.x = x;
           position.y = y;
           return position;
