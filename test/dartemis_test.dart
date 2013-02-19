@@ -305,10 +305,18 @@ main() {
 
 typedef void EntitySystemStarter(EntitySystem es);
 
-class ComponentA implements Component {}
-class ComponentB implements Component {}
-class ComponentC implements Component {}
-class ComponentD implements Component {}
+class ComponentA implements Component {
+  ComponentA._();
+  factory ComponentA() => new Component(ComponentA, () => new ComponentA._());
+}
+class ComponentB implements Component {
+  ComponentB._();
+  factory ComponentB() => new Component(ComponentB, () => new ComponentB._());
+}
+class ComponentC implements Component {
+  ComponentC._();
+  factory ComponentC() => new Component(ComponentC, () => new ComponentC._());
+}
 class MockEntitySystem extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
 
