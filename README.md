@@ -54,9 +54,9 @@ A `Component` is a pretty simple structure and should not contain any logic:
       }
       static Position _constructor() => new Position._();
   }
-  ```  
-  
+  ```
 By using a factory constructor and calling the factory constructor in `Component` the system is able to reuse destroyed components and no garbage collection will occur as long as the world exists. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/) 
+
 5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
   ```dart
