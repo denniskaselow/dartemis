@@ -20,83 +20,84 @@ Some useful links about what an Entity System/Entity Component System is:
 Getting started
 ===============
 
-1. Add dartemis to your project by adding it to your **pubspec.yaml**
-2. Import it in your project:
+1\. Add dartemis to your project by adding it to your **pubspec.yaml**  
+2\. Import it in your project:
 
-  ```dart
-  import 'package:dartemis/dartemis.dart';
-  ```
-3. Create a world:
+```dart
+import 'package:dartemis/dartemis.dart';
+```
+3\. Create a world:
 
-  ```dart
-  World world = new World();
-  ```
-4. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
+```dart
+World world = new World();
+```
+4\. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
 
-  ```dart
-  Entity entity  = world.createEntity();
-  entity.addComponent(new Position(world, 0, 0));
-  entity.addComponent(new Velocity(world, 1, 1));
-  entity.addToWorld();
-  ```
+```dart
+Entity entity  = world.createEntity();
+entity.addComponent(new Position(world, 0, 0));
+entity.addComponent(new Velocity(world, 1, 1));
+entity.addToWorld();
+```
 A `Component` is a pretty simple structure and should not contain any logic:
 
-  ```dart
-  class Position extends Component {
-      num x, y;
+```dart
+class Position extends Component {
+    num x, y;
 
-      Position._();
-      factory Position(num x, num y) {
-          Position position = new Component(Position, _constructor);
-          position.x = x;
-          position.y = y;
-          return position;
-      }
-      static Position _constructor() => new Position._();
-  }
-  ```
+    Position._();
+    factory Position(num x, num y) {
+        Position position = new Component(Position, _constructor);
+        position.x = x;
+        position.y = y;
+        return position;
+    }
+    static Position _constructor() => new Position._();
+}
+```
 By using a factory constructor and calling the factory constructor in `Component` the system is able to reuse destroyed components and no garbage collection will occur as long as the world exists. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/) 
 
-5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
+5\. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
-  ```dart
-  class MovementSystem extends EntityProcessingSystem {
-      ComponentMapper<Position> positionMapper;
-      ComponentMapper<Velocity> velocityMapper;
-    
-      MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
-    
-      void initialize() {
-        positionMapper = new ComponentMapper<Position>(Position, world);
-        velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
-      }
-    
-      void processEntity(Entity entity) {
-        Position position = positionMapper.get(entity);
-        Velocity vel = velocityMapper.get(entity);  
-        position.x += vel.x;
-        position.y += vel.y;
-      }
-  }
-  ```  
-6. Add your system to the world:
-  ```dart  
-  world.addSystem(new MovementSystem());
-  ```
+```dart
+class MovementSystem extends EntityProcessingSystem {
+    ComponentMapper<Position> positionMapper;
+    ComponentMapper<Velocity> velocityMapper;
+  
+    MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
+  
+    void initialize() {
+      positionMapper = new ComponentMapper<Position>(Position, world);
+      velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
+    }
+  
+    void processEntity(Entity entity) {
+      Position position = positionMapper.get(entity);
+      Velocity vel = velocityMapper.get(entity);  
+      position.x += vel.x;
+      position.y += vel.y;
+    }
+}
+```  
+6\. Add your system to the world:
 
-7. Initialize the world:
-  ```dart
-  world.initialize();
-  ```
+```dart  
+world.addSystem(new MovementSystem());
+```
+7\. Initialize the world:
 
-8. In your game loop you then process your systems:
-  ```dart
-  world.process();
-  ```
-  If your game logic requires a delta you can set it by calling:
-  ```dart
-  world.delta = delta;
-  ```
+```dart
+world.initialize();
+```
+8\. In your game loop you then process your systems:
+
+```dart
+world.process();
+```
+If your game logic requires a delta you can set it by calling:
+```dart
+world.delta = delta;
+```
 
 Documentation
 =============
