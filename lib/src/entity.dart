@@ -6,8 +6,9 @@ part of dartemis;
  */
 class Entity {
   /**
-   * The internal id for this entity within the framework. No other entity will have the same ID, but
-   * ID's are however reused so another entity may acquire this ID if the previous entity was deleted.
+   * The internal id for this entity within the framework. No other entity will
+   * have the same ID, but ID's are however reused so another entity may acquire
+   * this ID if the previous entity was deleted.
    */
   final int id;
 
@@ -25,7 +26,8 @@ class Entity {
   }
 
   /**
-   * Get the unique ID of this entity. Because entity instances are reused internally use this to identify between different instances.
+   * Get the unique ID of this entity. Because entity instances are reused
+   * internally use this to identify between different instances.
    */
   int get uniqueId => _uniqueId;
 
@@ -60,10 +62,10 @@ class Entity {
   }
 
   /**
-   * Removes the [component] from this entity.
+   * Removes the [Component] of [Type] [componentType] from this entity.
    */
-  void removeComponent(Component component){
-    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType));
+  void removeComponent(Type componentType){
+    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(componentType));
   }
 
   /**
@@ -80,9 +82,12 @@ class Entity {
   bool get active=> _entityManager.isActive(id);
 
   /**
-   * This is the preferred method to use when retrieving a [Component] from an entity. It will provide good performance.
+   * This is the preferred method to use when retrieving a [Component] from an
+   * entity. It will provide good performance. The recommended way to retrieve
+   * components from an entity is using the [ComponentMapper].
    *
-   * In order to retrieve the component fast you must provide a [ComponentType] instance for the expected component.
+   * In order to retrieve the component fast you must provide a [ComponentType]
+   * instance for the expected component.
    *
    * Returns the [Component].
    */
@@ -91,8 +96,9 @@ class Entity {
   }
 
   /**
-   * Slower retrieval of a [Component] from this entity. Minimize usage of this, but is fine to use e.g. when creating new entities
-   * and setting data in components.
+   * Slower retrieval of a [Component] from this entity. Minimize usage of this,
+   * but is fine to use e.g. when creating new entities and setting data in
+   * components.
    *
    * Returns [:null:] if none is found.
    */
