@@ -171,7 +171,7 @@ class Bag<E> implements ImmutableBag<E> {
   void _growTo(int newCapacity) {
     List oldData = _data;
     _data = new List.fixedLength(newCapacity);
-    Arrays.copy(oldData, 0, _data, 0, oldData.length);
+    _data.setRange(0, oldData.length, oldData);
   }
 
   void _ensureCapacity(int index) {
