@@ -9,7 +9,7 @@ class Bag<E> implements ImmutableBag<E> {
   int _size = 0;
 
   Bag({int capacity: 16}) {
-    _data = new List.fixedLength(capacity);
+    _data = new List(capacity);
   }
 
   /**
@@ -170,7 +170,7 @@ class Bag<E> implements ImmutableBag<E> {
 
   void _growTo(int newCapacity) {
     List oldData = _data;
-    _data = new List.fixedLength(newCapacity);
+    _data = new List(newCapacity);
     _data.setRange(0, oldData.length, oldData);
   }
 
