@@ -12,9 +12,7 @@ class TagManager extends Manager {
   TagManager() : _entitiesByTag = new Map<String, Entity>(),
                  _tagsByEntity = new Map<Entity, String>();
 
-
-
-  void register(String tag, Entity e) {
+  void register(Entity e, String tag) {
     _entitiesByTag[tag] = e;
     _tagsByEntity[e] = tag;
   }

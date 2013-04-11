@@ -53,7 +53,7 @@ class Darteroids {
     player.addToWorld();
 
     TagManager tagManager = new TagManager();
-    tagManager.register(TAG_PLAYER, player);
+    tagManager.register(player, TAG_PLAYER);
     world.addManager(tagManager);
     GroupManager groupManager = new GroupManager();
     world.addManager(groupManager);
