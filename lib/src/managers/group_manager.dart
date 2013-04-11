@@ -4,7 +4,7 @@ part of dartemis;
  * If you need to group your entities together, e.g. tanks going into "units" group or explosions into "effects",
  * then use this manager. You must retrieve it using world instance.
  *
- * An [Entity] can only belong to one group at a time.
+ * An [Entity] can only belong to several groups (0,n) at a time.
  */
 class GroupManager extends Manager {
   final Map<String, Bag<Entity>> _entitiesByGroup;
@@ -95,7 +95,7 @@ class GroupManager extends Manager {
    */
   bool isInGroup(Entity e, String group) {
     Bag<String> groups = _groupsByEntity[e];
-    return groups.contains(group);
+    return (groups != null) && groups.contains(group);
   }
 
   void deleted(Entity e) {
