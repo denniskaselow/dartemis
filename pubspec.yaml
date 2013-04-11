@@ -3,6 +3,6 @@ description: An Entity System Framework for game development. Based on Artemis.
 version: 0.3.3-dev
 author: Dennis Kaselow <Dennis.Kaselow+dartemis@gmail.com>
 homepage: https://github.com/denniskaselow/dartemis
-dependencies:
+dev_dependencies:
   unittest: any
   browser: any
