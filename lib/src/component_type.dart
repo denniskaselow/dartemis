@@ -8,16 +8,11 @@ class ComponentType {
   var _id = 0;
 
   ComponentType() {
-    _init();
-  }
-
-  _init() {
     _bit = _nextBit;
     _nextBit = _nextBit << 1;
     _id = _nextId++;
   }
 
   int get bit => _bit;
-
   int get id => _id;
 }

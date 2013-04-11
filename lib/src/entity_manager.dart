@@ -59,23 +59,17 @@ class EntityManager extends Manager {
    * Check if this entity is active.
    * Active means the entity is being actively processed.
    */
-  bool isActive(int entityId) {
-    return _entities[entityId] != null;
-  }
+  bool isActive(int entityId) => _entities[entityId] != null;
 
   /**
    * Check if the specified entityId is enabled.
    */
-  bool isEnabled(int entityId) {
-    return !_disabled[entityId];
-  }
+  bool isEnabled(int entityId) => !_disabled[entityId];
 
   /**
    * Get a entity with this id.
    */
-  Entity _getEntity(int entityId) {
-    return _entities[entityId];
-  }
+  Entity _getEntity(int entityId) => _entities[entityId];
 
   /**
    * Get how many entities are active in this world.
@@ -117,7 +111,5 @@ class _IdentifierPool {
     return _nextAvailableId++;
   }
 
-  void checkIn(int id) {
-    _ids.add(id);
-  }
+  void checkIn(int id) => _ids.add(id);
 }

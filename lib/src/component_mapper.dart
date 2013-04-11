@@ -18,9 +18,7 @@ class ComponentMapper<A extends Component> {
    * No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
    * however in most scenarios you already know the entity possesses this component.
    */
-  A get(Entity e) {
-    return _components[e.id] as A;
-  }
+  A get(Entity e) => _components[e.id] as A;
 
   /**
    * Fast and safe retrieval of a component for this entity.
@@ -36,8 +34,5 @@ class ComponentMapper<A extends Component> {
   /**
    * Checks if the entity has this type of component.
    */
-  bool has(Entity e) {
-    return getSafe(e) != null;
-  }
-
+  bool has(Entity e) => getSafe(e) != null;
 }

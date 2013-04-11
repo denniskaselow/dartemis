@@ -81,9 +81,7 @@ class Aspect {
    *
    * Returns an empty Aspect that will reject all entities.
    */
-  static Aspect getEmpty() {
-    return new Aspect();
-  }
+  static Aspect getEmpty() => new Aspect();
 
   int get all => _all;
   int get excluded => _excluded;

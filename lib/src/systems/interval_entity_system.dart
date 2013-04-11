@@ -6,14 +6,14 @@ part of dartemis;
  */
 abstract class IntervalEntitySystem extends EntitySystem {
   num _acc = 0;
-  final num interval;
+  final num _interval;
 
-  IntervalEntitySystem(this.interval, Aspect aspect) : super(aspect);
+  IntervalEntitySystem(this._interval, Aspect aspect) : super(aspect);
 
   bool checkProcessing() {
     _acc += world.delta;
-    if(_acc >= interval) {
-      _acc -= interval;
+    if(_acc >= _interval) {
+      _acc -= _interval;
       return true;
     }
     return false;

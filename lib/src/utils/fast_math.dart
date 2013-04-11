@@ -22,34 +22,22 @@ class FastMath {
 
   static const double _atan_a = 0.280872;
 
-  static double cos(final num x) {
-    return _TrigUtil.cos(x);
-  }
-
-  static double sin(num x) {
-    return _TrigUtil.sin(x);
-  }
-
-  static double tan(final num x) {
-    return sin(x) / cos(x);
-  }
+  static double cos(final num x) => _TrigUtil.cos(x);
+  static double sin(num x) => _TrigUtil.sin(x);
+  static double tan(final num x) => sin(x) / cos(x);
 
   static double asin(num x) {
     x = x.toDouble();
     return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
   }
 
-  static double acos(num x) {
-    return HALF_PI - asin(x);
-  }
+  static double acos(num x) => HALF_PI - asin(x);
 
   static double atan(num x) {
     x = x.toDouble();
     return (x.abs() < 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
   }
 
-  static int signum(num x) {
-    return (x < 0) ? -1 : (x > 0) ? 1 : 0;
-  }
+  static int signum(num x) => (x < 0) ? -1 : (x > 0) ? 1 : 0;
 
 }

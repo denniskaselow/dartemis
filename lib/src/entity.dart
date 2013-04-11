@@ -79,7 +79,7 @@ class Entity {
    * Checks if the entity has been deleted from somewhere.
    * Returns [:true:] if it's active.
    */
-  bool get active=> _entityManager.isActive(id);
+  bool get active => _entityManager.isActive(id);
 
   /**
    * This is the preferred method to use when retrieving a [Component] from an
@@ -117,25 +117,26 @@ class Entity {
   }
 
   /**
-   * Adds the entity to the world.
+   * Adds this entity to the world.
    */
-  void addToWorld() {
-    _world.addEntity(this);
-  }
-
-  void deleteFromWorld() {
-    _world.deleteEntity(this);
-  }
-
-  void disable() {
-    _world.disable(this);
-  }
-
-  void changedInWorld() {
-    _world.changedEntity(this);
-  }
-
-  void enable() {
-    _world.enable(this);
-  }
+  void addToWorld() => _world.addEntity(this);
+  /**
+   * Deletes this entity from the world.
+   *
+   * The entity will be removed once world.process or world.processEntityChanges
+   * has been called.
+   */
+  void deleteFromWorld() => _world.deleteEntity(this);
+  /**
+   * Disables this entity in the world.
+   */
+  void disable() => _world.disable(this);
+  /**
+   * Notifies the world that this entity has changed.
+   */
+  void changedInWorld() => _world.changedEntity(this);
+  /**
+   * Enables this entity in the world.
+   */
+  void enable() => _world.enable(this);
 }

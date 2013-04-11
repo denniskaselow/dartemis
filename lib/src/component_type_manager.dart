@@ -11,17 +11,9 @@ class ComponentTypeManager {
       type = new ComponentType();
       _componentTypes[componentType] = type;
     }
-
     return type;
   }
 
-  static int getBit(Type componentType) {
-    return getTypeFor(componentType).bit;
-  }
-
-  static int getId(Type componentType) {
-    return getTypeFor(componentType).id;
-  }
-
-
+  static int getBit(Type componentType) => getTypeFor(componentType).bit;
+  static int getId(Type componentType) => getTypeFor(componentType).id;
 }

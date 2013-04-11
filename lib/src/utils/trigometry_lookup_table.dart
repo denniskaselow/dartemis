@@ -8,21 +8,10 @@ part of dartemis;
  * Thanks to [Riven](http://riven8192.blogspot.com/2009/08/fastmath-sincos-lookup-tables.html "FastMath :: sin/cos lookup")
  */
 class _TrigUtil {
-  static double sin(num rad) {
-    return _sin((rad * _radToIndex).toInt() & _SIN_MASK);
-  }
-
-  static double cos(num rad) {
-    return _cos((rad * _radToIndex).toInt() & _SIN_MASK);
-  }
-
-  static double sinDeg(num deg) {
-    return _sin((deg * _degToIndex).toInt() & _SIN_MASK);
-  }
-
-  static double cosDeg(num deg) {
-    return _cos((deg * _degToIndex).toInt() & _SIN_MASK);
-  }
+  static double sin(num rad) => _sin((rad * _radToIndex).toInt() & _SIN_MASK);
+  static double cos(num rad) => _cos((rad * _radToIndex).toInt() & _SIN_MASK);
+  static double sinDeg(num deg) => _sin((deg * _degToIndex).toInt() & _SIN_MASK);
+  static double cosDeg(num deg) => _cos((deg * _degToIndex).toInt() & _SIN_MASK);
 
   static final double _RAD = Math.PI / 180.0;
   static final double _DEG = 180.0 / Math.PI;
@@ -36,13 +25,8 @@ class _TrigUtil {
   static final List<double> _sinLookUpTable = _createLookUpTable(Math.sin);
   static final List<double> _cosLookUpTable = _createLookUpTable(Math.cos);
 
-  static double _sin(index) {
-    return _sinLookUpTable[index];
-  }
-
-  static double _cos(index) {
-    return _cosLookUpTable[index];
-  }
+  static double _sin(index) => _sinLookUpTable[index];
+  static double _cos(index) => _cosLookUpTable[index];
 
   static _createLookUpTable(double f(num x)) {
     var lookUpTable = new List<double>(_SIN_COUNT);
