@@ -3,6 +3,7 @@ part of dartemis;
 /**
  * If you need to tag any entity, use this. A typical usage would be to tag
  * entities such as "PLAYER", "BOSS" or something that is very unique.
+ * An [Entity] can only belong to one tag (0,1) at a time.
  */
 class TagManager extends Manager {
   final Map<String, Entity> _entitiesByTag;
