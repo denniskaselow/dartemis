@@ -45,7 +45,7 @@ class _TrigUtil {
   }
 
   static _createLookUpTable(double f(num x)) {
-    var lookUpTable = new List<double>.fixedLength(_SIN_COUNT);
+    var lookUpTable = new List<double>(_SIN_COUNT);
     for (int i = 0; i < _SIN_COUNT; i++) {
       lookUpTable[i] = f((i + 0.5) / _SIN_COUNT * _radFull);
     }
