@@ -92,7 +92,7 @@ class World {
   /**
    * Gives you all the systems in this world for possible iteration.
    */
-  ImmutableBag<EntitySystem> get systems => _systemsBag;
+  ReadOnlyBag<EntitySystem> get systems => _systemsBag.readOnly;
 
   /**
    * Adds a system to this world that will be processed by World.process().
@@ -160,18 +160,14 @@ class World {
   /**
    * Adds a [Entity e] to this world.
    */
-  void addEntity(Entity e) {
-    _added.add(e);
-  }
+  void addEntity(Entity e) => _added.add(e);
 
   /**
    * Ensure all systems are notified of changes to this [Entity e]. If you're
    * adding a [Component] to an [Entity] after it's been added to the world, then
    * you need to invoke this method.
    */
-  void changedEntity(Entity e) {
-    _changed.add(e);
-  }
+  void changedEntity(Entity e) => _changed.add(e);
 
   /**
    * Delete the [Entity e] from the world.
@@ -186,17 +182,11 @@ class World {
    * (Re)enable the [Entity e] in the world, after it having being disabled. Won't
    * do anything unless it was already disabled.
    */
-  void enable(Entity e) {
-    _enable.add(e);
-  }
+  void enable(Entity e) => _enable.add(e);
 
   /**
    * Disable the [Entity e] from being processed. Won't delete it, it will
    * continue to exist but won't get processed.
    */
-  void disable(Entity e) {
-    _disable.add(e);
-  }
-
-
+  void disable(Entity e) => _disable.add(e);
 }

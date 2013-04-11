@@ -19,9 +19,7 @@ class TeamManager extends Manager {
 
   void initialize() {}
 
-  String getTeam(String player) {
-    return _teamByPlayer[player];
-  }
+  String getTeam(String player) => _teamByPlayer[player];
 
   void setTeam(String player, String team) {
     removeFromTeam(player);
@@ -36,8 +34,9 @@ class TeamManager extends Manager {
     players.add(player);
   }
 
-  ImmutableBag<String> getPlayers(String team) {
-    return _playersByTeam[team];
+  ReadOnlyBag<String> getPlayers(String team) {
+    var result = _playersByTeam[team];
+    return result == null ? null : result.readOnly;
   }
 
   void removeFromTeam(String player) {

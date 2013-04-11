@@ -149,7 +149,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
     bodyMapper = new ComponentMapper<CircularBody>(CircularBody, world);
   }
 
-  void processEntities(ImmutableBag<Entity> entities) {
+  void processEntities(ReadOnlyBag<Entity> entities) {
     Entity player = tagManager.getEntity(TAG_PLAYER);
     Position playerPos = positionMapper.get(player);
     Status playerStatus = statusMapper.get(player);

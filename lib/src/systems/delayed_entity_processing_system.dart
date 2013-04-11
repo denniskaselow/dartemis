@@ -23,11 +23,16 @@ part of dartemis;
  * for all valid entities.
  */
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
-  num delay;
-  bool running;
-  num acc;
+  num _delay;
+  bool _running;
+  num _acc;
 
   DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
+
+  /**
+   * Check if the system is counting down towards processing.
+   */
+  bool get running => _running;
 
   /**
    * Return the delay until this entity should be processed.
@@ -42,9 +47,9 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
   void processExpired(Entity e);
 
-  void processEntities(ImmutableBag<Entity> entities) {
+  void processEntities(ReadOnlyBag<Entity> entities) {
     entities.forEach((entity) {
-      processDelta(entity, acc);
+      processDelta(entity, _acc);
       num remaining = getRemainingDelay(entity);
       if(remaining <= 0) {
         processExpired(entity);
@@ -63,10 +68,10 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   }
 
   bool checkProcessing() {
-    if(running) {
-      acc += world.delta;
+    if(_running) {
+      _acc += world.delta;
 
-      if(acc >= delay) {
+      if(_acc >= _delay) {
         return true;
       }
     }
@@ -79,9 +84,9 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * Cancels current delayed run and starts a new one.
    */
   void restart(num delay) {
-    this.delay = delay;
-    this.acc = 0;
-    running = true;
+    this._delay = delay;
+    this._acc = 0;
+    _running = true;
   }
 
   /**
@@ -97,7 +102,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * restart itself to run at the offered delay.
    */
   void offerDelay(num delay) {
-    if(!running || delay < getRemainingTimeUntilProcessing()) {
+    if(!_running || delay < getRemainingTimeUntilProcessing()) {
       restart(delay);
     }
   }
@@ -105,9 +110,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /**
    * Get the initial delay that the system was ordered to process entities after.
    */
-  num getInitialTimeDelay() {
-    return delay;
-  }
+  num getInitialTimeDelay() => _delay;
 
   /**
    * Get the time until the system is scheduled to run at.
@@ -115,17 +118,10 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * Use isRunning() before checking this value.
    */
   num getRemainingTimeUntilProcessing() {
-    if(running) {
-      return delay-acc;
+    if(_running) {
+      return _delay-_acc;
     }
     return 0;
-  }
-
-  /**
-   * Check if the system is counting down towards processing.
-   */
-  bool isRunning() {
-    return running;
   }
 
   /**
@@ -133,8 +129,8 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * Call offerDelay or restart to run it again.
    */
   void stop() {
-    this.running = false;
-    this.acc = 0;
+    this._running = false;
+    this._acc = 0;
   }
 
 }

@@ -41,7 +41,7 @@ abstract class EntitySystem implements EntityObserver {
   void process() {
     if(checkProcessing()) {
       begin();
-      processEntities(_actives);
+      processEntities(_actives.readOnly);
       end();
     }
   }
@@ -55,7 +55,7 @@ abstract class EntitySystem implements EntityObserver {
    * Any implementing entity system must implement this method and the logic
    * to process the given [entities] of the system.
    */
-  void processEntities(ImmutableBag<Entity> entities);
+  void processEntities(ReadOnlyBag<Entity> entities);
 
   /**
    * Returns true if the system should be processed, false if not.
@@ -111,17 +111,9 @@ abstract class EntitySystem implements EntityObserver {
     removed(e);
   }
 
-  void added(Entity e) {
-    _check(e);
-  }
-
-  void changed(Entity e) {
-    _check(e);
-  }
-
-  void enabled(Entity e) {
-    _check(e);
-  }
+  void added(Entity e) => _check(e);
+  void changed(Entity e) => _check(e);
+  void enabled(Entity e) => _check(e);
 
   void deleted(Entity e) {
     if (_contains(e)) {

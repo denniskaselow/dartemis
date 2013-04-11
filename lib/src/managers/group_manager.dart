@@ -15,8 +15,6 @@ class GroupManager extends Manager {
 
   void initialize() {}
 
-
-
   /**
    * Set the group of the entity.
    */
@@ -67,28 +65,27 @@ class GroupManager extends Manager {
   /**
    * Get all entities that belong to the provided group.
    */
-  ImmutableBag<Entity> getEntities(String group) {
+  ReadOnlyBag<Entity> getEntities(String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
-    if(entities == null) {
+    if (entities == null) {
       entities = new Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
-    return entities;
+    return entities.readOnly;
   }
 
   /**
    * Returns the groups the entity belongs to, null if none.
    */
-  ImmutableBag<String> getGroups(Entity e) {
-    return _groupsByEntity[e];
+  ReadOnlyBag<String> getGroups(Entity e) {
+    var result = _groupsByEntity[e];
+    return result == null ? null : result.readOnly;
   }
 
   /**
    * Checks if the entity belongs to any group.
    */
-  bool isInAnyGroup(Entity e) {
-    return getGroups(e) != null;
-  }
+  bool isInAnyGroup(Entity e) => getGroups(e) != null;
 
   /**
    * Check if the entity is in the supplied group.
@@ -98,8 +95,6 @@ class GroupManager extends Manager {
     return (groups != null) && groups.contains(group);
   }
 
-  void deleted(Entity e) {
-    removeFromAllGroups(e);
-  }
+  void deleted(Entity e) => removeFromAllGroups(e);
 
 }

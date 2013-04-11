@@ -9,14 +9,9 @@ abstract class VoidEntitySystem extends EntitySystem {
 
   VoidEntitySystem() : super(Aspect.getEmpty());
 
-  void processEntities(ImmutableBag<Entity> entities) {
-    processSystem();
-  }
+  void processEntities(ReadOnlyBag<Entity> entities) => processSystem();
 
   void processSystem();
 
-  bool checkProcessing() {
-    return true;
-  }
-
+  bool checkProcessing() => true;
 }

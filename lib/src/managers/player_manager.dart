@@ -24,12 +24,12 @@ class PlayerManager extends Manager {
     entities.add(e);
   }
 
-  ImmutableBag<Entity> getEntitiesOfPlayer(String player) {
+  ReadOnlyBag<Entity> getEntitiesOfPlayer(String player) {
     Bag<Entity> entities = _entitiesByPlayer[player];
     if(entities == null) {
       entities = new Bag<Entity>();
     }
-    return entities;
+    return entities.readOnly;
   }
 
   void removeFromPlayer(Entity e) {
@@ -42,14 +42,10 @@ class PlayerManager extends Manager {
     }
   }
 
-  String getPlayer(Entity e) {
-    return _playerByEntity[e];
-  }
+  String getPlayer(Entity e) => _playerByEntity[e];
 
   void initialize() {}
 
-  void deleted(Entity e) {
-    removeFromPlayer(e);
-  }
+  void deleted(Entity e) => removeFromPlayer(e);
 
 }

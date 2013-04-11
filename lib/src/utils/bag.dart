@@ -4,35 +4,42 @@ part of dartemis;
  * Collection type a bit like List but does not preserve the order of its
  * entities, speedwise it is very good, especially suited for games.
  */
-class Bag<E> implements ImmutableBag<E> {
+class Bag<E> {
   List _data;
   int _size = 0;
+  ReadOnlyBag<E> _readOnly;
 
-  Bag({int capacity: 16}) {
-    _data = new List(capacity);
+  Bag({int capacity: 16}) : _data = new List(capacity) {
+    _readOnly = new ReadOnlyBag._of(this);
   }
 
   /**
    * Returns the element at the specified [index] in the bag.
    */
-  E operator [](int index) {
-    return _data[index];
-  }
+  E operator [](int index) => _data[index];
 
   /**
    * Returns the number of elements in this bag.
    */
-  int get size {
-    return _size;
-  }
+  int get size => _size;
+
+  /**
+   * Returns a read only view for this bag.
+   */
+  ReadOnlyBag get readOnly => _readOnly;
 
   /**
    * Returns [:true:] if this list contains no elements.
    */
-  bool isEmpty() {
-    return _size == 0;
-  }
+  bool get isEmpty => _size == 0;
 
+  /**
+   * Applies the function [f] to each element of this collection.
+   *
+   * Do not pass functions that add or remove elements because the order of
+   * elements is not preserved and such a function could lead to unexpected
+   * results.
+   */
   void forEach(void f(E element)) {
     for (int i = 0; i < _size; i++) {
       f(_data[i]);
@@ -44,11 +51,12 @@ class Bag<E> implements ImmutableBag<E> {
    * overwriting with the last element and then removing the last element.
    */
   E removeAt(int index) {
-    var o = _data[index]; // make copy of element to remove so it can be
-    // returned
-    _data[index] = _data[--_size]; // overwrite item to remove with last
-    // element
-    _data[_size] = null; // null last element, so gc can do its work
+    // make copy of element to remove so it can be returned
+    var o = _data[index];
+    // overwrite item to remove with last element
+    _data[index] = _data[--_size];
+    // null last element, so gc can do its work
+    _data[_size] = null;
 
     return o;
   }
@@ -57,10 +65,10 @@ class Bag<E> implements ImmutableBag<E> {
    * Remove and return the last object in the bag.
    */
   E removeLast() {
-    if(size > 0) {
-      Object o = _data[--_size];
+    if (_size > 0) {
+      E current = _data[--_size];
       _data[_size] = null;
-      return o;
+      return current;
     }
     return null;
   }
@@ -70,55 +78,50 @@ class Bag<E> implements ImmutableBag<E> {
    * it is present. If the Bag does not contain the element, it is unchanged.
    * Does this by overwriting with the last element and then removing the last
    * element.
-   * Returns [:true:] if this list contained the specified element.
+   * Returns [:true:] if this list contained the specified [element].
    */
-  bool remove(E o) {
+  bool remove(E element) {
     for (int i = 0; i < _size; i++) {
-      Object o1 = _data[i];
+      E current = _data[i];
 
-      if (o == o1) {
-        _data[i] = _data[--_size]; // overwrite item to remove with last
-        // element
-        _data[_size] = null; // null last element, so gc can do its work
+      if (element == current) {
+        // overwrite item to remove with last element
+        _data[i] = _data[--_size];
+        // null last element, so gc can do its work
+        _data[_size] = null;
         return true;
       }
     }
 
     return false;
   }
-
 
   /**
-   * Check if this bag contains this element.
-   *
-   * @param o
-   * @return
+   * Returns [:true:] if this bag contains the [element].
    */
-  bool contains(E o) {
+  bool contains(E element) {
     for(int i = 0; _size > i; i++) {
-      if(o == _data[i]) {
+      if(element == _data[i]) {
         return true;
       }
     }
     return false;
   }
-
-
 
   /**
    * Removes from this Bag all of its elements that are contained in the
    * specified [bag].
    *
-   * Retur s [:true:] if this Bag changed as a result of the call
+   * Returns [:true:] if this Bag changed as a result of the call
    */
   bool removeAll(Bag<E> bag) {
     bool modified = false;
 
     for (int i = 0; i < bag.size; i++) {
-      Object o1 = bag[i];
+      E o1 = bag[i];
 
       for (int j = 0; j < size; j++) {
-        var o2 = _data[j];
+        E o2 = _data[j];
 
         if (o1 == o2) {
           removeAt(j);
@@ -128,39 +131,35 @@ class Bag<E> implements ImmutableBag<E> {
         }
       }
     }
-
     return modified;
   }
 
   /**
    * Returns the number of elements the bag can hold without growing.
    */
-  int get capacity {
-    return _data.length;
-  }
+  int get capacity => _data.length;
 
   /**
-   * Adds the specified element [o] to the end of this bag. if needed also
+   * Adds the specified [element] to the end of this bag. If needed also
    * increases the capacity of the bag.
    */
-  void add(E o) {
+  void add(E element) {
     // is size greater than capacity increase capacity
     if (_size == _data.length) {
       _grow();
     }
-
-    _data[_size++] = o;
+    _data[_size++] = element;
   }
 
   /**
-   * Set element [o] at specified [index] in the bag.
+   * Sets [element] at specified [index] in the bag.
    */
-  void operator []=(int index, E o) {
+  void operator []=(int index, E element) {
     if(index >= _data.length) {
       _growTo(index*2);
     }
     _size = index+1;
-    _data[index] = o;
+    _data[index] = element;
   }
 
   void _grow() {
@@ -169,8 +168,8 @@ class Bag<E> implements ImmutableBag<E> {
   }
 
   void _growTo(int newCapacity) {
-    List oldData = _data;
-    _data = new List(newCapacity);
+    List<E> oldData = _data;
+    _data = new List<E>(newCapacity);
     _data.setRange(0, oldData.length, oldData);
   }
 
@@ -179,7 +178,6 @@ class Bag<E> implements ImmutableBag<E> {
       _growTo(index*2);
     }
   }
-
 
   /**
    * Removes all of the elements from this bag. The bag will be empty after
@@ -190,7 +188,6 @@ class Bag<E> implements ImmutableBag<E> {
     for (int i = 0; i < _size; i++) {
       _data[i] = null;
     }
-
     _size = 0;
   }
 
@@ -203,11 +200,6 @@ class Bag<E> implements ImmutableBag<E> {
     }
   }
 
-  String toString() {
-    return Collections.collectionToString(_data);
-  }
-
-  bool isIndexWithinBounds(int index) {
-    return index < capacity;
-  }
+  bool isIndexWithinBounds(int index) => index < capacity;
+  String toString() => Collections.collectionToString(_data);
 }

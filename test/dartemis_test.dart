@@ -341,7 +341,31 @@ main() {
       expect(sut.isInGroup(entity00, 'A'), equals(false));
     });
   });
-  
+  group('Bag tests', () {
+    Bag<String> sut;
+    setUp(() {
+      sut = new Bag<String>();
+      sut.add('A');
+      sut.add('B');
+    });
+    test('removing an element', () {
+      sut.remove('A');
+      expect(sut.contains('A'), equals(false));
+      expect(sut.contains('B'), equals(true));
+      expect(sut.size, equals(1));
+    });
+    test('removing at position', () {
+      sut.removeAt(0);
+      expect(sut.contains('A'), equals(false));
+      expect(sut.contains('B'), equals(true));
+      expect(sut.size, equals(1));
+    });
+    test('clear', () {
+      sut.clear();
+      expect(sut.size, equals(0));
+    });
+  });
+
 }
 
 typedef void EntitySystemStarter(EntitySystem es);
@@ -365,7 +389,7 @@ class TestEntitySystem extends EntitySystem {
   var expectedEntities;
   TestEntitySystem(Aspect aspect, this.expectedEntities):super(aspect) {}
 
-  void processEntities(ImmutableBag<Entity> entities) {
+  void processEntities(ReadOnlyBag<Entity> entities) {
     int length = expectedEntities.length;
     expect(entities.size, length);
     for (int i = 0; i < length; i++) {
@@ -374,7 +398,4 @@ class TestEntitySystem extends EntitySystem {
   }
 
   bool checkProcessing() => true;
-
-
 }
-
