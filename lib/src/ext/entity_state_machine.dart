@@ -2,7 +2,7 @@ part of dartemis;
 
 // based on http://www.richardlord.net/blog/finite-state-machines-with-ash
 
-class EntityStateComponent extends Component {
+class EntityStateComponent implements Component {
   EntityStateMachine fsm;
 
   EntityStateComponent._();
@@ -85,6 +85,8 @@ typedef Component ComponentProviderF(Entity e);
 typedef dynamic ComponentProviderId();
 
 class ComponentProvider {
+  static nullId() => null;
+
   /// Type of the provided Component
   final ComponentType type;
 
@@ -92,7 +94,7 @@ class ComponentProvider {
 
   final ComponentProviderId id;
 
-  ComponentProvider(Type ctype, this.f, this.id) : type = ComponentTypeManager.getTypeFor(ctype);
+  ComponentProvider(Type ctype, this.f, [this.id = nullId]) : type = ComponentTypeManager.getTypeFor(ctype);
 
   factory ComponentProvider.singleton(Component c) {
     return new ComponentProvider(c.runtimeType, (e) => c, () => c);
