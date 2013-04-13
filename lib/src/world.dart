@@ -18,7 +18,7 @@ class World {
   final Bag<Entity> _disable = new Bag<Entity>();
 
   final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
-  final Bag<EntitySystem> _systemsBag= new Bag<EntitySystem>();
+  final List<EntitySystem> _systemsList= new List<EntitySystem>();
 
   final Map<Type, Manager> _managers = new Map<Type, Manager>();
   final Bag<Manager> _managersBag = new Bag<Manager>();
@@ -36,7 +36,7 @@ class World {
    */
   void initialize() {
     _managersBag.forEach((manager) => manager.initialize());
-    _systemsBag.forEach((system) => system.initialize());
+    _systemsList.forEach((system) => system.initialize());
   }
 
   /**
@@ -92,7 +92,7 @@ class World {
   /**
    * Gives you all the systems in this world for possible iteration.
    */
-  ReadOnlyBag<EntitySystem> get systems => _systemsBag.readOnly;
+  ReadOnlyBag<EntitySystem> get systems => new Bag.from(_systemsList).readOnly;
 
   /**
    * Adds a system to this world that will be processed by World.process().
@@ -103,7 +103,7 @@ class World {
     system._passive = passive;
 
     _systems[system.runtimeType] = system;
-    _systemsBag.add(system);
+    _systemsList.add(system);
 
     return system;
   }
@@ -113,7 +113,7 @@ class World {
    */
   void deleteSystem(EntitySystem system) {
     _systems.remove(system.runtimeType);
-    _systemsBag.remove(system);
+    _systemsList.remove(system);
   }
 
   /**
@@ -129,7 +129,7 @@ class World {
   void _check(Bag<Entity> entities, void perform(EntityObserver, Entity)) {
     entities.forEach((entity) {
       _managersBag.forEach((manager) => perform(manager, entity));
-      _systemsBag.forEach((system) => perform(system, entity));
+      _systemsList.forEach((system) => perform(system, entity));
     });
     entities.clear();
   }
@@ -140,7 +140,7 @@ class World {
   void process() {
     processEntityChanges();
 
-    _systemsBag.forEach((system) {
+    _systemsList.forEach((system) {
       if (!system.passive) {
         system.process();
       }

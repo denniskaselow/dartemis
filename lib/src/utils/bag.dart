@@ -14,6 +14,14 @@ class Bag<E> {
   }
 
   /**
+   * Creates a new [Bag] with the elements of [iterable].
+   */
+  Bag.from(Iterable<E> iterable) : _data = iterable.toList(growable: false),
+                                   _size = iterable.length {
+    _readOnly = new ReadOnlyBag._of(this);
+  }
+
+  /**
    * Returns the element at the specified [index] in the bag.
    */
   E operator [](int index) => _data[index];
