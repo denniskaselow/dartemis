@@ -38,5 +38,6 @@ part 'src/managers/group_manager.dart';
 part 'src/managers/player_manager.dart';
 part 'src/managers/tag_manager.dart';
 part 'src/managers/team_manager.dart';
+part 'src/ext/entity_state_machine.dart';
 
 part 'src/world.dart';
