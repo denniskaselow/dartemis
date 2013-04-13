@@ -378,7 +378,7 @@ main() {
 
   group('FiniteStateMachine tests',(){
     var pA = new ComponentProvider(ComponentA, (e) => new ComponentA(), () => "A");
-    var pB = new ComponentProvider.singleton(new ComponentB());
+    var pB = new ComponentProvider(ComponentB, (e) => new ComponentB(), () => "B");
     var pC = new ComponentProvider(ComponentC, (e) => new ComponentC(), () => "C");
     var cnt = 0;
     var esr = new EntityStateRepository()

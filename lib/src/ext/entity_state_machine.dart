@@ -68,7 +68,7 @@ class EntityStateRepository {
       // (not previously removed because same provider.id or managed outside of the state machine)
       next.forEach((provider){
         if (e.getComponent(provider.type) == null) {
-          e.addComponent(provider.f(e));
+          e.addComponent(provider.createComponent(e));
         }
       });
       e.changedInWorld();
@@ -77,10 +77,10 @@ class EntityStateRepository {
 }
 
 /**
- * return a component that can be added to the entity [e]
+ * Creates a component that can be added to the entity [e]
  * (but it should not add component to entity [e]).
  */
-typedef Component ComponentProviderF(Entity e);
+typedef Component CreateComponent(Entity e);
 
 /**
  * Returns an identifier that is used to determine whether two component providers will
@@ -100,15 +100,19 @@ class ComponentProvider {
   /// Type of the provided Component
   final ComponentType type;
 
-  final ComponentProviderF f;
+  final CreateComponent createComponent;
 
   final ComponentProviderId id;
 
-  ComponentProvider(Type ctype, this.f, [this.id = nullId]) : type = ComponentTypeManager.getTypeFor(ctype);
-
-  factory ComponentProvider.singleton(Component c) {
-    return new ComponentProvider(c.runtimeType, (e) => c, () => c);
-  }
+  /**
+   * Creates a new [ComponentProvider].
+   *
+   * The [createComponent] alsways has to create a [Component] that is returned
+   * using the factory constructor of that [Component]. Do not return the same
+   * instance for multiple calls, because it will be added to [FreeComponents]
+   * when it gets removed from the entity on a state change.
+   */
+  ComponentProvider(Type ctype, this.createComponent, [this.id = nullId]) : type = ComponentTypeManager.getTypeFor(ctype);
 }
 
 class EntityState {
