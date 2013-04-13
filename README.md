@@ -16,6 +16,7 @@ Some useful links about what an Entity System/Entity Component System is:
 
 * http://piemaster.net/2011/07/entity-component-artemis/
 * http://t-machine.org/index.php/2007/09/03/entity-systems-are-the-future-of-mmog-development-part-1/ 
+* http://www.richardlord.net/blog/what-is-an-entity-framework
 
 Getting started
 ===============
@@ -118,3 +119,7 @@ GitHub Space Off
 A game originally created for the GitHub Game Off 2012  
 [Source Code](https://github.com/denniskaselow/game-off-2012)  
 [Playable version](http://denniskaselow.github.com/game-off-2012/)
+
+Contributors
+============
+* [David Bernard](https://github.com/davidB) - EntityStateMachine and other additions
