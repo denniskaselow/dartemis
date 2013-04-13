@@ -403,7 +403,7 @@ main() {
       ..registerState("stateCD4", new EntityState()
         ..add(pC)
         ..add(new ComponentProvider(ComponentD, (e) => new ComponentD(4), () => cnt++))
-      )
+        )
       ;
     var world = new World();
     EntityStateMachine sut;
@@ -454,6 +454,12 @@ main() {
       sut.currentState = "stateD3";
       expect((e.getComponentByClass(ComponentD) as ComponentD).d, equals(33));
     });
+    test('states change replace Component if ComponentProvider returns different id', (){
+      sut = new EntityStateMachine(e, "stateCD3", esr);
+
+      sut.currentState = "stateCD4";
+      expect((e.getComponentByClass(ComponentD) as ComponentD).d, equals(4));
+    });
     test('states change keep Component if its not part of current state', (){
       sut = new EntityStateMachine(e, "stateAB", esr);
       e.addComponent(new ComponentD(33));
@@ -477,7 +483,7 @@ main() {
       sut.currentState = "stateAC";
       expect(e.getComponentByClass(ComponentB), isNull);
     });
-    
+
   });
 }
 
@@ -497,8 +503,12 @@ class ComponentC implements Component {
 }
 class ComponentD implements Component {
   int d = 0;
-  ComponentD._(this.d);
-  factory ComponentD(int d) => new Component(ComponentD, () => new ComponentD._(d));
+  ComponentD._();
+  factory ComponentD(int d) {
+    var component = new Component(ComponentD, () => new ComponentD._());
+    component.d = d;
+    return component;
+  }
 }
 class MockEntitySystem extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
