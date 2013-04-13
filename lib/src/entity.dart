@@ -20,7 +20,7 @@ class Entity {
   EntityManager _entityManager;
   ComponentManager _componentManager;
 
-  Entity(this._world, this.id) {
+  Entity._(this._world, this.id) {
     _entityManager = _world.entityManager;
     _componentManager = _world.componentManager;
   }

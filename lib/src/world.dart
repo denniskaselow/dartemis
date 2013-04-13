@@ -135,7 +135,7 @@ class World {
   }
 
   /**
-   * Process all non-passive systems.
+   * Processes all changes to entities and executes all non-passive systems.
    */
   void process() {
     processEntityChanges();
@@ -147,6 +147,9 @@ class World {
     });
   }
 
+  /**
+   *Processes all changes to entities.
+   */
   void processEntityChanges() {
     _check(_added, (observer, entity) => observer.added(entity));
     _check(_changed, (observer, entity) => observer.changed(entity));
@@ -155,6 +158,21 @@ class World {
     _check(_deleted, (observer, entity) => observer.deleted(entity));
 
     _componentManager.clean();
+  }
+
+  /**
+   * Removes all entities from the world.
+   *
+   * Every entity and component has to be created anew. Make sure not to reuse
+   * [Component]s that were added to an [Entity] and referenced in you code
+   * because they will be added to a free list and might be overwritten once a
+   * new [Component] of that type is created.
+   */
+  void deleteAllEntities() {
+    entityManager._entities.forEach((entity) {
+      deleteEntity(entity);
+    });
+    processEntityChanges();
   }
 
   /**

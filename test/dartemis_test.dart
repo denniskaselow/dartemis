@@ -272,6 +272,16 @@ main() {
 
       manager.getLogs(callsTo('initialize')).verify(happenedExactly(1));
     });
+    test('world deletes all entites', () {
+      world.initialize();
+      world.createEntity().addToWorld();
+      world.createEntity().addToWorld();
+      world.process();
+
+      expect(world.entityManager.activeEntityCount, equals(2));
+      world.deleteAllEntities();
+      expect(world.entityManager.activeEntityCount, equals(0));
+    });
   });
   group('FastMath tests', () {
     compareFunctions(double mathFunc(num arg), double fastMathFunc(num arg1)) {
