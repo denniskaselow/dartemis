@@ -120,6 +120,6 @@ A game originally created for the GitHub Game Off 2012
 [Source Code](https://github.com/denniskaselow/game-off-2012)  
 [Playable version](http://denniskaselow.github.com/game-off-2012/)
 
-Contributors
-============
-* [David Bernard](https://github.com/davidB) - EntityStateMachine and other additions
+Add-ons
+=======
+* [dartemis_addons](https://github.com/davidB/dartemis_addons) - A set of addons to use with dartemis (like EntityStateMachine, ...)
