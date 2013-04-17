@@ -6,13 +6,13 @@ part of dartemis;
  * Based on <http://www.richardlord.net/blog/finite-state-machines-with-ash>
  */
 class EntityStateComponent implements Component {
-  String _currentState;
-  String _previousState;
-  Map<String, EntityState> _states;
+  int _currentState;
+  int _previousState;
+  Map<int, EntityState> _states;
 
   /// the name of the 'virtual' state (if != currentState, then it be after next
   /// [EntityStateSystem.process()]
-  String state;
+  int state;
 
   /// the name of the current state.
   get currentState => _currentState;
@@ -22,7 +22,7 @@ class EntityStateComponent implements Component {
 
   EntityStateComponent._();
   static _ctor() => new EntityStateComponent._();
-  factory EntityStateComponent(String startState, Map<String, EntityState> states) {
+  factory EntityStateComponent(int startState, Map<int, EntityState> states) {
     var c = new Component(EntityStateComponent, _ctor);
     c._currentState = null;
     c._previousState = null;
