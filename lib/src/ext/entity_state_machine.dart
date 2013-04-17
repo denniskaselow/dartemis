@@ -71,6 +71,9 @@ class EntityStateRepository {
           e.addComponent(provider.createComponent(e));
         }
       });
+      next.modifiers.forEach((modifier){
+        modifier.applyE(e);
+      });
       e.changedInWorld();
     }
   }
@@ -95,6 +98,8 @@ typedef Component CreateComponent(Entity e);
 typedef dynamic ComponentProviderId();
 
 class ComponentProvider {
+  static int _cnt = -1000000;
+  static alwaysNewId() => _cnt++;
   static nullId() => null;
 
   /// Type of the provided Component
@@ -115,19 +120,45 @@ class ComponentProvider {
   ComponentProvider(Type ctype, this.createComponent, [this.id = nullId]) : type = ComponentTypeManager.getTypeFor(ctype);
 }
 
-class EntityState {
-  var _componentProviderByType = new Bag<ComponentProvider>();
-  var _indices = new Set<int>();
+/**
+ * Creates a component that can be added to the entity [e]
+ * (but it should not add component to entity [e]).
+ */
+typedef void ModifyComponent<T>(T c);
 
-  EntityState add(ComponentProvider provider) {
+class ComponentModifier<T> {
+  final ComponentType type;
+  final ModifyComponent<T> modifyComponent;
+
+  //TODO use generic to define ctype and secure that ctype == T
+  //(see https://code.google.com/p/dart/source/browse/branches/bleeding_edge/dart/tests/language/type_parameter_literal_test.dart)
+  ComponentModifier(Type ctype, this.modifyComponent) : type = ComponentTypeManager.getTypeFor(ctype);
+
+  void applyE(Entity e) {
+    var c = e.getComponent(type);
+    applyC(e.getComponent(type));
+  }
+  void applyC(T c) {
+    if (c != null) modifyComponent(c);
+  }
+}
+
+class EntityState {
+  final _componentProviderByType = new Bag<ComponentProvider>();
+  final _indicesP = new Set<int>();
+
+  final modifiers = new List<ComponentModifier>();
+
+  void add(ComponentProvider provider) {
     int index = provider.type.id;
     _componentProviderByType[index] = provider;
-    _indices.add(index);
+    _indicesP.add(index);
   }
 
   void forEach(void f(ComponentProvider)) {
-    _indices.forEach((index) => f(_componentProviderByType[index]));
+    _indicesP.forEach((index) => f(_componentProviderByType[index]));
   }
 
   ComponentProvider getByType(ComponentType type) => _componentProviderByType[type.id];
+
 }
