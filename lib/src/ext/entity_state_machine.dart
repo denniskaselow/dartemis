@@ -1,57 +1,80 @@
 part of dartemis;
 
 /**
- * A component containing an [EntityStateMachine]. Setting [fsm.currentState]
- * will add and remove [Component]s as defined in the [EntityStateMachine].
+ * A component containing information about [EntityState] to used for the component.
  *
  * Based on <http://www.richardlord.net/blog/finite-state-machines-with-ash>
  */
 class EntityStateComponent implements Component {
-  EntityStateMachine fsm;
+  int _currentState;
+  int _previousState;
+  Map<int, EntityState> _states;
+
+  /// the name of the 'virtual' state (if != currentState, then it be after next
+  /// [EntityStateSystem.process()]
+  int state;
+
+  /// the name of the current state.
+  get currentState => _currentState;
+  /// the name of the previous state (before last [EntityStateSystem.process()])
+  get previousState => _previousState;
+
 
   EntityStateComponent._();
   static _ctor() => new EntityStateComponent._();
-  factory EntityStateComponent(EntityStateMachine fsm) {
+  factory EntityStateComponent(int startState, Map<int, EntityState> states) {
     var c = new Component(EntityStateComponent, _ctor);
-    c.fsm = fsm;
+    c._currentState = null;
+    c._previousState = null;
+    c._states = states;
+    c.state = startState;
     return c;
   }
 }
 
-class EntityStateMachine {
-  Entity _entity;
-  String _currentState;
-  EntityStateRepository _repo;
+/**
+ * A System applying [EntityState] on [Entity] based on its [EntityStateComponent].
+ * Applying = added/removed/modified [Component] of the [Entity].
+ * The System will update [EntityStateComponent.currentState] and
+ * [EntityStateComponent.previousState].
+ *
+ * Based on <http://www.richardlord.net/blog/finite-state-machines-with-ash> but
+ * without the EntityStateMachine, because :
+ *
+ * * [EntityState] changes are applying only on existing [Entity]
+ *   via [EntityProcessingSystem] behavior of [EntityStateSystem].
+ * * If a [EntitySystem] change [EntityStateComponent.state],
+ *   the [Component] of [Entity] aren't added/modify/removed, so internal
+ *   [ComponentMapper] of the System aren't impacted, and Aspect constraints
+ *   of the System are keep.
+ * * Other [EntitySystem] can compare the value of
+ *   [EntityStateComponent.previousState] and [EntityStateComponent.currentState]
+ *   to check if state has been changed since last process (to trigger some
+ *   modifications).
+ * * More EntitySystem way of doing (IMHO)
+ */
+class EntityStateSystem extends EntityProcessingSystem {
+  ComponentMapper<EntityStateComponent> _escMapper;
 
-  /**
-   * The [EntityStateMachine] should only be used in an [EntityStateComponent].
-   *
-   * Using it on it's own will lead to undeterministic behaviour when the
-   * [Entity] is deleted from the world.
-   */
-  EntityStateMachine(this._entity, String startState, this._repo) {
-    currentState = startState;
+  EntityStateSystem() : super(Aspect.getAspectForAllOf([EntityStateComponent]));
+
+  void initialize(){
+    _escMapper = new ComponentMapper<EntityStateComponent>(EntityStateComponent, world);
   }
 
-  Entity get entity => _entity;
-  String get currentState => _currentState;
-  void set currentState(String nextState) {
-    _repo._changeStateOf(_entity, _currentState, nextState);
-    _currentState = nextState;
-  }
-}
-
-class EntityStateRepository {
-  var _states = new Map<String, EntityState>();
-
-  void registerState(String name, EntityState state) {
-    _states[name] = state;
+  void processEntity(Entity entity) {
+    var esc = _escMapper.get(entity);
+    esc._previousState = esc._currentState;
+    if (esc.state != null && esc.state != esc.currentState){
+      var current = esc._states[esc.currentState];
+      var next = esc._states[esc.state];
+      assert(next != null);//, "state '${next}' is not defined");
+      _changeStateOf(entity, current, next);
+      esc._currentState = esc.state;
+    }
   }
 
-  _changeStateOf(Entity e, String currentState, String nextState) {
-    var current = _states[currentState];
-    var next = _states[nextState];
-    assert(next != null);//, "state '${next}' is not defined");
+  void _changeStateOf(Entity e, EntityState current, EntityState next) {
     if (current == next) {
       // nothing to do
     } else {
@@ -70,6 +93,9 @@ class EntityStateRepository {
         if (e.getComponent(provider.type) == null) {
           e.addComponent(provider.createComponent(e));
         }
+      });
+      next.modifiers.forEach((modifier){
+        modifier.applyE(e);
       });
       e.changedInWorld();
     }
@@ -95,6 +121,8 @@ typedef Component CreateComponent(Entity e);
 typedef dynamic ComponentProviderId();
 
 class ComponentProvider {
+  static int _cnt = -1000000;
+  static alwaysNewId() => _cnt++;
   static nullId() => null;
 
   /// Type of the provided Component
@@ -115,19 +143,45 @@ class ComponentProvider {
   ComponentProvider(Type ctype, this.createComponent, [this.id = nullId]) : type = ComponentTypeManager.getTypeFor(ctype);
 }
 
-class EntityState {
-  var _componentProviderByType = new Bag<ComponentProvider>();
-  var _indices = new Set<int>();
+/**
+ * Creates a component that can be added to the entity [e]
+ * (but it should not add component to entity [e]).
+ */
+typedef void ModifyComponent<T>(T c);
 
-  EntityState add(ComponentProvider provider) {
+class ComponentModifier<T> {
+  final ComponentType type;
+  final ModifyComponent<T> modifyComponent;
+
+  //TODO use generic to define ctype and secure that ctype == T
+  //(see https://code.google.com/p/dart/source/browse/branches/bleeding_edge/dart/tests/language/type_parameter_literal_test.dart)
+  ComponentModifier(Type ctype, this.modifyComponent) : type = ComponentTypeManager.getTypeFor(ctype);
+
+  void applyE(Entity e) {
+    var c = e.getComponent(type);
+    applyC(e.getComponent(type));
+  }
+  void applyC(T c) {
+    if (c != null) modifyComponent(c);
+  }
+}
+
+class EntityState {
+  final _componentProviderByType = new Bag<ComponentProvider>();
+  final _indicesP = new Set<int>();
+
+  final modifiers = new List<ComponentModifier>();
+
+  void add(ComponentProvider provider) {
     int index = provider.type.id;
     _componentProviderByType[index] = provider;
-    _indices.add(index);
+    _indicesP.add(index);
   }
 
   void forEach(void f(ComponentProvider)) {
-    _indices.forEach((index) => f(_componentProviderByType[index]));
+    _indicesP.forEach((index) => f(_componentProviderByType[index]));
   }
 
   ComponentProvider getByType(ComponentType type) => _componentProviderByType[type.id];
+
 }
