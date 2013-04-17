@@ -1,57 +1,80 @@
 part of dartemis;
 
 /**
- * A component containing an [EntityStateMachine]. Setting [fsm.currentState]
- * will add and remove [Component]s as defined in the [EntityStateMachine].
+ * A component containing information about [EntityState] to used for the component.
  *
  * Based on <http://www.richardlord.net/blog/finite-state-machines-with-ash>
  */
 class EntityStateComponent implements Component {
-  EntityStateMachine fsm;
+  String _currentState;
+  String _previousState;
+  Map<String, EntityState> _states;
+
+  /// the name of the 'virtual' state (if != currentState, then it be after next
+  /// [EntityStateSystem.process()]
+  String state;
+
+  /// the name of the current state.
+  get currentState => _currentState;
+  /// the name of the previous state (before last [EntityStateSystem.process()])
+  get previousState => _previousState;
+
 
   EntityStateComponent._();
   static _ctor() => new EntityStateComponent._();
-  factory EntityStateComponent(EntityStateMachine fsm) {
+  factory EntityStateComponent(String startState, Map<String, EntityState> states) {
     var c = new Component(EntityStateComponent, _ctor);
-    c.fsm = fsm;
+    c._currentState = null;
+    c._previousState = null;
+    c._states = states;
+    c.state = startState;
     return c;
   }
 }
 
-class EntityStateMachine {
-  Entity _entity;
-  String _currentState;
-  EntityStateRepository _repo;
+/**
+ * A System applying [EntityState] on [Entity] based on its [EntityStateComponent].
+ * Applying = added/removed/modified [Component] of the [Entity].
+ * The System will update [EntityStateComponent.currentState] and
+ * [EntityStateComponent.previousState].
+ *
+ * Based on <http://www.richardlord.net/blog/finite-state-machines-with-ash> but
+ * without the EntityStateMachine, because :
+ *
+ * * [EntityState] changes are applying only on existing [Entity]
+ *   via [EntityProcessingSystem] behavior of [EntityStateSystem].
+ * * If a [EntitySystem] change [EntityStateComponent.state],
+ *   the [Component] of [Entity] aren't added/modify/removed, so internal
+ *   [ComponentMapper] of the System aren't impacted, and Aspect constraints
+ *   of the System are keep.
+ * * Other [EntitySystem] can compare the value of
+ *   [EntityStateComponent.previousState] and [EntityStateComponent.currentState]
+ *   to check if state has been changed since last process (to trigger some
+ *   modifications).
+ * * More EntitySystem way of doing (IMHO)
+ */
+class EntityStateSystem extends EntityProcessingSystem {
+  ComponentMapper<EntityStateComponent> _escMapper;
 
-  /**
-   * The [EntityStateMachine] should only be used in an [EntityStateComponent].
-   *
-   * Using it on it's own will lead to undeterministic behaviour when the
-   * [Entity] is deleted from the world.
-   */
-  EntityStateMachine(this._entity, String startState, this._repo) {
-    currentState = startState;
+  EntityStateSystem() : super(Aspect.getAspectForAllOf([EntityStateComponent]));
+
+  void initialize(){
+    _escMapper = new ComponentMapper<EntityStateComponent>(EntityStateComponent, world);
   }
 
-  Entity get entity => _entity;
-  String get currentState => _currentState;
-  void set currentState(String nextState) {
-    _repo._changeStateOf(_entity, _currentState, nextState);
-    _currentState = nextState;
-  }
-}
-
-class EntityStateRepository {
-  var _states = new Map<String, EntityState>();
-
-  void registerState(String name, EntityState state) {
-    _states[name] = state;
+  void processEntity(Entity entity) {
+    var esc = _escMapper.get(entity);
+    esc._previousState = esc._currentState;
+    if (esc.state != null && esc.state != esc.currentState){
+      var current = esc._states[esc.currentState];
+      var next = esc._states[esc.state];
+      assert(next != null);//, "state '${next}' is not defined");
+      _changeStateOf(entity, current, next);
+      esc._currentState = esc.state;
+    }
   }
 
-  _changeStateOf(Entity e, String currentState, String nextState) {
-    var current = _states[currentState];
-    var next = _states[nextState];
-    assert(next != null);//, "state '${next}' is not defined");
+  void _changeStateOf(Entity e, EntityState current, EntityState next) {
     if (current == next) {
       // nothing to do
     } else {
