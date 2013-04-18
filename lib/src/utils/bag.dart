@@ -209,5 +209,5 @@ class Bag<E> {
   }
 
   bool isIndexWithinBounds(int index) => index < capacity;
-  String toString() => Collections.collectionToString(_data);
+  String toString() => "[${_data.join(',')}]";
 }
