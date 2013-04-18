@@ -23,7 +23,7 @@ class TagManager extends Manager {
 
   bool isRegistered(String tag) => _entitiesByTag.containsKey(tag);
   Entity getEntity(String tag) => _entitiesByTag[tag];
-  Collection<String> getRegisteredTags() => _tagsByEntity.values;
+  Iterable<String> getRegisteredTags() => _tagsByEntity.values;
 
   void deleted(Entity e) {
     String removedTag = _tagsByEntity.remove(e);
