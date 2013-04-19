@@ -1,12 +1,12 @@
 part of darteroids;
 
-class CircularBody implements Component {
+class CircularBody extends FreeListComponent {
   num radius;
   String color;
 
   CircularBody._();
   factory CircularBody(num radius, String color) {
-    CircularBody body = new Component(CircularBody, _constructor);
+    CircularBody body = new FreeListComponent.of(CircularBody, _constructor);
     body.radius = radius;
     body.color = color;
     return body;
@@ -14,12 +14,12 @@ class CircularBody implements Component {
   static CircularBody _constructor() => new CircularBody._();
 }
 
-class Position implements Component {
+class Position extends FreeListComponent {
   num _x, _y;
 
   Position._();
   factory Position(num x, num y) {
-    Position position = new Component(Position, _constructor);
+    Position position = new FreeListComponent.of(Position, _constructor);
     position.x = x;
     position.y = y;
     return position;
@@ -33,12 +33,12 @@ class Position implements Component {
   get y => _y;
 }
 
-class Velocity implements Component {
+class Velocity extends FreeListComponent {
   num x, y;
 
   Velocity._();
   factory Velocity([num x = 0, num y = 0]) {
-    Velocity velocity = new Component(Velocity, _constructor);
+    Velocity velocity = new FreeListComponent.of(Velocity, _constructor);
     velocity.x = x;
     velocity.y = y;
     return velocity;
@@ -46,26 +46,22 @@ class Velocity implements Component {
   static Velocity _constructor() => new Velocity._();
 }
 
-class PlayerDestroyer implements Component {
+class PlayerDestroyer extends FreeListComponent {
   PlayerDestroyer._();
-  factory PlayerDestroyer() => new Component(PlayerDestroyer, _constructor);
+  factory PlayerDestroyer() => new FreeListComponent.of(PlayerDestroyer, _constructor);
   static PlayerDestroyer _constructor() => new PlayerDestroyer._();
 }
 
-class AsteroidDestroyer implements Component {
+class AsteroidDestroyer extends FreeListComponent {
   AsteroidDestroyer._();
-  factory AsteroidDestroyer() => new Component(AsteroidDestroyer, _constructor);
+  factory AsteroidDestroyer() => new FreeListComponent.of(AsteroidDestroyer, _constructor);
   static AsteroidDestroyer _constructor() => new AsteroidDestroyer._();
 }
 
-class Cannon implements Component {
+class Cannon extends Component {
   bool shoot = false;
   num targetX, targetY;
   num cooldown = 0;
-
-  Cannon._();
-  factory Cannon() => new Component(Cannon, _constructor);
-  static Cannon _constructor() => new Cannon._();
 
   void target(num targetX, num targetY) {
     this.targetX = targetX;
@@ -78,30 +74,23 @@ class Cannon implements Component {
   }
 }
 
-class Decay implements Component {
+class Decay extends FreeListComponent {
   num timer;
 
   Decay._();
   factory Decay(num timer) {
-    Decay decay = new Component(Decay, _constructor);
+    Decay decay = new FreeListComponent.of(Decay, _constructor);
     decay.timer = timer;
     return decay;
   }
   static Decay _constructor() => new Decay._();
 }
 
-class Status implements Component {
+class Status extends Component {
   int lifes;
   num invisiblityTimer;
 
-  Status._();
-  factory Status({int lifes : 1, num invisiblityTimer : 0}) {
-    Status status = new Component(Status, _constructor);
-    status.lifes = lifes;
-    status.invisiblityTimer = invisiblityTimer;
-    return status;
-  }
-  static Status _constructor() => new Status._();
+  Status({this.lifes : 1, this.invisiblityTimer : 0});
 
   bool get invisible => invisiblityTimer > 0;
 }

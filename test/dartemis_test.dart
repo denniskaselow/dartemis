@@ -283,6 +283,29 @@ main() {
       expect(world.entityManager.activeEntityCount, equals(0));
     });
   });
+  group('Component tests', () {
+    World world;
+    setUp(() {
+      world = new World();
+    });
+    test('creating a new Component creates a new instance', () {
+      Entity e = world.createEntity();
+      Component c = new ComponentA();
+      e.addComponent(c);
+      e.removeComponent(ComponentA);
+
+      expect(new ComponentA(), isNot(same(c)));
+    });
+    test('creating a new FreeListComponent reuses a removed instance', () {
+      Entity e = world.createEntity();
+      Component c = new ComponentC();
+      e.addComponent(c);
+
+      expect(new ComponentC(), isNot(same(c)));
+      e.removeComponent(ComponentC);
+      expect(new ComponentC(), same(c));
+    });
+  });
   group('FastMath tests', () {
     compareFunctions(double mathFunc(num arg), double fastMathFunc(num arg1)) {
       double diff;
@@ -397,17 +420,14 @@ main() {
 
 typedef void EntitySystemStarter(EntitySystem es);
 
-class ComponentA implements Component {
-  ComponentA._();
-  factory ComponentA() => new Component(ComponentA, () => new ComponentA._());
+class ComponentA extends Component {
 }
-class ComponentB implements Component {
-  ComponentB._();
-  factory ComponentB() => new Component(ComponentB, () => new ComponentB._());
+class ComponentB extends Component {
+  ComponentB();
 }
-class ComponentC implements Component {
+class ComponentC extends FreeListComponent {
   ComponentC._();
-  factory ComponentC() => new Component(ComponentC, () => new ComponentC._());
+  factory ComponentC() => new FreeListComponent.of(ComponentC, () => new ComponentC._());
 }
 
 class MockEntitySystem extends Mock implements EntitySystem {}

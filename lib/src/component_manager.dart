@@ -13,8 +13,7 @@ class ComponentManager extends Manager {
 
   void _removeComponentsOfEntity(Entity e) {
     _forComponentsOfEntity(e, (components, typeId) {
-      Component component = components[e.id];
-      FreeComponents._add(component, typeId);
+      components[e.id]._removed(typeId);
       components[e.id] = null;
     });
     e._typeBits = 0;
@@ -38,7 +37,7 @@ class ComponentManager extends Manager {
   void _removeComponent(Entity e, ComponentType type) {
     if((e._typeBits & type.bit) != 0) {
       int typeId = type.id;
-      FreeComponents._add(_componentsByType[typeId][e.id], typeId);
+      _componentsByType[typeId][e.id]._removed(typeId);
       _componentsByType[typeId][e.id] = null;
       e._removeTypeBit(type.bit);
     }

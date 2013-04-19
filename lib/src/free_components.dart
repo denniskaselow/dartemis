@@ -6,10 +6,10 @@ part of dartemis;
  */
 class FreeComponents {
 
-  static Bag<Bag<Component>> _freeLists = new Bag<Bag<Component>>();
+  static Bag<Bag<FreeListComponent>> _freeLists = new Bag<Bag<FreeListComponent>>();
 
-  static Component _getComponent(Type componentType, ComponentConstructor componentConstructor) {
-    Bag<Component> freeList = _getFreeList(componentType);
+  static FreeListComponent _getComponent(Type componentType, ComponentConstructor componentConstructor) {
+    Bag<FreeListComponent> freeList = _getFreeList(componentType);
     var component = freeList.removeLast();
     if (null == component) {
       component = componentConstructor();
@@ -17,7 +17,7 @@ class FreeComponents {
     return component;
   }
 
-  static Bag<Component> _getFreeList(Type componentType) {
+  static Bag<FreeListComponent> _getFreeList(Type componentType) {
     var index = ComponentTypeManager.getId(componentType);
     _freeLists._ensureCapacity(index);
     var freeList = _freeLists[index];
@@ -28,15 +28,15 @@ class FreeComponents {
     return freeList;
   }
 
-  static void _add(Component component, int typeId) {
+  static void _add(FreeListComponent component, int typeId) {
     _freeLists[typeId].add(component);
   }
 
   /**
-   * Add a specific [amount] of [Component]s for later reuse.
+   * Add a specific [amount] of [FreeListComponent]s for later reuse.
    */
   static void add(Type componentType, ComponentConstructor componentConstructor, int amount) {
-    Bag<Component> freeList = _getFreeList(componentType);
+    Bag<FreeListComponent> freeList = _getFreeList(componentType);
     for (int i = 0; i < amount; i++) {
       freeList.add(componentConstructor());
     }
