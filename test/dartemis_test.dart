@@ -416,11 +416,6 @@ main() {
       expect(sut.delta, equals(32));
     });
   });
-  group('ObjectPool tests', () {
-    test('creating a new Poolable creates a new instance', () {
-
-    });
-  });
 }
 
 typedef void EntitySystemStarter(EntitySystem es);
