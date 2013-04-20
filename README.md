@@ -120,7 +120,7 @@ darteroids
 ----------
 An very simple example included in the example folder of dartemis:  
 [Source Code](https://github.com/denniskaselow/dartemis/tree/master/example/web)  
-[Playable version](http://denniskaselow.github.com/dartemis/example/darteroids/darteroids.html)
+[Playable version](http://denniskaselow.github.com/dartemis/example/darteroids/web/darteroids.html)
 
 GitHub Space Off
 ----------------
