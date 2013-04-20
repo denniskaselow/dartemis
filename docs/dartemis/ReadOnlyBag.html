@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>ComponentType class / dartemis Library / Dart Documentation</title>
+        <title>ReadOnlyBag&lt;E&gt; class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dartemis" data-type="ComponentType">
+        <body data-library="dartemis" data-type="ReadOnlyBag&amp;lt;E&amp;gt;">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ComponentType.html">ComponentType</a>        <div id="search-box">
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag&lt;E&gt;</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -31,7 +31,7 @@
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
-<li><div class="icon-class"></div><strong>ComponentType</strong></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
 <li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
@@ -48,7 +48,7 @@
 <li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
-<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
+<li><div class="icon-class"></div><strong>ReadOnlyBag&lt;E&gt;</strong></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -57,71 +57,113 @@
 </ul>
 </div>
 <div class="content">
-        <h2><strong>ComponentType</strong>
+        <h2><strong>ReadOnlyBag&lt;E&gt;</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
+<p>A <a class="crossref" href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a> offers a read-only view for an underlying <a class="crossref" href="../dartemis/Bag.html">Bag</a>.</p>
 <pre class="source">
-class ComponentType {
- static var _nextBit = 1;
- static var _nextId = 0;
+class ReadOnlyBag&lt;E&gt; {
+ Bag&lt;E&gt; _bag;
 
- var _bit = 0;
- var _id = 0;
+ ReadOnlyBag._of(this._bag);
 
- ComponentType() {
-   _bit = _nextBit;
-   _nextBit = _nextBit &lt;&lt; 1;
-   _id = _nextId++;
- }
+ /**
+  * Returns the element at [index].
+  */
+ E operator [](int index) =&gt; _bag[index];
 
- int get bit =&gt; _bit;
- int get id =&gt; _id;
+ /**
+  * Returns the size of the underlying [Bag].
+  */
+ int get size =&gt; _bag.size;
+
+ /**
+  * Returns [:true:] if the underlying [Bag] is empty.
+  */
+ bool get isEmpty =&gt; _bag.isEmpty;
+
+ /**
+  * Returns [:true:] if the underlying [Bag] contains the [element].
+  */
+ bool contains(E element) =&gt; _bag.contains(element);
+
+ /**
+  * Applies the function [f] to each element the underlying [Bag].
+  */
+ void forEach(void f(E element)) =&gt; _bag.forEach(f);
 }
 </pre>
-</div>
-<div>
-<h3>Constructors</h3>
-<div class="method"><h4 id="ComponentType">
-<button class="show-code">Code</button>
-new <strong>ComponentType</strong>() <a class="anchor-link" href="#ComponentType"
-              title="Permalink to ComponentType.ComponentType">#</a></h4>
-<div class="doc">
-<pre class="source">
-ComponentType() {
- _bit = _nextBit;
- _nextBit = _nextBit &lt;&lt; 1;
- _id = _nextId++;
-}
-</pre>
-</div>
-</div>
 </div>
 <div>
 <h3>Properties</h3>
-<div class="field"><h4 id="bit">
+<div class="field"><h4 id="isEmpty">
 <button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>bit</strong> <a class="anchor-link"
-            href="#bit"
-            title="Permalink to ComponentType.bit">#</a>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isEmpty</strong> <a class="anchor-link"
+            href="#isEmpty"
+            title="Permalink to ReadOnlyBag&lt;E&gt;.isEmpty">#</a>
         </h4>
         <div class="doc">
+<p>Returns <code>true</code> if the underlying <a class="crossref" href="../dartemis/Bag.html">Bag</a> is empty.</p>
 <pre class="source">
-int get bit =&gt; _bit;
+bool get isEmpty =&gt; _bag.isEmpty;
 </pre>
 </div>
 </div>
-<div class="field"><h4 id="id">
+<div class="field"><h4 id="size">
 <button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>id</strong> <a class="anchor-link"
-            href="#id"
-            title="Permalink to ComponentType.id">#</a>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>size</strong> <a class="anchor-link"
+            href="#size"
+            title="Permalink to ReadOnlyBag&lt;E&gt;.size">#</a>
         </h4>
         <div class="doc">
+<p>Returns the size of the underlying <a class="crossref" href="../dartemis/Bag.html">Bag</a>.</p>
 <pre class="source">
-int get id =&gt; _id;
+int get size =&gt; _bag.size;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="[]">
+<button class="show-code">Code</button>
+<a href="../dartemis/ReadOnlyBag.html">E</a> <strong>operator []</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#[]"
+              title="Permalink to ReadOnlyBag&lt;E&gt;.operator []">#</a></h4>
+<div class="doc">
+<p>Returns the element at 
+<span class="param">index</span>.</p>
+<pre class="source">
+E operator [](int index) =&gt; _bag[index];
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="contains">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="../dartemis/ReadOnlyBag.html">E</a> element) <a class="anchor-link" href="#contains"
+              title="Permalink to ReadOnlyBag&lt;E&gt;.contains">#</a></h4>
+<div class="doc">
+<p>Returns <code>true</code> if the underlying <a class="crossref" href="../dartemis/Bag.html">Bag</a> contains the 
+<span class="param">element</span>.</p>
+<pre class="source">
+bool contains(E element) =&gt; _bag.contains(element);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="forEach">
+<button class="show-code">Code</button>
+void <strong>forEach</strong>(void f(<a href="../dartemis/ReadOnlyBag.html">E</a> element)) <a class="anchor-link" href="#forEach"
+              title="Permalink to ReadOnlyBag&lt;E&gt;.forEach">#</a></h4>
+<div class="doc">
+<p>Applies the function 
+<span class="param">f</span> to each element the underlying <a class="crossref" href="../dartemis/Bag.html">Bag</a>.</p>
+<pre class="source">
+void forEach(void f(E element)) =&gt; _bag.forEach(f);
 </pre>
 </div>
 </div>
@@ -130,7 +172,7 @@ int get id =&gt; _id;
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.830</div>
+          <div>This page was generated at 2013-04-20 15:22:34.917</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

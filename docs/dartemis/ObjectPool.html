@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>ComponentType class / dartemis Library / Dart Documentation</title>
+        <title>ObjectPool class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dartemis" data-type="ComponentType">
+        <body data-library="dartemis" data-type="ObjectPool">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ComponentType.html">ComponentType</a>        <div id="search-box">
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ObjectPool.html">ObjectPool</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -31,7 +31,7 @@
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
-<li><div class="icon-class"></div><strong>ComponentType</strong></li>
+<li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
 <li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
@@ -45,7 +45,7 @@
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
-<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
+<li><div class="icon-class"></div><strong>ObjectPool</strong></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
 <li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
 <li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
@@ -57,71 +57,110 @@
 </ul>
 </div>
 <div class="content">
-        <h2><strong>ComponentType</strong>
+        <h2><strong>ObjectPool</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
+<p>Inspired by <a href="http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/">http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/</a>
+this class stores objects that are no longer used in the game for later reuse.</p>
 <pre class="source">
-class ComponentType {
- static var _nextBit = 1;
- static var _nextId = 0;
+class ObjectPool {
 
- var _bit = 0;
- var _id = 0;
+ static Map&lt;Type, Bag&lt;Poolable&gt;&gt; _objectPools = new Map&lt;Type, Bag&lt;Poolable&gt;&gt;();
 
- ComponentType() {
-   _bit = _nextBit;
-   _nextBit = _nextBit &lt;&lt; 1;
-   _id = _nextId++;
+ /**
+  * Returns a pooled object of [Type] [type]. If there is no object in the pool
+  * it will create a new one using [createPoolable].
+  */
+ static Poolable get(Type type, CreatePoolable createPoolable) {
+   Bag&lt;Poolable&gt; pool = _getPool(type);
+   var obj = pool.removeLast();
+   if (null == obj) {
+     obj = createPoolable();
+   }
+   return obj;
  }
 
- int get bit =&gt; _bit;
- int get id =&gt; _id;
+ static Bag&lt;Poolable&gt; _getPool(Type type) {
+   var pooledObjects = _objectPools[type];
+   if (null == pooledObjects) {
+     pooledObjects = new Bag();
+     _objectPools[type] = pooledObjects;
+   }
+   return pooledObjects;
+ }
+
+ /**
+  * Adds a [poolable] to the [ObjectPool].
+  */
+ static void add(Poolable poolable) {
+   _objectPools[poolable.runtimeType].add(poolable);
+ }
+
+ /**
+  * Add a specific [amount] of [Poolable]s for later reuse.
+  */
+ static void addMany(Type type, CreatePoolable createPoolable, int amount) {
+   Bag&lt;Poolable&gt; pool = _getPool(type);
+   for (int i = 0; i &lt; amount; i++) {
+     pool.add(createPoolable());
+   }
+ }
 }
 </pre>
 </div>
 <div>
-<h3>Constructors</h3>
-<div class="method"><h4 id="ComponentType">
+<h3>Static Methods</h3>
+<div class="method"><h4 id="get">
 <button class="show-code">Code</button>
-new <strong>ComponentType</strong>() <a class="anchor-link" href="#ComponentType"
-              title="Permalink to ComponentType.ComponentType">#</a></h4>
+<a href="../dartemis/Poolable.html">Poolable</a> <strong>get</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> type, <a href="../dartemis/CreatePoolable.html">CreatePoolable</a> createPoolable) <a class="anchor-link" href="#get"
+              title="Permalink to ObjectPool.get">#</a></h4>
 <div class="doc">
+<p>Returns a pooled object of [Type] [type]. If there is no object in the pool
+it will create a new one using 
+<span class="param">createPoolable</span>.</p>
 <pre class="source">
-ComponentType() {
- _bit = _nextBit;
- _nextBit = _nextBit &lt;&lt; 1;
- _id = _nextId++;
+static Poolable get(Type type, CreatePoolable createPoolable) {
+ Bag&lt;Poolable&gt; pool = _getPool(type);
+ var obj = pool.removeLast();
+ if (null == obj) {
+   obj = createPoolable();
+ }
+ return obj;
 }
 </pre>
 </div>
 </div>
-</div>
-<div>
-<h3>Properties</h3>
-<div class="field"><h4 id="bit">
+<div class="method"><h4 id="add">
 <button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>bit</strong> <a class="anchor-link"
-            href="#bit"
-            title="Permalink to ComponentType.bit">#</a>
-        </h4>
-        <div class="doc">
+void <strong>add</strong>(<a href="../dartemis/Poolable.html">Poolable</a> poolable) <a class="anchor-link" href="#add"
+              title="Permalink to ObjectPool.add">#</a></h4>
+<div class="doc">
+<p>Adds a 
+<span class="param">poolable</span> to the <a class="crossref" href="../dartemis/ObjectPool.html">ObjectPool</a>.</p>
 <pre class="source">
-int get bit =&gt; _bit;
+static void add(Poolable poolable) {
+ _objectPools[poolable.runtimeType].add(poolable);
+}
 </pre>
 </div>
 </div>
-<div class="field"><h4 id="id">
+<div class="method"><h4 id="addMany">
 <button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>id</strong> <a class="anchor-link"
-            href="#id"
-            title="Permalink to ComponentType.id">#</a>
-        </h4>
-        <div class="doc">
+void <strong>addMany</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> type, <a href="../dartemis/CreatePoolable.html">CreatePoolable</a> createPoolable, <a href="http://api.dartlang.org/dart_core/int.html">int</a> amount) <a class="anchor-link" href="#addMany"
+              title="Permalink to ObjectPool.addMany">#</a></h4>
+<div class="doc">
+<p>Add a specific 
+<span class="param">amount</span> of <a class="crossref" href="../dartemis/Poolable.html">Poolable</a>s for later reuse.</p>
 <pre class="source">
-int get id =&gt; _id;
+static void addMany(Type type, CreatePoolable createPoolable, int amount) {
+ Bag&lt;Poolable&gt; pool = _getPool(type);
+ for (int i = 0; i &lt; amount; i++) {
+   pool.add(createPoolable());
+ }
+}
 </pre>
 </div>
 </div>
@@ -130,7 +169,7 @@ int get id =&gt; _id;
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.830</div>
+          <div>This page was generated at 2013-04-20 15:22:34.891</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

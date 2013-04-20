@@ -5,7 +5,7 @@
         <title>Entity class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><div class="icon-class"></div><strong>Entity</strong></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
 <li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
-<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -64,8 +68,9 @@ create new entities using World.</p>
 <pre class="source">
 class Entity {
  /**
-  * The internal id for this entity within the framework. No other entity will have the same ID, but
-  * ID's are however reused so another entity may acquire this ID if the previous entity was deleted.
+  * The internal id for this entity within the framework. No other entity will
+  * have the same ID, but ID's are however reused so another entity may acquire
+  * this ID if the previous entity was deleted.
   */
  final int id;
 
@@ -77,13 +82,14 @@ class Entity {
  EntityManager _entityManager;
  ComponentManager _componentManager;
 
- Entity(this._world, this.id) {
+ Entity._(this._world, this.id) {
    _entityManager = _world.entityManager;
    _componentManager = _world.componentManager;
  }
 
  /**
-  * Get the unique ID of this entity. Because entity instances are reused internally use this to identify between different instances.
+  * Get the unique ID of this entity. Because entity instances are reused
+  * internally use this to identify between different instances.
   */
  int get uniqueId =&gt; _uniqueId;
 
@@ -118,10 +124,10 @@ class Entity {
  }
 
  /**
-  * Removes the [component] from this entity.
+  * Removes the [Component] of [Type] [componentType] from this entity.
   */
- void removeComponent(Component component){
-   _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType));
+ void removeComponent(Type componentType){
+   _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(componentType));
  }
 
  /**
@@ -135,12 +141,15 @@ class Entity {
   * Checks if the entity has been deleted from somewhere.
   * Returns [:true:] if it's active.
   */
- bool get active=&gt; _entityManager.isActive(id);
+ bool get active =&gt; _entityManager.isActive(id);
 
  /**
-  * This is the preferred method to use when retrieving a [Component] from an entity. It will provide good performance.
+  * This is the preferred method to use when retrieving a [Component] from an
+  * entity. It will provide good performance. The recommended way to retrieve
+  * components from an entity is using the [ComponentMapper].
   *
-  * In order to retrieve the component fast you must provide a [ComponentType] instance for the expected component.
+  * In order to retrieve the component fast you must provide a [ComponentType]
+  * instance for the expected component.
   *
   * Returns the [Component].
   */
@@ -149,8 +158,9 @@ class Entity {
  }
 
  /**
-  * Slower retrieval of a [Component] from this entity. Minimize usage of this, but is fine to use e.g. when creating new entities
-  * and setting data in components.
+  * Slower retrieval of a [Component] from this entity. Minimize usage of this,
+  * but is fine to use e.g. when creating new entities and setting data in
+  * components.
   *
   * Returns [:null:] if none is found.
   */
@@ -169,45 +179,30 @@ class Entity {
  }
 
  /**
-  * Adds the entity to the world.
+  * Adds this entity to the world.
   */
- void addToWorld() {
-   _world.addEntity(this);
- }
-
- void deleteFromWorld() {
-   _world.deleteEntity(this);
- }
-
- void disable() {
-   _world.disable(this);
- }
-
- void changedInWorld() {
-   _world.changedEntity(this);
- }
-
- void enable() {
-   _world.enable(this);
- }
+ void addToWorld() =&gt; _world.addEntity(this);
+ /**
+  * Deletes this entity from the world.
+  *
+  * The entity will be removed once world.process or world.processEntityChanges
+  * has been called.
+  */
+ void deleteFromWorld() =&gt; _world.deleteEntity(this);
+ /**
+  * Disables this entity in the world.
+  */
+ void disable() =&gt; _world.disable(this);
+ /**
+  * Notifies the world that this entity has changed.
+  */
+ void changedInWorld() =&gt; _world.changedEntity(this);
+ /**
+  * Enables this entity in the world.
+  */
+ void enable() =&gt; _world.enable(this);
 }
 </pre>
-</div>
-<div>
-<h3>Constructors</h3>
-<div class="method"><h4 id="Entity">
-<button class="show-code">Code</button>
-new <strong>Entity</strong>(<a href="../dartemis/World.html">World</a> _world, <a href="http://api.dartlang.org/dart_core/int.html">int</a> id) <a class="anchor-link" href="#Entity"
-              title="Permalink to Entity.Entity">#</a></h4>
-<div class="doc">
-<pre class="source">
-Entity(this._world, this.id) {
- _entityManager = _world.entityManager;
- _componentManager = _world.componentManager;
-}
-</pre>
-</div>
-</div>
 </div>
 <div>
 <h3>Properties</h3>
@@ -221,7 +216,7 @@ final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <st
 <p>Checks if the entity has been deleted from somewhere.
 Returns <code>true</code> if it's active.</p>
 <pre class="source">
-bool get active=&gt; _entityManager.isActive(id);
+bool get active =&gt; _entityManager.isActive(id);
 </pre>
 </div>
 </div>
@@ -232,10 +227,11 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
             title="Permalink to Entity.id">#</a>
         </h4>
         <div class="doc">
-<p>The internal id for this entity within the framework. No other entity will have the same ID, but
-ID's are however reused so another entity may acquire this ID if the previous entity was deleted.</p>
+<p>The internal id for this entity within the framework. No other entity will
+have the same ID, but ID's are however reused so another entity may acquire
+this ID if the previous entity was deleted.</p>
 <pre class="source">
-final int id;
+final int id
 </pre>
 </div>
 </div>
@@ -246,7 +242,8 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
             title="Permalink to Entity.uniqueId">#</a>
         </h4>
         <div class="doc">
-<p>Get the unique ID of this entity. Because entity instances are reused internally use this to identify between different instances.</p>
+<p>Get the unique ID of this entity. Because entity instances are reused
+internally use this to identify between different instances.</p>
 <pre class="source">
 int get uniqueId =&gt; _uniqueId;
 </pre>
@@ -274,11 +271,9 @@ void addComponent(Component component){
 void <strong>addToWorld</strong>() <a class="anchor-link" href="#addToWorld"
               title="Permalink to Entity.addToWorld">#</a></h4>
 <div class="doc">
-<p>Adds the entity to the world.</p>
+<p>Adds this entity to the world.</p>
 <pre class="source">
-void addToWorld() {
- _world.addEntity(this);
-}
+void addToWorld() =&gt; _world.addEntity(this);
 </pre>
 </div>
 </div>
@@ -287,10 +282,9 @@ void addToWorld() {
 void <strong>changedInWorld</strong>() <a class="anchor-link" href="#changedInWorld"
               title="Permalink to Entity.changedInWorld">#</a></h4>
 <div class="doc">
+<p>Notifies the world that this entity has changed.</p>
 <pre class="source">
-void changedInWorld() {
- _world.changedEntity(this);
-}
+void changedInWorld() =&gt; _world.changedEntity(this);
 </pre>
 </div>
 </div>
@@ -299,10 +293,11 @@ void changedInWorld() {
 void <strong>deleteFromWorld</strong>() <a class="anchor-link" href="#deleteFromWorld"
               title="Permalink to Entity.deleteFromWorld">#</a></h4>
 <div class="doc">
+<p>Deletes this entity from the world.</p>
+<p>The entity will be removed once world.process or world.processEntityChanges
+has been called.</p>
 <pre class="source">
-void deleteFromWorld() {
- _world.deleteEntity(this);
-}
+void deleteFromWorld() =&gt; _world.deleteEntity(this);
 </pre>
 </div>
 </div>
@@ -311,10 +306,9 @@ void deleteFromWorld() {
 void <strong>disable</strong>() <a class="anchor-link" href="#disable"
               title="Permalink to Entity.disable">#</a></h4>
 <div class="doc">
+<p>Disables this entity in the world.</p>
 <pre class="source">
-void disable() {
- _world.disable(this);
-}
+void disable() =&gt; _world.disable(this);
 </pre>
 </div>
 </div>
@@ -323,10 +317,9 @@ void disable() {
 void <strong>enable</strong>() <a class="anchor-link" href="#enable"
               title="Permalink to Entity.enable">#</a></h4>
 <div class="doc">
+<p>Enables this entity in the world.</p>
 <pre class="source">
-void enable() {
- _world.enable(this);
-}
+void enable() =&gt; _world.enable(this);
 </pre>
 </div>
 </div>
@@ -335,8 +328,11 @@ void enable() {
 <a href="../dartemis/Component.html">Component</a> <strong>getComponent</strong>(<a href="../dartemis/ComponentType.html">ComponentType</a> type) <a class="anchor-link" href="#getComponent"
               title="Permalink to Entity.getComponent">#</a></h4>
 <div class="doc">
-<p>This is the preferred method to use when retrieving a <a class="crossref" href="../dartemis/Component.html">Component</a> from an entity. It will provide good performance.</p>
-<p>In order to retrieve the component fast you must provide a <a class="crossref" href="../dartemis/ComponentType.html">ComponentType</a> instance for the expected component.</p>
+<p>This is the preferred method to use when retrieving a <a class="crossref" href="../dartemis/Component.html">Component</a> from an
+entity. It will provide good performance. The recommended way to retrieve
+components from an entity is using the <a class="crossref" href="../dartemis/ComponentMapper.html">ComponentMapper</a>.</p>
+<p>In order to retrieve the component fast you must provide a <a class="crossref" href="../dartemis/ComponentType.html">ComponentType</a>
+instance for the expected component.</p>
 <p>Returns the <a class="crossref" href="../dartemis/Component.html">Component</a>.</p>
 <pre class="source">
 Component getComponent(ComponentType type) {
@@ -350,8 +346,9 @@ Component getComponent(ComponentType type) {
 <a href="../dartemis/Component.html">Component</a> <strong>getComponentByClass</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getComponentByClass"
               title="Permalink to Entity.getComponentByClass">#</a></h4>
 <div class="doc">
-<p>Slower retrieval of a <a class="crossref" href="../dartemis/Component.html">Component</a> from this entity. Minimize usage of this, but is fine to use e.g. when creating new entities
-and setting data in components.</p>
+<p>Slower retrieval of a <a class="crossref" href="../dartemis/Component.html">Component</a> from this entity. Minimize usage of this,
+but is fine to use e.g. when creating new entities and setting data in
+components.</p>
 <p>Returns <code>null</code> if none is found.</p>
 <pre class="source">
 Component getComponentByClass(Type componentType) {
@@ -378,14 +375,13 @@ Bag&lt;Component&gt; getComponents([Bag&lt;Component&gt; fillBag]) {
 </div>
 <div class="method"><h4 id="removeComponent">
 <button class="show-code">Code</button>
-void <strong>removeComponent</strong>(<a href="../dartemis/Component.html">Component</a> component) <a class="anchor-link" href="#removeComponent"
+void <strong>removeComponent</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#removeComponent"
               title="Permalink to Entity.removeComponent">#</a></h4>
 <div class="doc">
-<p>Removes the 
-<span class="param">component</span> from this entity.</p>
+<p>Removes the <a class="crossref" href="../dartemis/Component.html">Component</a> of [Type] [componentType] from this entity.</p>
 <pre class="source">
-void removeComponent(Component component){
- _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType));
+void removeComponent(Type componentType){
+ _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(componentType));
 }
 </pre>
 </div>
@@ -421,9 +417,8 @@ String toString() =&gt; "Entity[$id]";
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.895</div>
+          <div>This page was generated at 2013-04-20 15:22:34.802</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

@@ -5,7 +5,7 @@
         <title>FastMath class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><div class="icon-class"></div><strong>FastMath</strong></li>
 <li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
-<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -80,35 +84,23 @@ class FastMath {
 
  static const double _atan_a = 0.280872;
 
- static double cos(final num x) {
-   return _TrigUtil.cos(x);
- }
-
- static double sin(num x) {
-   return _TrigUtil.sin(x);
- }
-
- static double tan(final num x) {
-   return sin(x) / cos(x);
- }
+ static double cos(final num x) =&gt; _TrigUtil.cos(x);
+ static double sin(num x) =&gt; _TrigUtil.sin(x);
+ static double tan(final num x) =&gt; sin(x) / cos(x);
 
  static double asin(num x) {
    x = x.toDouble();
    return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
  }
 
- static double acos(num x) {
-   return HALF_PI - asin(x);
- }
+ static double acos(num x) =&gt; HALF_PI - asin(x);
 
  static double atan(num x) {
    x = x.toDouble();
    return (x.abs() &lt; 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
  }
 
- static int signum(num x) {
-   return (x &lt; 0) ? -1 : (x &gt; 0) ? 1 : 0;
- }
+ static int signum(num x) =&gt; (x &lt; 0) ? -1 : (x &gt; 0) ? 1 : 0;
 
 }
 </pre>
@@ -123,7 +115,7 @@ const <a href="http://api.dartlang.org/dart_core/double.html">double</a>        
         </h4>
         <div class="doc">
 <pre class="source">
-static const double HALF_PI = 0.5 * PI;
+static const double HALF_PI = 0.5 * PI
 </pre>
 </div>
 </div>
@@ -135,7 +127,7 @@ const <a href="http://api.dartlang.org/dart_core/double.html">double</a>        
         </h4>
         <div class="doc">
 <pre class="source">
-static const double PI = Math.PI;
+static const double PI = Math.PI
 </pre>
 </div>
 </div>
@@ -147,7 +139,7 @@ const <a href="http://api.dartlang.org/dart_core/double.html">double</a>        
         </h4>
         <div class="doc">
 <pre class="source">
-static const double SQUARED_PI = PI * PI;
+static const double SQUARED_PI = PI * PI
 </pre>
 </div>
 </div>
@@ -159,7 +151,7 @@ const <a href="http://api.dartlang.org/dart_core/double.html">double</a>        
         </h4>
         <div class="doc">
 <pre class="source">
-static const double THREE_PI_HALVES = TWO_PI - HALF_PI;
+static const double THREE_PI_HALVES = TWO_PI - HALF_PI
 </pre>
 </div>
 </div>
@@ -171,7 +163,7 @@ const <a href="http://api.dartlang.org/dart_core/double.html">double</a>        
         </h4>
         <div class="doc">
 <pre class="source">
-static const double TWO_PI = 2.0 * PI;
+static const double TWO_PI = 2.0 * PI
 </pre>
 </div>
 </div>
@@ -184,9 +176,7 @@ static const double TWO_PI = 2.0 * PI;
               title="Permalink to FastMath.cos">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double cos(final num x) {
- return _TrigUtil.cos(x);
-}
+static double cos(final num x) =&gt; _TrigUtil.cos(x);
 </pre>
 </div>
 </div>
@@ -196,9 +186,7 @@ static double cos(final num x) {
               title="Permalink to FastMath.sin">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double sin(num x) {
- return _TrigUtil.sin(x);
-}
+static double sin(num x) =&gt; _TrigUtil.sin(x);
 </pre>
 </div>
 </div>
@@ -208,9 +196,7 @@ static double sin(num x) {
               title="Permalink to FastMath.tan">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double tan(final num x) {
- return sin(x) / cos(x);
-}
+static double tan(final num x) =&gt; sin(x) / cos(x);
 </pre>
 </div>
 </div>
@@ -233,9 +219,7 @@ static double asin(num x) {
               title="Permalink to FastMath.acos">#</a></h4>
 <div class="doc">
 <pre class="source">
-static double acos(num x) {
- return HALF_PI - asin(x);
-}
+static double acos(num x) =&gt; HALF_PI - asin(x);
 </pre>
 </div>
 </div>
@@ -258,9 +242,7 @@ static double atan(num x) {
               title="Permalink to FastMath.signum">#</a></h4>
 <div class="doc">
 <pre class="source">
-static int signum(num x) {
- return (x &lt; 0) ? -1 : (x &gt; 0) ? 1 : 0;
-}
+static int signum(num x) =&gt; (x &lt; 0) ? -1 : (x &gt; 0) ? 1 : 0;
 </pre>
 </div>
 </div>
@@ -268,9 +250,8 @@ static int signum(num x) {
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.950</div>
+          <div>This page was generated at 2013-04-20 15:22:34.925</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

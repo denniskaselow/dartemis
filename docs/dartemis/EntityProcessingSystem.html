@@ -5,7 +5,7 @@
         <title>EntityProcessingSystem abstract class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
 <li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
-<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -74,9 +78,7 @@ abstract class EntityProcessingSystem extends EntitySystem {
   */
  void processEntity(Entity entity);
 
- void processEntities(ImmutableBag&lt;Entity&gt; entities) {
-   entities.forEach((entity) =&gt; processEntity(entity));
- }
+ void processEntities(ReadOnlyBag&lt;Entity&gt; entities) =&gt; entities.forEach((entity) =&gt; processEntity(entity));
 
  bool checkProcessing() =&gt; true;
 
@@ -122,7 +124,7 @@ get passive =&gt; _passive;
         </h4>
         <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-World world;
+World world
 </pre>
 </div>
 </div>
@@ -135,9 +137,7 @@ void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a c
               title="Permalink to EntityProcessingSystem.added">#</a></h4>
 <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-void added(Entity e) {
- _check(e);
-}
+void added(Entity e) =&gt; _check(e);
 </pre>
 </div>
 </div>
@@ -158,9 +158,7 @@ void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a
               title="Permalink to EntityProcessingSystem.changed">#</a></h4>
 <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-void changed(Entity e) {
- _check(e);
-}
+void changed(Entity e) =&gt; _check(e);
 </pre>
 </div>
 </div>
@@ -211,9 +209,7 @@ void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a
               title="Permalink to EntityProcessingSystem.enabled">#</a></h4>
 <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-void enabled(Entity e) {
- _check(e);
-}
+void enabled(Entity e) =&gt; _check(e);
 </pre>
 </div>
 </div>
@@ -261,7 +257,7 @@ void <strong>process</strong>() <a class="anchor-link" href="#process"
 void process() {
  if(checkProcessing()) {
    begin();
-   processEntities(_actives);
+   processEntities(_actives.readOnly);
    end();
  }
 }
@@ -270,7 +266,7 @@ void process() {
 </div>
 <div class="method"><h4 id="processEntities">
 <button class="show-code">Code</button>
-void <strong>processEntities</strong>(<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; entities) <a class="anchor-link" href="#processEntities"
+void <strong>processEntities</strong>(<a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; entities) <a class="anchor-link" href="#processEntities"
               title="Permalink to EntityProcessingSystem.processEntities">#</a></h4>
 <div class="doc">
 <div class="inherited">
@@ -279,9 +275,7 @@ to process the given
 <span class="param">entities</span> of the system.</p>
 <div class="docs-inherited-from">docs inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div></div>
 <pre class="source">
-void processEntities(ImmutableBag&lt;Entity&gt; entities) {
- entities.forEach((entity) =&gt; processEntity(entity));
-}
+void processEntities(ReadOnlyBag&lt;Entity&gt; entities) =&gt; entities.forEach((entity) =&gt; processEntity(entity));
 </pre>
 </div>
 </div>
@@ -309,9 +303,8 @@ void removed(Entity entity) {}
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.863</div>
+          <div>This page was generated at 2013-04-20 15:22:34.752</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

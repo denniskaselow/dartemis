@@ -5,7 +5,7 @@
         <title>DelayedEntityProcessingSystem abstract class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><div class="icon-class"></div><strong>DelayedEntityProcessingSystem</strong></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
 <li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
-<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -77,11 +81,16 @@ Also, when processing the entities you must also call offerDelay(num delay)
 for all valid entities.</p>
 <pre class="source">
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
- num delay;
- bool running;
- num acc;
+ num _delay;
+ bool _running;
+ num _acc;
 
  DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
+
+ /**
+  * Check if the system is counting down towards processing.
+  */
+ bool get running =&gt; _running;
 
  /**
   * Return the delay until this entity should be processed.
@@ -96,9 +105,9 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
  void processExpired(Entity e);
 
- void processEntities(ImmutableBag&lt;Entity&gt; entities) {
+ void processEntities(ReadOnlyBag&lt;Entity&gt; entities) {
    entities.forEach((entity) {
-     processDelta(entity, acc);
+     processDelta(entity, _acc);
      num remaining = getRemainingDelay(entity);
      if(remaining &lt;= 0) {
        processExpired(entity);
@@ -117,10 +126,10 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
  }
 
  bool checkProcessing() {
-   if(running) {
-     acc += world.delta;
+   if(_running) {
+     _acc += world.delta;
 
-     if(acc &gt;= delay) {
+     if(_acc &gt;= _delay) {
        return true;
      }
    }
@@ -133,9 +142,9 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   * Cancels current delayed run and starts a new one.
   */
  void restart(num delay) {
-   this.delay = delay;
-   this.acc = 0;
-   running = true;
+   this._delay = delay;
+   this._acc = 0;
+   _running = true;
  }
 
  /**
@@ -151,7 +160,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   * restart itself to run at the offered delay.
   */
  void offerDelay(num delay) {
-   if(!running || delay &lt; getRemainingTimeUntilProcessing()) {
+   if(!_running || delay &lt; getRemainingTimeUntilProcessing()) {
      restart(delay);
    }
  }
@@ -159,9 +168,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
  /**
   * Get the initial delay that the system was ordered to process entities after.
   */
- num getInitialTimeDelay() {
-   return delay;
- }
+ num getInitialTimeDelay() =&gt; _delay;
 
  /**
   * Get the time until the system is scheduled to run at.
@@ -169,17 +176,10 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   * Use isRunning() before checking this value.
   */
  num getRemainingTimeUntilProcessing() {
-   if(running) {
-     return delay-acc;
+   if(_running) {
+     return _delay-_acc;
    }
    return 0;
- }
-
- /**
-  * Check if the system is counting down towards processing.
-  */
- bool isRunning() {
-   return running;
  }
 
  /**
@@ -187,8 +187,8 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   * Call offerDelay or restart to run it again.
   */
  void stop() {
-   this.running = false;
-   this.acc = 0;
+   this._running = false;
+   this._acc = 0;
  }
 
 }
@@ -212,30 +212,6 @@ DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
 </div>
 <div>
 <h3>Properties</h3>
-<div class="field"><h4 id="acc">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/num.html">num</a>         <strong>acc</strong> <a class="anchor-link"
-            href="#acc"
-            title="Permalink to DelayedEntityProcessingSystem.acc">#</a>
-        </h4>
-        <div class="doc">
-<pre class="source">
-num acc;
-</pre>
-</div>
-</div>
-<div class="field"><h4 id="delay">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/num.html">num</a>         <strong>delay</strong> <a class="anchor-link"
-            href="#delay"
-            title="Permalink to DelayedEntityProcessingSystem.delay">#</a>
-        </h4>
-        <div class="doc">
-<pre class="source">
-num delay;
-</pre>
-</div>
-</div>
 <div class="field inherited"><h4 id="passive">
 <button class="show-code">Code</button>
 final         <strong>passive</strong> <a class="anchor-link"
@@ -250,13 +226,14 @@ get passive =&gt; _passive;
 </div>
 <div class="field"><h4 id="running">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>running</strong> <a class="anchor-link"
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>running</strong> <a class="anchor-link"
             href="#running"
             title="Permalink to DelayedEntityProcessingSystem.running">#</a>
         </h4>
         <div class="doc">
+<p>Check if the system is counting down towards processing.</p>
 <pre class="source">
-bool running;
+bool get running =&gt; _running;
 </pre>
 </div>
 </div>
@@ -268,7 +245,7 @@ bool running;
         </h4>
         <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-World world;
+World world
 </pre>
 </div>
 </div>
@@ -281,9 +258,7 @@ void <strong>added</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a c
               title="Permalink to DelayedEntityProcessingSystem.added">#</a></h4>
 <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-void added(Entity e) {
- _check(e);
-}
+void added(Entity e) =&gt; _check(e);
 </pre>
 </div>
 </div>
@@ -304,9 +279,7 @@ void <strong>changed</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a
               title="Permalink to DelayedEntityProcessingSystem.changed">#</a></h4>
 <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-void changed(Entity e) {
- _check(e);
-}
+void changed(Entity e) =&gt; _check(e);
 </pre>
 </div>
 </div>
@@ -320,10 +293,10 @@ void changed(Entity e) {
 <div class="docs-inherited-from">docs inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div></div>
 <pre class="source">
 bool checkProcessing() {
- if(running) {
-   acc += world.delta;
+ if(_running) {
+   _acc += world.delta;
 
-   if(acc &gt;= delay) {
+   if(_acc &gt;= _delay) {
      return true;
    }
  }
@@ -366,9 +339,7 @@ void <strong>enabled</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a
               title="Permalink to DelayedEntityProcessingSystem.enabled">#</a></h4>
 <div class="inherited-from">inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div><div class="doc">
 <pre class="source">
-void enabled(Entity e) {
- _check(e);
-}
+void enabled(Entity e) =&gt; _check(e);
 </pre>
 </div>
 </div>
@@ -390,9 +361,7 @@ void end() {}
 <div class="doc">
 <p>Get the initial delay that the system was ordered to process entities after.</p>
 <pre class="source">
-num getInitialTimeDelay() {
- return delay;
-}
+num getInitialTimeDelay() =&gt; _delay;
 </pre>
 </div>
 </div>
@@ -413,8 +382,8 @@ Returns zero (0) if the system is not running.
 Use isRunning() before checking this value.</p>
 <pre class="source">
 num getRemainingTimeUntilProcessing() {
- if(running) {
-   return delay-acc;
+ if(_running) {
+   return _delay-_acc;
  }
  return 0;
 }
@@ -450,19 +419,6 @@ void inserted(Entity e) {
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="isRunning">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>isRunning</strong>() <a class="anchor-link" href="#isRunning"
-              title="Permalink to DelayedEntityProcessingSystem.isRunning">#</a></h4>
-<div class="doc">
-<p>Check if the system is counting down towards processing.</p>
-<pre class="source">
-bool isRunning() {
- return running;
-}
-</pre>
-</div>
-</div>
 <div class="method"><h4 id="offerDelay">
 <button class="show-code">Code</button>
 void <strong>offerDelay</strong>(<a href="http://api.dartlang.org/dart_core/num.html">num</a> delay) <a class="anchor-link" href="#offerDelay"
@@ -478,7 +434,7 @@ offered delay is shorter than the time remaining, the system will
 restart itself to run at the offered delay.</p>
 <pre class="source">
 void offerDelay(num delay) {
- if(!running || delay &lt; getRemainingTimeUntilProcessing()) {
+ if(!_running || delay &lt; getRemainingTimeUntilProcessing()) {
    restart(delay);
  }
 }
@@ -495,7 +451,7 @@ void <strong>process</strong>() <a class="anchor-link" href="#process"
 void process() {
  if(checkProcessing()) {
    begin();
-   processEntities(_actives);
+   processEntities(_actives.readOnly);
    end();
  }
 }
@@ -512,7 +468,7 @@ from the entities defined delay.</p>
 </div>
 <div class="method"><h4 id="processEntities">
 <button class="show-code">Code</button>
-void <strong>processEntities</strong>(<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; entities) <a class="anchor-link" href="#processEntities"
+void <strong>processEntities</strong>(<a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; entities) <a class="anchor-link" href="#processEntities"
               title="Permalink to DelayedEntityProcessingSystem.processEntities">#</a></h4>
 <div class="doc">
 <div class="inherited">
@@ -521,9 +477,9 @@ to process the given
 <span class="param">entities</span> of the system.</p>
 <div class="docs-inherited-from">docs inherited from <a href="../dartemis/EntitySystem.html">EntitySystem</a> </div></div>
 <pre class="source">
-void processEntities(ImmutableBag&lt;Entity&gt; entities) {
+void processEntities(ReadOnlyBag&lt;Entity&gt; entities) {
  entities.forEach((entity) {
-   processDelta(entity, acc);
+   processDelta(entity, _acc);
    num remaining = getRemainingDelay(entity);
    if(remaining &lt;= 0) {
      processExpired(entity);
@@ -563,9 +519,9 @@ void <strong>restart</strong>(<a href="http://api.dartlang.org/dart_core/num.htm
 <p>Cancels current delayed run and starts a new one.</p>
 <pre class="source">
 void restart(num delay) {
- this.delay = delay;
- this.acc = 0;
- running = true;
+ this._delay = delay;
+ this._acc = 0;
+ _running = true;
 }
 </pre>
 </div>
@@ -579,8 +535,8 @@ void <strong>stop</strong>() <a class="anchor-link" href="#stop"
 Call offerDelay or restart to run it again.</p>
 <pre class="source">
 void stop() {
- this.running = false;
- this.acc = 0;
+ this._running = false;
+ this._acc = 0;
 }
 </pre>
 </div>
@@ -589,9 +545,8 @@ void stop() {
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.853</div>
+          <div>This page was generated at 2013-04-20 15:22:34.735</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

@@ -5,7 +5,7 @@
         <title>TeamManager class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
 <li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
-<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><div class="icon-class"></div><strong>TeamManager</strong></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -75,9 +79,7 @@ class TeamManager extends Manager {
 
  void initialize() {}
 
- String getTeam(String player) {
-   return _teamByPlayer[player];
- }
+ String getTeam(String player) =&gt; _teamByPlayer[player];
 
  void setTeam(String player, String team) {
    removeFromTeam(player);
@@ -92,8 +94,9 @@ class TeamManager extends Manager {
    players.add(player);
  }
 
- ImmutableBag&lt;String&gt; getPlayers(String team) {
-   return _playersByTeam[team];
+ ReadOnlyBag&lt;String&gt; getPlayers(String team) {
+   var result = _playersByTeam[team];
+   return result == null ? null : result.readOnly;
  }
 
  void removeFromTeam(String player) {
@@ -182,12 +185,13 @@ void enabled(Entity e) {}
 </div>
 <div class="method"><h4 id="getPlayers">
 <button class="show-code">Code</button>
-<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; <strong>getPlayers</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> team) <a class="anchor-link" href="#getPlayers"
+<a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; <strong>getPlayers</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> team) <a class="anchor-link" href="#getPlayers"
               title="Permalink to TeamManager.getPlayers">#</a></h4>
 <div class="doc">
 <pre class="source">
-ImmutableBag&lt;String&gt; getPlayers(String team) {
- return _playersByTeam[team];
+ReadOnlyBag&lt;String&gt; getPlayers(String team) {
+ var result = _playersByTeam[team];
+ return result == null ? null : result.readOnly;
 }
 </pre>
 </div>
@@ -198,9 +202,7 @@ ImmutableBag&lt;String&gt; getPlayers(String team) {
               title="Permalink to TeamManager.getTeam">#</a></h4>
 <div class="doc">
 <pre class="source">
-String getTeam(String player) {
- return _teamByPlayer[player];
-}
+String getTeam(String player) =&gt; _teamByPlayer[player];
 </pre>
 </div>
 </div>
@@ -257,9 +259,8 @@ void setTeam(String player, String team) {
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.761</div>
+          <div>This page was generated at 2013-04-20 15:22:34.583</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

@@ -5,7 +5,7 @@
         <title>World class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
 <li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
-<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -74,7 +78,7 @@ class World {
  final Bag&lt;Entity&gt; _disable = new Bag&lt;Entity&gt;();
 
  final Map&lt;Type, EntitySystem&gt; _systems = new Map&lt;Type, EntitySystem&gt;();
- final Bag&lt;EntitySystem&gt; _systemsBag= new Bag&lt;EntitySystem&gt;();
+ final List&lt;EntitySystem&gt; _systemsList= new List&lt;EntitySystem&gt;();
 
  final Map&lt;Type, Manager&gt; _managers = new Map&lt;Type, Manager&gt;();
  final Bag&lt;Manager&gt; _managersBag = new Bag&lt;Manager&gt;();
@@ -92,7 +96,7 @@ class World {
   */
  void initialize() {
    _managersBag.forEach((manager) =&gt; manager.initialize());
-   _systemsBag.forEach((system) =&gt; system.initialize());
+   _systemsList.forEach((system) =&gt; system.initialize());
  }
 
  /**
@@ -148,7 +152,7 @@ class World {
  /**
   * Gives you all the systems in this world for possible iteration.
   */
- ImmutableBag&lt;EntitySystem&gt; get systems =&gt; _systemsBag;
+ ReadOnlyBag&lt;EntitySystem&gt; get systems =&gt; new Bag.from(_systemsList).readOnly;
 
  /**
   * Adds a system to this world that will be processed by World.process().
@@ -159,7 +163,7 @@ class World {
    system._passive = passive;
 
    _systems[system.runtimeType] = system;
-   _systemsBag.add(system);
+   _systemsList.add(system);
 
    return system;
  }
@@ -169,7 +173,7 @@ class World {
   */
  void deleteSystem(EntitySystem system) {
    _systems.remove(system.runtimeType);
-   _systemsBag.remove(system);
+   _systemsList.remove(system);
  }
 
  /**
@@ -185,24 +189,27 @@ class World {
  void _check(Bag&lt;Entity&gt; entities, void perform(EntityObserver, Entity)) {
    entities.forEach((entity) {
      _managersBag.forEach((manager) =&gt; perform(manager, entity));
-     _systemsBag.forEach((system) =&gt; perform(system, entity));
+     _systemsList.forEach((system) =&gt; perform(system, entity));
    });
    entities.clear();
  }
 
  /**
-  * Process all non-passive systems.
+  * Processes all changes to entities and executes all non-passive systems.
   */
  void process() {
    processEntityChanges();
 
-   _systemsBag.forEach((system) {
+   _systemsList.forEach((system) {
      if (!system.passive) {
        system.process();
      }
    });
  }
 
+ /**
+  *Processes all changes to entities.
+  */
  void processEntityChanges() {
    _check(_added, (observer, entity) =&gt; observer.added(entity));
    _check(_changed, (observer, entity) =&gt; observer.changed(entity));
@@ -214,20 +221,31 @@ class World {
  }
 
  /**
+  * Removes all entities from the world.
+  *
+  * Every entity and component has to be created anew. Make sure not to reuse
+  * [Component]s that were added to an [Entity] and referenced in you code
+  * because they will be added to a free list and might be overwritten once a
+  * new [Component] of that type is created.
+  */
+ void deleteAllEntities() {
+   entityManager._entities.forEach((entity) {
+     deleteEntity(entity);
+   });
+   processEntityChanges();
+ }
+
+ /**
   * Adds a [Entity e] to this world.
   */
- void addEntity(Entity e) {
-   _added.add(e);
- }
+ void addEntity(Entity e) =&gt; _added.add(e);
 
  /**
   * Ensure all systems are notified of changes to this [Entity e]. If you're
   * adding a [Component] to an [Entity] after it's been added to the world, then
   * you need to invoke this method.
   */
- void changedEntity(Entity e) {
-   _changed.add(e);
- }
+ void changedEntity(Entity e) =&gt; _changed.add(e);
 
  /**
   * Delete the [Entity e] from the world.
@@ -242,19 +260,13 @@ class World {
   * (Re)enable the [Entity e] in the world, after it having being disabled. Won't
   * do anything unless it was already disabled.
   */
- void enable(Entity e) {
-   _enable.add(e);
- }
+ void enable(Entity e) =&gt; _enable.add(e);
 
  /**
   * Disable the [Entity e] from being processed. Won't delete it, it will
   * continue to exist but won't get processed.
   */
- void disable(Entity e) {
-   _disable.add(e);
- }
-
-
+ void disable(Entity e) =&gt; _disable.add(e);
 }
 </pre>
 </div>
@@ -297,7 +309,7 @@ ComponentManager get componentManager =&gt; _componentManager;
         </h4>
         <div class="doc">
 <pre class="source">
-num delta;
+num delta
 </pre>
 </div>
 </div>
@@ -317,14 +329,14 @@ EntityManager get entityManager =&gt; _entityManager;
 </div>
 <div class="field"><h4 id="systems">
 <button class="show-code">Code</button>
-final <a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/EntitySystem.html">EntitySystem</a>&gt;         <strong>systems</strong> <a class="anchor-link"
+final <a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="../dartemis/EntitySystem.html">EntitySystem</a>&gt;         <strong>systems</strong> <a class="anchor-link"
             href="#systems"
             title="Permalink to World.systems">#</a>
         </h4>
         <div class="doc">
 <p>Gives you all the systems in this world for possible iteration.</p>
 <pre class="source">
-ImmutableBag&lt;EntitySystem&gt; get systems =&gt; _systemsBag;
+ReadOnlyBag&lt;EntitySystem&gt; get systems =&gt; new Bag.from(_systemsList).readOnly;
 </pre>
 </div>
 </div>
@@ -338,9 +350,7 @@ void <strong>addEntity</strong>(<a href="../dartemis/Entity.html">Entity</a> e) 
 <div class="doc">
 <p>Adds a <code>Entity e</code> to this world.</p>
 <pre class="source">
-void addEntity(Entity e) {
- _added.add(e);
-}
+void addEntity(Entity e) =&gt; _added.add(e);
 </pre>
 </div>
 </div>
@@ -374,7 +384,7 @@ EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
  system._passive = passive;
 
  _systems[system.runtimeType] = system;
- _systemsBag.add(system);
+ _systemsList.add(system);
 
  return system;
 }
@@ -390,9 +400,7 @@ void <strong>changedEntity</strong>(<a href="../dartemis/Entity.html">Entity</a>
 adding a <a class="crossref" href="../dartemis/Component.html">Component</a> to an <a class="crossref" href="../dartemis/Entity.html">Entity</a> after it's been added to the world, then
 you need to invoke this method.</p>
 <pre class="source">
-void changedEntity(Entity e) {
- _changed.add(e);
-}
+void changedEntity(Entity e) =&gt; _changed.add(e);
 </pre>
 </div>
 </div>
@@ -405,6 +413,26 @@ void changedEntity(Entity e) {
 <pre class="source">
 Entity createEntity() {
  return _entityManager._createEntityInstance();
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="deleteAllEntities">
+<button class="show-code">Code</button>
+void <strong>deleteAllEntities</strong>() <a class="anchor-link" href="#deleteAllEntities"
+              title="Permalink to World.deleteAllEntities">#</a></h4>
+<div class="doc">
+<p>Removes all entities from the world.</p>
+<p>Every entity and component has to be created anew. Make sure not to reuse
+<a class="crossref" href="../dartemis/Component.html">Component</a>s that were added to an <a class="crossref" href="../dartemis/Entity.html">Entity</a> and referenced in you code
+because they will be added to a free list and might be overwritten once a
+new <a class="crossref" href="../dartemis/Component.html">Component</a> of that type is created.</p>
+<pre class="source">
+void deleteAllEntities() {
+ entityManager._entities.forEach((entity) {
+   deleteEntity(entity);
+ });
+ processEntityChanges();
 }
 </pre>
 </div>
@@ -447,7 +475,7 @@ void <strong>deleteSystem</strong>(<a href="../dartemis/EntitySystem.html">Entit
 <pre class="source">
 void deleteSystem(EntitySystem system) {
  _systems.remove(system.runtimeType);
- _systemsBag.remove(system);
+ _systemsList.remove(system);
 }
 </pre>
 </div>
@@ -460,9 +488,7 @@ void <strong>disable</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a
 <p>Disable the <code>Entity e</code> from being processed. Won't delete it, it will
 continue to exist but won't get processed.</p>
 <pre class="source">
-void disable(Entity e) {
- _disable.add(e);
-}
+void disable(Entity e) =&gt; _disable.add(e);
 </pre>
 </div>
 </div>
@@ -474,9 +500,7 @@ void <strong>enable</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a 
 <p>(Re)enable the <code>Entity e</code> in the world, after it having being disabled. Won't
 do anything unless it was already disabled.</p>
 <pre class="source">
-void enable(Entity e) {
- _enable.add(e);
-}
+void enable(Entity e) =&gt; _enable.add(e);
 </pre>
 </div>
 </div>
@@ -531,7 +555,7 @@ added.</p>
 <pre class="source">
 void initialize() {
  _managersBag.forEach((manager) =&gt; manager.initialize());
- _systemsBag.forEach((system) =&gt; system.initialize());
+ _systemsList.forEach((system) =&gt; system.initialize());
 }
 </pre>
 </div>
@@ -541,12 +565,12 @@ void initialize() {
 void <strong>process</strong>() <a class="anchor-link" href="#process"
               title="Permalink to World.process">#</a></h4>
 <div class="doc">
-<p>Process all non-passive systems.</p>
+<p>Processes all changes to entities and executes all non-passive systems.</p>
 <pre class="source">
 void process() {
  processEntityChanges();
 
- _systemsBag.forEach((system) {
+ _systemsList.forEach((system) {
    if (!system.passive) {
      system.process();
    }
@@ -560,6 +584,7 @@ void process() {
 void <strong>processEntityChanges</strong>() <a class="anchor-link" href="#processEntityChanges"
               title="Permalink to World.processEntityChanges">#</a></h4>
 <div class="doc">
+<p>Processes all changes to entities.</p>
 <pre class="source">
 void processEntityChanges() {
  _check(_added, (observer, entity) =&gt; observer.added(entity));
@@ -577,9 +602,8 @@ void processEntityChanges() {
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.748</div>
+          <div>This page was generated at 2013-04-20 15:22:34.568</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

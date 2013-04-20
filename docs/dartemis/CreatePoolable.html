@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>Component abstract class / dartemis Library / Dart Documentation</title>
+        <title>CreatePoolable typedef / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dartemis" data-type="Component">
+        <body data-library="dartemis" data-type="CreatePoolable">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/Component.html">Component</a>        <div id="search-box">
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/CreatePoolable.html">CreatePoolable</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -27,13 +27,13 @@
 <h2><div class="icon-library"></div><a href="../dartemis.html">dartemis</a></h2><ul class="icon">
 <li><a href="../dartemis/Aspect.html"><div class="icon-class"></div>Aspect</a></li>
 <li><a href="../dartemis/Bag.html"><div class="icon-class"></div>Bag&lt;E&gt;</a></li>
-<li><div class="icon-class"></div><strong>Component</strong></li>
+<li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
 <li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
-<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
+<li><div class="icon-interface"></div><strong>CreatePoolable</strong></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -57,27 +57,32 @@
 </ul>
 </div>
 <div class="content">
-        <h2><strong>Component</strong>
-          abstract class
+        <h2><strong>CreatePoolable</strong>
+          typedef
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>All components extend from this class.</p>
-<p>If you want to use a poolable component that will be added to a FreeList when
-it is being removed use <a class="crossref" href="../dartemis/ComponentPoolable.html">ComponentPoolable</a> instead.</p>
+<p>Create a <a class="crossref" href="../dartemis/Poolable.html">Poolable</a> object with a zero argument constructor.</p>
 <pre class="source">
-abstract class Component {
- /// Does nothing in [Component], only relevant for [ComponentPoolable].
- void _removed() {}
-}
+typedef Poolable CreatePoolable();
 </pre>
+</div>
+<div class="method"><h4 id="CreatePoolable">
+<button class="show-code">Code</button>
+typedef <a href="../dartemis/Poolable.html">Poolable</a> CreatePoolable() <a class="anchor-link" href="#CreatePoolable"
+              title="Permalink to CreatePoolable">#</a></h4>
+<div class="doc">
+<pre class="source">
+typedef Poolable CreatePoolable();
+</pre>
+</div>
 </div>
         </div>
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.863</div>
+          <div>This page was generated at 2013-04-20 15:22:34.878</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

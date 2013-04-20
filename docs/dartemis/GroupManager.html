@@ -5,7 +5,7 @@
         <title>GroupManager class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
 <li><div class="icon-class"></div><strong>GroupManager</strong></li>
-<li><a href="../dartemis/ImmutableBag.html"><div class="icon-class"></div>ImmutableBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><a href="../dartemis/Poolable.html"><div class="icon-class"></div>Poolable</a></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -61,7 +65,7 @@
 <div class="doc">
 <p>If you need to group your entities together, e.g. tanks going into "units" group or explosions into "effects",
 then use this manager. You must retrieve it using world instance.</p>
-<p>An <a class="crossref" href="../dartemis/Entity.html">Entity</a> can only belong to one group at a time.</p>
+<p>An <a class="crossref" href="../dartemis/Entity.html">Entity</a> can only belong to several groups (0,n) at a time.</p>
 <pre class="source">
 class GroupManager extends Manager {
  final Map&lt;String, Bag&lt;Entity&gt;&gt; _entitiesByGroup;
@@ -71,8 +75,6 @@ class GroupManager extends Manager {
                   _groupsByEntity = new Map&lt;Entity, Bag&lt;String&gt;&gt;();
 
  void initialize() {}
-
-
 
  /**
   * Set the group of the entity.
@@ -124,40 +126,37 @@ class GroupManager extends Manager {
  /**
   * Get all entities that belong to the provided group.
   */
- ImmutableBag&lt;Entity&gt; getEntities(String group) {
+ ReadOnlyBag&lt;Entity&gt; getEntities(String group) {
    Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
-   if(entities == null) {
+   if (entities == null) {
      entities = new Bag&lt;Entity&gt;();
      _entitiesByGroup[group] = entities;
    }
-   return entities;
+   return entities.readOnly;
  }
 
  /**
   * Returns the groups the entity belongs to, null if none.
   */
- ImmutableBag&lt;String&gt; getGroups(Entity e) {
-   return _groupsByEntity[e];
+ ReadOnlyBag&lt;String&gt; getGroups(Entity e) {
+   var result = _groupsByEntity[e];
+   return result == null ? null : result.readOnly;
  }
 
  /**
   * Checks if the entity belongs to any group.
   */
- bool isInAnyGroup(Entity e) {
-   return getGroups(e) != null;
- }
+ bool isInAnyGroup(Entity e) =&gt; getGroups(e) != null;
 
  /**
   * Check if the entity is in the supplied group.
   */
  bool isInGroup(Entity e, String group) {
    Bag&lt;String&gt; groups = _groupsByEntity[e];
-   return groups.contains(group);
+   return (groups != null) &amp;&amp; groups.contains(group);
  }
 
- void deleted(Entity e) {
-   removeFromAllGroups(e);
- }
+ void deleted(Entity e) =&gt; removeFromAllGroups(e);
 
 }
 </pre>
@@ -232,9 +231,7 @@ void <strong>deleted</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a
               title="Permalink to GroupManager.deleted">#</a></h4>
 <div class="doc">
 <pre class="source">
-void deleted(Entity e) {
- removeFromAllGroups(e);
-}
+void deleted(Entity e) =&gt; removeFromAllGroups(e);
 </pre>
 </div>
 </div>
@@ -260,31 +257,32 @@ void enabled(Entity e) {}
 </div>
 <div class="method"><h4 id="getEntities">
 <button class="show-code">Code</button>
-<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; <strong>getEntities</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#getEntities"
+<a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="../dartemis/Entity.html">Entity</a>&gt; <strong>getEntities</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> group) <a class="anchor-link" href="#getEntities"
               title="Permalink to GroupManager.getEntities">#</a></h4>
 <div class="doc">
 <p>Get all entities that belong to the provided group.</p>
 <pre class="source">
-ImmutableBag&lt;Entity&gt; getEntities(String group) {
+ReadOnlyBag&lt;Entity&gt; getEntities(String group) {
  Bag&lt;Entity&gt; entities = _entitiesByGroup[group];
- if(entities == null) {
+ if (entities == null) {
    entities = new Bag&lt;Entity&gt;();
    _entitiesByGroup[group] = entities;
  }
- return entities;
+ return entities.readOnly;
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="getGroups">
 <button class="show-code">Code</button>
-<a href="../dartemis/ImmutableBag.html">ImmutableBag</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; <strong>getGroups</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#getGroups"
+<a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="http://api.dartlang.org/dart_core/String.html">String</a>&gt; <strong>getGroups</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#getGroups"
               title="Permalink to GroupManager.getGroups">#</a></h4>
 <div class="doc">
 <p>Returns the groups the entity belongs to, null if none.</p>
 <pre class="source">
-ImmutableBag&lt;String&gt; getGroups(Entity e) {
- return _groupsByEntity[e];
+ReadOnlyBag&lt;String&gt; getGroups(Entity e) {
+ var result = _groupsByEntity[e];
+ return result == null ? null : result.readOnly;
 }
 </pre>
 </div>
@@ -306,9 +304,7 @@ void initialize() {}
 <div class="doc">
 <p>Checks if the entity belongs to any group.</p>
 <pre class="source">
-bool isInAnyGroup(Entity e) {
- return getGroups(e) != null;
-}
+bool isInAnyGroup(Entity e) =&gt; getGroups(e) != null;
 </pre>
 </div>
 </div>
@@ -321,7 +317,7 @@ bool isInAnyGroup(Entity e) {
 <pre class="source">
 bool isInGroup(Entity e, String group) {
  Bag&lt;String&gt; groups = _groupsByEntity[e];
- return groups.contains(group);
+ return (groups != null) &amp;&amp; groups.contains(group);
 }
 </pre>
 </div>
@@ -372,9 +368,8 @@ void removeFromAllGroups(Entity e) {
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.797</div>
+          <div>This page was generated at 2013-04-20 15:22:34.631</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

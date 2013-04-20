@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>ImmutableBag&lt;E&gt; abstract class / dartemis Library / Dart Documentation</title>
+        <title>Poolable abstract class / dartemis Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dartemis" data-type="ImmutableBag&amp;lt;E&amp;gt;">
+        <body data-library="dartemis" data-type="Poolable">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/ImmutableBag.html">ImmutableBag&lt;E&gt;</a>        <div id="search-box">
+         &rsaquo; <a href="../dartemis.html">dartemis</a> &rsaquo; <a href="../dartemis/Poolable.html">Poolable</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -30,8 +30,10 @@
 <li><a href="../dartemis/Component.html"><div class="icon-class"></div>Component</a></li>
 <li><a href="../dartemis/ComponentManager.html"><div class="icon-class"></div>ComponentManager</a></li>
 <li><a href="../dartemis/ComponentMapper.html"><div class="icon-class"></div>ComponentMapper&lt;A&gt;</a></li>
+<li><a href="../dartemis/ComponentPoolable.html"><div class="icon-class"></div>ComponentPoolable</a></li>
 <li><a href="../dartemis/ComponentType.html"><div class="icon-class"></div>ComponentType</a></li>
 <li><a href="../dartemis/ComponentTypeManager.html"><div class="icon-class"></div>ComponentTypeManager</a></li>
+<li><a href="../dartemis/CreatePoolable.html"><div class="icon-interface"></div>CreatePoolable</a></li>
 <li><a href="../dartemis/DelayedEntityProcessingSystem.html"><div class="icon-class"></div>DelayedEntityProcessingSystem</a></li>
 <li><a href="../dartemis/Entity.html"><div class="icon-class"></div>Entity</a></li>
 <li><a href="../dartemis/EntityManager.html"><div class="icon-class"></div>EntityManager</a></li>
@@ -40,11 +42,13 @@
 <li><a href="../dartemis/EntitySystem.html"><div class="icon-class"></div>EntitySystem</a></li>
 <li><a href="../dartemis/FastMath.html"><div class="icon-class"></div>FastMath</a></li>
 <li><a href="../dartemis/GroupManager.html"><div class="icon-class"></div>GroupManager</a></li>
-<li><div class="icon-class"></div><strong>ImmutableBag&lt;E&gt;</strong></li>
 <li><a href="../dartemis/IntervalEntityProcessingSystem.html"><div class="icon-class"></div>IntervalEntityProcessingSystem</a></li>
 <li><a href="../dartemis/IntervalEntitySystem.html"><div class="icon-class"></div>IntervalEntitySystem</a></li>
 <li><a href="../dartemis/Manager.html"><div class="icon-class"></div>Manager</a></li>
+<li><a href="../dartemis/ObjectPool.html"><div class="icon-class"></div>ObjectPool</a></li>
 <li><a href="../dartemis/PlayerManager.html"><div class="icon-class"></div>PlayerManager</a></li>
+<li><div class="icon-class"></div><strong>Poolable</strong></li>
+<li><a href="../dartemis/ReadOnlyBag.html"><div class="icon-class"></div>ReadOnlyBag&lt;E&gt;</a></li>
 <li><a href="../dartemis/TagManager.html"><div class="icon-class"></div>TagManager</a></li>
 <li><a href="../dartemis/TeamManager.html"><div class="icon-class"></div>TeamManager</a></li>
 <li><a href="../dartemis/Utils.html"><div class="icon-class"></div>Utils</a></li>
@@ -53,78 +57,93 @@
 </ul>
 </div>
 <div class="content">
-        <h2><strong>ImmutableBag&lt;E&gt;</strong>
+        <h2><strong>Poolable</strong>
           abstract class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
+<p>Objects of this class can be pooled in the <a class="crossref" href="../dartemis/ObjectPool.html">ObjectPool</a> for later reuse.</p>
+<p>Should be added as a mixin.</p>
 <pre class="source">
-abstract class ImmutableBag&lt;E&gt; {
+abstract class Poolable {
 
-   E operator [](int index);
+ /**
+  * Creates a new [Poolable] of [Type] [type].
+  *
+  * The instance created with [createPoolable] should be created with
+  * a zero-argument contructor because it will only be called once. All fields
+  * of the created object should be set in the calling factory constructor.
+  */
+ factory Poolable.of(Type type, CreatePoolable createPoolable) {
+   return ObjectPool.get(type, createPoolable);
+ }
+ /**
+  * If you need to do some cleanup before this object moves into the Pool of
+  * reusable objects.
+  */
+ void cleanUp();
 
-   int get size;
-
-   bool isEmpty();
-
-   /**
-    * Applies the function [f] to each element of this collection.
-    */
-   void forEach(void f(E element));
+ /**
+  * Calls the cleanup function and moves this object to the [ObjectPool].
+  */
+ void moveToPool() {
+   cleanUp();
+   ObjectPool.add(this);
+ }
 }
 </pre>
 </div>
-<h3>Subclasses</h3>
-<p>
-<span class="type-box"><span class="icon-class"></span><a href="../dartemis/Bag.html">Bag&lt;E&gt;</a></span></p>
 <div>
-<h3>Properties</h3>
-<div class="field"><h4 id="size">
+<h3>Constructors</h3>
+<div class="method"><h4 id="Poolable.of">
 <button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>size</strong> <a class="anchor-link"
-            href="#size"
-            title="Permalink to ImmutableBag&lt;E&gt;.size">#</a>
-        </h4>
-        <div class="doc">
-<pre class="source">
-int get size;
-</pre>
-</div>
-</div>
-</div>
-<div>
-<h3>Operators</h3>
-<div class="method"><h4 id="[]">
-abstract <a href="../dartemis/ImmutableBag.html">E</a> <strong>operator []</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#[]"
-              title="Permalink to ImmutableBag&lt;E&gt;.operator []">#</a></h4>
+factory <strong>Poolable.of</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> type, <a href="../dartemis/CreatePoolable.html">CreatePoolable</a> createPoolable) <a class="anchor-link" href="#Poolable.of"
+              title="Permalink to Poolable.Poolable.of">#</a></h4>
 <div class="doc">
+<p>Creates a new <a class="crossref" href="../dartemis/Poolable.html">Poolable</a> of [Type] [type].</p>
+<p>The instance created with 
+<span class="param">createPoolable</span> should be created with
+a zero-argument contructor because it will only be called once. All fields
+of the created object should be set in the calling factory constructor.</p>
+<pre class="source">
+factory Poolable.of(Type type, CreatePoolable createPoolable) {
+ return ObjectPool.get(type, createPoolable);
+}
+</pre>
 </div>
 </div>
 </div>
 <div>
 <h3>Methods</h3>
-<div class="method"><h4 id="forEach">
-abstract void <strong>forEach</strong>(void f(<a href="../dartemis/ImmutableBag.html">E</a> element)) <a class="anchor-link" href="#forEach"
-              title="Permalink to ImmutableBag&lt;E&gt;.forEach">#</a></h4>
+<div class="method"><h4 id="cleanUp">
+abstract void <strong>cleanUp</strong>() <a class="anchor-link" href="#cleanUp"
+              title="Permalink to Poolable.cleanUp">#</a></h4>
 <div class="doc">
-<p>Applies the function 
-<span class="param">f</span> to each element of this collection.</p>
+<p>If you need to do some cleanup before this object moves into the Pool of
+reusable objects.</p>
 </div>
 </div>
-<div class="method"><h4 id="isEmpty">
-abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>isEmpty</strong>() <a class="anchor-link" href="#isEmpty"
-              title="Permalink to ImmutableBag&lt;E&gt;.isEmpty">#</a></h4>
+<div class="method"><h4 id="moveToPool">
+<button class="show-code">Code</button>
+void <strong>moveToPool</strong>() <a class="anchor-link" href="#moveToPool"
+              title="Permalink to Poolable.moveToPool">#</a></h4>
 <div class="doc">
+<p>Calls the cleanup function and moves this object to the <a class="crossref" href="../dartemis/ObjectPool.html">ObjectPool</a>.</p>
+<pre class="source">
+void moveToPool() {
+ cleanUp();
+ ObjectPool.add(this);
+}
+</pre>
 </div>
 </div>
 </div>
         </div>
         <div class="clear"></div>
         </div>
-        
         <div class="footer">
-          <div>This page was generated at 2013-01-06 21:02:41.944</div>
+          <div>This page was generated at 2013-04-20 15:22:34.870</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>
