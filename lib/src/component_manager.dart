@@ -1,7 +1,5 @@
 part of dartemis;
 
-typedef Component ComponentConstructor();
-
 class ComponentManager extends Manager {
   Bag<Bag<Component>> _componentsByType;
   Bag<Entity> _deleted;
@@ -13,7 +11,7 @@ class ComponentManager extends Manager {
 
   void _removeComponentsOfEntity(Entity e) {
     _forComponentsOfEntity(e, (components, typeId) {
-      components[e.id]._removed(typeId);
+      components[e.id]._removed();
       components[e.id] = null;
     });
     e._typeBits = 0;
@@ -37,7 +35,7 @@ class ComponentManager extends Manager {
   void _removeComponent(Entity e, ComponentType type) {
     if((e._typeBits & type.bit) != 0) {
       int typeId = type.id;
-      _componentsByType[typeId][e.id]._removed(typeId);
+      _componentsByType[typeId][e.id]._removed();
       _componentsByType[typeId][e.id] = null;
       e._removeTypeBit(type.bit);
     }

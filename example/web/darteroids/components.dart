@@ -1,12 +1,12 @@
 part of darteroids;
 
-class CircularBody extends FreeListComponent {
+class CircularBody extends ComponentPoolable {
   num radius;
   String color;
 
   CircularBody._();
   factory CircularBody(num radius, String color) {
-    CircularBody body = new FreeListComponent.of(CircularBody, _constructor);
+    CircularBody body = new Poolable.of(CircularBody, _constructor);
     body.radius = radius;
     body.color = color;
     return body;
@@ -14,12 +14,12 @@ class CircularBody extends FreeListComponent {
   static CircularBody _constructor() => new CircularBody._();
 }
 
-class Position extends FreeListComponent {
+class Position extends ComponentPoolable {
   num _x, _y;
 
   Position._();
   factory Position(num x, num y) {
-    Position position = new FreeListComponent.of(Position, _constructor);
+    Position position = new Poolable.of(Position, _constructor);
     position.x = x;
     position.y = y;
     return position;
@@ -33,12 +33,12 @@ class Position extends FreeListComponent {
   get y => _y;
 }
 
-class Velocity extends FreeListComponent {
+class Velocity extends ComponentPoolable {
   num x, y;
 
   Velocity._();
   factory Velocity([num x = 0, num y = 0]) {
-    Velocity velocity = new FreeListComponent.of(Velocity, _constructor);
+    Velocity velocity = new Poolable.of(Velocity, _constructor);
     velocity.x = x;
     velocity.y = y;
     return velocity;
@@ -46,15 +46,15 @@ class Velocity extends FreeListComponent {
   static Velocity _constructor() => new Velocity._();
 }
 
-class PlayerDestroyer extends FreeListComponent {
+class PlayerDestroyer extends ComponentPoolable {
   PlayerDestroyer._();
-  factory PlayerDestroyer() => new FreeListComponent.of(PlayerDestroyer, _constructor);
+  factory PlayerDestroyer() => new Poolable.of(PlayerDestroyer, _constructor);
   static PlayerDestroyer _constructor() => new PlayerDestroyer._();
 }
 
-class AsteroidDestroyer extends FreeListComponent {
+class AsteroidDestroyer extends ComponentPoolable {
   AsteroidDestroyer._();
-  factory AsteroidDestroyer() => new FreeListComponent.of(AsteroidDestroyer, _constructor);
+  factory AsteroidDestroyer() => new Poolable.of(AsteroidDestroyer, _constructor);
   static AsteroidDestroyer _constructor() => new AsteroidDestroyer._();
 }
 
@@ -74,12 +74,12 @@ class Cannon extends Component {
   }
 }
 
-class Decay extends FreeListComponent {
+class Decay extends ComponentPoolable {
   num timer;
 
   Decay._();
   factory Decay(num timer) {
-    Decay decay = new FreeListComponent.of(Decay, _constructor);
+    Decay decay = new Poolable.of(Decay, _constructor);
     decay.timer = timer;
     return decay;
   }

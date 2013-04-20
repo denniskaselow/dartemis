@@ -9,13 +9,13 @@ part 'src/utils/fast_math.dart';
 part 'src/utils/read_only_bag.dart';
 part 'src/utils/trigometry_lookup_table.dart';
 part 'src/utils/utils.dart';
+part 'src/utils/object_pool.dart';
 
 part 'src/component.dart';
 part 'src/component_mapper.dart';
 part 'src/component_manager.dart';
 part 'src/component_type.dart';
 part 'src/component_type_manager.dart';
-part 'src/free_components.dart';
 
 part 'src/aspect.dart';
 

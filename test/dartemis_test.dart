@@ -5,7 +5,7 @@ import "dart:math" as Math;
 
 final Type COMPONENT_A = new ComponentA().runtimeType;
 final Type COMPONENT_B = new ComponentB().runtimeType;
-final Type COMPONENT_C = new ComponentC().runtimeType;
+final Type COMPONENT_C = new ComponentPoolableC().runtimeType;
 
 const int COMPONENT_A_BIT = 0x0001;
 const int COMPONENT_B_BIT = 0x0002;
@@ -82,7 +82,7 @@ main() {
       entityAB.addToWorld();
       entityAC = world.createEntity();
       entityAC.addComponent(new ComponentA());
-      entityAC.addComponent(new ComponentC());
+      entityAC.addComponent(new ComponentPoolableC());
       entityAC.addToWorld();
       systemStarter = (EntitySystem es) {
         es = world.addSystem(es);
@@ -128,7 +128,7 @@ main() {
       es = world.addSystem(es);
       world.initialize();
       world.process();
-      entityAB.addComponent(new ComponentC());
+      entityAB.addComponent(new ComponentPoolableC());
       world.process();
     });
     test('Adding a component will get the entity processed if the world is notified of the change', () {
@@ -138,7 +138,7 @@ main() {
       world.initialize();
       world.process();
       es.expectedEntities = [entityAB, entityAC];
-      entityAB.addComponent(new ComponentC());
+      entityAB.addComponent(new ComponentPoolableC());
       entityAB.changedInWorld();
       world.process();
     });
@@ -174,7 +174,7 @@ main() {
     test('ComponentManager correctly associates entity and components', () {
       Entity entity = world.createEntity();
       Component componentA = new ComponentA();
-      Component componentC = new ComponentC();
+      Component componentC = new ComponentPoolableC();
       entity.addComponent(componentA);
       entity.addComponent(componentC);
 
@@ -187,14 +187,14 @@ main() {
     test('ComponentManager correctly associates multiple entity and components', () {
       Entity entity1 = world.createEntity();
       Component component1A = new ComponentA();
-      Component component1C = new ComponentC();
+      Component component1C = new ComponentPoolableC();
       entity1.addComponent(component1A);
       entity1.addComponent(component1C);
 
       Entity entity2 = world.createEntity();
       Component component2A = new ComponentA();
       Component component2B = new ComponentB();
-      Component component2C = new ComponentC();
+      Component component2C = new ComponentPoolableC();
       entity2.addComponent(component2A);
       entity2.addComponent(component2B);
       entity2.addComponent(component2C);
@@ -214,7 +214,7 @@ main() {
     test('ComponentManager removes Components of deleted Entity', () {
       Entity entity = world.createEntity();
       Component componentA = new ComponentA();
-      Component componentC = new ComponentC();
+      Component componentC = new ComponentPoolableC();
       entity.addComponent(componentA);
       entity.addComponent(componentC);
       world.addEntity(entity);
@@ -298,12 +298,12 @@ main() {
     });
     test('creating a new FreeListComponent reuses a removed instance', () {
       Entity e = world.createEntity();
-      Component c = new ComponentC();
+      Component c = new ComponentPoolableC();
       e.addComponent(c);
 
-      expect(new ComponentC(), isNot(same(c)));
-      e.removeComponent(ComponentC);
-      expect(new ComponentC(), same(c));
+      expect(new ComponentPoolableC(), isNot(same(c)));
+      e.removeComponent(ComponentPoolableC);
+      expect(new ComponentPoolableC(), same(c));
     });
   });
   group('FastMath tests', () {
@@ -416,18 +416,20 @@ main() {
       expect(sut.delta, equals(32));
     });
   });
+  group('ObjectPool tests', () {
+    test('creating a new Poolable creates a new instance', () {
+
+    });
+  });
 }
 
 typedef void EntitySystemStarter(EntitySystem es);
 
-class ComponentA extends Component {
-}
-class ComponentB extends Component {
-  ComponentB();
-}
-class ComponentC extends FreeListComponent {
-  ComponentC._();
-  factory ComponentC() => new FreeListComponent.of(ComponentC, () => new ComponentC._());
+class ComponentA extends Component {}
+class ComponentB extends Component {}
+class ComponentPoolableC extends ComponentPoolable {
+  ComponentPoolableC._();
+  factory ComponentPoolableC() => new Poolable.of(ComponentPoolableC, () => new ComponentPoolableC._());
 }
 
 class MockEntitySystem extends Mock implements EntitySystem {}
