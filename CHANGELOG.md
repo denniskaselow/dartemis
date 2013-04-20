@@ -1,0 +1,17 @@
+# Changelog
+##0.4.0
+### API Changes
+* swapped parameters of `Tagmanager.register`
+* replaced `ImmutableBag` with `ReadOnlyBag`, added getter for `ReadOnlyBag` to `Bag`
+* changed `FreeComponents` to `ObjectPool`
+* old `Component` has changed, there are two different kinds of components now:
+  * instances of classes extending `ComponentPoolable` will be added to the `ObjectPool` when they are removed from an `Entity` (preventing garbage collection and allowing reuse)
+  * instances of classes extending `Component` will not be added to the `ObjectPool` when they are removed from an `Entity` (allowing garbage collection)
+
+### Enhancements
+* added function `deleteAllEntities` to `World`
+* `IntervalEntitySystem` has a getter for the `delta` since the systm was processed last
+* updated to work with Dart M4
+
+### Bugfixes
+* GroupManager.isInGroup works if entity is in no group
