@@ -56,7 +56,7 @@ class ComponentManager extends Manager {
   Component _getComponent(Entity e, ComponentType type) {
     int index = type.id;
     Bag<Component> components = _componentsByType[index];
-    if(components != null) {
+    if(components != null && components.isIndexWithinBounds(e.id)) {
       return components[e.id];
     }
     return null;
