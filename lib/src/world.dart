@@ -170,7 +170,9 @@ class World {
    */
   void deleteAllEntities() {
     entityManager._entities.forEach((entity) {
-      deleteEntity(entity);
+      if (null != entity) {
+        deleteEntity(entity);
+      }
     });
     processEntityChanges();
   }

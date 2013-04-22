@@ -282,6 +282,14 @@ main() {
       world.deleteAllEntities();
       expect(world.entityManager.activeEntityCount, equals(0));
     });
+    test('world delete all entites should not fail if called twice', () {
+      world.initialize();
+      world.createEntity().addToWorld();
+      world.process();
+
+      world.deleteAllEntities();
+      world.deleteAllEntities();
+    });
   });
   group('Component tests', () {
     World world;
