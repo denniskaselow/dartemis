@@ -3,6 +3,7 @@
 ### Bugfixes
 * `World.deleteAllEntites()` did not work if there was already a deleted entity
 * writing to the `Bag` by index doesn't make it smaller anymore
+
 ##0.4.0
 ### API Changes
 * swapped parameters of `Tagmanager.register`
