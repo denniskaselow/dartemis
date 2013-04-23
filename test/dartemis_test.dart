@@ -405,6 +405,11 @@ main() {
       sut.clear();
       expect(sut.size, equals(0));
     });
+    test('setting a value by index should not shrink the bag', () {
+      sut[9] = 'A';
+      sut[5] = 'B';
+      expect(sut.size, equals(10));
+    });
   });
 
   group('IntervalEntitySystem tests', () {

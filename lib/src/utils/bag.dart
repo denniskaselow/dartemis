@@ -166,7 +166,9 @@ class Bag<E> {
     if(index >= _data.length) {
       _growTo(index*2);
     }
-    _size = index+1;
+    if (_size <= index) {
+      _size = index+1;
+    }
     _data[index] = element;
   }
 

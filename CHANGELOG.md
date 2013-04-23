@@ -1,4 +1,8 @@
 # Changelog
+##0.4.1
+### Bugfixes
+* `World.deleteAllEntites()` did not work if there was already a deleted entity
+* writing to the `Bag` by index doesn't make it smaller anymore
 ##0.4.0
 ### API Changes
 * swapped parameters of `Tagmanager.register`
@@ -14,4 +18,4 @@
 * updated to work with Dart M4
 
 ### Bugfixes
-* GroupManager.isInGroup works if entity is in no group
+* `GroupManager.isInGroup` works if entity is in no group
