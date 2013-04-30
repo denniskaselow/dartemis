@@ -14,13 +14,6 @@ part of dartemis;
  * to perform the animation.
  *
  * This will save CPU cycles in some scenarios.
- *
- * Implementation notes:
- * In order to start the system you need to override the inserted(Entity e) method,
- * look up the delay time from that entity and offer it to the system by using the
- * offerDelay(num delay) method.
- * Also, when processing the entities you must also call offerDelay(num delay)
- * for all valid entities.
  */
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
   num _delay;
