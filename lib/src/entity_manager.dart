@@ -64,7 +64,12 @@ class EntityManager extends Manager {
   /**
    * Check if the specified entityId is enabled.
    */
-  bool isEnabled(int entityId) => !_disabled[entityId];
+  bool isEnabled(int entityId) {
+    if (_disabled.size > entityId) {
+      return _disabled[entityId] != true;
+    }
+    return true;
+  }
 
   /**
    * Get a entity with this id.
