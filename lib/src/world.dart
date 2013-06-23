@@ -8,6 +8,9 @@ part of dartemis;
  * It is also important to set the delta each game loop iteration, and initialize before game loop.
  */
 class World {
+  final Symbol _symbolManager = const Symbol('dartemis.Manager');
+  final Symbol _symbolDynamic = const Symbol('dynamic');
+
   final EntityManager _entityManager = new EntityManager();
   final ComponentManager _componentManager = new ComponentManager();
 
@@ -20,7 +23,7 @@ class World {
   final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
   final List<EntitySystem> _systemsList= new List<EntitySystem>();
 
-  final Map<Type, Manager> _managers = new Map<Type, Manager>();
+  final Map<Symbol, Manager> _managers = new Map<Symbol, Manager>();
   final Bag<Manager> _managersBag = new Bag<Manager>();
 
   num delta = 0;
@@ -52,7 +55,13 @@ class World {
   }
 
   void _injectMapper(EntitySystem system) {
-    reflectClass(system.runtimeType).variables.forEach((k, v) {
+    reflectClass(system.runtimeType).variables.forEach((k, VariableMirror v) {
+      if (v.type.qualifiedName != _symbolDynamic) {
+        if ((v.type as ClassMirror).superclass.qualifiedName == _symbolManager) {
+          Manager m = _managers[(v.type as ClassMirror).qualifiedName];
+          reflect(system).setField(v.simpleName, m);
+        }
+      }
       v.metadata.forEach((m) {
         if (m.reflectee is Mapper) {
           Type t = m.reflectee.mapperType;
@@ -78,7 +87,7 @@ class World {
    * notify this manager of changes to entity.
    */
   void addManager(Manager manager) {
-    _managers[manager.runtimeType] = manager;
+    _managers[reflect(manager).type.qualifiedName] = manager;
     _managersBag.add(manager);
     manager._world = this;
   }
@@ -87,14 +96,14 @@ class World {
    * Returns a [Manager] of the specified [managerType].
    */
   Manager getManager(Type managerType) {
-    return _managers[managerType];
+    return _managers[reflectClass(managerType).qualifiedName];
   }
 
   /**
    * Deletes the manager from this world.
    */
   void deleteManager(Manager manager) {
-    _managers.remove(manager.runtimeType);
+    _managers.remove(reflect(manager).type.qualifiedName);
     _managersBag.remove(manager);
   }
 

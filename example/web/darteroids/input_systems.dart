@@ -26,7 +26,6 @@ class PlayerControlSystem extends IntervalEntitySystem {
   PlayerControlSystem(this.canvas) : super(20, Aspect.getAspectForAllOf([Velocity, Cannon]));
 
   void initialize() {
-    tagManager = world.getManager(new TagManager().runtimeType);
     window.onKeyDown.listen(handleKeyDown);
     window.onKeyUp.listen(handleKeyUp);
     canvas.onMouseDown.listen(handleMouseDown);

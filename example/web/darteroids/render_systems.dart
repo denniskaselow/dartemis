@@ -89,10 +89,6 @@ class HudRenderSystem extends VoidEntitySystem {
 
   HudRenderSystem(this.context2d);
 
-  void initialize() {
-    tagManager = world.getManager(new TagManager().runtimeType);
-  }
-
   void processSystem() {
     context2d.save();
     try {

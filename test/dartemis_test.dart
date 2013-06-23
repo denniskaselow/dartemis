@@ -271,6 +271,15 @@ main() {
 
       expect(system.mapperForA, new isInstanceOf('ComponentMapper<ComponentA>'));
     });
+    test('world initializes Managers in system', () {
+      EntitySystemWithManager system = new EntitySystemWithManager();
+      var manager = new TagManager();
+      world.addManager(manager);
+      world.addSystem(system);
+      world.initialize();
+
+      expect(system.tagManager, same(manager));
+    });
     test('world processes added system', () {
       MockEntitySystem system = new MockEntitySystem();
       system.when(callsTo('get passive')).alwaysReturn(false);
@@ -507,5 +516,10 @@ class TestIntervalEntitySystem extends IntervalEntitySystem {
 class EntitySystemWithAnnotatedComponentMapper extends VoidEntitySystem {
   @Mapper(ComponentA)
   ComponentMapper<ComponentA> mapperForA;
+  processSystem() {}
+}
+
+class EntitySystemWithManager extends VoidEntitySystem {
+  TagManager tagManager;
   processSystem() {}
 }

@@ -88,10 +88,6 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
 
   AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([AsteroidDestroyer, Position]));
 
-  void initialize() {
-    groupManager = world.getManager(new GroupManager().runtimeType);
-  }
-
   void processEntity(Entity entity) {
     Position destroyerPos = positionMapper.get(entity);
 
@@ -135,10 +131,6 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   ComponentMapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
-
-  void initialize() {
-    tagManager = world.getManager(new TagManager().runtimeType);
-  }
 
   void processEntities(ReadOnlyBag<Entity> entities) {
     Entity player = tagManager.getEntity(TAG_PLAYER);
