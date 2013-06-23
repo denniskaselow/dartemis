@@ -22,6 +22,7 @@ Getting started
 ===============
 
 1\. Add dartemis to your project by adding it to your **pubspec.yaml**
+
 2\. Import it in your project:
 
 ```dart
@@ -116,23 +117,10 @@ API
 
 Example Games using dartemis
 ============================
-VDrones
-----------------
-An arcade game (with weekly updates).
-*[Source Code](https://github.com/davidB/vdrones)
-*[Playable version](http://vdrones.appspot.com/) - Chrome/Firefox -
+* [VDrones](http://vdrones.appspot.com/) - An arcade game (with weekly updates), ([Source](https://github.com/davidB/vdrones))
+* [GitHub Space Off](http://denniskaselow.github.com/game-off-2012/) - Originally created for the GitHub Game Off 2012, ([Source](https://github.com/denniskaselow/game-off-2012))
+* [darteroids](http://denniskaselow.github.com/dartemis/example/darteroids/web/darteroids.html) - Very simple example included in the example folder of dartemis, ([Source](https://github.com/denniskaselow/dartemis/tree/master/example/web))
 
-GitHub Space Off
-----------------
-A game originally created for the GitHub Game Off 2012
-*[Source Code](https://github.com/denniskaselow/game-off-2012)
-*[Playable version](http://denniskaselow.github.com/game-off-2012/)
-
-darteroids
-----------
-An very simple example included in the example folder of dartemis:
-*[Source Code](https://github.com/denniskaselow/dartemis/tree/master/example/web)
-*[Playable version](http://denniskaselow.github.com/dartemis/example/darteroids/web/darteroids.html)
 
 Add-ons
 =======
