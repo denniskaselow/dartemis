@@ -2,15 +2,12 @@ part of darteroids;
 
 class MovementSystem extends EntityProcessingSystem {
 
+  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
+  @Mapper(Velocity)
   ComponentMapper<Velocity> velocityMapper;
 
   MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
-
-  void initialize() {
-    positionMapper = new ComponentMapper<Position>(Position, world);
-    velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
-  }
 
   void processEntity(Entity entity) {
     Position pos = positionMapper.get(entity);
@@ -25,17 +22,14 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   static const num bulletSpeed = 2.5;
 
+  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
+  @Mapper(Cannon)
   ComponentMapper<Cannon> cannonMapper;
+  @Mapper(Velocity)
   ComponentMapper<Velocity> velocityMapper;
 
   BulletSpawningSystem() : super(Aspect.getAspectForAllOf([Cannon, Position, Velocity]));
-
-  void initialize() {
-    positionMapper = new ComponentMapper<Position>(Position, world);
-    velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
-    cannonMapper = new ComponentMapper<Cannon>(Cannon, world);
-  }
 
   void processEntity(Entity entity) {
     Cannon cannon = cannonMapper.get(entity);
@@ -68,13 +62,10 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
 class DecaySystem extends EntityProcessingSystem {
 
+  @Mapper(Decay)
   ComponentMapper<Decay> decayMapper;
 
   DecaySystem() : super(Aspect.getAspectForAllOf([Decay]));
-
-  void initialize() {
-    decayMapper = new ComponentMapper<Decay>(Decay, world);
-  }
 
   void processEntity(Entity entity) {
     Decay decay = decayMapper.get(entity);
@@ -90,15 +81,15 @@ class DecaySystem extends EntityProcessingSystem {
 class AsteroidDestructionSystem extends EntityProcessingSystem {
   static final num sqrtOf2 = sqrt(2);
   GroupManager groupManager;
+  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
+  @Mapper(CircularBody)
   ComponentMapper<CircularBody> bodyMapper;
 
   AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([AsteroidDestroyer, Position]));
 
   void initialize() {
     groupManager = world.getManager(new GroupManager().runtimeType);
-    positionMapper = new ComponentMapper<Position>(Position, world);
-    bodyMapper = new ComponentMapper<CircularBody>(CircularBody, world);
   }
 
   void processEntity(Entity entity) {
@@ -136,17 +127,17 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
 
 class PlayerCollisionDetectionSystem extends EntitySystem {
   TagManager tagManager;
+  @Mapper(Status)
   ComponentMapper<Status> statusMapper;
+  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
+  @Mapper(CircularBody)
   ComponentMapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
 
   void initialize() {
     tagManager = world.getManager(new TagManager().runtimeType);
-    statusMapper = new ComponentMapper(Status, world);
-    positionMapper = new ComponentMapper<Position>(Position, world);
-    bodyMapper = new ComponentMapper<CircularBody>(CircularBody, world);
   }
 
   void processEntities(ReadOnlyBag<Entity> entities) {

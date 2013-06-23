@@ -3,6 +3,7 @@ library dartemis;
 import 'dart:collection';
 import 'dart:core';
 import 'dart:math' as Math;
+import 'dart:mirrors';
 
 part 'src/utils/bag.dart';
 part 'src/utils/fast_math.dart';

@@ -36,3 +36,13 @@ class ComponentMapper<A extends Component> {
    */
   bool has(Entity e) => getSafe(e) != null;
 }
+
+/**
+ * Metadata field for ComponentMapper.
+ *
+ * Only temporary until typeArguments is implemented in ClassMirror.
+ */
+class Mapper {
+  final Type mapperType;
+  const Mapper(this.mapperType);
+}

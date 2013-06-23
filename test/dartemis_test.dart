@@ -264,6 +264,13 @@ main() {
 
       system.getLogs(callsTo('initialize')).verify(happenedExactly(1));
     });
+    test('world initializes annotated ComponentMapper', () {
+      EntitySystemWithAnnotatedComponentMapper system = new EntitySystemWithAnnotatedComponentMapper();
+      world.addSystem(system);
+      world.initialize();
+
+      expect(system.mapperForA, new isInstanceOf('ComponentMapper<ComponentA>'));
+    });
     test('world processes added system', () {
       MockEntitySystem system = new MockEntitySystem();
       system.when(callsTo('get passive')).alwaysReturn(false);
@@ -495,4 +502,10 @@ class TestEntitySystem extends EntitySystem {
 
 class TestIntervalEntitySystem extends IntervalEntitySystem {
   TestIntervalEntitySystem(num interval) : super(interval, Aspect.getEmpty());
+}
+
+class EntitySystemWithAnnotatedComponentMapper extends VoidEntitySystem {
+  @Mapper(ComponentA)
+  ComponentMapper<ComponentA> mapperForA;
+  processSystem() {}
 }

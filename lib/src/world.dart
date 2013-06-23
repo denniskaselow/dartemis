@@ -44,7 +44,22 @@ class World {
    */
   void initialize() {
     _managersBag.forEach((manager) => manager.initialize());
-    _systemsList.forEach((system) => system.initialize());
+
+    _systemsList.forEach((system) {
+      _injectMapper(system);
+      system.initialize();
+    });
+  }
+
+  void _injectMapper(EntitySystem system) {
+    reflectClass(system.runtimeType).variables.forEach((k, v) {
+      v.metadata.forEach((m) {
+        if (m.reflectee is Mapper) {
+          Type t = m.reflectee.mapperType;
+          reflect(system).setField(v.simpleName, new ComponentMapper(t, this));
+        }
+      });
+    });
   }
 
   /**

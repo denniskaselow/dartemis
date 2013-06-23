@@ -15,7 +15,9 @@ class PlayerControlSystem extends IntervalEntitySystem {
   num targetX = 0;
   num targetY = 0;
 
+  @Mapper(Velocity)
   ComponentMapper<Velocity> velocityMapper;
+  @Mapper(Cannon)
   ComponentMapper<Cannon> cannonMapper;
   TagManager tagManager;
 
@@ -24,9 +26,6 @@ class PlayerControlSystem extends IntervalEntitySystem {
   PlayerControlSystem(this.canvas) : super(20, Aspect.getAspectForAllOf([Velocity, Cannon]));
 
   void initialize() {
-    velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
-    cannonMapper = new ComponentMapper<Cannon>(Cannon, world);
-
     tagManager = world.getManager(new TagManager().runtimeType);
     window.onKeyDown.listen(handleKeyDown);
     window.onKeyUp.listen(handleKeyUp);
