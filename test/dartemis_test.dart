@@ -307,6 +307,24 @@ main() {
       world.deleteAllEntities();
       world.deleteAllEntities();
     });
+    test('world process increments frame count', () {
+      world.initialize();
+
+      world.process();
+      expect(world.frame, equals(1));
+      world.process();
+      expect(world.frame, equals(2));
+    });
+    test('world process increments time by delta', () {
+      world.initialize();
+
+      world.delta = 10;
+      world.process();
+      expect(world.time, equals(10));
+      world.delta = 20;
+      world.process();
+      expect(world.time, equals(30));
+    });
   });
   group('Component tests', () {
     World world;

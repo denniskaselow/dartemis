@@ -1,7 +1,11 @@
 # Changelog
 ##0.4.2
 ### Bugfixes
-* `EntityManager.isEnabled()` no longer fails if the bag of disabled entities is smaller than the id of the checked entity 
+* `EntityManager.isEnabled()` no longer fails if the bag of disabled entities is smaller than the id of the checked entity
+
+### Enhancements
+* added getters for current `time` and `frame` to `World`
+
 ##0.4.1
 ### Bugfixes
 * `World.deleteAllEntites()` did not work if there was already a deleted entity

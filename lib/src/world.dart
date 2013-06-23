@@ -23,7 +23,15 @@ class World {
   final Map<Type, Manager> _managers = new Map<Type, Manager>();
   final Bag<Manager> _managersBag = new Bag<Manager>();
 
-  num delta;
+  num delta = 0;
+  int _frame = 0;
+  double _time = 0.0;
+
+  /// Returns the current frame.
+  int get frame => _frame;
+  /// Returns the time that has elapsed since the game has started (sum of all
+  /// deltas).
+  double get time => _time;
 
   World() {
     addManager(_entityManager);
@@ -138,6 +146,8 @@ class World {
    * Processes all changes to entities and executes all non-passive systems.
    */
   void process() {
+    _frame++;
+    _time += delta;
     processEntityChanges();
 
     _systemsList.forEach((system) {
