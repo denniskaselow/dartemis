@@ -23,7 +23,7 @@ class MovementSystem extends EntityProcessingSystem {
 
 class BulletSpawningSystem extends EntityProcessingSystem {
 
-  const num bulletSpeed = 2.5;
+  static const num bulletSpeed = 2.5;
 
   ComponentMapper<Position> positionMapper;
   ComponentMapper<Cannon> cannonMapper;

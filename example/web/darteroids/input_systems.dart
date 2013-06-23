@@ -1,10 +1,10 @@
 part of darteroids;
 
 class PlayerControlSystem extends IntervalEntitySystem {
-  const int UP = 87;
-  const int DOWN = 83;
-  const int LEFT = 65;
-  const int RIGHT = 68;
+  static const int UP = 87;
+  static const int DOWN = 83;
+  static const int LEFT = 65;
+  static const int RIGHT = 68;
 
   bool moveUp = false;
   bool moveDown = false;
