@@ -1,14 +1,14 @@
 part of darteroids;
 
-class CirleRenderingSystem extends EntityProcessingSystem {
+class CircleRenderingSystem extends EntityProcessingSystem {
 
-  CanvasRenderingContext2D context2d;
+  CanvasRenderingContext2D context;
 
   ComponentMapper<Position> positionMapper;
   ComponentMapper<CircularBody> bodyMapper;
   ComponentMapper<Status> statusMapper;
 
-  CirleRenderingSystem(this.context2d) : super(Aspect.getAspectForAllOf([Position, CircularBody]));
+  CircleRenderingSystem(this.context) : super(Aspect.getAspectForAllOf([Position, CircularBody]));
 
   void initialize() {
     positionMapper = new ComponentMapper<Position>(Position, world);
@@ -21,15 +21,15 @@ class CirleRenderingSystem extends EntityProcessingSystem {
     CircularBody body = bodyMapper.get(entity);
     Status status = statusMapper.getSafe(entity);
 
-    context2d.save();
+    context.save();
 
     try {
-      context2d.lineWidth = 0.5;
-      context2d.fillStyle = body.color;
-      context2d.strokeStyle = body.color;
+      context.lineWidth = 0.5;
+      context.fillStyle = body.color;
+      context.strokeStyle = body.color;
       if (null != status && status.invisible) {
         if (status.invisiblityTimer % 600 < 300) {
-          context2d.globalAlpha = 0.4;
+          context.globalAlpha = 0.4;
         }
       }
 
@@ -47,49 +47,49 @@ class CirleRenderingSystem extends EntityProcessingSystem {
       }
 
 
-      context2d.stroke();
+      context.stroke();
     } finally {
-      context2d.restore();
+      context.restore();
     }
   }
 
   void drawCirle(Position pos, CircularBody body, {int offsetX : 0, int offsetY : 0}) {
-    context2d.beginPath();
+    context.beginPath();
 
-    context2d.arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, PI * 2, false);
+    context.arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, PI * 2, false);
 
-    context2d.closePath();
-    context2d.fill();
+    context.closePath();
+    context.fill();
   }
 }
 
 class BackgroundRenderSystem extends VoidEntitySystem {
-  CanvasRenderingContext2D context2d;
+  CanvasRenderingContext2D context;
 
-  BackgroundRenderSystem(this.context2d);
+  BackgroundRenderSystem(this.context);
 
   void processSystem() {
-    context2d.save();
+    context.save();
     try {
-      context2d.fillStyle = "black";
+      context.fillStyle = "black";
 
-      context2d.beginPath();
-      context2d.rect(0, 0, MAXWIDTH, MAXHEIGHT + HUDHEIGHT);
-      context2d.closePath();
+      context.beginPath();
+      context.rect(0, 0, MAXWIDTH, MAXHEIGHT + HUDHEIGHT);
+      context.closePath();
 
-      context2d.fill();
+      context.fill();
     } finally {
-      context2d.restore();
+      context.restore();
     }
   }
 }
 
 class HudRenderSystem extends VoidEntitySystem {
-  CanvasRenderingContext2D context2d;
+  CanvasRenderingContext2D context;
   TagManager tagManager;
   ComponentMapper<Status> statusMapper;
 
-  HudRenderSystem(this.context2d);
+  HudRenderSystem(this.context);
 
   void initialize() {
     tagManager = world.getManager(new TagManager().runtimeType);
@@ -97,31 +97,31 @@ class HudRenderSystem extends VoidEntitySystem {
   }
 
   void processSystem() {
-    context2d.save();
+    context.save();
     try {
-      context2d.fillStyle = "#555";
+      context.fillStyle = "#555";
 
-      context2d.beginPath();
-      context2d.rect(0, MAXHEIGHT, MAXWIDTH, MAXHEIGHT + HUDHEIGHT);
-      context2d.closePath();
+      context.beginPath();
+      context.rect(0, MAXHEIGHT, MAXWIDTH, MAXHEIGHT + HUDHEIGHT);
+      context.closePath();
 
-      context2d.fill();
+      context.fill();
 
       Entity player = tagManager.getEntity(TAG_PLAYER);
       Status status = statusMapper.get(player);
 
-      context2d.fillStyle = PLAYER_COLOR;
+      context.fillStyle = PLAYER_COLOR;
       for (int i = 0; i < status.lifes; i++) {
 
-        context2d.beginPath();
-        context2d.arc(50 + i * 50, MAXHEIGHT + HUDHEIGHT~/2, 15, 0, PI * 2, false);
-        context2d.closePath();
+        context.beginPath();
+        context.arc(50 + i * 50, MAXHEIGHT + HUDHEIGHT~/2, 15, 0, PI * 2, false);
+        context.closePath();
 
-        context2d.fill();
+        context.fill();
       }
 
     } finally {
-      context2d.restore();
+      context.restore();
     }
   }
 }
