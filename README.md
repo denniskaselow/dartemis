@@ -9,19 +9,19 @@ The original has been written in Java by Arni Arent and Tiago Costa and can be f
 
 Ports for other languages are also available:
 
-* C#: https://github.com/thelinuxlich/artemis_CSharp 
+* C#: https://github.com/thelinuxlich/artemis_CSharp
 * Python: https://github.com/kernhanda/PyArtemis
 
 Some useful links about what an Entity System/Entity Component System is:
 
 * http://piemaster.net/2011/07/entity-component-artemis/
-* http://t-machine.org/index.php/2007/09/03/entity-systems-are-the-future-of-mmog-development-part-1/ 
+* http://t-machine.org/index.php/2007/09/03/entity-systems-are-the-future-of-mmog-development-part-1/
 * http://www.richardlord.net/blog/what-is-an-entity-framework
 
 Getting started
 ===============
 
-1\. Add dartemis to your project by adding it to your **pubspec.yaml**  
+1\. Add dartemis to your project by adding it to your **pubspec.yaml**
 2\. Import it in your project:
 
 ```dart
@@ -64,7 +64,7 @@ class Position extends ComponentPoolable {
     static Position _constructor() => new Position._();
 }
 ```
-By using a factory constructor and calling the factory constructor in `Poolable`, dartemis is able to reuse destroyed components and they will not be garbage collected. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/) 
+By using a factory constructor and calling the factory constructor in `Poolable`, dartemis is able to reuse destroyed components and they will not be garbage collected. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/)
 
 5\. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
@@ -72,25 +72,25 @@ By using a factory constructor and calling the factory constructor in `Poolable`
 class MovementSystem extends EntityProcessingSystem {
     ComponentMapper<Position> positionMapper;
     ComponentMapper<Velocity> velocityMapper;
-  
+
     MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
-  
+
     void initialize() {
       positionMapper = new ComponentMapper<Position>(Position, world);
       velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
     }
-  
+
     void processEntity(Entity entity) {
       Position position = positionMapper.get(entity);
-      Velocity vel = velocityMapper.get(entity);  
+      Velocity vel = velocityMapper.get(entity);
       position.x += vel.x;
       position.y += vel.y;
     }
 }
-```  
+```
 6\. Add your system to the world:
 
-```dart  
+```dart
 world.addSystem(new MovementSystem());
 ```
 7\. Initialize the world:
@@ -118,22 +118,22 @@ Example Games using dartemis
 ============================
 VDrones
 ----------------
-An arcade game (with weekly updates).  
-[Source Code](https://github.com/davidB/vdrones)  
-[Playable version](http://vdrones.appspot.com/) - Chrome/Firefox -
+An arcade game (with weekly updates).
+*[Source Code](https://github.com/davidB/vdrones)
+*[Playable version](http://vdrones.appspot.com/) - Chrome/Firefox -
 
 GitHub Space Off
 ----------------
-A game originally created for the GitHub Game Off 2012  
-[Source Code](https://github.com/denniskaselow/game-off-2012)  
-[Playable version](http://denniskaselow.github.com/game-off-2012/)
+A game originally created for the GitHub Game Off 2012
+*[Source Code](https://github.com/denniskaselow/game-off-2012)
+*[Playable version](http://denniskaselow.github.com/game-off-2012/)
 
 darteroids
 ----------
-An very simple example included in the example folder of dartemis:  
-[Source Code](https://github.com/denniskaselow/dartemis/tree/master/example/web)  
-[Playable version](http://denniskaselow.github.com/dartemis/example/darteroids/web/darteroids.html)
+An very simple example included in the example folder of dartemis:
+*[Source Code](https://github.com/denniskaselow/dartemis/tree/master/example/web)
+*[Playable version](http://denniskaselow.github.com/dartemis/example/darteroids/web/darteroids.html)
 
 Add-ons
 =======
-* [dartemis_addons](https://github.com/davidB/dartemis_addons) - A set of addons to use with dartemis (like EntityStateMachine, ...)
+* [dartemis_toolbox](https://github.com/davidB/dartemis_toolbox/) - A set of addons to use with dartemis (like EntityStateMachine, ...) and other libraries for gamedev.
