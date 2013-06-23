@@ -38,7 +38,7 @@ class Darteroids {
   World world;
 
   Darteroids(this.canvas) {
-    context2d = canvas.context2d;
+    context2d = canvas.context2D;
   }
 
   void start() {
@@ -67,7 +67,7 @@ class Darteroids {
     world.addSystem(new AsteroidDestructionSystem());
     world.addSystem(new PlayerCollisionDetectionSystem());
     world.addSystem(new BackgroundRenderSystem(context2d));
-    world.addSystem(new CirleRenderingSystem(context2d));
+    world.addSystem(new CircleRenderingSystem(context2d));
     world.addSystem(new HudRenderSystem(context2d));
 
     world.initialize();
