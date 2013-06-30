@@ -49,27 +49,35 @@ class World {
     _managersBag.forEach((manager) => manager.initialize());
 
     _systemsList.forEach((system) {
-      _injectMapper(system);
+      _injectFields(system);
       system.initialize();
     });
   }
 
-  void _injectMapper(EntitySystem system) {
-    reflectClass(system.runtimeType).variables.forEach((k, VariableMirror v) {
-      if (v.type.qualifiedName != _symbolDynamic) {
-        if ((v.type as ClassMirror).superclass.qualifiedName == _symbolManager) {
-          Manager m = _managers[(v.type as ClassMirror).qualifiedName];
-          reflect(system).setField(v.simpleName, m);
-        }
-      }
-      v.metadata.forEach((m) {
-        if (m.reflectee is Mapper) {
-          Type t = m.reflectee.mapperType;
-          reflect(system).setField(v.simpleName, new ComponentMapper(t, this));
-        }
+  void _injectFields(EntitySystem system) {
+    var variableMirrors = reflectClass(system.runtimeType).variables.values;
+    _injectManager(system, variableMirrors);
+    _injectMapper(system, variableMirrors);
+  }
+
+  void _injectManager(EntitySystem system, Iterable<VariableMirror> vms) {
+    vms.where((vm) => _isManager(vm)).forEach((cm) {
+      reflect(system).setField(cm.simpleName, _managers[cm.type.qualifiedName]);
+    });
+  }
+
+  void _injectMapper(EntitySystem system, Iterable<VariableMirror> vms) {
+    vms.forEach((vm) {
+      vm.metadata.where((m) => m.reflectee is Mapper).forEach((m) {
+        Type t = m.reflectee.mapperType;
+        reflect(system).setField(vm.simpleName, new ComponentMapper(t, this));
       });
     });
   }
+
+  bool _isManager(VariableMirror vm) => vm.type.qualifiedName != _symbolDynamic
+      && vm.type is ClassMirror
+      && (vm.type as ClassMirror).superclass.qualifiedName == _symbolManager;
 
   /**
    * Returns a manager that takes care of all the entities in the world.
