@@ -15,9 +15,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   num targetX = 0;
   num targetY = 0;
 
-  @Mapper(Velocity)
   ComponentMapper<Velocity> velocityMapper;
-  @Mapper(Cannon)
   ComponentMapper<Cannon> cannonMapper;
   TagManager tagManager;
 

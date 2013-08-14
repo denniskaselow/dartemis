@@ -2,9 +2,7 @@ part of darteroids;
 
 class MovementSystem extends EntityProcessingSystem {
 
-  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
-  @Mapper(Velocity)
   ComponentMapper<Velocity> velocityMapper;
 
   MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
@@ -22,11 +20,8 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   static const num bulletSpeed = 2.5;
 
-  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
-  @Mapper(Cannon)
   ComponentMapper<Cannon> cannonMapper;
-  @Mapper(Velocity)
   ComponentMapper<Velocity> velocityMapper;
 
   BulletSpawningSystem() : super(Aspect.getAspectForAllOf([Cannon, Position, Velocity]));
@@ -62,7 +57,6 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
 class DecaySystem extends EntityProcessingSystem {
 
-  @Mapper(Decay)
   ComponentMapper<Decay> decayMapper;
 
   DecaySystem() : super(Aspect.getAspectForAllOf([Decay]));
@@ -81,9 +75,7 @@ class DecaySystem extends EntityProcessingSystem {
 class AsteroidDestructionSystem extends EntityProcessingSystem {
   static final num sqrtOf2 = sqrt(2);
   GroupManager groupManager;
-  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
-  @Mapper(CircularBody)
   ComponentMapper<CircularBody> bodyMapper;
 
   AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([AsteroidDestroyer, Position]));
@@ -123,11 +115,8 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
 
 class PlayerCollisionDetectionSystem extends EntitySystem {
   TagManager tagManager;
-  @Mapper(Status)
   ComponentMapper<Status> statusMapper;
-  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
-  @Mapper(CircularBody)
   ComponentMapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));

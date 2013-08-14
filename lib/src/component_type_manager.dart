@@ -3,15 +3,26 @@ part of dartemis;
 class ComponentTypeManager {
 
   static var _componentTypes = new Map<Type, ComponentType>();
+  static var _componentTypesByMirror = new Map<ClassMirror, ComponentType>();
 
-  static ComponentType getTypeFor(Type componentType){
-    ComponentType type = _componentTypes[componentType];
+  static ComponentType getTypeFor(Type typeOfComponent){
+    ComponentType componentType = _componentTypes[typeOfComponent];
 
-    if (type == null) {
-      type = new ComponentType();
-      _componentTypes[componentType] = type;
+    if (componentType == null) {
+      ClassMirror cm = reflectClass(typeOfComponent);
+      componentType = _getTypeFor(cm);
+      _componentTypes[typeOfComponent] = componentType;
     }
-    return type;
+    return componentType;
+  }
+
+  static ComponentType _getTypeFor(ClassMirror cm) {
+    ComponentType componentType = _componentTypesByMirror[cm];
+    if (componentType == null) {
+      componentType = new ComponentType();
+      _componentTypesByMirror[cm] = componentType;
+    }
+    return componentType;
   }
 
   static int getBit(Type componentType) => getTypeFor(componentType).bit;

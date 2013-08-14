@@ -8,6 +8,7 @@ part of dartemis;
  * It is also important to set the delta each game loop iteration, and initialize before game loop.
  */
 class World {
+  final Symbol _symbolComponentMapper = const Symbol('dartemis.ComponentMapper');
   final Symbol _symbolManager = const Symbol('dartemis.Manager');
   final Symbol _symbolDynamic = const Symbol('dynamic');
 
@@ -56,28 +57,30 @@ class World {
 
   void _injectFields(EntitySystem system) {
     var variableMirrors = reflectClass(system.runtimeType).variables.values;
-    _injectManager(system, variableMirrors);
-    _injectMapper(system, variableMirrors);
+    var systemInstanceMirror = reflect(system);
+    _injectManager(systemInstanceMirror, variableMirrors);
+    _injectMapper(systemInstanceMirror, variableMirrors);
   }
 
-  void _injectManager(EntitySystem system, Iterable<VariableMirror> vms) {
+  void _injectManager(InstanceMirror system, Iterable<VariableMirror> vms) {
     vms.where((vm) => _isManager(vm)).forEach((cm) {
-      reflect(system).setField(cm.simpleName, _managers[cm.type.qualifiedName]);
+      system.setField(cm.simpleName, _managers[cm.type.qualifiedName]);
     });
   }
 
-  void _injectMapper(EntitySystem system, Iterable<VariableMirror> vms) {
-    vms.forEach((vm) {
-      vm.metadata.where((m) => m.reflectee is Mapper).forEach((m) {
-        Type t = m.reflectee.mapperType;
-        reflect(system).setField(vm.simpleName, new ComponentMapper(t, this));
-      });
+  void _injectMapper(InstanceMirror system, Iterable<VariableMirror> vms) {
+    vms.where((vm) => _isComponentMapper(vm)).forEach((cm) {
+      ClassMirror tvm = (cm.type as ClassMirror).typeArguments.values.first as ClassMirror;
+      system.setField(cm.simpleName, new ComponentMapper._byMirror(tvm, this));
     });
   }
 
   bool _isManager(VariableMirror vm) => vm.type.qualifiedName != _symbolDynamic
       && vm.type is ClassMirror
       && (vm.type as ClassMirror).superclass.qualifiedName == _symbolManager;
+  
+  bool _isComponentMapper(VariableMirror vm) => vm.type.qualifiedName != _symbolDynamic
+      && vm.type.qualifiedName == _symbolComponentMapper;
 
   /**
    * Returns a manager that takes care of all the entities in the world.

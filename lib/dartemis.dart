@@ -1,6 +1,5 @@
 library dartemis;
 
-import 'dart:collection';
 import 'dart:core';
 import 'dart:math' as Math;
 import 'dart:mirrors';

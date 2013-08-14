@@ -264,14 +264,14 @@ main() {
 
       system.getLogs(callsTo('initialize')).verify(happenedExactly(1));
     });
-    test('world initializes annotated ComponentMapper', () {
-      EntitySystemWithAnnotatedComponentMapper system = new EntitySystemWithAnnotatedComponentMapper();
+    test('world injects ComponentMapper into system', () {
+      EntitySystemWithComponentMapper system = new EntitySystemWithComponentMapper();
       world.addSystem(system);
       world.initialize();
-
-      expect(system.mapperForA, new isInstanceOf('ComponentMapper<ComponentA>'));
+      
+      expect(system.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
     });
-    test('world initializes Managers in system', () {
+    test('world injects Managers into system', () {
       EntitySystemWithManager system = new EntitySystemWithManager();
       var manager = new TagManager();
       world.addManager(manager);
@@ -513,8 +513,7 @@ class TestIntervalEntitySystem extends IntervalEntitySystem {
   TestIntervalEntitySystem(num interval) : super(interval, Aspect.getEmpty());
 }
 
-class EntitySystemWithAnnotatedComponentMapper extends VoidEntitySystem {
-  @Mapper(ComponentA)
+class EntitySystemWithComponentMapper extends VoidEntitySystem {
   ComponentMapper<ComponentA> mapperForA;
   processSystem() {}
 }

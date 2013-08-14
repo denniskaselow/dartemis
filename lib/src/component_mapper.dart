@@ -12,6 +12,11 @@ class ComponentMapper<A extends Component> {
     this._type = ComponentTypeManager.getTypeFor(componentType);
     _components = world.componentManager.getComponentsByType(this._type);
   }
+  
+  ComponentMapper._byMirror(ClassMirror cm, World world) {
+    this._type = ComponentTypeManager._getTypeFor(cm);
+    _components = world.componentManager.getComponentsByType(this._type);
+  }
 
   /**
    * Fast but unsafe retrieval of a component for this entity.
@@ -35,14 +40,4 @@ class ComponentMapper<A extends Component> {
    * Checks if the entity has this type of component.
    */
   bool has(Entity e) => getSafe(e) != null;
-}
-
-/**
- * Metadata field for ComponentMapper.
- *
- * Only temporary until typeArguments is implemented in ClassMirror.
- */
-class Mapper {
-  final Type mapperType;
-  const Mapper(this.mapperType);
 }

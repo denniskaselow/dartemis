@@ -4,11 +4,8 @@ class CircleRenderingSystem extends EntityProcessingSystem {
 
   CanvasRenderingContext2D context;
 
-  @Mapper(Position)
   ComponentMapper<Position> positionMapper;
-  @Mapper(CircularBody)
   ComponentMapper<CircularBody> bodyMapper;
-  @Mapper(Status)
   ComponentMapper<Status> statusMapper;
 
   CircleRenderingSystem(this.context) : super(Aspect.getAspectForAllOf([Position, CircularBody]));
@@ -84,7 +81,6 @@ class BackgroundRenderSystem extends VoidEntitySystem {
 class HudRenderSystem extends VoidEntitySystem {
   CanvasRenderingContext2D context;
   TagManager tagManager;
-  @Mapper(Status)
   ComponentMapper<Status> statusMapper;
 
   HudRenderSystem(this.context);
