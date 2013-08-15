@@ -2,6 +2,7 @@ library dartemis;
 
 import 'dart:core';
 import 'dart:math' as Math;
+@MirrorsUsed(targets: const [Component, ComponentMapper, EntitySystem, Manager])
 import 'dart:mirrors';
 
 part 'src/utils/bag.dart';

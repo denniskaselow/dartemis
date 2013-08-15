@@ -1,4 +1,10 @@
 # Changelog
+##0.5.0
+### Enhancements
+* more injection, less boilerplate
+  * Instances of `ComponentMapper` no longer need to be created in the `initialize`-method of a system, they will be injected
+  * `Manager`s and `EntitySystem`s no longer need to be requested from the `World` in the `initialize`-method of a system, they will be injected
+
 ##0.4.2
 ### Bugfixes
 * `EntityManager.isEnabled()` no longer fails if the bag of disabled entities is smaller than the id of the checked entity

@@ -3,7 +3,7 @@ dartemis
 
 [![](https://drone.io/denniskaselow/dartemis/status.png)](https://drone.io/denniskaselow/dartemis/latest)
 
-A Dart port of the Entity System Framework **Artemis**.
+**dartemis** is a Dart port of the Entity System Framework **Artemis**.
 
 The original has been written in Java by Arni Arent and Tiago Costa and can be found here: http://gamadu.com/artemis with the source available here: https://code.google.com/p/artemis-framework/
 
@@ -71,15 +71,11 @@ By using a factory constructor and calling the factory constructor in `Poolable`
 
 ```dart
 class MovementSystem extends EntityProcessingSystem {
+    // these will be injected
     ComponentMapper<Position> positionMapper;
     ComponentMapper<Velocity> velocityMapper;
 
     MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
-
-    void initialize() {
-      positionMapper = new ComponentMapper<Position>(Position, world);
-      velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
-    }
 
     void processEntity(Entity entity) {
       Position position = positionMapper.get(entity);
