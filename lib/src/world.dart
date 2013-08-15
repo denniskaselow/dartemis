@@ -9,8 +9,8 @@ part of dartemis;
  */
 class World {
   final Symbol _symbolComponentMapper = const Symbol('dartemis.ComponentMapper');
+  final Symbol _symbolEntitySystem = const Symbol('dartemis.EntitySystem');
   final Symbol _symbolManager = const Symbol('dartemis.Manager');
-  final Symbol _symbolDynamic = const Symbol('dynamic');
 
   final EntityManager _entityManager = new EntityManager();
   final ComponentManager _componentManager = new ComponentManager();
@@ -21,7 +21,7 @@ class World {
   final Bag<Entity> _enable = new Bag<Entity>();
   final Bag<Entity> _disable = new Bag<Entity>();
 
-  final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
+  final Map<Symbol, EntitySystem> _systems = new Map<Symbol, EntitySystem>();
   final List<EntitySystem> _systemsList= new List<EntitySystem>();
 
   final Map<Symbol, Manager> _managers = new Map<Symbol, Manager>();
@@ -56,31 +56,45 @@ class World {
   }
 
   void _injectFields(EntitySystem system) {
-    var variableMirrors = reflectClass(system.runtimeType).variables.values;
+    var variableMirrors = reflectClass(system.runtimeType).variables.values.where((vm) => _isClassMirror(vm));
     var systemInstanceMirror = reflect(system);
     _injectManager(systemInstanceMirror, variableMirrors);
+    _injectSystem(systemInstanceMirror, variableMirrors);
     _injectMapper(systemInstanceMirror, variableMirrors);
-  }
+  }  
 
   void _injectManager(InstanceMirror system, Iterable<VariableMirror> vms) {
-    vms.where((vm) => _isManager(vm)).forEach((cm) {
-      system.setField(cm.simpleName, _managers[cm.type.qualifiedName]);
+    vms.where((vm) => _isManager(vm)).forEach((vm) {
+      system.setField(vm.simpleName, _managers[vm.type.qualifiedName]);
+    });
+  }
+  
+  void _injectSystem(InstanceMirror system, Iterable<VariableMirror> vms) {
+    vms.where((vm) => _isSystem(vm)).forEach((vm) {
+      system.setField(vm.simpleName, _systems[vm.type.qualifiedName]);
     });
   }
 
   void _injectMapper(InstanceMirror system, Iterable<VariableMirror> vms) {
-    vms.where((vm) => _isComponentMapper(vm)).forEach((cm) {
-      ClassMirror tvm = (cm.type as ClassMirror).typeArguments.values.first as ClassMirror;
-      system.setField(cm.simpleName, new ComponentMapper._byMirror(tvm, this));
+    vms.where((vm) => _isComponentMapper(vm)).forEach((vm) {
+      ClassMirror tacm = (vm.type as ClassMirror).typeArguments.values.first as ClassMirror;
+      system.setField(vm.simpleName, new ComponentMapper._byMirror(tacm, this));
     });
   }
-
-  bool _isManager(VariableMirror vm) => vm.type.qualifiedName != _symbolDynamic
-      && vm.type is ClassMirror
-      && (vm.type as ClassMirror).superclass.qualifiedName == _symbolManager;
   
-  bool _isComponentMapper(VariableMirror vm) => vm.type.qualifiedName != _symbolDynamic
-      && vm.type.qualifiedName == _symbolComponentMapper;
+  bool _isClassMirror(VariableMirror vm) => vm.type is ClassMirror; 
+
+  bool _isManager(VariableMirror vm) => _isSuperclassSymbol((vm.type as ClassMirror).superclass, _symbolManager);
+  
+  bool _isSystem(VariableMirror vm) => _isSuperclassSymbol((vm.type as ClassMirror).superclass, _symbolEntitySystem);
+  
+  bool _isSuperclassSymbol(ClassMirror cm, Symbol target) {
+    if (null == cm) return false;
+    if (cm.qualifiedName == target) return true;
+    return _isSuperclassSymbol(cm.superclass, target);
+  }
+  
+  bool _isComponentMapper(VariableMirror vm) => vm.type.qualifiedName == _symbolComponentMapper;
 
   /**
    * Returns a manager that takes care of all the entities in the world.
@@ -145,7 +159,7 @@ class World {
     system.world = this;
     system._passive = passive;
 
-    _systems[system.runtimeType] = system;
+    _systems[reflect(system).type.qualifiedName] = system;
     _systemsList.add(system);
 
     return system;
@@ -155,7 +169,7 @@ class World {
    * Removed the specified system from the world.
    */
   void deleteSystem(EntitySystem system) {
-    _systems.remove(system.runtimeType);
+    _systems.remove(reflect(system).type.qualifiedName);
     _systemsList.remove(system);
   }
 
@@ -163,7 +177,7 @@ class World {
    * Retrieve a system for specified system type.
    */
   EntitySystem getSystem(Type type) {
-    return _systems[type];
+    return _systems[reflectClass(type).qualifiedName];
   }
 
   /**
