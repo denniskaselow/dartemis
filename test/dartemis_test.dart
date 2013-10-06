@@ -261,7 +261,7 @@ main() {
       world.addSystem(new EntitySystemWithManager());
       world.addSystem(new EntitySystemWithOtherSystem());
       world.addSystem(new EntitySystemWithNothingToInject());
-      
+
       world.initialize();
     });
     test('world injects ComponentMapper into system', () {
@@ -272,19 +272,19 @@ main() {
     });
     test('world injects Managers into system', () {
       EntitySystemWithManager system = world.getSystem(EntitySystemWithManager);
-      
+
       expect(system.tagManager, isNotNull);
       expect(system.tagManager, same(world.getManager(TagManager)));
     });
     test('world injects Systems into system', () {
       EntitySystemWithOtherSystem system = world.getSystem(EntitySystemWithOtherSystem);
-      
+
       expect(system.systemWithManager, isNotNull);
       expect(system.systemWithManager, same(world.getSystem(EntitySystemWithManager)));
     });
     test('world injects nothing into system when there is nothing to inject', () {
       EntitySystemWithNothingToInject system = world.getSystem(EntitySystemWithNothingToInject);
-      
+
       expect(system.a, isNull);
       expect(system.b, isNull);
       expect(system.c, isNull);

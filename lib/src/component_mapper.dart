@@ -12,18 +12,13 @@ class ComponentMapper<A extends Component> {
     this._type = ComponentTypeManager.getTypeFor(componentType);
     _components = world.componentManager.getComponentsByType(this._type);
   }
-  
-  ComponentMapper._byMirror(ClassMirror cm, World world) {
-    this._type = ComponentTypeManager._getTypeFor(cm);
-    _components = world.componentManager.getComponentsByType(this._type);
-  }
 
   /**
    * Fast but unsafe retrieval of a component for this entity.
    * No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
    * however in most scenarios you already know the entity possesses this component.
    */
-  A get(Entity entity) => _components[entity.id] as A;
+  A get(Entity entity) => _components[entity.id];
 
   /**
    * Fast and safe retrieval of a component for this entity.
@@ -31,7 +26,7 @@ class ComponentMapper<A extends Component> {
    */
   A getSafe(Entity entity) {
     if(_components.isIndexWithinBounds(entity.id)) {
-      return _components[entity.id] as A;
+      return _components[entity.id];
     }
     return null;
   }

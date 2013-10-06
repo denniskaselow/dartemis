@@ -9,8 +9,6 @@ part of dartemis;
  */
 class World {
   final Symbol _symbolComponentMapper = const Symbol('dartemis.ComponentMapper');
-  final Symbol _symbolEntitySystem = const Symbol('dartemis.EntitySystem');
-  final Symbol _symbolManager = const Symbol('dartemis.Manager');
 
   final EntityManager _entityManager = new EntityManager();
   final ComponentManager _componentManager = new ComponentManager();
@@ -21,10 +19,10 @@ class World {
   final Bag<Entity> _enable = new Bag<Entity>();
   final Bag<Entity> _disable = new Bag<Entity>();
 
-  final Map<Symbol, EntitySystem> _systems = new Map<Symbol, EntitySystem>();
+  final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
   final List<EntitySystem> _systemsList= new List<EntitySystem>();
 
-  final Map<Symbol, Manager> _managers = new Map<Symbol, Manager>();
+  final Map<Type, Manager> _managers = new Map<Type, Manager>();
   final Bag<Manager> _managersBag = new Bag<Manager>();
 
   num delta = 0;
@@ -56,45 +54,41 @@ class World {
   }
 
   void _injectFields(EntitySystem system) {
-    var variableMirrors = reflectClass(system.runtimeType).variables.values.where((vm) => _isClassMirror(vm));
+    var vmsAndTypes = reflectClass(system.runtimeType).variables.values
+        .where((vm) => _isClassMirror(vm))
+        .map((vm) => [vm, (vm.type as ClassMirror).reflectedType]);
     var systemInstanceMirror = reflect(system);
-    _injectManager(systemInstanceMirror, variableMirrors);
-    _injectSystem(systemInstanceMirror, variableMirrors);
-    _injectMapper(systemInstanceMirror, variableMirrors);
-  }  
-
-  void _injectManager(InstanceMirror system, Iterable<VariableMirror> vms) {
-    vms.where((vm) => _isManager(vm)).forEach((vm) {
-      system.setField(vm.simpleName, _managers[vm.type.qualifiedName]);
-    });
+    _injectManager(systemInstanceMirror, vmsAndTypes);
+    _injectSystem(systemInstanceMirror, vmsAndTypes);
+    _injectMapper(systemInstanceMirror, vmsAndTypes);
   }
-  
-  void _injectSystem(InstanceMirror system, Iterable<VariableMirror> vms) {
-    vms.where((vm) => _isSystem(vm)).forEach((vm) {
-      system.setField(vm.simpleName, _systems[vm.type.qualifiedName]);
+
+  void _injectManager(InstanceMirror system, Iterable<List> vmsAndTypes) {
+    vmsAndTypes.where((vmAndType) => _isManager(vmAndType[1])).forEach((vmAndType) {
+      system.setField(vmAndType[0].simpleName, _managers[vmAndType[1]]);
     });
   }
 
-  void _injectMapper(InstanceMirror system, Iterable<VariableMirror> vms) {
-    vms.where((vm) => _isComponentMapper(vm)).forEach((vm) {
-      ClassMirror tacm = (vm.type as ClassMirror).typeArguments.values.first as ClassMirror;
-      system.setField(vm.simpleName, new ComponentMapper._byMirror(tacm, this));
+  void _injectSystem(InstanceMirror system, Iterable<List> vmsAndTypes) {
+    vmsAndTypes.where((vmAndType) => _isSystem(vmAndType[1])).forEach((vmAndType) {
+      system.setField(vmAndType[0].simpleName, _systems[vmAndType[1]]);
     });
   }
-  
-  bool _isClassMirror(VariableMirror vm) => vm.type is ClassMirror; 
 
-  bool _isManager(VariableMirror vm) => _isSuperclassSymbol((vm.type as ClassMirror).superclass, _symbolManager);
-  
-  bool _isSystem(VariableMirror vm) => _isSuperclassSymbol((vm.type as ClassMirror).superclass, _symbolEntitySystem);
-  
-  bool _isSuperclassSymbol(ClassMirror cm, Symbol target) {
-    if (null == cm) return false;
-    if (cm.qualifiedName == target) return true;
-    return _isSuperclassSymbol(cm.superclass, target);
+  void _injectMapper(InstanceMirror system, Iterable<List> vmsAndTypes) {
+    vmsAndTypes.where((vmAndType) => _isComponentMapper(vmAndType[0])).forEach((vmAndType) {
+      ClassMirror tacm = (vmAndType[0].type as ClassMirror).typeArguments.first as ClassMirror;
+      system.setField(vmAndType[0].simpleName, new ComponentMapper(tacm.reflectedType, this));
+    });
   }
-  
-  bool _isComponentMapper(VariableMirror vm) => vm.type.qualifiedName == _symbolComponentMapper;
+
+  bool _isClassMirror(VariableMirror vm) => vm.type is ClassMirror;
+
+  bool _isManager(Type type) => _managers.containsKey(type);
+
+  bool _isSystem(Type type) => _systems.containsKey(type);
+
+  bool _isComponentMapper(VariableMirror vm) => (vm.type as ClassMirror).qualifiedName == _symbolComponentMapper;
 
   /**
    * Returns a manager that takes care of all the entities in the world.
@@ -112,7 +106,7 @@ class World {
    * notify this manager of changes to entity.
    */
   void addManager(Manager manager) {
-    _managers[reflect(manager).type.qualifiedName] = manager;
+    _managers[manager.runtimeType] = manager;
     _managersBag.add(manager);
     manager._world = this;
   }
@@ -121,14 +115,14 @@ class World {
    * Returns a [Manager] of the specified [managerType].
    */
   Manager getManager(Type managerType) {
-    return _managers[reflectClass(managerType).qualifiedName];
+    return _managers[managerType];
   }
 
   /**
    * Deletes the manager from this world.
    */
   void deleteManager(Manager manager) {
-    _managers.remove(reflect(manager).type.qualifiedName);
+    _managers.remove(manager.runtimeType);
     _managersBag.remove(manager);
   }
 
@@ -159,7 +153,7 @@ class World {
     system.world = this;
     system._passive = passive;
 
-    _systems[reflect(system).type.qualifiedName] = system;
+    _systems[system.runtimeType] = system;
     _systemsList.add(system);
 
     return system;
@@ -169,7 +163,7 @@ class World {
    * Removed the specified system from the world.
    */
   void deleteSystem(EntitySystem system) {
-    _systems.remove(reflect(system).type.qualifiedName);
+    _systems.remove(system.runtimeType);
     _systemsList.remove(system);
   }
 
@@ -177,7 +171,7 @@ class World {
    * Retrieve a system for specified system type.
    */
   EntitySystem getSystem(Type type) {
-    return _systems[reflectClass(type).qualifiedName];
+    return _systems[type];
   }
 
   /**
