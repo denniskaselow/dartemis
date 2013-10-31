@@ -2,8 +2,7 @@ library darteroids;
 
 import 'dart:html' hide Entity;
 import 'dart:math';
-import 'package:dartemis/dartemis.dart';
-
+import 'package:dartemis/dartemis_mirrors.dart';
 
 part 'darteroids/components.dart';
 part 'darteroids/gamelogic_systems.dart';
@@ -21,14 +20,12 @@ const int HUDHEIGHT = 100;
 final Random random = new Random();
 
 void main() {
-  CanvasElement canvas = query('#gamecontainer');
-  window.setImmediate(() {
-    canvas.width = MAXWIDTH;
-    canvas.height = MAXHEIGHT + HUDHEIGHT;
+  CanvasElement canvas = querySelector('#gamecontainer');
+  canvas.width = MAXWIDTH;
+  canvas.height = MAXHEIGHT + HUDHEIGHT;
 
-    Darteroids darteroids = new Darteroids(canvas);
-    darteroids.start();
-  });
+  Darteroids darteroids = new Darteroids(canvas);
+  darteroids.start();
 }
 
 class Darteroids {

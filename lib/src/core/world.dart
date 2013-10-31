@@ -8,8 +8,6 @@ part of dartemis;
  * It is also important to set the delta each game loop iteration, and initialize before game loop.
  */
 class World {
-  final Symbol _symbolComponentMapper = const Symbol('dartemis.ComponentMapper');
-
   final EntityManager _entityManager = new EntityManager();
   final ComponentManager _componentManager = new ComponentManager();
 
@@ -46,49 +44,10 @@ class World {
    */
   void initialize() {
     _managersBag.forEach((manager) => manager.initialize());
-
-    _systemsList.forEach((system) {
-      _injectFields(system);
-      system.initialize();
-    });
+    _systemsList.forEach((system) => initializeSystem(system));
   }
 
-  void _injectFields(EntitySystem system) {
-    var vmsAndTypes = reflectClass(system.runtimeType).variables.values
-        .where((vm) => _isClassMirror(vm))
-        .map((vm) => [vm, (vm.type as ClassMirror).reflectedType]);
-    var systemInstanceMirror = reflect(system);
-    _injectManager(systemInstanceMirror, vmsAndTypes);
-    _injectSystem(systemInstanceMirror, vmsAndTypes);
-    _injectMapper(systemInstanceMirror, vmsAndTypes);
-  }
-
-  void _injectManager(InstanceMirror system, Iterable<List> vmsAndTypes) {
-    vmsAndTypes.where((vmAndType) => _isManager(vmAndType[1])).forEach((vmAndType) {
-      system.setField(vmAndType[0].simpleName, _managers[vmAndType[1]]);
-    });
-  }
-
-  void _injectSystem(InstanceMirror system, Iterable<List> vmsAndTypes) {
-    vmsAndTypes.where((vmAndType) => _isSystem(vmAndType[1])).forEach((vmAndType) {
-      system.setField(vmAndType[0].simpleName, _systems[vmAndType[1]]);
-    });
-  }
-
-  void _injectMapper(InstanceMirror system, Iterable<List> vmsAndTypes) {
-    vmsAndTypes.where((vmAndType) => _isComponentMapper(vmAndType[0])).forEach((vmAndType) {
-      ClassMirror tacm = (vmAndType[0].type as ClassMirror).typeArguments.first as ClassMirror;
-      system.setField(vmAndType[0].simpleName, new ComponentMapper(tacm.reflectedType, this));
-    });
-  }
-
-  bool _isClassMirror(VariableMirror vm) => vm.type is ClassMirror;
-
-  bool _isManager(Type type) => _managers.containsKey(type);
-
-  bool _isSystem(Type type) => _systems.containsKey(type);
-
-  bool _isComponentMapper(VariableMirror vm) => (vm.type as ClassMirror).qualifiedName == _symbolComponentMapper;
+  void initializeSystem(EntitySystem system) => system.initialize();
 
   /**
    * Returns a manager that takes care of all the entities in the world.

@@ -1,4 +1,4 @@
-import "package:dartemis/dartemis.dart";
+import "package:dartemis/dartemis_mirrors.dart";
 import "package:unittest/mock.dart";
 import "package:unittest/unittest.dart";
 import "dart:math" as Math;
