@@ -16,9 +16,10 @@ class World extends core.World {
   }
 
   void _injectFields(EntitySystem system) {
-    var vmsAndTypes = reflectClass(system.runtimeType).variables.values
-        .where((vm) => _isClassMirror(vm))
-        .map((vm) => [vm, (vm.type as ClassMirror).reflectedType]);
+    var vmsAndTypes = reflectClass(system.runtimeType).declarations.values
+        .where((m) => m is VariableMirror)
+        .where((m) => m.type is ClassMirror)
+        .map((m) => [m, (m.type as ClassMirror).reflectedType]);
     var systemInstanceMirror = reflect(system);
     _injectManager(systemInstanceMirror, vmsAndTypes);
     _injectSystem(systemInstanceMirror, vmsAndTypes);
@@ -43,8 +44,6 @@ class World extends core.World {
       system.setField(vmAndType[0].simpleName, new ComponentMapper(tacm.reflectedType, this));
     });
   }
-
-  bool _isClassMirror(VariableMirror vm) => vm.type is ClassMirror;
 
   bool _isManager(Type type) => getManager(type) != null;
 
