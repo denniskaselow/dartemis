@@ -1,7 +1,7 @@
 # Changelog
 ##0.5.0
 ### Enhancements
-* more injection, less boilerplate
+* more injection, less boilerplate (when using dartemis_mirrors)
   * Instances of `ComponentMapper` no longer need to be created in the `initialize`-method of a system, they will be injected
   * `Manager`s and `EntitySystem`s no longer need to be requested from the `World` in the `initialize`-method of a system, they will be injected
 

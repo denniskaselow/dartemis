@@ -71,11 +71,15 @@ By using a factory constructor and calling the factory constructor in `Poolable`
 
 ```dart
 class MovementSystem extends EntityProcessingSystem {
-    // these will be injected
     ComponentMapper<Position> positionMapper;
     ComponentMapper<Velocity> velocityMapper;
 
     MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
+
+    void initialize() {
+      positionMapper = new ComponentMapper<Position>(Position, world);
+      velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
+    }
 
     void processEntity(Entity entity) {
       Position position = positionMapper.get(entity);
@@ -104,6 +108,44 @@ If your game logic requires a delta you can set it by calling:
 ```dart
 world.delta = delta;
 ```
+
+Injection
+---------
+If you want to write less code, you can use a version of dartemis that uses
+mirrors to inject `Managers`, `EntitySystems` and `ComponentMapper`. Currently,
+this does not work when compiling to Javascript. If you want it to work,
+consider staring this issue: http://code.google.com/p/dart/issues/detail?id=12022.
+The injection takes place when you call `world.initialize()`, right before the
+`initialize()` method of your `EntitySystem` is executed.
+
+To use that version of dartemis, you have to do these steps instead:
+2\. Import it in your project:
+
+```dart
+@MirrorsUsed(targets: const [MovementSystem, EveryOtherSystemThatYouUse])
+import 'dart:mirrors';
+import 'package:dartemis/dartemis_mirrors.dart';
+```
+
+5\. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
+
+```dart
+class MovementSystem extends EntityProcessingSystem {
+    ComponentMapper<Position> positionMapper;
+    ComponentMapper<Velocity> velocityMapper;
+
+    MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
+
+    void processEntity(Entity entity) {
+      Position position = positionMapper.get(entity);
+      Velocity vel = velocityMapper.get(entity);
+      position.x += vel.x;
+      position.y += vel.y;
+    }
+}
+```
+
+and add the system to
 
 Documentation
 =============

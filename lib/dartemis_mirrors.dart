@@ -1,10 +1,10 @@
-library dartemis;
+library dartemis_mirrors;
 
 import 'package:dartemis/dartemis.dart' hide World;
 export 'package:dartemis/dartemis.dart' hide World;
 import 'package:dartemis/dartemis.dart' as core show World;
 
-@MirrorsUsed(targets: const [Component, ComponentMapper, EntitySystem, Manager])
+@MirrorsUsed(targets: const [ComponentMapper])
 import 'dart:mirrors';
 
 part 'src/mirrors/world.dart';

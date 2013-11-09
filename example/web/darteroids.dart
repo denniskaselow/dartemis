@@ -3,6 +3,11 @@ library darteroids;
 import 'dart:html' hide Entity;
 import 'dart:math';
 import 'package:dartemis/dartemis_mirrors.dart';
+@MirrorsUsed(targets: const [PlayerControlSystem, BulletSpawningSystem,
+                             DecaySystem, MovementSystem, AsteroidDestructionSystem,
+                             PlayerCollisionDetectionSystem, BackgroundRenderSystem,
+                             CircleRenderingSystem, HudRenderSystem])
+import 'dart:mirrors';
 
 part 'darteroids/components.dart';
 part 'darteroids/gamelogic_systems.dart';
