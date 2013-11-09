@@ -80,15 +80,15 @@ class ComponentMapper&lt;A extends Component&gt; {
   * No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
   * however in most scenarios you already know the entity possesses this component.
   */
- A get(Entity e) =&gt; _components[e.id] as A;
+ A get(Entity entity) =&gt; _components[entity.id];
 
  /**
   * Fast and safe retrieval of a component for this entity.
   * If the entity does not have this component then null is returned.
   */
- A getSafe(Entity e) {
-   if(_components.isIndexWithinBounds(e.id)) {
-     return _components[e.id] as A;
+ A getSafe(Entity entity) {
+   if(_components.isIndexWithinBounds(entity.id)) {
+     return _components[entity.id];
    }
    return null;
  }
@@ -96,17 +96,23 @@ class ComponentMapper&lt;A extends Component&gt; {
  /**
   * Checks if the entity has this type of component.
   */
- bool has(Entity e) =&gt; getSafe(e) != null;
+ bool has(Entity entity) =&gt; getSafe(entity) != null;
 }
 </pre>
 </div>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="ComponentMapper">
+<div class="method"><h4 id="">
 <button class="show-code">Code</button>
-new <strong>ComponentMapper</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType, <a href="../dartemis/World.html">World</a> world) <a class="anchor-link" href="#ComponentMapper"
+new <strong>ComponentMapper</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType, <a href="../dartemis/World.html">World</a> world) <a class="anchor-link" href="#"
               title="Permalink to ComponentMapper&lt;A&gt;.ComponentMapper">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Creates a new <a class="crossref" href="../dart_core/Object.html">Object</a> instance.</p>
+<p><a class="crossref" href="../dart_core/Object.html">Object</a> instances have no meaningful state, and are only useful
+through their identity. An <a class="crossref" href="../dart_core/Object.html">Object</a> instance is equal to itself
+only.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 ComponentMapper(Type componentType, World world) {
  this._type = ComponentTypeManager.getTypeFor(componentType);
@@ -120,28 +126,28 @@ ComponentMapper(Type componentType, World world) {
 <h3>Methods</h3>
 <div class="method"><h4 id="get">
 <button class="show-code">Code</button>
-<a href="../dartemis/ComponentMapper.html">A</a> <strong>get</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#get"
+<a href="../dartemis/ComponentMapper.html">A</a> <strong>get</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#get"
               title="Permalink to ComponentMapper&lt;A&gt;.get">#</a></h4>
 <div class="doc">
 <p>Fast but unsafe retrieval of a component for this entity.
 No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
 however in most scenarios you already know the entity possesses this component.</p>
 <pre class="source">
-A get(Entity e) =&gt; _components[e.id] as A;
+A get(Entity entity) =&gt; _components[entity.id];
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="getSafe">
 <button class="show-code">Code</button>
-<a href="../dartemis/ComponentMapper.html">A</a> <strong>getSafe</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#getSafe"
+<a href="../dartemis/ComponentMapper.html">A</a> <strong>getSafe</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#getSafe"
               title="Permalink to ComponentMapper&lt;A&gt;.getSafe">#</a></h4>
 <div class="doc">
 <p>Fast and safe retrieval of a component for this entity.
 If the entity does not have this component then null is returned.</p>
 <pre class="source">
-A getSafe(Entity e) {
- if(_components.isIndexWithinBounds(e.id)) {
-   return _components[e.id] as A;
+A getSafe(Entity entity) {
+ if(_components.isIndexWithinBounds(entity.id)) {
+   return _components[entity.id];
  }
  return null;
 }
@@ -150,12 +156,12 @@ A getSafe(Entity e) {
 </div>
 <div class="method"><h4 id="has">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>has</strong>(<a href="../dartemis/Entity.html">Entity</a> e) <a class="anchor-link" href="#has"
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>has</strong>(<a href="../dartemis/Entity.html">Entity</a> entity) <a class="anchor-link" href="#has"
               title="Permalink to ComponentMapper&lt;A&gt;.has">#</a></h4>
 <div class="doc">
 <p>Checks if the entity has this type of component.</p>
 <pre class="source">
-bool has(Entity e) =&gt; getSafe(e) != null;
+bool has(Entity entity) =&gt; getSafe(entity) != null;
 </pre>
 </div>
 </div>
@@ -164,7 +170,7 @@ bool has(Entity e) =&gt; getSafe(e) != null;
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.849</div>
+          <div>This page was generated at 2013-11-09 20:50:42.866</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

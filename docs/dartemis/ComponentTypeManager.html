@@ -68,14 +68,14 @@ class ComponentTypeManager {
 
  static var _componentTypes = new Map&lt;Type, ComponentType&gt;();
 
- static ComponentType getTypeFor(Type componentType){
-   ComponentType type = _componentTypes[componentType];
+ static ComponentType getTypeFor(Type typeOfComponent){
+   ComponentType componentType = _componentTypes[typeOfComponent];
 
-   if (type == null) {
-     type = new ComponentType();
-     _componentTypes[componentType] = type;
+   if (componentType == null) {
+     componentType = new ComponentType();
+     _componentTypes[typeOfComponent] = componentType;
    }
-   return type;
+   return componentType;
  }
 
  static int getBit(Type componentType) =&gt; getTypeFor(componentType).bit;
@@ -87,18 +87,18 @@ class ComponentTypeManager {
 <h3>Static Methods</h3>
 <div class="method"><h4 id="getTypeFor">
 <button class="show-code">Code</button>
-<a href="../dartemis/ComponentType.html">ComponentType</a> <strong>getTypeFor</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> componentType) <a class="anchor-link" href="#getTypeFor"
+<a href="../dartemis/ComponentType.html">ComponentType</a> <strong>getTypeFor</strong>(<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> typeOfComponent) <a class="anchor-link" href="#getTypeFor"
               title="Permalink to ComponentTypeManager.getTypeFor">#</a></h4>
 <div class="doc">
 <pre class="source">
-static ComponentType getTypeFor(Type componentType){
- ComponentType type = _componentTypes[componentType];
+static ComponentType getTypeFor(Type typeOfComponent){
+ ComponentType componentType = _componentTypes[typeOfComponent];
 
- if (type == null) {
-   type = new ComponentType();
-   _componentTypes[componentType] = type;
+ if (componentType == null) {
+   componentType = new ComponentType();
+   _componentTypes[typeOfComponent] = componentType;
  }
- return type;
+ return componentType;
 }
 </pre>
 </div>
@@ -128,7 +128,7 @@ static int getId(Type componentType) =&gt; getTypeFor(componentType).id;
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.823</div>
+          <div>This page was generated at 2013-11-09 20:50:42.828</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

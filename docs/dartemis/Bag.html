@@ -228,7 +228,9 @@ class Bag&lt;E&gt; {
    if(index &gt;= _data.length) {
      _growTo(index*2);
    }
-   _size = index+1;
+   if (_size &lt;= index) {
+     _size = index+1;
+   }
    _data[index] = element;
  }
 
@@ -277,11 +279,17 @@ class Bag&lt;E&gt; {
 </div>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="Bag">
+<div class="method"><h4 id="">
 <button class="show-code">Code</button>
-new <strong>Bag</strong>({<a href="http://api.dartlang.org/dart_core/int.html">int</a> capacity: 16}) <a class="anchor-link" href="#Bag"
+new <strong>Bag</strong>({<a href="http://api.dartlang.org/dart_core/int.html">int</a> capacity: 16}) <a class="anchor-link" href="#"
               title="Permalink to Bag&lt;E&gt;.Bag">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Creates a new <a class="crossref" href="../dart_core/Object.html">Object</a> instance.</p>
+<p><a class="crossref" href="../dart_core/Object.html">Object</a> instances have no meaningful state, and are only useful
+through their identity. An <a class="crossref" href="../dart_core/Object.html">Object</a> instance is equal to itself
+only.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 Bag({int capacity: 16}) : _data = new List(capacity) {
  _readOnly = new ReadOnlyBag._of(this);
@@ -289,12 +297,12 @@ Bag({int capacity: 16}) : _data = new List(capacity) {
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="Bag.from">
+<div class="method"><h4 id="from">
 <button class="show-code">Code</button>
-new <strong>Bag.from</strong>(<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../dartemis/Bag.html">E</a>&gt; iterable) <a class="anchor-link" href="#Bag.from"
+new <strong>Bag.from</strong>(<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../dartemis/Bag.html">E</a>&gt; iterable) <a class="anchor-link" href="#from"
               title="Permalink to Bag&lt;E&gt;.Bag.from">#</a></h4>
 <div class="doc">
-<p>Creates a new <a class="crossref" href="../dartemis/Bag.html#Bag">Bag</a> with the elements of 
+<p>Creates a new <a class="crossref" href="../dartemis/Bag.html">Bag</a> with the elements of 
 <span class="param">iterable</span>.</p>
 <pre class="source">
 Bag.from(Iterable&lt;E&gt; iterable) : _data = iterable.toList(growable: false),
@@ -387,7 +395,9 @@ void operator []=(int index, E element) {
  if(index &gt;= _data.length) {
    _growTo(index*2);
  }
- _size = index+1;
+ if (_size &lt;= index) {
+   _size = index+1;
+ }
  _data[index] = element;
 }
 </pre>
@@ -617,7 +627,7 @@ String toString() =&gt; "[${_data.join(',')}]";
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.940</div>
+          <div>This page was generated at 2013-11-09 20:50:42.965</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

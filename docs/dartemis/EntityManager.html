@@ -128,7 +128,12 @@ class EntityManager extends Manager {
  /**
   * Check if the specified entityId is enabled.
   */
- bool isEnabled(int entityId) =&gt; !_disabled[entityId];
+ bool isEnabled(int entityId) {
+   if (_disabled.size &gt; entityId) {
+     return _disabled[entityId] != true;
+   }
+   return true;
+ }
 
  /**
   * Get a entity with this id.
@@ -164,11 +169,17 @@ class EntityManager extends Manager {
 <span class="type-box"><span class="icon-class"></span><a href="../dartemis/Manager.html">Manager</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>EntityManager</strong></span></p>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="EntityManager">
+<div class="method"><h4 id="">
 <button class="show-code">Code</button>
-new <strong>EntityManager</strong>() <a class="anchor-link" href="#EntityManager"
+new <strong>EntityManager</strong>() <a class="anchor-link" href="#"
               title="Permalink to EntityManager.EntityManager">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Creates a new <a class="crossref" href="../dart_core/Object.html">Object</a> instance.</p>
+<p><a class="crossref" href="../dart_core/Object.html">Object</a> instances have no meaningful state, and are only useful
+through their identity. An <a class="crossref" href="../dart_core/Object.html">Object</a> instance is equal to itself
+only.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 EntityManager() : _entities = new Bag&lt;Entity&gt;(),
                  _deletedEntities = new Bag&lt;Entity&gt;(),
@@ -333,7 +344,12 @@ bool isActive(int entityId) =&gt; _entities[entityId] != null;
 <div class="doc">
 <p>Check if the specified entityId is enabled.</p>
 <pre class="source">
-bool isEnabled(int entityId) =&gt; !_disabled[entityId];
+bool isEnabled(int entityId) {
+ if (_disabled.size &gt; entityId) {
+   return _disabled[entityId] != true;
+ }
+ return true;
+}
 </pre>
 </div>
 </div>
@@ -342,7 +358,7 @@ bool isEnabled(int entityId) =&gt; !_disabled[entityId];
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.787</div>
+          <div>This page was generated at 2013-11-09 20:50:42.797</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

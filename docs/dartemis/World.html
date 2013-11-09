@@ -83,7 +83,15 @@ class World {
  final Map&lt;Type, Manager&gt; _managers = new Map&lt;Type, Manager&gt;();
  final Bag&lt;Manager&gt; _managersBag = new Bag&lt;Manager&gt;();
 
- num delta;
+ num delta = 0;
+ int _frame = 0;
+ double _time = 0.0;
+
+ /// Returns the current frame.
+ int get frame =&gt; _frame;
+ /// Returns the time that has elapsed since the game has started (sum of all
+ /// deltas).
+ double get time =&gt; _time;
 
  World() {
    addManager(_entityManager);
@@ -96,8 +104,10 @@ class World {
   */
  void initialize() {
    _managersBag.forEach((manager) =&gt; manager.initialize());
-   _systemsList.forEach((system) =&gt; system.initialize());
+   _systemsList.forEach((system) =&gt; initializeSystem(system));
  }
+
+ void initializeSystem(EntitySystem system) =&gt; system.initialize();
 
  /**
   * Returns a manager that takes care of all the entities in the world.
@@ -198,6 +208,8 @@ class World {
   * Processes all changes to entities and executes all non-passive systems.
   */
  void process() {
+   _frame++;
+   _time += delta;
    processEntityChanges();
 
    _systemsList.forEach((system) {
@@ -230,7 +242,9 @@ class World {
   */
  void deleteAllEntities() {
    entityManager._entities.forEach((entity) {
-     deleteEntity(entity);
+     if (null != entity) {
+       deleteEntity(entity);
+     }
    });
    processEntityChanges();
  }
@@ -272,11 +286,17 @@ class World {
 </div>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="World">
+<div class="method"><h4 id="">
 <button class="show-code">Code</button>
-new <strong>World</strong>() <a class="anchor-link" href="#World"
+new <strong>World</strong>() <a class="anchor-link" href="#"
               title="Permalink to World.World">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Creates a new <a class="crossref" href="../dart_core/Object.html">Object</a> instance.</p>
+<p><a class="crossref" href="../dart_core/Object.html">Object</a> instances have no meaningful state, and are only useful
+through their identity. An <a class="crossref" href="../dart_core/Object.html">Object</a> instance is equal to itself
+only.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 World() {
  addManager(_entityManager);
@@ -309,7 +329,7 @@ ComponentManager get componentManager =&gt; _componentManager;
         </h4>
         <div class="doc">
 <pre class="source">
-num delta
+num delta = 0
 </pre>
 </div>
 </div>
@@ -327,6 +347,19 @@ EntityManager get entityManager =&gt; _entityManager;
 </pre>
 </div>
 </div>
+<div class="field"><h4 id="frame">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>frame</strong> <a class="anchor-link"
+            href="#frame"
+            title="Permalink to World.frame">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns the current frame.</p>
+<pre class="source">
+int get frame =&gt; _frame;
+</pre>
+</div>
+</div>
 <div class="field"><h4 id="systems">
 <button class="show-code">Code</button>
 final <a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="../dartemis/EntitySystem.html">EntitySystem</a>&gt;         <strong>systems</strong> <a class="anchor-link"
@@ -337,6 +370,20 @@ final <a href="../dartemis/ReadOnlyBag.html">ReadOnlyBag</a>&lt;<a href="../dart
 <p>Gives you all the systems in this world for possible iteration.</p>
 <pre class="source">
 ReadOnlyBag&lt;EntitySystem&gt; get systems =&gt; new Bag.from(_systemsList).readOnly;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="time">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/double.html">double</a>         <strong>time</strong> <a class="anchor-link"
+            href="#time"
+            title="Permalink to World.time">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns the time that has elapsed since the game has started (sum of all
+deltas).</p>
+<pre class="source">
+double get time =&gt; _time;
 </pre>
 </div>
 </div>
@@ -430,7 +477,9 @@ new <a class="crossref" href="../dartemis/Component.html">Component</a> of that 
 <pre class="source">
 void deleteAllEntities() {
  entityManager._entities.forEach((entity) {
-   deleteEntity(entity);
+   if (null != entity) {
+     deleteEntity(entity);
+   }
  });
  processEntityChanges();
 }
@@ -555,8 +604,18 @@ added.</p>
 <pre class="source">
 void initialize() {
  _managersBag.forEach((manager) =&gt; manager.initialize());
- _systemsList.forEach((system) =&gt; system.initialize());
+ _systemsList.forEach((system) =&gt; initializeSystem(system));
 }
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="initializeSystem">
+<button class="show-code">Code</button>
+void <strong>initializeSystem</strong>(<a href="../dartemis/EntitySystem.html">EntitySystem</a> system) <a class="anchor-link" href="#initializeSystem"
+              title="Permalink to World.initializeSystem">#</a></h4>
+<div class="doc">
+<pre class="source">
+void initializeSystem(EntitySystem system) =&gt; system.initialize();
 </pre>
 </div>
 </div>
@@ -568,6 +627,8 @@ void <strong>process</strong>() <a class="anchor-link" href="#process"
 <p>Processes all changes to entities and executes all non-passive systems.</p>
 <pre class="source">
 void process() {
+ _frame++;
+ _time += delta;
  processEntityChanges();
 
  _systemsList.forEach((system) {
@@ -603,7 +664,7 @@ void processEntityChanges() {
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.568</div>
+          <div>This page was generated at 2013-11-09 20:50:42.492</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>

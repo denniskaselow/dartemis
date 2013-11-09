@@ -73,12 +73,6 @@ shortest lived entity, etc.</p>
 a certain entity, e.g. in 300 milliseconds. So you can set the system to run in 300 ms.
 to perform the animation.</p>
 <p>This will save CPU cycles in some scenarios.</p>
-<p>Implementation notes:
-In order to start the system you need to override the inserted(Entity e) method,
-look up the delay time from that entity and offer it to the system by using the
-offerDelay(num delay) method.
-Also, when processing the entities you must also call offerDelay(num delay)
-for all valid entities.</p>
 <pre class="source">
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
  num _delay;
@@ -199,11 +193,17 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
 <span class="type-box"><span class="icon-class"></span><a href="../dartemis/EntitySystem.html">EntitySystem</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>DelayedEntityProcessingSystem</strong></span></p>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="DelayedEntityProcessingSystem">
+<div class="method"><h4 id="">
 <button class="show-code">Code</button>
-new <strong>DelayedEntityProcessingSystem</strong>(<a href="../dartemis/Aspect.html">Aspect</a> aspect) <a class="anchor-link" href="#DelayedEntityProcessingSystem"
+new <strong>DelayedEntityProcessingSystem</strong>(<a href="../dartemis/Aspect.html">Aspect</a> aspect) <a class="anchor-link" href="#"
               title="Permalink to DelayedEntityProcessingSystem.DelayedEntityProcessingSystem">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Creates a new <a class="crossref" href="../dart_core/Object.html">Object</a> instance.</p>
+<p><a class="crossref" href="../dart_core/Object.html">Object</a> instances have no meaningful state, and are only useful
+through their identity. An <a class="crossref" href="../dart_core/Object.html">Object</a> instance is equal to itself
+only.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
 </pre>
@@ -546,7 +546,7 @@ void stop() {
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-20 15:22:34.735</div>
+          <div>This page was generated at 2013-11-09 20:50:42.741</div>
         </div>
         <script async src="../client-static.js"></script>
         </body></html>
