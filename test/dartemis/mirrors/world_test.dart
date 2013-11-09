@@ -13,6 +13,7 @@ void main() {
       world = new World();
       world.addManager(new TagManager());
       world.addSystem(new EntitySystemWithComponentMapper());
+      world.addSystem(new EntitySystemExtendingSystemWithComponentMapper());
       world.addSystem(new EntitySystemWithManager());
       world.addSystem(new EntitySystemWithOtherSystem());
       world.addSystem(new EntitySystemWithNothingToInject());
@@ -24,6 +25,14 @@ void main() {
 
       expect(system.mapperForA, isNotNull);
       expect(system.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+    });
+    test('world injects ComponentMapper into extended system', () {
+      EntitySystemExtendingSystemWithComponentMapper system = world.getSystem(EntitySystemExtendingSystemWithComponentMapper);
+
+      expect(system.mapperForA, isNotNull);
+      expect(system.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(system.mapperForB, isNotNull);
+      expect(system.mapperForB, new isInstanceOf<ComponentMapper>('ComponentMapper'));
     });
     test('world injects Managers into system', () {
       EntitySystemWithManager system = world.getSystem(EntitySystemWithManager);
@@ -61,6 +70,10 @@ class EntitySystemWithManager extends VoidEntitySystem {
 class EntitySystemWithOtherSystem extends VoidEntitySystem {
   EntitySystemWithManager systemWithManager;
   processSystem() {}
+}
+
+class EntitySystemExtendingSystemWithComponentMapper extends EntitySystemWithComponentMapper {
+  ComponentMapper<ComponentB> mapperForB;
 }
 
 class EntitySystemWithNothingToInject extends VoidEntitySystem {
