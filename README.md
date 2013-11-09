@@ -119,6 +119,7 @@ The injection takes place when you call `world.initialize()`, right before the
 `initialize()` method of your `EntitySystem` is executed.
 
 To use that version of dartemis, you have to do these steps instead:
+
 2\. Import it in your project:
 
 ```dart
@@ -131,6 +132,7 @@ import 'package:dartemis/dartemis_mirrors.dart';
 
 ```dart
 class MovementSystem extends EntityProcessingSystem {
+    // no initialize required, the objects will be injected
     ComponentMapper<Position> positionMapper;
     ComponentMapper<Velocity> velocityMapper;
 
@@ -144,8 +146,6 @@ class MovementSystem extends EntityProcessingSystem {
     }
 }
 ```
-
-and add the system to
 
 Documentation
 =============
