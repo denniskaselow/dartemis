@@ -1,4 +1,8 @@
 # Changelog
+##0.5.1
+### Internal
+* added version constraint for release of Dart
+
 ##0.5.0
 ### Enhancements
 * more injection, less boilerplate (when using dartemis_mirrors)
