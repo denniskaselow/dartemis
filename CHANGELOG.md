@@ -4,6 +4,9 @@
 * injection works for `Manager`s
 * `initialize()` in the `Manager` is no longer abstract (same as in `EntitySystem`)
 
+### Bugfixes
+* added getter for the `World` in `Manager` 
+
 ##0.5.1
 ### Internal
 * added version constraint for release of Dart

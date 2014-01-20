@@ -111,7 +111,7 @@ class World {
    * If [passive] is set to true the system will not be processed by the world.
    */
   EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
-    system.world = this;
+    system._world = this;
     system._passive = passive;
 
     _systems[system.runtimeType] = system;
