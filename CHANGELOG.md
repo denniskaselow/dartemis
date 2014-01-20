@@ -1,4 +1,9 @@
 # Changelog
+##0.5.2
+### Enhancements
+* injection works for `Manager`s
+* `initialize()` in the `Manager` is no longer abstract (same as in `EntitySystem`)
+
 ##0.5.1
 ### Internal
 * added version constraint for release of Dart

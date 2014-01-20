@@ -9,26 +9,34 @@ part of dartemis_mirrors;
  */
 class World extends core.World {
 
+  static const Symbol QN_ENTITY_SYSTEM = #dartemis.EntitySystem;
+  static const Symbol QN_MANAGER = #dartemis.Manager;
+
+  void initializeManager(Manager manager) {
+    _injectFields(manager, QN_MANAGER);
+    super.initializeManager(manager);
+  }
+
   void initializeSystem(EntitySystem system) {
-    _injectFields(system);
+    _injectFields(system, QN_ENTITY_SYSTEM);
     super.initializeSystem(system);
   }
 
-  void _injectFields(EntitySystem system, [ClassMirror cm]) {
-    if (null == cm) cm = reflectClass(system.runtimeType);
+  void _injectFields(dynamic instance, Symbol qnBaseClass, [ClassMirror cm]) {
+    if (null == cm) cm = reflectClass(instance.runtimeType);
+    if (cm.superclass.qualifiedName != qnBaseClass) {
+      _injectFields(instance, qnBaseClass, cm.superclass);
+    }
     var vmsAndTypes = cm.declarations.values
         .where((m) => m is VariableMirror)
         .where((m) => canAccessType(m))
         .where((m) => m.type is ClassMirror)
         .map((m) => [m, (m.type as ClassMirror).reflectedType])
         .toList(growable: false);
-    var systemInstanceMirror = reflect(system);
-    _injectManager(systemInstanceMirror, vmsAndTypes);
-    _injectSystem(systemInstanceMirror, vmsAndTypes);
-    _injectMapper(systemInstanceMirror, vmsAndTypes);
-    if (cm.superclass.qualifiedName != #dartemis.EntitySystem) {
-      _injectFields(system, cm.superclass);
-    }
+    var instanceMirror = reflect(instance);
+    _injectManager(instanceMirror, vmsAndTypes);
+    _injectSystem(instanceMirror, vmsAndTypes);
+    _injectMapper(instanceMirror, vmsAndTypes);
   }
 
   bool canAccessType(VariableMirror vm) {

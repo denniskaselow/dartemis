@@ -12,6 +12,11 @@ void main() {
     setUp(() {
       world = new World();
       world.addManager(new TagManager());
+      world.addManager(new ManagerWithComponentMapper());
+      world.addManager(new ManagerExtendingManagerWithComponentMapper());
+      world.addManager(new ManagerWithOtherManager());
+      world.addManager(new ManagerWithSystem());
+      world.addManager(new ManagerWithNothingToInject());
       world.addSystem(new EntitySystemWithComponentMapper());
       world.addSystem(new EntitySystemExtendingSystemWithComponentMapper());
       world.addSystem(new EntitySystemWithManager());
@@ -54,6 +59,41 @@ void main() {
       expect(system.c, isNull);
       expect(system.d, isNull);
     });
+
+    test('world injects ComponentMapper into manager', () {
+      ManagerWithComponentMapper manager = world.getManager(ManagerWithComponentMapper);
+
+      expect(manager.mapperForA, isNotNull);
+      expect(manager.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+    });
+    test('world injects ComponentMapper into extended manager', () {
+      ManagerExtendingManagerWithComponentMapper manager = world.getManager(ManagerExtendingManagerWithComponentMapper);
+
+      expect(manager.mapperForA, isNotNull);
+      expect(manager.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(manager.mapperForB, isNotNull);
+      expect(manager.mapperForB, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+    });
+    test('world injects Managers into manager', () {
+      ManagerWithOtherManager manager = world.getManager(ManagerWithOtherManager);
+
+      expect(manager.tagManager, isNotNull);
+      expect(manager.tagManager, same(world.getManager(TagManager)));
+    });
+    test('world injects Systems into manager', () {
+      ManagerWithSystem manager = world.getManager(ManagerWithSystem);
+
+      expect(manager.systemWithManager, isNotNull);
+      expect(manager.systemWithManager, same(world.getSystem(EntitySystemWithManager)));
+    });
+    test('world injects nothing into system when there is nothing to inject', () {
+      ManagerWithNothingToInject manager = world.getManager(ManagerWithNothingToInject);
+
+      expect(manager.a, isNull);
+      expect(manager.b, isNull);
+      expect(manager.c, isNull);
+      expect(manager.d, isNull);
+    });
   });
 }
 
@@ -82,4 +122,31 @@ class EntitySystemWithNothingToInject extends VoidEntitySystem {
   int c;
   String d;
   processSystem() {}
+}
+
+
+class ManagerWithComponentMapper extends Manager {
+  ComponentMapper<ComponentA> mapperForA;
+  processSystem() {}
+}
+
+class ManagerWithOtherManager extends Manager {
+  TagManager tagManager;
+  processSystem() {}
+}
+
+class ManagerWithSystem extends Manager {
+  EntitySystemWithManager systemWithManager;
+  processSystem() {}
+}
+
+class ManagerExtendingManagerWithComponentMapper extends ManagerWithComponentMapper {
+  ComponentMapper<ComponentB> mapperForB;
+}
+
+class ManagerWithNothingToInject extends Manager {
+  var a;
+  dynamic b;
+  int c;
+  String d;
 }

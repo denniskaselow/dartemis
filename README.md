@@ -114,14 +114,16 @@ Injection
 If you want to write less code, you can use a version of dartemis that uses
 mirrors to inject `Managers`, `EntitySystems` and `ComponentMapper`. The
 injection takes place when you call `world.initialize()`, right before the
-`initialize()` method of your `EntitySystem` is executed.
+`initialize()` method of your `EntitySystem` is executed. For the injection to
+work, you have to add the systems and managers with injectable fields to the 
+`@MirrorsUsed` annotation. 
 
 To use that version of dartemis, you have to do these steps instead:
 
 2\. Import it in your project:
 
 ```dart
-@MirrorsUsed(targets: const [MovementSystem, EveryOtherSystemThatYouUse])
+@MirrorsUsed(targets: const [MovementSystem, OtherSystemsOrManagersThatYouUse])
 import 'dart:mirrors';
 import 'package:dartemis/dartemis_mirrors.dart';
 ```

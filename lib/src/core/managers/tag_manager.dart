@@ -31,6 +31,4 @@ class TagManager extends Manager {
       _entitiesByTag.remove(removedTag);
     }
   }
-
-  void initialize() {}
 }

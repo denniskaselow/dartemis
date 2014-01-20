@@ -44,8 +44,6 @@ class PlayerManager extends Manager {
 
   String getPlayer(Entity e) => _playerByEntity[e];
 
-  void initialize() {}
-
   void deleted(Entity e) => removeFromPlayer(e);
 
 }

@@ -43,9 +43,11 @@ class World {
    * added.
    */
   void initialize() {
-    _managersBag.forEach((manager) => manager.initialize());
+    _managersBag.forEach((manager) => initializeManager(manager));
     _systemsList.forEach((system) => initializeSystem(system));
   }
+
+  void initializeManager(Manager manager) => manager.initialize();
 
   void initializeSystem(EntitySystem system) => system.initialize();
 
