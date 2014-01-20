@@ -112,10 +112,8 @@ world.delta = delta;
 Injection
 ---------
 If you want to write less code, you can use a version of dartemis that uses
-mirrors to inject `Managers`, `EntitySystems` and `ComponentMapper`. Currently,
-this does not work when compiling to Javascript. If you want it to work,
-consider staring this issue: http://code.google.com/p/dart/issues/detail?id=12022.
-The injection takes place when you call `world.initialize()`, right before the
+mirrors to inject `Managers`, `EntitySystems` and `ComponentMapper`. The
+injection takes place when you call `world.initialize()`, right before the
 `initialize()` method of your `EntitySystem` is executed.
 
 To use that version of dartemis, you have to do these steps instead:

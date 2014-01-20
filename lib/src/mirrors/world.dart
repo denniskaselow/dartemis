@@ -18,6 +18,7 @@ class World extends core.World {
     if (null == cm) cm = reflectClass(system.runtimeType);
     var vmsAndTypes = cm.declarations.values
         .where((m) => m is VariableMirror)
+        .where((m) => canAccessType(m))
         .where((m) => m.type is ClassMirror)
         .map((m) => [m, (m.type as ClassMirror).reflectedType])
         .toList(growable: false);
@@ -27,6 +28,18 @@ class World extends core.World {
     _injectMapper(systemInstanceMirror, vmsAndTypes);
     if (cm.superclass.qualifiedName != #dartemis.EntitySystem) {
       _injectFields(system, cm.superclass);
+    }
+  }
+
+  bool canAccessType(VariableMirror vm) {
+    try {
+      // has to be done for https://code.google.com/p/dart/issues/detail?id=16070
+      vm.type;
+      return true;
+    } catch (e) {
+      // should never happen for injectable variables, so it's okay to skip
+      print('skipping ${vm.qualifiedName} for injection because type cannot be accessed');
+      return false;
     }
   }
 
