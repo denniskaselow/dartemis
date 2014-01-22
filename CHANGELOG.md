@@ -3,6 +3,8 @@
 ### Enhancements
 * injection works for `Manager`s
 * `initialize()` in the `Manager` is no longer abstract (same as in `EntitySystem`)
+* `World.createEntity` got an optional paramter to create an `Entity` with components
+* new function `World.createAndAddEntity` which adds the `Entity` to the world after creation
 
 ### Bugfixes
 * added getter for the `World` in `Manager` 

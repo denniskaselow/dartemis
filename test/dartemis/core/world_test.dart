@@ -88,10 +88,7 @@ void main() {
     EntitySystemStarter systemStarter;
     setUp(() {
       world = new World();
-      entityAB = world.createEntity();
-      entityAB.addComponent(new ComponentA());
-      entityAB.addComponent(new ComponentB());
-      entityAB.addToWorld();
+      entityAB = world.createAndAddEntity([new ComponentA(), new ComponentB()]);
       entityAC = world.createEntity();
       entityAC.addComponent(new ComponentA());
       entityAC.addComponent(new ComponentPoolableC());

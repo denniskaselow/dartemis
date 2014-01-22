@@ -88,10 +88,25 @@ class World {
   }
 
   /**
-   * Create and return a new or reused [Entity] instance.
+   * Create and return a new or reused [Entity] instance, optionally with
+   * [components].
    */
-  Entity createEntity() {
-    return _entityManager._createEntityInstance();
+  Entity createEntity([List<Component> components = const []]) {
+    var e = _entityManager._createEntityInstance();
+    components.forEach((component) => e.addComponent(component));
+    return e;
+  }
+
+  /**
+   * Creates an [Entity] with [components], adds it to the world and returns
+   * it.
+   *
+   * You don't have to call [Entity.addToWorld()] if you use this.
+   */
+  Entity createAndAddEntity([List<Component> components = const []]) {
+    var e = createEntity(components);
+    addEntity(e);
+    return e;
   }
 
   /**
