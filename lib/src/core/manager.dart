@@ -6,7 +6,12 @@ part of dartemis;
 abstract class Manager implements EntityObserver {
   World _world;
 
-  void initialize();
+  World get world => _world;
+
+  /**
+   * Override to implement code that gets executed when managers are initialized.
+   */
+  void initialize() {}
 
   void added(Entity e) {}
 

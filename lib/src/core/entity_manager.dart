@@ -2,6 +2,8 @@ part of dartemis;
 
 class EntityManager extends Manager {
 
+  static int _nextUniqueId = 0;
+
   Bag<Entity> _entities;
   Bag<Entity> _deletedEntities;
   Bag<bool> _disabled;
@@ -26,6 +28,7 @@ class EntityManager extends Manager {
       e = new Entity._(_world, _identifierPool.checkOut());
     }
     _created++;
+    e._uniqueId = _nextUniqueId++;
     return e;
   }
 

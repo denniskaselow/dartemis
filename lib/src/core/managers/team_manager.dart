@@ -17,8 +17,6 @@ class TeamManager extends Manager {
     _teamByPlayer = new Map<String, String>();
   }
 
-  void initialize() {}
-
   String getTeam(String player) => _teamByPlayer[player];
 
   void setTeam(String player, String team) {

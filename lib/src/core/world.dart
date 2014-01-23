@@ -43,9 +43,11 @@ class World {
    * added.
    */
   void initialize() {
-    _managersBag.forEach((manager) => manager.initialize());
+    _managersBag.forEach((manager) => initializeManager(manager));
     _systemsList.forEach((system) => initializeSystem(system));
   }
+
+  void initializeManager(Manager manager) => manager.initialize();
 
   void initializeSystem(EntitySystem system) => system.initialize();
 
@@ -86,10 +88,25 @@ class World {
   }
 
   /**
-   * Create and return a new or reused [Entity] instance.
+   * Create and return a new or reused [Entity] instance, optionally with
+   * [components].
    */
-  Entity createEntity() {
-    return _entityManager._createEntityInstance();
+  Entity createEntity([List<Component> components = const []]) {
+    var e = _entityManager._createEntityInstance();
+    components.forEach((component) => e.addComponent(component));
+    return e;
+  }
+
+  /**
+   * Creates an [Entity] with [components], adds it to the world and returns
+   * it.
+   *
+   * You don't have to call [Entity.addToWorld()] if you use this.
+   */
+  Entity createAndAddEntity([List<Component> components = const []]) {
+    var e = createEntity(components);
+    addEntity(e);
+    return e;
   }
 
   /**
@@ -109,7 +126,7 @@ class World {
    * If [passive] is set to true the system will not be processed by the world.
    */
   EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
-    system.world = this;
+    system._world = this;
     system._passive = passive;
 
     _systems[system.runtimeType] = system;

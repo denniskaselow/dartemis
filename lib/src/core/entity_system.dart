@@ -11,7 +11,7 @@ abstract class EntitySystem implements EntityObserver {
 
 
   int _systemBit = 0;
-  World world;
+  World _world;
   Bag<Entity> _actives;
 
   int _all;
@@ -28,7 +28,8 @@ abstract class EntitySystem implements EntityObserver {
     _systemBit = _SystemBitManager._getBitFor(runtimeType);
   }
 
-  get passive => _passive;
+  bool get passive => _passive;
+  World get world => _world;
 
   /**
    * Called before processing of entities begins.
