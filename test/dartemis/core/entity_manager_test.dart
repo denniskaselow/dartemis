@@ -16,6 +16,12 @@ void main() {
 
       expect(a.id, isNot(equals(b.id)));
     });
+    test('entities have unique uniqueIds', () {
+      Entity a = world.createEntity();
+      Entity b = world.createEntity();
+
+      expect(a.uniqueId, isNot(equals(b.uniqueId)));
+    });
     test('isEnabled returns correct values for enabled/disabled', () {
       Entity a = world.createEntity();
       Entity b = world.createEntity();

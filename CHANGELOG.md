@@ -8,6 +8,7 @@
 
 ### Bugfixes
 * added getter for the `World` in `Manager` 
+* the uniqueId of an `Entity` was always 0, not very unique
 
 ##0.5.1
 ### Internal
