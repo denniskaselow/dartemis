@@ -17,6 +17,6 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
    */
   void processEntity(Entity entity);
 
-  void processEntities(ReadOnlyBag<Entity> entities) => entities.forEach((entity) => processEntity(entity));
+  void processEntities(Iterable<Entity> entities) => entities.forEach((entity) => processEntity(entity));
 
 }

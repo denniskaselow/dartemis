@@ -119,7 +119,7 @@ class World {
   /**
    * Gives you all the systems in this world for possible iteration.
    */
-  ReadOnlyBag<EntitySystem> get systems => new Bag.from(_systemsList).readOnly;
+  Iterable<EntitySystem> get systems => _systemsList;
 
   /**
    * Adds a system to this world that will be processed by World.process().

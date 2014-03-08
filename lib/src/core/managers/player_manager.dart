@@ -24,12 +24,12 @@ class PlayerManager extends Manager {
     entities.add(e);
   }
 
-  ReadOnlyBag<Entity> getEntitiesOfPlayer(String player) {
+  Iterable<Entity> getEntitiesOfPlayer(String player) {
     Bag<Entity> entities = _entitiesByPlayer[player];
     if(entities == null) {
       entities = new Bag<Entity>();
     }
-    return entities.readOnly;
+    return entities;
   }
 
   void removeFromPlayer(Entity e) {

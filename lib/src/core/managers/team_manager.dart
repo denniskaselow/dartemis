@@ -32,9 +32,9 @@ class TeamManager extends Manager {
     players.add(player);
   }
 
-  ReadOnlyBag<String> getPlayers(String team) {
+  Iterable<String> getPlayers(String team) {
     var result = _playersByTeam[team];
-    return result == null ? null : result.readOnly;
+    return result == null ? null : result;
   }
 
   void removeFromTeam(String player) {

@@ -4,22 +4,17 @@ part of dartemis;
  * Collection type a bit like List but does not preserve the order of its
  * entities, speedwise it is very good, especially suited for games.
  */
-class Bag<E> {
+class Bag<E> extends Object with IterableMixin {
   List _data;
   int _size = 0;
-  ReadOnlyBag<E> _readOnly;
 
-  Bag({int capacity: 16}) : _data = new List(capacity) {
-    _readOnly = new ReadOnlyBag._of(this);
-  }
+  Bag({int capacity: 16}) : _data = new List(capacity);
 
   /**
    * Creates a new [Bag] with the elements of [iterable].
    */
   Bag.from(Iterable<E> iterable) : _data = iterable.toList(growable: false),
-                                   _size = iterable.length {
-    _readOnly = new ReadOnlyBag._of(this);
-  }
+                                   _size = iterable.length;
 
   /**
    * Returns the element at the specified [index] in the bag.
@@ -32,27 +27,9 @@ class Bag<E> {
   int get size => _size;
 
   /**
-   * Returns a read only view for this bag.
-   */
-  ReadOnlyBag get readOnly => _readOnly;
-
-  /**
    * Returns [:true:] if this list contains no elements.
    */
   bool get isEmpty => _size == 0;
-
-  /**
-   * Applies the function [f] to each element of this collection.
-   *
-   * Do not pass functions that add or remove elements because the order of
-   * elements is not preserved and such a function could lead to unexpected
-   * results.
-   */
-  void forEach(void f(E element)) {
-    for (int i = 0; i < _size; i++) {
-      f(_data[i]);
-    }
-  }
 
   /**
    * Removes the element at the specified [index] in this bag. Does this by
@@ -211,5 +188,7 @@ class Bag<E> {
   }
 
   bool isIndexWithinBounds(int index) => index < capacity;
-  String toString() => "[${_data.join(',')}]";
+
+  get iterator => _data.sublist(0, size).iterator;
+  get length => _size;
 }

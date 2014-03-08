@@ -40,7 +40,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
   void processExpired(Entity e);
 
-  void processEntities(ReadOnlyBag<Entity> entities) {
+  void processEntities(Iterable<Entity> entities) {
     entities.forEach((entity) {
       processDelta(entity, _acc);
       num remaining = getRemainingDelay(entity);

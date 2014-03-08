@@ -63,21 +63,21 @@ class GroupManager extends Manager {
   /**
    * Get all entities that belong to the provided group.
    */
-  ReadOnlyBag<Entity> getEntities(String group) {
+  Iterable<Entity> getEntities(String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities == null) {
       entities = new Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
-    return entities.readOnly;
+    return entities;
   }
 
   /**
    * Returns the groups the entity belongs to, null if none.
    */
-  ReadOnlyBag<String> getGroups(Entity e) {
+  Iterable<String> getGroups(Entity e) {
     var result = _groupsByEntity[e];
-    return result == null ? null : result.readOnly;
+    return result == null ? null : result;
   }
 
   /**
