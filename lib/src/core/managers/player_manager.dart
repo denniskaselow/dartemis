@@ -17,7 +17,7 @@ class PlayerManager extends Manager {
   void setPlayer(Entity e, String player) {
     _playerByEntity[e] = player;
     Bag<Entity> entities = _entitiesByPlayer[player];
-    if(entities == null) {
+    if (entities == null) {
       entities = new Bag<Entity>();
       _entitiesByPlayer[player] = entities;
     }
@@ -26,7 +26,7 @@ class PlayerManager extends Manager {
 
   Iterable<Entity> getEntitiesOfPlayer(String player) {
     Bag<Entity> entities = _entitiesByPlayer[player];
-    if(entities == null) {
+    if (entities == null) {
       entities = new Bag<Entity>();
     }
     return entities;
@@ -34,9 +34,9 @@ class PlayerManager extends Manager {
 
   void removeFromPlayer(Entity e) {
     String player = _playerByEntity[e];
-    if(player != null) {
+    if (player != null) {
       Bag<Entity> entities = _entitiesByPlayer[player];
-      if(entities != null) {
+      if (entities != null) {
         entities.remove(e);
       }
     }

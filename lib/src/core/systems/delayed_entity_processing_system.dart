@@ -1,17 +1,18 @@
 part of dartemis;
 
 /**
- * The purpose of this class is to allow systems to execute at varying intervals.
+ * The purpose of this class is to allow systems to execute at varying
+ * intervals.
  *
- * An example system would be an ExpirationSystem, that deletes entities after a certain
- * lifetime. Instead of running a system that decrements a timeLeft value for each
- * entity, you can simply use this system to execute in a future at a time of the shortest
- * lived entity, and then reset the system to run at a time in a future at a time of the
- * shortest lived entity, etc.
+ * An example system would be an ExpirationSystem, that deletes entities after a
+ * certain lifetime. Instead of running a system that decrements a timeLeft
+ * value for each entity, you can simply use this system to execute in a future
+ * at a time of the shortest lived entity, and then reset the system to run at a
+ * time in a future at a time of the shortest lived entity, etc.
  *
- * Another example system would be an AnimationSystem. You know when you have to animate
- * a certain entity, e.g. in 300 milliseconds. So you can set the system to run in 300 ms.
- * to perform the animation.
+ * Another example system would be an AnimationSystem. You know when you have to
+ * animate a certain entity, e.g. in 300 milliseconds. So you can set the system
+ * to run in 300 ms to perform the animation.
  *
  * This will save CPU cycles in some scenarios.
  */
@@ -20,7 +21,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   bool _running;
   num _acc;
 
-  DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
+  DelayedEntityProcessingSystem(Aspect aspect): super(aspect);
 
   /**
    * Check if the system is counting down towards processing.
@@ -33,8 +34,8 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   num getRemainingDelay(Entity e);
 
   /**
-   * Process a entity this system is interested in. Substract the accumulatedDelta
-   * from the entities defined delay.
+   * Process a entity this system is interested in. Substract the
+   * accumulatedDelta from the entities defined delay.
    */
   void processDelta(Entity e, num accumulatedDelta);
 
@@ -44,7 +45,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
     entities.forEach((entity) {
       processDelta(entity, _acc);
       num remaining = getRemainingDelay(entity);
-      if(remaining <= 0) {
+      if (remaining <= 0) {
         processExpired(entity);
       } else {
         offerDelay(remaining);
@@ -55,16 +56,16 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
   void inserted(Entity e) {
     num delay = getRemainingDelay(e);
-    if(delay > 0) {
+    if (delay > 0) {
       offerDelay(delay);
     }
   }
 
   bool checkProcessing() {
-    if(_running) {
+    if (_running) {
       _acc += world.delta;
 
-      if(_acc >= _delay) {
+      if (_acc >= _delay) {
         return true;
       }
     }
@@ -95,13 +96,14 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * restart itself to run at the offered delay.
    */
   void offerDelay(num delay) {
-    if(!_running || delay < getRemainingTimeUntilProcessing()) {
+    if (!_running || delay < getRemainingTimeUntilProcessing()) {
       restart(delay);
     }
   }
 
   /**
-   * Get the initial delay that the system was ordered to process entities after.
+   * Get the initial delay that the system was ordered to process entities
+   * after.
    */
   num getInitialTimeDelay() => _delay;
 
@@ -111,8 +113,8 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * Use isRunning() before checking this value.
    */
   num getRemainingTimeUntilProcessing() {
-    if(_running) {
-      return _delay-_acc;
+    if (_running) {
+      return _delay - _acc;
     }
     return 0;
   }

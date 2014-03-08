@@ -25,7 +25,7 @@ class TeamManager extends Manager {
     _teamByPlayer[player] = team;
 
     Bag<String> players = _playersByTeam[team];
-    if(players == null) {
+    if (players == null) {
       players = new Bag<String>();
       _playersByTeam[team] = players;
     }
@@ -39,9 +39,9 @@ class TeamManager extends Manager {
 
   void removeFromTeam(String player) {
     String team = _teamByPlayer.remove(player);
-    if(team != null) {
+    if (team != null) {
       Bag<String> players = _playersByTeam[team];
-      if(players != null) {
+      if (players != null) {
         players.remove(player);
       }
     }

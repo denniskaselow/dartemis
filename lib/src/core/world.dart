@@ -5,7 +5,8 @@ part of dartemis;
  *
  * You must use this to create, delete and retrieve entities.
  *
- * It is also important to set the delta each game loop iteration, and initialize before game loop.
+ * It is also important to set the delta each game loop iteration, and
+ * initialize before game loop.
  */
 class World {
   final EntityManager _entityManager = new EntityManager();
@@ -18,7 +19,7 @@ class World {
   final Bag<Entity> _disable = new Bag<Entity>();
 
   final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
-  final List<EntitySystem> _systemsList= new List<EntitySystem>();
+  final List<EntitySystem> _systemsList = new List<EntitySystem>();
 
   final Map<Type, Manager> _managers = new Map<Type, Manager>();
   final Bag<Manager> _managersBag = new Bag<Manager>();
@@ -125,7 +126,7 @@ class World {
    * Adds a system to this world that will be processed by World.process().
    * If [passive] is set to true the system will not be processed by the world.
    */
-  EntitySystem addSystem(EntitySystem system, {bool passive : false}) {
+  EntitySystem addSystem(EntitySystem system, {bool passive: false}) {
     system._world = this;
     system._passive = passive;
 
@@ -213,8 +214,8 @@ class World {
 
   /**
    * Ensure all systems are notified of changes to this [Entity e]. If you're
-   * adding a [Component] to an [Entity] after it's been added to the world, then
-   * you need to invoke this method.
+   * adding a [Component] to an [Entity] after it's been added to the world,
+   * then you need to invoke this method.
    */
   void changedEntity(Entity e) => _changed.add(e);
 
@@ -228,8 +229,8 @@ class World {
   }
 
   /**
-   * (Re)enable the [Entity e] in the world, after it having being disabled. Won't
-   * do anything unless it was already disabled.
+   * (Re)enable the [Entity e] in the world, after it having being disabled.
+   * Won't do anything unless it was already disabled.
    */
   void enable(Entity e) => _enable.add(e);
 

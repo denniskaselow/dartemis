@@ -15,10 +15,11 @@ class EntityManager extends Manager {
 
   _IdentifierPool _identifierPool;
 
-  EntityManager() : _entities = new Bag<Entity>(),
-                    _deletedEntities = new Bag<Entity>(),
-                    _disabled = new Bag<bool>(),
-                    _identifierPool = new _IdentifierPool();
+  EntityManager()
+      : _entities = new Bag<Entity>(),
+        _deletedEntities = new Bag<Entity>(),
+        _disabled = new Bag<bool>(),
+        _identifierPool = new _IdentifierPool();
 
   void initialize() {}
 
@@ -110,10 +111,10 @@ class _IdentifierPool {
   Bag<int> _ids;
   int _nextAvailableId = 0;
 
-  _IdentifierPool() : _ids = new Bag<int>();
+  _IdentifierPool(): _ids = new Bag<int>();
 
   int checkOut() {
-    if(_ids.size > 0) {
+    if (_ids.size > 0) {
       return _ids.removeLast();
     }
     return _nextAvailableId++;

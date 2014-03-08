@@ -1,11 +1,12 @@
 part of dartemis;
 
 /**
- * The most raw entity system. It should not typically be used, but you can create your own
- * entity system handling by extending this. It is recommended that you use the other provided
- * entity system implementations.
+ * The most raw entity system. It should not typically be used, but you can
+ * create your own entity system handling by extending this. It is recommended
+ * that you use the other provided entity system implementations.
  *
- * There is no need to ever call any other method than process on objects of this class.
+ * There is no need to ever call any other method than process on objects of
+ * this class.
  */
 abstract class EntitySystem implements EntityObserver {
 
@@ -20,10 +21,11 @@ abstract class EntitySystem implements EntityObserver {
   bool _dummy;
   bool _passive;
 
-  EntitySystem(Aspect aspect) : _actives = new Bag<Entity>(),
-                                            _all = aspect.all,
-                                            _excluded = aspect.excluded,
-                                            _one = aspect.one {
+  EntitySystem(Aspect aspect)
+      : _actives = new Bag<Entity>(),
+        _all = aspect.all,
+        _excluded = aspect.excluded,
+        _one = aspect.one {
     _dummy = _all == 0 && _one == 0;
     _systemBit = _SystemBitManager._getBitFor(runtimeType);
   }
@@ -37,10 +39,11 @@ abstract class EntitySystem implements EntityObserver {
   void begin() {}
 
   /**
-   * This is the only method that is supposed to be called from outside the library,
+   * This is the only method that is supposed to be called from outside the
+   * library,
    */
   void process() {
-    if(checkProcessing()) {
+    if (checkProcessing()) {
       begin();
       processEntities(_actives);
       end();
@@ -69,12 +72,14 @@ abstract class EntitySystem implements EntityObserver {
   void initialize() {}
 
   /**
-   * Called if the system has received an [entity] it is interested in, e.g. created or a component was added to it.
+   * Called if the system has received an [entity] it is interested in, e.g.
+   * created or a component was added to it.
    */
   void inserted(Entity entity) {}
 
   /**
-   * Called if an [entity] was removed from this system, e.g. deleted or had one of it's components removed.
+   * Called if an [entity] was removed from this system, e.g. deleted or had one
+   * of it's components removed.
    */
   void removed(Entity entity) {}
 
@@ -93,8 +98,10 @@ abstract class EntitySystem implements EntityObserver {
 
     if (interest && !contains) {
       _insertToSystem(e);
-    } else if (!interest && contains) {
-      _removeFromSystem(e);
+    } else {
+      if (!interest && contains) {
+        _removeFromSystem(e);
+      }
     }
   }
 

@@ -4,17 +4,18 @@ part of dartemis;
  * Collection type a bit like List but does not preserve the order of its
  * entities, speedwise it is very good, especially suited for games.
  */
-class Bag<E> extends Object with IterableMixin {
+class Bag<E> extends Object with IterableMixin<E> {
   List _data;
   int _size = 0;
 
-  Bag({int capacity: 16}) : _data = new List(capacity);
+  Bag({int capacity: 16}): _data = new List(capacity);
 
   /**
    * Creates a new [Bag] with the elements of [iterable].
    */
-  Bag.from(Iterable<E> iterable) : _data = iterable.toList(growable: false),
-                                   _size = iterable.length;
+  Bag.from(Iterable<E> iterable)
+      : _data = iterable.toList(growable: false),
+        _size = iterable.length;
 
   /**
    * Returns the element at the specified [index] in the bag.
@@ -82,18 +83,6 @@ class Bag<E> extends Object with IterableMixin {
   }
 
   /**
-   * Returns [:true:] if this bag contains the [element].
-   */
-  bool contains(E element) {
-    for(int i = 0; _size > i; i++) {
-      if(element == _data[i]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Removes from this Bag all of its elements that are contained in the
    * specified [bag].
    *
@@ -140,11 +129,11 @@ class Bag<E> extends Object with IterableMixin {
    * Sets [element] at specified [index] in the bag.
    */
   void operator []=(int index, E element) {
-    if(index >= _data.length) {
-      _growTo(index*2);
+    if (index >= _data.length) {
+      _growTo(index * 2);
     }
     if (_size <= index) {
-      _size = index+1;
+      _size = index + 1;
     }
     _data[index] = element;
   }
@@ -162,7 +151,7 @@ class Bag<E> extends Object with IterableMixin {
 
   void _ensureCapacity(int index) {
     if (index >= _data.length) {
-      _growTo(index*2);
+      _growTo(index * 2);
     }
   }
 
@@ -182,13 +171,15 @@ class Bag<E> extends Object with IterableMixin {
    * Add all [items] into this bag.
    */
   void addAll(Bag<E> items) {
-    for(int i = 0; items.size > i; i++) {
+    for (int i = 0; items.size > i; i++) {
       add(items[i]);
     }
   }
 
   bool isIndexWithinBounds(int index) => index < capacity;
 
-  get iterator => _data.sublist(0, size).iterator;
-  get length => _size;
+  Iterator<E> get iterator => _data.sublist(0, size).iterator;
+
+  @override
+  int get length => _size;
 }

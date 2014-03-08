@@ -1,8 +1,8 @@
 part of dartemis;
 
 /**
- * High performance component retrieval from entities. Use this wherever you need
- * to retrieve components from entities often and fast.
+ * High performance component retrieval from entities. Use this wherever you
+ * need to retrieve components from entities often and fast.
  */
 class ComponentMapper<A extends Component> {
   ComponentType _type;
@@ -16,7 +16,8 @@ class ComponentMapper<A extends Component> {
   /**
    * Fast but unsafe retrieval of a component for this entity.
    * No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
-   * however in most scenarios you already know the entity possesses this component.
+   * however in most scenarios you already know the entity possesses this
+   * component.
    */
   A get(Entity entity) => _components[entity.id];
 
@@ -25,7 +26,7 @@ class ComponentMapper<A extends Component> {
    * If the entity does not have this component then null is returned.
    */
   A getSafe(Entity entity) {
-    if(_components.isIndexWithinBounds(entity.id)) {
+    if (_components.isIndexWithinBounds(entity.id)) {
       return _components[entity.id];
     }
     return null;
