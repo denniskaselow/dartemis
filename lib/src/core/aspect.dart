@@ -1,17 +1,19 @@
 part of dartemis;
 
 /**
- * An Aspect is used by systems as a matcher against entities, to check if a system is
- * interested in an entity. Aspects define what sort of component types an entity must
- * possess, or not possess.
+ * An Aspect is used by systems as a matcher against entities, to check if a
+ * system is interested in an entity. Aspects define what sort of component
+ * types an entity must possess, or not possess.
  *
  * This creates an aspect where an entity must possess A and B and C:
  *     Aspect.getAspectForAllOf([A, B, C])
  *
- * This creates an aspect where an entity must possess A and B and C, but must not possess U or V.
+ * This creates an aspect where an entity must possess A and B and C, but must
+ * not possess U or V.
  *     Aspect.getAspectForAllOf([A, B, C]).exclude([U, V])
  *
- * This creates an aspect where an entity must possess A and B and C, but must not possess U or V, but must possess one of X or Y or Z.
+ * This creates an aspect where an entity must possess A and B and C, but must
+ * not possess U or V, but must possess one of X or Y or Z.
  *     Aspect.getAspectForAllOf([A, B, C]).exclude([U, V]).oneOf([X, Y, Z])
  *
  * You can create and compose aspects in many ways:
@@ -26,7 +28,8 @@ class Aspect {
   int _one = 0;
 
   /**
-   * Returns an aspect where an entity must possess all of the specified components.
+   * Returns an aspect where an entity must possess all of the specified
+   * components.
    */
   Aspect allOf(List<Type> componentTypes) {
     _all = _updateBitMask(_all, componentTypes);
@@ -34,8 +37,9 @@ class Aspect {
   }
 
   /**
-   * Excludes all of the specified components from the aspect. A system will not be
-   * interested in an entity that possesses one of the specified excluded components.
+   * Excludes all of the specified components from the aspect. A system will not
+   * be interested in an entity that possesses one of the specified excluded
+   * components.
    *
    * Returns an aspect that can be matched against entities.
    */
@@ -45,7 +49,8 @@ class Aspect {
   }
 
   /**
-   * Returns an aspect where an entity must possess one of the specified components.
+   * Returns an aspect where an entity must possess one of the specified
+   * components.
    */
   Aspect oneOf(List<Type> componentTypes) {
     _one = _updateBitMask(_one, componentTypes);
@@ -53,7 +58,8 @@ class Aspect {
   }
 
   /**
-   * Creates an aspect where an entity must possess all of the specified components.
+   * Creates an aspect where an entity must possess all of the specified
+   * components.
    */
   static Aspect getAspectForAllOf(List<Type> componentTypes) {
     Aspect aspect = new Aspect();
@@ -62,7 +68,8 @@ class Aspect {
   }
 
   /**
-   * Creates an aspect where an entity must possess one of the specified componens.
+   * Creates an aspect where an entity must possess one of the specified
+   * componens.
    */
   static getAspectForOneOf(List<Type> componentTypes) {
     Aspect aspect = new Aspect();
@@ -71,13 +78,15 @@ class Aspect {
   }
 
   /**
-   * Creates and returns an empty aspect. This can be used if you want a system that processes no entities, but
-   * still gets invoked. Typical usages is when you need to create special purpose systems for debug rendering,
-   * like rendering FPS, how many entities are active in the world, etc.
+   * Creates and returns an empty aspect. This can be used if you want a system
+   * that processes no entities, but still gets invoked. Typical usages is when
+   * you need to create special purpose systems for debug rendering, like
+   * rendering FPS, how many entities are active in the world, etc.
    *
-   * You can also use the all, one and exclude methods on this aspect, so if you wanted to create a system that
-   * processes only entities possessing just one of the components A or B or C, then you can do:
-   * Aspect.getEmpty().one("A", "B", "C");
+   * You can also use the all, one and exclude methods on this aspect, so if you
+   * wanted to create a system that processes only entities possessing just one
+   * of the components A or B or C, then you can do:
+   *     Aspect.getEmpty().one("A", "B", "C");
    *
    * Returns an empty Aspect that will reject all entities.
    */

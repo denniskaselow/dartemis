@@ -1,8 +1,9 @@
 part of dartemis;
 
 /**
- * If you need to group your entities together, e.g. tanks going into "units" group or explosions into "effects",
- * then use this manager. You must retrieve it using world instance.
+ * If you need to group your entities together, e.g. tanks going into "units"
+ * group or explosions into "effects", then use this manager. You must retrieve
+ * it using world instance.
  *
  * An [Entity] can only belong to several groups (0,n) at a time.
  */
@@ -10,8 +11,9 @@ class GroupManager extends Manager {
   final Map<String, Bag<Entity>> _entitiesByGroup;
   final Map<Entity, Bag<String>> _groupsByEntity;
 
-  GroupManager() : _entitiesByGroup = new Map<String, Bag<Entity>>(),
-                   _groupsByEntity = new Map<Entity, Bag<String>>();
+  GroupManager()
+      : _entitiesByGroup = new Map<String, Bag<Entity>>(),
+        _groupsByEntity = new Map<Entity, Bag<String>>();
 
   /**
    * Set the group of the entity.
@@ -25,7 +27,7 @@ class GroupManager extends Manager {
     entities.add(e);
 
     Bag<String> groups = _groupsByEntity[e];
-    if(groups == null) {
+    if (groups == null) {
       groups = new Bag<String>();
       _groupsByEntity[e] = groups;
     }
@@ -37,22 +39,22 @@ class GroupManager extends Manager {
    */
   void remove(Entity e, String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
-    if(entities != null) {
+    if (entities != null) {
       entities.remove(e);
     }
 
     Bag<String> groups = _groupsByEntity[e];
-    if(groups != null) {
+    if (groups != null) {
       groups.remove(group);
     }
   }
 
   void removeFromAllGroups(Entity e) {
     Bag<String> groups = _groupsByEntity[e];
-    if(groups != null) {
+    if (groups != null) {
       groups.forEach((group) {
         Bag<Entity> entities = _entitiesByGroup[group];
-        if(entities != null) {
+        if (entities != null) {
           entities.remove(e);
         }
       });
@@ -63,21 +65,21 @@ class GroupManager extends Manager {
   /**
    * Get all entities that belong to the provided group.
    */
-  ReadOnlyBag<Entity> getEntities(String group) {
+  Iterable<Entity> getEntities(String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities == null) {
       entities = new Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
-    return entities.readOnly;
+    return entities;
   }
 
   /**
    * Returns the groups the entity belongs to, null if none.
    */
-  ReadOnlyBag<String> getGroups(Entity e) {
+  Iterable<String> getGroups(Entity e) {
     var result = _groupsByEntity[e];
-    return result == null ? null : result.readOnly;
+    return result == null ? null : result;
   }
 
   /**

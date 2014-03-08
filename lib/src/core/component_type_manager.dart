@@ -4,7 +4,7 @@ class ComponentTypeManager {
 
   static var _componentTypes = new Map<Type, ComponentType>();
 
-  static ComponentType getTypeFor(Type typeOfComponent){
+  static ComponentType getTypeFor(Type typeOfComponent) {
     ComponentType componentType = _componentTypes[typeOfComponent];
 
     if (componentType == null) {

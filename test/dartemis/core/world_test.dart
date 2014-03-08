@@ -175,12 +175,10 @@ class TestEntitySystem extends EntitySystem {
   var expectedEntities;
   TestEntitySystem(Aspect aspect, this.expectedEntities):super(aspect) {}
 
-  void processEntities(ReadOnlyBag<Entity> entities) {
+  void processEntities(Iterable<Entity> entities) {
     int length = expectedEntities.length;
-    expect(entities.size, length);
-    for (int i = 0; i < length; i++) {
-      expect(entities[i], isIn(expectedEntities));
-    }
+    expect(entities.length, length);
+    entities.forEach((entity) => expect(entity, isIn(expectedEntities)));
   }
 
   bool checkProcessing() => true;

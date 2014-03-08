@@ -1,7 +1,8 @@
 part of dartemis;
 
 /**
- * Using these function will save you some time if you are doing A LOT of calculation.
+ * Using these function will save you some time if you are doing A LOT of
+ * calculation.
  */
 class FastMath {
 
@@ -28,14 +29,16 @@ class FastMath {
 
   static double asin(num x) {
     x = x.toDouble();
-    return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) * (_asin_d - Math.sqrt(1 - x * x));
+    return x * (x.abs() * (x.abs() * _asin_a + _asin_b) + _asin_c) + signum(x) *
+        (_asin_d - Math.sqrt(1 - x * x));
   }
 
   static double acos(num x) => HALF_PI - asin(x);
 
   static double atan(num x) {
     x = x.toDouble();
-    return (x.abs() < 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x / (x * x + _atan_a);
+    return (x.abs() < 1) ? x / (1 + _atan_a * x * x) : signum(x) * HALF_PI - x /
+        (x * x + _atan_a);
   }
 
   static int signum(num x) => (x < 0) ? -1 : (x > 0) ? 1 : 0;

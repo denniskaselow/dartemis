@@ -2,7 +2,8 @@ part of dartemis;
 
 /**
  * Inspired by <http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/>
- * this class stores objects that are no longer used in the game for later reuse.
+ * this class stores objects that are no longer used in the game for later
+ * reuse.
  */
 class ObjectPool {
 

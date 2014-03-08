@@ -1,4 +1,9 @@
 # Changelog
+##0.6.0
+### API Changes
+* `Bag` is `Iterable` 
+* removed `ReadOnlyBag`, when upgrading to 0.6.0 replace every occurence of `ReadOnlyBag` with `Iterable`
+ 
 ##0.5.2
 ### Enhancements
 * injection works for `Manager`s

@@ -11,7 +11,7 @@ class _SystemBitManager {
     }
     var bit = _systemBits[esType];
 
-    if(bit == null){
+    if (bit == null) {
       bit = 1 << _POS;
       _POS++;
       _systemBits[esType] = bit;

@@ -9,8 +9,9 @@ class TagManager extends Manager {
   final Map<String, Entity> _entitiesByTag;
   final Map<Entity, String> _tagsByEntity;
 
-  TagManager() : _entitiesByTag = new Map<String, Entity>(),
-                 _tagsByEntity = new Map<Entity, String>();
+  TagManager()
+      : _entitiesByTag = new Map<String, Entity>(),
+        _tagsByEntity = new Map<Entity, String>();
 
   void register(Entity e, String tag) {
     _entitiesByTag[tag] = e;
@@ -27,7 +28,7 @@ class TagManager extends Manager {
 
   void deleted(Entity e) {
     String removedTag = _tagsByEntity.remove(e);
-    if(removedTag != null) {
+    if (removedTag != null) {
       _entitiesByTag.remove(removedTag);
     }
   }

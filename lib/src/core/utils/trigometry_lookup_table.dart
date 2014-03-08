@@ -10,8 +10,10 @@ part of dartemis;
 class _TrigUtil {
   static double sin(num rad) => _sin((rad * _radToIndex).toInt() & _SIN_MASK);
   static double cos(num rad) => _cos((rad * _radToIndex).toInt() & _SIN_MASK);
-  static double sinDeg(num deg) => _sin((deg * _degToIndex).toInt() & _SIN_MASK);
-  static double cosDeg(num deg) => _cos((deg * _degToIndex).toInt() & _SIN_MASK);
+  static double sinDeg(num deg) => _sin((deg * _degToIndex).toInt() & _SIN_MASK
+      );
+  static double cosDeg(num deg) => _cos((deg * _degToIndex).toInt() & _SIN_MASK
+      );
 
   static final double _RAD = Math.PI / 180.0;
   static final double _DEG = 180.0 / Math.PI;
