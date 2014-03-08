@@ -4,22 +4,18 @@ part of dartemis;
  * Collection type a bit like List but does not preserve the order of its
  * entities, speedwise it is very good, especially suited for games.
  */
-class Bag<E> {
+class Bag<E> extends Object with IterableMixin<E> {
   List _data;
   int _size = 0;
-  ReadOnlyBag<E> _readOnly;
 
-  Bag({int capacity: 16}) : _data = new List(capacity) {
-    _readOnly = new ReadOnlyBag._of(this);
-  }
+  Bag({int capacity: 16}): _data = new List(capacity);
 
   /**
    * Creates a new [Bag] with the elements of [iterable].
    */
-  Bag.from(Iterable<E> iterable) : _data = iterable.toList(growable: false),
-                                   _size = iterable.length {
-    _readOnly = new ReadOnlyBag._of(this);
-  }
+  Bag.from(Iterable<E> iterable)
+      : _data = iterable.toList(growable: false),
+        _size = iterable.length;
 
   /**
    * Returns the element at the specified [index] in the bag.
@@ -32,27 +28,9 @@ class Bag<E> {
   int get size => _size;
 
   /**
-   * Returns a read only view for this bag.
-   */
-  ReadOnlyBag get readOnly => _readOnly;
-
-  /**
    * Returns [:true:] if this list contains no elements.
    */
   bool get isEmpty => _size == 0;
-
-  /**
-   * Applies the function [f] to each element of this collection.
-   *
-   * Do not pass functions that add or remove elements because the order of
-   * elements is not preserved and such a function could lead to unexpected
-   * results.
-   */
-  void forEach(void f(E element)) {
-    for (int i = 0; i < _size; i++) {
-      f(_data[i]);
-    }
-  }
 
   /**
    * Removes the element at the specified [index] in this bag. Does this by
@@ -105,18 +83,6 @@ class Bag<E> {
   }
 
   /**
-   * Returns [:true:] if this bag contains the [element].
-   */
-  bool contains(E element) {
-    for(int i = 0; _size > i; i++) {
-      if(element == _data[i]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Removes from this Bag all of its elements that are contained in the
    * specified [bag].
    *
@@ -163,11 +129,11 @@ class Bag<E> {
    * Sets [element] at specified [index] in the bag.
    */
   void operator []=(int index, E element) {
-    if(index >= _data.length) {
-      _growTo(index*2);
+    if (index >= _data.length) {
+      _growTo(index * 2);
     }
     if (_size <= index) {
-      _size = index+1;
+      _size = index + 1;
     }
     _data[index] = element;
   }
@@ -185,7 +151,7 @@ class Bag<E> {
 
   void _ensureCapacity(int index) {
     if (index >= _data.length) {
-      _growTo(index*2);
+      _growTo(index * 2);
     }
   }
 
@@ -205,11 +171,15 @@ class Bag<E> {
    * Add all [items] into this bag.
    */
   void addAll(Bag<E> items) {
-    for(int i = 0; items.size > i; i++) {
+    for (int i = 0; items.size > i; i++) {
       add(items[i]);
     }
   }
 
   bool isIndexWithinBounds(int index) => index < capacity;
-  String toString() => "[${_data.join(',')}]";
+
+  Iterator<E> get iterator => _data.sublist(0, size).iterator;
+
+  @override
+  int get length => _size;
 }

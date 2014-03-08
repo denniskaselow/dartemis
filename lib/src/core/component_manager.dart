@@ -4,8 +4,9 @@ class ComponentManager extends Manager {
   Bag<Bag<Component>> _componentsByType;
   Bag<Entity> _deleted;
 
-  ComponentManager() : _componentsByType = new Bag<Bag<Component>>(),
-                       _deleted = new Bag<Entity>();
+  ComponentManager()
+      : _componentsByType = new Bag<Bag<Component>>(),
+        _deleted = new Bag<Entity>();
 
   void initialize() {}
 
@@ -22,7 +23,7 @@ class ComponentManager extends Manager {
     _componentsByType._ensureCapacity(index);
 
     Bag<Component> components = _componentsByType[index];
-    if(components == null) {
+    if (components == null) {
       components = new Bag<Component>();
       _componentsByType[index] = components;
     }
@@ -33,7 +34,7 @@ class ComponentManager extends Manager {
   }
 
   void _removeComponent(Entity e, ComponentType type) {
-    if((e._typeBits & type.bit) != 0) {
+    if ((e._typeBits & type.bit) != 0) {
       int typeId = type.id;
       _componentsByType[typeId][e.id]._removed();
       _componentsByType[typeId][e.id] = null;
@@ -46,7 +47,7 @@ class ComponentManager extends Manager {
     _componentsByType._ensureCapacity(index);
 
     Bag<Component> components = _componentsByType[index];
-    if(components == null) {
+    if (components == null) {
       components = new Bag<Component>();
       _componentsByType[index] = components;
     }
@@ -56,7 +57,7 @@ class ComponentManager extends Manager {
   Component _getComponent(Entity e, ComponentType type) {
     int index = type.id;
     Bag<Component> components = _componentsByType[index];
-    if(components != null && components.isIndexWithinBounds(e.id)) {
+    if (components != null && components.isIndexWithinBounds(e.id)) {
       return components[e.id];
     }
     return null;
@@ -68,7 +69,8 @@ class ComponentManager extends Manager {
     return fillBag;
   }
 
-  void _forComponentsOfEntity(Entity e, void f(Bag<Component> components, int index)) {
+  void _forComponentsOfEntity(Entity e, void f(Bag<Component> components, int
+      index)) {
     int componentBits = e._typeBits;
     int index = 0;
     while (componentBits > 0) {
@@ -87,4 +89,3 @@ class ComponentManager extends Manager {
     _deleted.clear();
   }
 }
-

@@ -121,7 +121,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
 
   PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
 
-  void processEntities(ReadOnlyBag<Entity> entities) {
+  void processEntities(Iterable<Entity> entities) {
     Entity player = tagManager.getEntity(TAG_PLAYER);
     Position playerPos = positionMapper.get(player);
     Status playerStatus = statusMapper.get(player);

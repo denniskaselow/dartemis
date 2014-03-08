@@ -57,21 +57,23 @@ class Entity {
   /**
    * Add a [component] to this entity.
    */
-  void addComponent(Component component){
-    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(component.runtimeType), component);
+  void addComponent(Component component) {
+    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(
+        component.runtimeType), component);
   }
 
   /**
    * Removes the [Component] of [Type] [componentType] from this entity.
    */
-  void removeComponent(Type componentType){
-    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(componentType));
+  void removeComponent(Type componentType) {
+    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(
+        componentType));
   }
 
   /**
    * Faster removal of components by [type] from a entity.
    */
-  void removeComponentByType(ComponentType type){
+  void removeComponentByType(ComponentType type) {
     _componentManager._removeComponent(this, type);
   }
 
@@ -102,9 +104,9 @@ class Entity {
    *
    * Returns [:null:] if none is found.
    */
-   Component getComponentByClass(Type componentType) {
-     return getComponent(ComponentTypeManager.getTypeFor(componentType));
-   }
+  Component getComponentByClass(Type componentType) {
+    return getComponent(ComponentTypeManager.getTypeFor(componentType));
+  }
 
   /**
    * Get all components belonging to this entity.

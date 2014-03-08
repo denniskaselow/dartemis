@@ -25,23 +25,23 @@ class TeamManager extends Manager {
     _teamByPlayer[player] = team;
 
     Bag<String> players = _playersByTeam[team];
-    if(players == null) {
+    if (players == null) {
       players = new Bag<String>();
       _playersByTeam[team] = players;
     }
     players.add(player);
   }
 
-  ReadOnlyBag<String> getPlayers(String team) {
+  Iterable<String> getPlayers(String team) {
     var result = _playersByTeam[team];
-    return result == null ? null : result.readOnly;
+    return result == null ? null : result;
   }
 
   void removeFromTeam(String player) {
     String team = _teamByPlayer.remove(player);
-    if(team != null) {
+    if (team != null) {
       Bag<String> players = _playersByTeam[team];
-      if(players != null) {
+      if (players != null) {
         players.remove(player);
       }
     }
