@@ -1,4 +1,10 @@
 # Changelog
+##0.6.1
+### Bugfixes
+* DelayedEntityProcessingSystem keeps running until all current entities have expired
+### Internal
+* upgraded unittest dependency
+
 ##0.6.0
 ### API Changes
 * `Bag` is `Iterable` 

@@ -17,8 +17,8 @@ part of dartemis;
  * This will save CPU cycles in some scenarios.
  */
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
+  bool _running = false;
   num _delay;
-  bool _running;
   num _acc;
 
   DelayedEntityProcessingSystem(Aspect aspect): super(aspect);
@@ -31,15 +31,15 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /**
    * Return the delay until this entity should be processed.
    */
-  num getRemainingDelay(Entity e);
+  num getRemainingDelay(Entity enitity);
 
   /**
    * Process a entity this system is interested in. Substract the
    * accumulatedDelta from the entities defined delay.
    */
-  void processDelta(Entity e, num accumulatedDelta);
+  void processDelta(Entity enitity, num accumulatedDelta);
 
-  void processExpired(Entity e);
+  void processExpired(Entity enitity);
 
   void processEntities(Iterable<Entity> entities) {
     entities.forEach((entity) {
@@ -51,11 +51,13 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
         offerDelay(remaining);
       }
     });
-    stop();
+    if (_actives.length == 0) {
+      stop();
+    }
   }
 
-  void inserted(Entity e) {
-    num delay = getRemainingDelay(e);
+  void inserted(Entity enitity) {
+    num delay = getRemainingDelay(enitity);
     if (delay > 0) {
       offerDelay(delay);
     }
@@ -96,7 +98,8 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * restart itself to run at the offered delay.
    */
   void offerDelay(num delay) {
-    if (!_running || delay < getRemainingTimeUntilProcessing()) {
+    var remaining = getRemainingTimeUntilProcessing();
+    if (!_running || delay < remaining || remaining == 0) {
       restart(delay);
     }
   }
