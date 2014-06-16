@@ -18,8 +18,8 @@ part of dartemis;
  */
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
   bool _running = false;
-  num _delay;
-  num _acc;
+  double _delay;
+  double _acc = 0.0;
 
   DelayedEntityProcessingSystem(Aspect aspect): super(aspect);
 
@@ -31,21 +31,21 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /**
    * Return the delay until this entity should be processed.
    */
-  num getRemainingDelay(Entity enitity);
+  double getRemainingDelay(Entity enitity);
 
   /**
    * Process a entity this system is interested in. Substract the
    * accumulatedDelta from the entities defined delay.
    */
-  void processDelta(Entity enitity, num accumulatedDelta);
+  void processDelta(Entity enitity, double accumulatedDelta);
 
   void processExpired(Entity enitity);
 
   void processEntities(Iterable<Entity> entities) {
     entities.forEach((entity) {
       processDelta(entity, _acc);
-      num remaining = getRemainingDelay(entity);
-      if (remaining <= 0) {
+      double remaining = getRemainingDelay(entity);
+      if (remaining <= 0.0) {
         processExpired(entity);
       } else {
         offerDelay(remaining);
@@ -54,11 +54,13 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
     if (_actives.length == 0) {
       stop();
     }
+    _acc = 0.0;
   }
 
   void inserted(Entity enitity) {
-    num delay = getRemainingDelay(enitity);
-    if (delay > 0) {
+    double delay = getRemainingDelay(enitity);
+    processDelta(enitity, 0.0 - _acc);
+    if (delay > 0.0) {
       offerDelay(delay);
     }
   }
@@ -79,9 +81,9 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    *
    * Cancels current delayed run and starts a new one.
    */
-  void restart(num delay) {
+  void restart(double delay) {
     this._delay = delay;
-    this._acc = 0;
+    this._acc = 0.0;
     _running = true;
   }
 
@@ -108,18 +110,18 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    * Get the initial delay that the system was ordered to process entities
    * after.
    */
-  num getInitialTimeDelay() => _delay;
+  double getInitialTimeDelay() => _delay;
 
   /**
    * Get the time until the system is scheduled to run at.
    * Returns zero (0) if the system is not running.
    * Use isRunning() before checking this value.
    */
-  num getRemainingTimeUntilProcessing() {
+  double getRemainingTimeUntilProcessing() {
     if (_running) {
       return _delay - _acc;
     }
-    return 0;
+    return 0.0;
   }
 
   /**
@@ -128,7 +130,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
    */
   void stop() {
     this._running = false;
-    this._acc = 0;
+    this._acc = 0.0;
   }
 
 }
