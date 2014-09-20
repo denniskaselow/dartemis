@@ -15,8 +15,8 @@ class PlayerControlSystem extends IntervalEntitySystem {
   num targetX = 0;
   num targetY = 0;
 
-  ComponentMapper<Velocity> velocityMapper;
-  ComponentMapper<Cannon> cannonMapper;
+  Mapper<Velocity> velocityMapper;
+  Mapper<Cannon> cannonMapper;
   TagManager tagManager;
 
   CanvasElement canvas;
@@ -32,8 +32,8 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   void processEntities(Iterable<Entity> entities) {
     Entity player = tagManager.getEntity(TAG_PLAYER);
-    Velocity velocity = velocityMapper.get(player);
-    Cannon cannon = cannonMapper.get(player);
+    Velocity velocity = velocityMapper[player];
+    Cannon cannon = cannonMapper[player];
 
     if (moveUp) {
       velocity.y -= 0.1;

@@ -29,15 +29,15 @@ void main() {
       EntitySystemWithComponentMapper system = world.getSystem(EntitySystemWithComponentMapper);
 
       expect(system.mapperForA, isNotNull);
-      expect(system.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(system.mapperForA, new isInstanceOf<Mapper>('ComponentMapper'));
     });
     test('world injects ComponentMapper into extended system', () {
       EntitySystemExtendingSystemWithComponentMapper system = world.getSystem(EntitySystemExtendingSystemWithComponentMapper);
 
       expect(system.mapperForA, isNotNull);
-      expect(system.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(system.mapperForA, new isInstanceOf<Mapper>('ComponentMapper'));
       expect(system.mapperForB, isNotNull);
-      expect(system.mapperForB, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(system.mapperForB, new isInstanceOf<Mapper>('ComponentMapper'));
     });
     test('world injects Managers into system', () {
       EntitySystemWithManager system = world.getSystem(EntitySystemWithManager);
@@ -64,15 +64,15 @@ void main() {
       ManagerWithComponentMapper manager = world.getManager(ManagerWithComponentMapper);
 
       expect(manager.mapperForA, isNotNull);
-      expect(manager.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(manager.mapperForA, new isInstanceOf<Mapper>('ComponentMapper'));
     });
     test('world injects ComponentMapper into extended manager', () {
       ManagerExtendingManagerWithComponentMapper manager = world.getManager(ManagerExtendingManagerWithComponentMapper);
 
       expect(manager.mapperForA, isNotNull);
-      expect(manager.mapperForA, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(manager.mapperForA, new isInstanceOf<Mapper>('ComponentMapper'));
       expect(manager.mapperForB, isNotNull);
-      expect(manager.mapperForB, new isInstanceOf<ComponentMapper>('ComponentMapper'));
+      expect(manager.mapperForB, new isInstanceOf<Mapper>('ComponentMapper'));
     });
     test('world injects Managers into manager', () {
       ManagerWithOtherManager manager = world.getManager(ManagerWithOtherManager);
@@ -98,7 +98,7 @@ void main() {
 }
 
 class EntitySystemWithComponentMapper extends VoidEntitySystem {
-  ComponentMapper<ComponentA> mapperForA;
+  Mapper<ComponentA> mapperForA;
   processSystem() {}
 }
 
@@ -113,7 +113,7 @@ class EntitySystemWithOtherSystem extends VoidEntitySystem {
 }
 
 class EntitySystemExtendingSystemWithComponentMapper extends EntitySystemWithComponentMapper {
-  ComponentMapper<ComponentB> mapperForB;
+  Mapper<ComponentB> mapperForB;
 }
 
 class EntitySystemWithNothingToInject extends VoidEntitySystem {
@@ -126,7 +126,7 @@ class EntitySystemWithNothingToInject extends VoidEntitySystem {
 
 
 class ManagerWithComponentMapper extends Manager {
-  ComponentMapper<ComponentA> mapperForA;
+  Mapper<ComponentA> mapperForA;
   processSystem() {}
 }
 
@@ -141,7 +141,7 @@ class ManagerWithSystem extends Manager {
 }
 
 class ManagerExtendingManagerWithComponentMapper extends ManagerWithComponentMapper {
-  ComponentMapper<ComponentB> mapperForB;
+  Mapper<ComponentB> mapperForB;
 }
 
 class ManagerWithNothingToInject extends Manager {

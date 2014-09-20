@@ -4,15 +4,15 @@ class CircleRenderingSystem extends EntityProcessingSystem {
 
   CanvasRenderingContext2D context;
 
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<CircularBody> bodyMapper;
-  ComponentMapper<Status> statusMapper;
+  Mapper<Position> positionMapper;
+  Mapper<CircularBody> bodyMapper;
+  Mapper<Status> statusMapper;
 
   CircleRenderingSystem(this.context) : super(Aspect.getAspectForAllOf([Position, CircularBody]));
 
   void processEntity(Entity entity) {
-    Position pos = positionMapper.get(entity);
-    CircularBody body = bodyMapper.get(entity);
+    Position pos = positionMapper[entity];
+    CircularBody body = bodyMapper[entity];
     Status status = statusMapper.getSafe(entity);
 
     context.save();
@@ -81,7 +81,7 @@ class BackgroundRenderSystem extends VoidEntitySystem {
 class HudRenderSystem extends VoidEntitySystem {
   CanvasRenderingContext2D context;
   TagManager tagManager;
-  ComponentMapper<Status> statusMapper;
+  Mapper<Status> statusMapper;
 
   HudRenderSystem(this.context);
 
@@ -97,7 +97,7 @@ class HudRenderSystem extends VoidEntitySystem {
       context.fill();
 
       Entity player = tagManager.getEntity(TAG_PLAYER);
-      Status status = statusMapper.get(player);
+      Status status = statusMapper[player];
 
       context.fillStyle = PLAYER_COLOR;
       for (int i = 0; i < status.lifes; i++) {

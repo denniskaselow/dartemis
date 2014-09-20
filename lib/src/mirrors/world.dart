@@ -75,7 +75,7 @@ skipping ${vm.qualifiedName} for injection because type cannot be accessed
           ClassMirror tacm = (vmAndType[0].type as ClassMirror).typeArguments
               .first as ClassMirror;
           system.setField(vmAndType[0].simpleName,
-              new ComponentMapper(tacm.reflectedType, this));
+              new Mapper(tacm.reflectedType, this));
     });
   }
 
@@ -83,6 +83,8 @@ skipping ${vm.qualifiedName} for injection because type cannot be accessed
 
   bool _isSystem(Type type) => getSystem(type) != null;
 
-  bool _isComponentMapper(VariableMirror vm) => (vm.type as
-      ClassMirror).qualifiedName == #dartemis.ComponentMapper;
+  bool _isComponentMapper(VariableMirror vm) {
+    var qualifiedName = (vm.type as ClassMirror).qualifiedName;
+    return qualifiedName == #dartemis.Mapper || qualifiedName == #dartemis.ComponentMapper;
+  }
 }

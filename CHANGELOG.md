@@ -1,5 +1,8 @@
 # Changelog
-##0.6.1
+##0.7.0
+### API Changes
+* deprecated `ComponentMapper` use `Mapper` instead
+* deprecated `ComponentMapper#get(Entity)`, use `Mapper[Entity]` instead
 ### Bugfixes
 * DelayedEntityProcessingSystem keeps running until all current entities have expired
 ### Internal

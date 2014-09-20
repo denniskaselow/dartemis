@@ -86,7 +86,7 @@ class Entity {
   /**
    * This is the preferred method to use when retrieving a [Component] from an
    * entity. It will provide good performance. The recommended way to retrieve
-   * components from an entity is using the [ComponentMapper].
+   * components from an entity is using the [Mapper].
    *
    * In order to retrieve the component fast you must provide a [ComponentType]
    * instance for the expected component.

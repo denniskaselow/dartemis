@@ -2,14 +2,14 @@ part of darteroids;
 
 class MovementSystem extends EntityProcessingSystem {
 
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<Velocity> velocityMapper;
+  Mapper<Position> positionMapper;
+  Mapper<Velocity> velocityMapper;
 
   MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
 
   void processEntity(Entity entity) {
-    Position pos = positionMapper.get(entity);
-    Velocity vel = velocityMapper.get(entity);
+    Position pos = positionMapper[entity];
+    Velocity vel = velocityMapper[entity];
 
     pos.x += vel.x;
     pos.y += vel.y;
@@ -20,18 +20,18 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   static const num bulletSpeed = 2.5;
 
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<Cannon> cannonMapper;
-  ComponentMapper<Velocity> velocityMapper;
+  Mapper<Position> positionMapper;
+  Mapper<Cannon> cannonMapper;
+  Mapper<Velocity> velocityMapper;
 
   BulletSpawningSystem() : super(Aspect.getAspectForAllOf([Cannon, Position, Velocity]));
 
   void processEntity(Entity entity) {
-    Cannon cannon = cannonMapper.get(entity);
+    Cannon cannon = cannonMapper[entity];
 
     if (cannon.canShoot) {
-      Position pos = positionMapper.get(entity);
-      Velocity vel = velocityMapper.get(entity);
+      Position pos = positionMapper[entity];
+      Velocity vel = velocityMapper[entity];
       fireBullet(pos, vel, cannon);
     } else if (cannon.cooldown > 0){
       cannon.cooldown -= world.delta;
@@ -57,12 +57,12 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
 class DecaySystem extends EntityProcessingSystem {
 
-  ComponentMapper<Decay> decayMapper;
+  Mapper<Decay> decayMapper;
 
   DecaySystem() : super(Aspect.getAspectForAllOf([Decay]));
 
   void processEntity(Entity entity) {
-    Decay decay = decayMapper.get(entity);
+    Decay decay = decayMapper[entity];
 
     if (decay.timer < 0) {
       entity.deleteFromWorld();
@@ -75,17 +75,17 @@ class DecaySystem extends EntityProcessingSystem {
 class AsteroidDestructionSystem extends EntityProcessingSystem {
   static final num sqrtOf2 = sqrt(2);
   GroupManager groupManager;
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<CircularBody> bodyMapper;
+  Mapper<Position> positionMapper;
+  Mapper<CircularBody> bodyMapper;
 
   AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([AsteroidDestroyer, Position]));
 
   void processEntity(Entity entity) {
-    Position destroyerPos = positionMapper.get(entity);
+    Position destroyerPos = positionMapper[entity];
 
     groupManager.getEntities(GROUP_ASTEROIDS).forEach((Entity asteroid) {
-      Position asteroidPos = positionMapper.get(asteroid);
-      CircularBody asteroidBody = bodyMapper.get(asteroid);
+      Position asteroidPos = positionMapper[asteroid];
+      CircularBody asteroidBody = bodyMapper[asteroid];
 
       if (Utils.doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x, asteroidPos.y, asteroidBody.radius)) {
         asteroid.deleteFromWorld();
@@ -115,22 +115,22 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
 
 class PlayerCollisionDetectionSystem extends EntitySystem {
   TagManager tagManager;
-  ComponentMapper<Status> statusMapper;
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<CircularBody> bodyMapper;
+  Mapper<Status> statusMapper;
+  Mapper<Position> positionMapper;
+  Mapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
 
   void processEntities(Iterable<Entity> entities) {
     Entity player = tagManager.getEntity(TAG_PLAYER);
-    Position playerPos = positionMapper.get(player);
-    Status playerStatus = statusMapper.get(player);
-    CircularBody playerBody = bodyMapper.get(player);
+    Position playerPos = positionMapper[player];
+    Status playerStatus = statusMapper[player];
+    CircularBody playerBody = bodyMapper[player];
 
     if (!playerStatus.invisible) {
       entities.forEach((entity) {
-        Position pos = positionMapper.get(entity);
-        CircularBody body = bodyMapper.get(entity);
+        Position pos = positionMapper[entity];
+        CircularBody body = bodyMapper[entity];
 
         if (Utils.doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x, playerPos.y, playerBody.radius)) {
           playerStatus.lifes--;

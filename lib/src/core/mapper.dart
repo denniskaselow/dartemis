@@ -4,6 +4,12 @@ part of dartemis;
  * High performance component retrieval from entities. Use this wherever you
  * need to retrieve components from entities often and fast.
  */
+class Mapper<A extends Component> extends ComponentMapper<A> {
+  Mapper(Type componentType, World world) : super(componentType, world);
+}
+
+/// Use [Mapper] instead.
+@deprecated
 class ComponentMapper<A extends Component> {
   ComponentType _type;
   Bag<Component> _components;
@@ -13,13 +19,17 @@ class ComponentMapper<A extends Component> {
     _components = world.componentManager.getComponentsByType(this._type);
   }
 
+  /// Use bracket operator instead.
+  @deprecated
+  A get(Entity entity) => _components[entity.id];
+
   /**
    * Fast but unsafe retrieval of a component for this entity.
    * No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
    * however in most scenarios you already know the entity possesses this
    * component.
    */
-  A get(Entity entity) => _components[entity.id];
+  A operator [](Entity entity) => _components[entity.id];
 
   /**
    * Fast and safe retrieval of a component for this entity.

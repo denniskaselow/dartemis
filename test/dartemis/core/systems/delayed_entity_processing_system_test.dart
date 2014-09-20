@@ -72,20 +72,20 @@ class Timer extends Component {
 }
 
 class TestDelayedEntityProcessingSystem extends DelayedEntityProcessingSystem {
-  ComponentMapper<Timer> timerMapper;
+  Mapper<Timer> timerMapper;
   TestDelayedEntityProcessingSystem() : super(Aspect.getAspectForAllOf([Timer]));
 
   @override
   void initialize() {
-    timerMapper = new ComponentMapper(Timer, world);
+    timerMapper = new Mapper(Timer, world);
   }
 
   @override
-  num getRemainingDelay(Entity entity) => timerMapper.get(entity).time;
+  num getRemainingDelay(Entity entity) => timerMapper[entity].time;
 
   @override
   void processDelta(Entity entity, num accumulatedDelta) {
-    timerMapper.get(entity).time -= accumulatedDelta;
+    timerMapper[entity].time -= accumulatedDelta;
   }
 
   @override
