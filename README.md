@@ -71,19 +71,19 @@ By using a factory constructor and calling the factory constructor in `Poolable`
 
 ```dart
 class MovementSystem extends EntityProcessingSystem {
-    ComponentMapper<Position> positionMapper;
-    ComponentMapper<Velocity> velocityMapper;
+    Mapper<Position> positionMapper;
+    Mapper<Velocity> velocityMapper;
 
     MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
 
     void initialize() {
-      positionMapper = new ComponentMapper<Position>(Position, world);
-      velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
+      positionMapper = new Mapper<Position>(Position, world);
+      velocityMapper = new Mapper<Velocity>(Velocity, world);
     }
 
     void processEntity(Entity entity) {
-      Position position = positionMapper.get(entity);
-      Velocity vel = velocityMapper.get(entity);
+      Position position = positionMapper[entity];
+      Velocity vel = velocityMapper[entity];
       position.x += vel.x;
       position.y += vel.y;
     }
@@ -112,7 +112,7 @@ world.delta = delta;
 Injection
 ---------
 If you want to write less code, you can use a version of dartemis that uses
-mirrors to inject `Managers`, `EntitySystems` and `ComponentMapper`. The
+mirrors to inject `Managers`, `EntitySystems` and `Mapper`. The
 injection takes place when you call `world.initialize()`, right before the
 `initialize()` method of your `EntitySystem` is executed. For the injection to
 work, you have to add the systems and managers with injectable fields to the 
@@ -133,14 +133,14 @@ import 'package:dartemis/dartemis_mirrors.dart';
 ```dart
 class MovementSystem extends EntityProcessingSystem {
     // no initialize required, the objects will be injected
-    ComponentMapper<Position> positionMapper;
-    ComponentMapper<Velocity> velocityMapper;
+    Mapper<Position> positionMapper;
+    Mapper<Velocity> velocityMapper;
 
     MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
 
     void processEntity(Entity entity) {
-      Position position = positionMapper.get(entity);
-      Velocity vel = velocityMapper.get(entity);
+      Position position = positionMapper[entity];
+      Velocity vel = velocityMapper[entity];
       position.x += vel.x;
       position.y += vel.y;
     }
@@ -151,7 +151,7 @@ Documentation
 =============
 API
 ---
-[Reference Manual](http://denniskaselow.github.com/dartemis/docs/dartemis.html)
+[Reference Manual](http://www.dartdocs.org/documentation/dartemis/0.7.0/index.html#dartemis)
 
 Example Games using dartemis
 ============================

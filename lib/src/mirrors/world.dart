@@ -70,7 +70,7 @@ skipping ${vm.qualifiedName} for injection because type cannot be accessed
   }
 
   void _injectMapper(InstanceMirror system, Iterable<List> vmsAndTypes) {
-    vmsAndTypes.where((vmAndType) => _isComponentMapper(vmAndType[0]))
+    vmsAndTypes.where((vmAndType) => _isMapper(vmAndType[0]))
         .forEach((vmAndType) {
           ClassMirror tacm = (vmAndType[0].type as ClassMirror).typeArguments
               .first as ClassMirror;
@@ -83,7 +83,7 @@ skipping ${vm.qualifiedName} for injection because type cannot be accessed
 
   bool _isSystem(Type type) => getSystem(type) != null;
 
-  bool _isComponentMapper(VariableMirror vm) {
+  bool _isMapper(VariableMirror vm) {
     var qualifiedName = (vm.type as ClassMirror).qualifiedName;
     return qualifiedName == #dartemis.Mapper || qualifiedName == #dartemis.ComponentMapper;
   }
