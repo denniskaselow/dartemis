@@ -65,6 +65,38 @@ void main() {
       });
     });
 
+    group('initializes Manager in', () {
+
+      test('sytem without initialize', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER_RESULT).toSource()));
+          }));
+        }));
+      });
+    });
+
+    group('initializes everything in', () {
+
+      test('managers and sytems', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(EVERYTHING_COMBINED));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(EVERYTHING_COMBINED_RESULT).toSource()));
+          }));
+        }));
+      });
+    });
+
     group('doesn\'t crash', () {
       test('for system with dynamic fields', () {
         assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_DYNAMIC_FIELD));
@@ -109,6 +141,26 @@ class SimpleSystem extends VoidEntitySystem {
   void initialize() {
     pm = new Mapper<Position>(Position, world);
   }
+}
+''';
+
+const SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER = '''
+class SimpleSystem extends VoidEntitySystem {
+  SimpleManager sm;
+}
+class SimpleManager extends Manager {
+}
+''';
+
+const SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER_RESULT = '''
+class SimpleSystem extends VoidEntitySystem {
+  SimpleManager sm;
+  @override
+  void initialize() {
+    sm = world.getManager(SimpleManager);
+  }
+}
+class SimpleManager extends Manager {
 }
 ''';
 
@@ -165,6 +217,45 @@ class SomeOtherClass extends NotAnEntitySystem {
 
 const VOID_ENTITY_SYSTEM = '''
 class VoidEntitySystem extends EntitySystem {
+}
+''';
+
+const EVERYTHING_COMBINED = '''
+class SimpleManager extends Manager {
+  OtherManager om;
+}
+class OtherManager extends Manager {
+  Mapper<Position> pm;
+}
+class SimpleSystem extends EntitySystem {
+  SimpleManager sm;
+  Mapper<Position> pm;
+}
+''';
+
+const EVERYTHING_COMBINED_RESULT = '''
+class SimpleManager extends Manager {
+  OtherManager om;
+  @override
+  void initialize() {
+    om = world.getManager(OtherManager);
+  }
+}
+class OtherManager extends Manager {
+  Mapper<Position> pm;
+  @override
+  void initialize() {
+    pm = new Mapper<Position>(Position, world);
+  }
+}
+class SimpleSystem extends EntitySystem {
+  SimpleManager sm;
+  Mapper<Position> pm;
+  @override
+  void initialize() {
+    sm = world.getManager(SimpleManager);
+    pm = new Mapper<Position>(Position, world);
+  }
 }
 ''';
 
