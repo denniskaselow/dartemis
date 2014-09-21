@@ -6,10 +6,12 @@ class SystemTransformer extends AggregateTransformer implements DeclaringAggrega
 
   @override
   apply(AggregateTransform transform) {
-    return transform.primaryInputs.forEach((asset) {
-      asset.readAsString().then((content) {
-        processContent(transform, asset, content);
-      });
+    return transform.primaryInputs.toList().then((assets) {
+      return Future.wait(assets.map((asset) {
+        return asset.readAsString().then((content) {
+          processContent(transform, asset, content);
+        });
+      }));
     });
   }
 
