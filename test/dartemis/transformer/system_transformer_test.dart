@@ -5,23 +5,23 @@ import "dart:async";
 import "package:unittest/unittest.dart";
 import 'package:analyzer/analyzer.dart';
 import "package:mock/mock.dart";
-import "package:barback/barback.dart" show Transform, Asset;
+import "package:barback/barback.dart" show AggregateTransform, Asset;
 import "package:dartemis/transformer.dart";
 
 void main() {
   group('SystemTransformer initializes Mapper in', () {
-    TransformMock transformMock;
+    AggregateTransformMock transformMock;
     AssetMock assetMock;
     SystemTransformer transformer;
 
     setUp(() {
       transformer = new SystemTransformer.asPlugin();
-      transformMock = new TransformMock();
+      transformMock = new AggregateTransformMock();
       assetMock = new AssetMock();
+      transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock]));
     });
 
     test('sytem without initialize', () {
-      transformMock.when(callsTo('get primaryInput')).alwaysReturn(assetMock);
       assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE));
 
       transformer.apply(transformMock).then(expectAsync((_) {
@@ -33,7 +33,6 @@ void main() {
     });
 
     test('sytem with initialize', () {
-      transformMock.when(callsTo('get primaryInput')).alwaysReturn(assetMock);
       assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE));
 
       transformer.apply(transformMock).then(expectAsync((_) {
@@ -81,5 +80,5 @@ class SimpleSystem extends VoidEntitySystem {
 }
 ''';
 
-class TransformMock extends Mock implements Transform {}
+class AggregateTransformMock extends Mock implements AggregateTransform {}
 class AssetMock extends Mock implements Asset {}

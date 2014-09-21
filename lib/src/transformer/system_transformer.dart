@@ -1,28 +1,35 @@
 part of transformer;
 
-class SystemTransformer extends Transformer implements DeclaringTransformer {
+class SystemTransformer extends AggregateTransformer implements DeclaringAggregateTransformer {
 
   SystemTransformer.asPlugin();
 
   @override
-  String get allowedExtensions => ".dart";
-
-  @override
-  apply(Transform transform) {
-    return transform.primaryInput.readAsString().then((content) {
-      processContent(transform, content);
+  apply(AggregateTransform transform) {
+    return transform.primaryInputs.forEach((asset) {
+      asset.readAsString().then((content) {
+        processContent(transform, asset, content);
+      });
     });
   }
 
-  void processContent(Transform transform, String content) {
+  void processContent(AggregateTransform transform, Asset asset, String content) {
     var unit = parseCompilationUnit(content);
     unit.visitChildren(new MapperInitializingAstVisitor());
-    transform.addOutput(new Asset.fromString(transform.primaryInput.id, unit.toSource()));
+    transform.addOutput(new Asset.fromString(asset.id, unit.toSource()));
   }
 
   @override
-  declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(transform.primaryId);
+  declareOutputs(DeclaringAggregateTransform transform) {
+    transform.primaryIds.forEach((assetId) => transform.declareOutput(assetId));
+  }
+
+  @override
+  classifyPrimary(AssetId id) {
+    if (id.extension == '.dart') {
+      return 'dart';
+    }
+    return null;
   }
 }
 
