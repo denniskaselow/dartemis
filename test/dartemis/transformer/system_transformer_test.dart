@@ -12,13 +12,16 @@ void main() {
   group('SystemTransformer', () {
     AggregateTransformMock transformMock;
     AssetMock assetMock;
+    AssetMock assetMockForVoidEntitySystem;
     SystemTransformer transformer;
 
     setUp(() {
       transformer = new SystemTransformer.asPlugin();
       transformMock = new AggregateTransformMock();
       assetMock = new AssetMock();
-      transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock]));
+      assetMockForVoidEntitySystem = new AssetMock();
+      assetMockForVoidEntitySystem.when(callsTo('readAsString')).alwaysReturn(new Future.value(VOID_ENTITY_SYSTEM));
+      transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock, assetMockForVoidEntitySystem]));
     });
     group('initializes Mapper in', () {
 
@@ -26,7 +29,9 @@ void main() {
         assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
             expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_RESULT).toSource()));
           }));
@@ -37,7 +42,9 @@ void main() {
         assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
             expect(content, equals(parseCompilationUnit(SYSTEM_WITH_INITIALIZE_RESULT).toSource()));
           }));
@@ -50,10 +57,25 @@ void main() {
         assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_DYNAMIC_FIELD));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_DYNAMIC_FIELD).toSource()));
-          }));
+          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
+        }));
+      });
+
+      test('for classes without superclass', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(CLASS_WITHOUT_SUPERCLASS));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
+        }));
+      });
+    });
+
+    group('doesn\'t create instance', () {
+      test('in unrelated classes', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SOME_OTHER_CLASS_WITH_MAPPER));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
         }));
       });
     });
@@ -98,6 +120,22 @@ class SimpleSystem extends VoidEntitySystem {
 const SYSTEM_WITH_DYNAMIC_FIELD = '''
 class SimpleSystem extends VoidEntitySystem {
   var something;
+}
+''';
+
+const CLASS_WITHOUT_SUPERCLASS = '''
+class SomeClass {
+}
+''';
+
+const SOME_OTHER_CLASS_WITH_MAPPER = '''
+class SomeOtherClass extends NotAnEntitySystem {
+  Mapper<Position> pm;
+}
+''';
+
+const VOID_ENTITY_SYSTEM = '''
+class VoidEntitySystem extends EntitySystem {
 }
 ''';
 

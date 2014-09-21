@@ -2,6 +2,8 @@ part of transformer;
 
 class SystemTransformer extends AggregateTransformer implements DeclaringAggregateTransformer {
 
+  Map<String, ClassHierarchyNode> nodes = {};
+
   SystemTransformer.asPlugin();
 
   @override
@@ -9,16 +11,30 @@ class SystemTransformer extends AggregateTransformer implements DeclaringAggrega
     return transform.primaryInputs.toList().then((assets) {
       return Future.wait(assets.map((asset) {
         return asset.readAsString().then((content) {
-          processContent(transform, asset, content);
+          return new AssetWithCompilationUnit(asset, analyze(content));
         });
-      }));
+      })).then((List<AssetWithCompilationUnit> assets) {
+        assets.forEach((asset) {
+          processContent(transform, asset);
+        });
+      });
     });
   }
 
-  void processContent(AggregateTransform transform, Asset asset, String content) {
+  CompilationUnit analyze(String content) {
     var unit = parseCompilationUnit(content);
-    unit.visitChildren(new MapperInitializingAstVisitor());
-    transform.addOutput(new Asset.fromString(asset.id, unit.toSource()));
+    var builder = new ClassHierarchyBuildingVisitor();
+    unit.visitChildren(builder);
+    nodes.addAll(builder.nodes);
+    return unit;
+  }
+
+  void processContent(AggregateTransform transform, AssetWithCompilationUnit asset) {
+    var mapperInitializer = new MapperInitializingAstVisitor(nodes);
+    asset.unit.visitChildren(mapperInitializer);
+    if (mapperInitializer.modified) {
+      transform.addOutput(new Asset.fromString(asset.asset.id, asset.unit.toSource()));
+    }
   }
 
   @override
@@ -35,25 +51,64 @@ class SystemTransformer extends AggregateTransformer implements DeclaringAggrega
   }
 }
 
+class AssetWithCompilationUnit {
+  Asset asset;
+  CompilationUnit unit;
+  AssetWithCompilationUnit(this.asset, this.unit);
+}
+
+class ClassHierarchyBuildingVisitor extends SimpleAstVisitor {
+  Map<String, ClassHierarchyNode> nodes = {};
+
+  visitClassDeclaration(ClassDeclaration node) {
+    if (null == node.extendsClause) return;
+    nodes[node.name.name] = new ClassHierarchyNode(node.name.name, node.extendsClause.superclass.name.name);
+  }
+}
+
+class ClassHierarchyNode {
+  String name;
+  String parent;
+  ClassHierarchyNode(this.name, this.parent);
+}
+
 class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
+
+  Map<String, ClassHierarchyNode> nodes;
+  var modified = false;
+
+  MapperInitializingAstVisitor(this.nodes);
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
-    var fieldCollector = new FieldCollectingAstVisitor();
-    node.visitChildren(fieldCollector);
-    if (fieldCollector.mappers.length > 0) {
-      var initializeMethodDeclaration = node.getMethod('initialize');
-      if (null == node.getMethod('initialize')) {
-        initializeMethodDeclaration = createInitializeMethodDeclaration();
-        node.members.add(initializeMethodDeclaration);
+    if (isEntitySystem(node.name.name)) {
+      var fieldCollector = new FieldCollectingAstVisitor();
+      node.visitChildren(fieldCollector);
+      if (fieldCollector.mappers.length > 0) {
+        var initializeMethodDeclaration = node.getMethod('initialize');
+        if (null == node.getMethod('initialize')) {
+          initializeMethodDeclaration = createInitializeMethodDeclaration();
+          node.members.add(initializeMethodDeclaration);
+          modified = true;
+        }
+        fieldCollector.mappers.forEach((mapper) {
+          var mapperName = mapper.fields.variables[0].name.name;
+          var mapperType = mapper.fields.type.typeArguments.arguments[0].name.name;
+          (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, createMapperAssignment(mapperName, mapperType));
+          modified = true;
+        });
       }
-      fieldCollector.mappers.forEach((mapper) {
-        var mapperName = mapper.fields.variables[0].name.name;
-        var mapperType = mapper.fields.type.typeArguments.arguments[0].name.name;
-        (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, createMapperAssignment(mapperName, mapperType));
-      });
     }
     return node;
+  }
+
+  bool isEntitySystem(String className) {
+    if (null == nodes[className] || null == nodes[className].parent) {
+      return false;
+    } else if (nodes[className].parent == 'EntitySystem') {
+      return true;
+    }
+    return isEntitySystem(nodes[className].parent);
   }
 }
 
