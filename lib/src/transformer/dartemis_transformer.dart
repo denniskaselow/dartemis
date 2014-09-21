@@ -1,10 +1,10 @@
 part of transformer;
 
-class SystemTransformer extends AggregateTransformer implements DeclaringAggregateTransformer {
+class DartemisTransformer extends AggregateTransformer implements DeclaringAggregateTransformer {
 
   Map<String, ClassHierarchyNode> nodes = {};
 
-  SystemTransformer.asPlugin();
+  DartemisTransformer.asPlugin();
 
   @override
   apply(AggregateTransform transform) {

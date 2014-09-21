@@ -1,4 +1,4 @@
-library system_transformer_test;
+library dartemis_transformer_test;
 
 import "dart:async";
 
@@ -9,14 +9,14 @@ import "package:barback/barback.dart" show AggregateTransform, Asset;
 import "package:dartemis/transformer.dart";
 
 void main() {
-  group('SystemTransformer', () {
+  group('DartemisTransformer', () {
     AggregateTransformMock transformMock;
     AssetMock assetMock;
     AssetMock assetMockForVoidEntitySystem;
-    SystemTransformer transformer;
+    DartemisTransformer transformer;
 
     setUp(() {
-      transformer = new SystemTransformer.asPlugin();
+      transformer = new DartemisTransformer.asPlugin();
       transformMock = new AggregateTransformMock();
       assetMock = new AssetMock();
       assetMockForVoidEntitySystem = new AssetMock();
