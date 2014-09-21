@@ -37,15 +37,34 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
-    var initializeMethodDeclaration = node.getMethod('initialize');
-    if (null == node.getMethod('initialize')) {
-      node.members.add(createInitializeMethodDeclaration());
-    } else {
-      (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, createMapperAssignment('pm', 'Position'));
+    var fieldCollector = new FieldCollectingAstVisitor();
+    node.visitChildren(fieldCollector);
+    if (fieldCollector.mappers.length > 0) {
+      var initializeMethodDeclaration = node.getMethod('initialize');
+      if (null == node.getMethod('initialize')) {
+        initializeMethodDeclaration = createInitializeMethodDeclaration();
+        node.members.add(initializeMethodDeclaration);
+      }
+      fieldCollector.mappers.forEach((mapper) {
+        var mapperName = mapper.fields.variables[0].name.name;
+        var mapperType = mapper.fields.type.typeArguments.arguments[0].name.name;
+        (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, createMapperAssignment(mapperName, mapperType));
+      });
     }
     return node;
   }
 }
+
+class FieldCollectingAstVisitor extends SimpleAstVisitor {
+  List<FieldDeclaration> mappers = <FieldDeclaration>[];
+
+  visitFieldDeclaration(FieldDeclaration node) {
+    if (null != node.fields.type && node.fields.type.name.name == 'Mapper') {
+      mappers.add(node);
+    }
+  }
+}
+
 
 MethodDeclaration createInitializeMethodDeclaration() {
   var comment = null;
@@ -57,8 +76,7 @@ MethodDeclaration createInitializeMethodDeclaration() {
   var operatorKeyword = null;
   var name = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'initialize', 0));
   var parameters = new FormalParameterList(new BeginToken(TokenType.OPEN_PAREN, 0), null, null, null, new Token(TokenType.CLOSE_PAREN, 0));
-  var statements = [createMapperAssignment('pm', 'Position')];
-  var block = new Block(new BeginToken(TokenType.OPEN_CURLY_BRACKET, 0), statements, new Token(TokenType.CLOSE_CURLY_BRACKET, 0));
+  var block = new Block(new BeginToken(TokenType.OPEN_CURLY_BRACKET, 0), [], new Token(TokenType.CLOSE_CURLY_BRACKET, 0));
   var body = new BlockFunctionBody(null, null, block);
   return new MethodDeclaration(comment, metadata, externalKeyword, modifierKeyword, returnType, propertyKeyword, operatorKeyword, name, parameters, body);
 }

@@ -9,7 +9,7 @@ import "package:barback/barback.dart" show AggregateTransform, Asset;
 import "package:dartemis/transformer.dart";
 
 void main() {
-  group('SystemTransformer initializes Mapper in', () {
+  group('SystemTransformer', () {
     AggregateTransformMock transformMock;
     AssetMock assetMock;
     SystemTransformer transformer;
@@ -20,27 +20,42 @@ void main() {
       assetMock = new AssetMock();
       transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock]));
     });
+    group('initializes Mapper in', () {
 
-    test('sytem without initialize', () {
-      assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE));
+      test('sytem without initialize', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE));
 
-      transformer.apply(transformMock).then(expectAsync((_) {
-        var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
-        (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-          expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_RESULT).toSource()));
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_RESULT).toSource()));
+          }));
         }));
-      }));
+      });
+
+      test('sytem with initialize', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_INITIALIZE_RESULT).toSource()));
+          }));
+        }));
+      });
     });
 
-    test('sytem with initialize', () {
-      assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE));
+    group('doesn\'t crash', () {
+      test('for system with dynamic fields', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_DYNAMIC_FIELD));
 
-      transformer.apply(transformMock).then(expectAsync((_) {
-        var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
-        (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-          expect(content, equals(parseCompilationUnit(SYSTEM_WITH_INITIALIZE_RESULT).toSource()));
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var resultAsset = transformMock.getLogs(callsTo('addOutput')).first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_DYNAMIC_FIELD).toSource()));
+          }));
         }));
-      }));
+      });
     });
   });
 }
@@ -77,6 +92,12 @@ class SimpleSystem extends VoidEntitySystem {
   void initialize() {
     pm = new Mapper<Position>(Position, world);
   }
+}
+''';
+
+const SYSTEM_WITH_DYNAMIC_FIELD = '''
+class SimpleSystem extends VoidEntitySystem {
+  var something;
 }
 ''';
 
