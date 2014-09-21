@@ -21,7 +21,14 @@ Some useful links about what an Entity System/Entity Component System is:
 Getting started
 ===============
 
-1\. Add dartemis to your project by adding it to your **pubspec.yaml**
+1\. Add dartemis to your project by adding it to your **pubspec.yaml** and include the dartemis transformer
+
+```yaml
+dependencies:
+  dartemis: any
+transformers:
+- dartemis
+```
 
 2\. Import it in your project:
 
@@ -77,8 +84,8 @@ class MovementSystem extends EntityProcessingSystem {
     MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
 
     void initialize() {
-      positionMapper = new Mapper<Position>(Position, world);
-      velocityMapper = new Mapper<Velocity>(Velocity, world);
+      // initialize your system
+      // Mappers, Systems and Managers will be assigned here through code generation by the transformer
     }
 
     void processEntity(Entity entity) {
@@ -109,49 +116,11 @@ If your game logic requires a delta you can set it by calling:
 world.delta = delta;
 ```
 
-Injection
----------
-If you want to write less code, you can use a version of dartemis that uses
-mirrors to inject `Managers`, `EntitySystems` and `Mapper`. The
-injection takes place when you call `world.initialize()`, right before the
-`initialize()` method of your `EntitySystem` is executed. For the injection to
-work, you have to add the systems and managers with injectable fields to the 
-`@MirrorsUsed` annotation. 
-
-To use that version of dartemis, you have to do these steps instead:
-
-2\. Import it in your project:
-
-```dart
-@MirrorsUsed(targets: const [MovementSystem, OtherSystemsOrManagersThatYouUse])
-import 'dart:mirrors';
-import 'package:dartemis/dartemis_mirrors.dart';
-```
-
-5\. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
-
-```dart
-class MovementSystem extends EntityProcessingSystem {
-    // no initialize required, the objects will be injected
-    Mapper<Position> positionMapper;
-    Mapper<Velocity> velocityMapper;
-
-    MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
-
-    void processEntity(Entity entity) {
-      Position position = positionMapper[entity];
-      Velocity vel = velocityMapper[entity];
-      position.x += vel.x;
-      position.y += vel.y;
-    }
-}
-```
-
 Documentation
 =============
 API
 ---
-[Reference Manual](http://www.dartdocs.org/documentation/dartemis/0.7.0/index.html#dartemis)
+[Reference Manual](http://www.dartdocs.org/documentation/dartemis/latest/index.html#dartemis)
 
 Example Games using dartemis
 ============================

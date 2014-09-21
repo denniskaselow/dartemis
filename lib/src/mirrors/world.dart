@@ -1,13 +1,7 @@
 part of dartemis_mirrors;
 
-/**
- * The primary instance for the framework. It contains all the managers.
- *
- * You must use this to create, delete and retrieve entities.
- *
- * It is also important to set the delta each game loop iteration, and
- * initialize before game loop.
- */
+/// Use the normal world instead and include the dartemis transformer in pubspec.yaml
+@deprecated
 class World extends core.World {
 
   static const Symbol QN_ENTITY_SYSTEM = #dartemis.EntitySystem;
