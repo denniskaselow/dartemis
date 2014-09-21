@@ -81,7 +81,7 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
-    if (isEntitySystem(node.name.name)) {
+    if (isOfType(node.name.name, 'EntitySystem') || isOfType(node.name.name, 'Manager')) {
       var fieldCollector = new FieldCollectingAstVisitor();
       node.visitChildren(fieldCollector);
       if (fieldCollector.mappers.length > 0) {
@@ -102,13 +102,13 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
     return node;
   }
 
-  bool isEntitySystem(String className) {
+  bool isOfType(String className, String superclassName) {
     if (null == nodes[className] || null == nodes[className].parent) {
       return false;
-    } else if (nodes[className].parent == 'EntitySystem') {
+    } else if (nodes[className].parent == superclassName) {
       return true;
     }
-    return isEntitySystem(nodes[className].parent);
+    return isOfType(nodes[className].parent, superclassName);
   }
 }
 

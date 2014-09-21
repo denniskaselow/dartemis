@@ -50,6 +50,19 @@ void main() {
           }));
         }));
       });
+
+      test('manager without initialize', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(MANAGER_WITHOUT_INITIALIZE));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(MANAGER_WITHOUT_INITIALIZE_RESULT).toSource()));
+          }));
+        }));
+      });
     });
 
     group('doesn\'t crash', () {
@@ -91,6 +104,22 @@ class SimpleSystem extends VoidEntitySystem {
 
 const SYSTEM_WITHOUT_INITIALIZE_RESULT = '''
 class SimpleSystem extends VoidEntitySystem {
+  Mapper<Position> pm;
+  @override
+  void initialize() {
+    pm = new Mapper<Position>(Position, world);
+  }
+}
+''';
+
+const MANAGER_WITHOUT_INITIALIZE = '''
+class SimpleManager extends Manager {
+  Mapper<Position> pm;
+}
+''';
+
+const MANAGER_WITHOUT_INITIALIZE_RESULT = '''
+class SimpleManager extends Manager {
   Mapper<Position> pm;
   @override
   void initialize() {
