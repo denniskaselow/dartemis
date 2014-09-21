@@ -26,40 +26,40 @@ void main() {
     group('initializes Mapper in', () {
 
       test('sytem without initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE));
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER));
 
         transformer.apply(transformMock).then(expectAsync((_) {
           var logs = transformMock.getLogs(callsTo('addOutput'));
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_RESULT).toSource()));
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT).toSource()));
           }));
         }));
       });
 
       test('sytem with initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE));
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE_WITH_MAPPER));
 
         transformer.apply(transformMock).then(expectAsync((_) {
           var logs = transformMock.getLogs(callsTo('addOutput'));
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_INITIALIZE_RESULT).toSource()));
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_INITIALIZE_WITH_MAPPER_RESULT).toSource()));
           }));
         }));
       });
 
       test('manager without initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(MANAGER_WITHOUT_INITIALIZE));
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER));
 
         transformer.apply(transformMock).then(expectAsync((_) {
           var logs = transformMock.getLogs(callsTo('addOutput'));
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(MANAGER_WITHOUT_INITIALIZE_RESULT).toSource()));
+            expect(content, equals(parseCompilationUnit(MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT).toSource()));
           }));
         }));
       });
@@ -76,6 +76,22 @@ void main() {
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
             expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER_RESULT).toSource()));
+          }));
+        }));
+      });
+    });
+
+    group('initializes System in', () {
+
+      test('system without initialize', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM_RESULT).toSource()));
           }));
         }));
       });
@@ -128,13 +144,13 @@ void main() {
 }
 
 
-const SYSTEM_WITHOUT_INITIALIZE = '''
+const SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER = '''
 class SimpleSystem extends VoidEntitySystem {
   Mapper<Position> pm;
 }
 ''';
 
-const SYSTEM_WITHOUT_INITIALIZE_RESULT = '''
+const SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT = '''
 class SimpleSystem extends VoidEntitySystem {
   Mapper<Position> pm;
   @override
@@ -164,13 +180,13 @@ class SimpleManager extends Manager {
 }
 ''';
 
-const MANAGER_WITHOUT_INITIALIZE = '''
+const MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER = '''
 class SimpleManager extends Manager {
   Mapper<Position> pm;
 }
 ''';
 
-const MANAGER_WITHOUT_INITIALIZE_RESULT = '''
+const MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT = '''
 class SimpleManager extends Manager {
   Mapper<Position> pm;
   @override
@@ -180,7 +196,27 @@ class SimpleManager extends Manager {
 }
 ''';
 
-const SYSTEM_WITH_INITIALIZE = '''
+const SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM = '''
+class SimpleSystem extends VoidEntitySystem {
+  OtherSystem om;
+}
+class OtherSystem extends EntitySystem {
+}
+''';
+
+const SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM_RESULT = '''
+class SimpleSystem extends VoidEntitySystem {
+  OtherSystem om;
+  @override
+  void initialize() {
+    om = world.getSystem(OtherSystem);
+  }
+}
+class OtherSystem extends EntitySystem {
+}
+''';
+
+const SYSTEM_WITH_INITIALIZE_WITH_MAPPER = '''
 class SimpleSystem extends VoidEntitySystem {
   Mapper<Position> pm;
   @override
@@ -188,7 +224,7 @@ class SimpleSystem extends VoidEntitySystem {
 }
 ''';
 
-const SYSTEM_WITH_INITIALIZE_RESULT = '''
+const SYSTEM_WITH_INITIALIZE_WITH_MAPPER_RESULT = '''
 class SimpleSystem extends VoidEntitySystem {
   Mapper<Position> pm;
   @override
@@ -223,6 +259,7 @@ class VoidEntitySystem extends EntitySystem {
 const EVERYTHING_COMBINED = '''
 class SimpleManager extends Manager {
   OtherManager om;
+  SimpleSystem ss;
 }
 class OtherManager extends Manager {
   Mapper<Position> pm;
@@ -231,13 +268,17 @@ class SimpleSystem extends EntitySystem {
   SimpleManager sm;
   Mapper<Position> pm;
 }
+class OtherSystem extends VoidEntitySystem {
+}
 ''';
 
 const EVERYTHING_COMBINED_RESULT = '''
 class SimpleManager extends Manager {
   OtherManager om;
+  SimpleSystem ss;
   @override
   void initialize() {
+    ss = world.getSystem(SimpleSystem);
     om = world.getManager(OtherManager);
   }
 }
@@ -256,6 +297,8 @@ class SimpleSystem extends EntitySystem {
     sm = world.getManager(SimpleManager);
     pm = new Mapper<Position>(Position, world);
   }
+}
+class OtherSystem extends VoidEntitySystem {
 }
 ''';
 

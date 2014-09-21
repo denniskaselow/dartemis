@@ -84,7 +84,9 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
     if (_isOfType(nodes, node.name.name, 'EntitySystem') || _isOfType(nodes, node.name.name, 'Manager')) {
       var fieldCollector = new FieldCollectingAstVisitor(nodes);
       node.visitChildren(fieldCollector);
-      if (fieldCollector.mappers.length > 0 || fieldCollector.managers.length > 0) {
+      if (fieldCollector.mappers.length > 0 ||
+          fieldCollector.managers.length > 0 ||
+          fieldCollector.systems.length > 0 ) {
         var initializeMethodDeclaration = node.getMethod('initialize');
         if (null == node.getMethod('initialize')) {
           initializeMethodDeclaration = _createInitializeMethodDeclaration();
@@ -97,12 +99,14 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
           (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, _createMapperAssignment(mapperName, mapperType));
           modified = true;
         });
-        fieldCollector.managers.forEach((manager) {
-          var managerName = manager.fields.variables[0].name.name;
-          var managerType = manager.fields.type.name.name;
-          (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, _createManagerAssignment(managerName, managerType));
+        var initField = (FieldDeclaration node, ExpressionStatement createAssignment(String name, String type)) {
+          var managerName = node.fields.variables[0].name.name;
+          var managerType = node.fields.type.name.name;
+          (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, createAssignment(managerName, managerType));
           modified = true;
-        });
+        };
+        fieldCollector.managers.forEach((manager) => initField(manager, (String name, String type) => _createManagerAssignment(name, type)));
+        fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _createSystemAssignment(name, type)));
       }
     }
     return node;
@@ -137,12 +141,18 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
     return new ExpressionStatement(assigmentStatement, new Token(TokenType.SEMICOLON, 0));
   }
 
-  ExpressionStatement _createManagerAssignment(String managerName, String managerType) {
-    var rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, managerName, 0));
+  ExpressionStatement _createManagerAssignment(String managerName, String managerType) =>
+    _createAssignmentFromWorldMethod(managerName, managerType, 'getManager');
+
+  ExpressionStatement _createSystemAssignment(String systemName, String systemType) =>
+    _createAssignmentFromWorldMethod(systemName, systemType, 'getSystem');
+
+  ExpressionStatement _createAssignmentFromWorldMethod(String fieldName, String fieldType, String worldMethod) {
+    var rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, fieldName, 0));
     var target = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'world', 0));
     var period = new Token(TokenType.PERIOD, 0);
-    var methodName = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'getManager', 0));
-    var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, managerType, 0))], new Token(TokenType.CLOSE_PAREN, 0));
+    var methodName = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, worldMethod, 0));
+    var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, fieldType, 0))], new Token(TokenType.CLOSE_PAREN, 0));
     var leftHandSide = new MethodInvocation(target, period, methodName, argumentList);
     var assigmentStatement = new AssignmentExpression(rightHandSide, new Token(TokenType.EQ, 0), leftHandSide);
     return new ExpressionStatement(assigmentStatement, new Token(TokenType.SEMICOLON, 0));
@@ -153,6 +163,7 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 class FieldCollectingAstVisitor extends SimpleAstVisitor {
   List<FieldDeclaration> mappers = <FieldDeclaration>[];
   List<FieldDeclaration> managers = <FieldDeclaration>[];
+  List<FieldDeclaration> systems = <FieldDeclaration>[];
   Map<String, ClassHierarchyNode> nodes;
 
   FieldCollectingAstVisitor(this.nodes);
@@ -164,6 +175,8 @@ class FieldCollectingAstVisitor extends SimpleAstVisitor {
         mappers.add(node);
       } else if (_isOfType(nodes, typeName, 'Manager')) {
         managers.add(node);
+      } else if (_isOfType(nodes, typeName, 'EntitySystem')) {
+        systems.add(node);
       }
     }
   }
