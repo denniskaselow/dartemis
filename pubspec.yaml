@@ -12,5 +12,6 @@ dev_dependencies:
   browser: '>=0.9.0 <0.11.0'
   mock: <0.12.0
   unittest: '>=0.11.0 <0.12.0'
-transformers:
-- dartemis
+# only needed for running the example
+#transformers:
+#- dartemis
