@@ -94,7 +94,8 @@ By using a factory constructor and calling the factory constructor in `Poolable`
 
         void initialize() {
           // initialize your system
-          // Mappers, Systems and Managers will be assigned here through code generation by the transformer
+          // Mappers, Systems and Managers will be assigned here
+          // through code generation by the transformer
           // if you don't want to use the transformer, do it this way:
           positionMapper = new Mapper<Position>(Position, world);
           velocityMapper = new Mapper<Velocity>(Velocity, world);
