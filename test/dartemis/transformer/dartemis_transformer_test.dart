@@ -190,6 +190,7 @@ class SimpleSystem extends VoidEntitySystem {
   Mapper<Position> pm;
   @override
   void initialize() {
+    super.initialize();
     pm = new Mapper<Position>(Position, world);
   }
 }
@@ -208,6 +209,7 @@ class SimpleSystem extends VoidEntitySystem {
   SimpleManager sm;
   @override
   void initialize() {
+    super.initialize();
     sm = world.getManager(SimpleManager);
   }
 }
@@ -226,6 +228,7 @@ class SimpleManager extends Manager {
   Mapper<Position> pm;
   @override
   void initialize() {
+    super.initialize();
     pm = new Mapper<Position>(Position, world);
   }
 }
@@ -244,6 +247,7 @@ class SimpleSystem extends VoidEntitySystem {
   OtherSystem om;
   @override
   void initialize() {
+    super.initialize();
     om = world.getSystem(OtherSystem);
   }
 }
@@ -299,6 +303,7 @@ class SimpleSystem extends EntitySystem {
   OtherSystem os;
   @override
   void initialize() {
+    super.initialize();
     os = world.getSystem(OtherSystem);
     sm = world.getManager(SimpleManager);
   }
@@ -341,6 +346,7 @@ class SimpleManager extends Manager {
   SimpleSystem ss;
   @override
   void initialize() {
+    super.initialize();
     ss = world.getSystem(SimpleSystem);
     om = world.getManager(OtherManager);
   }
@@ -349,6 +355,7 @@ class OtherManager extends Manager {
   Mapper<Position> pm;
   @override
   void initialize() {
+    super.initialize();
     pm = new Mapper<Position>(Position, world);
   }
 }
@@ -357,6 +364,7 @@ class SimpleSystem extends EntitySystem {
   Mapper<Position> pm;
   @override
   void initialize() {
+    super.initialize();
     sm = world.getManager(SimpleManager);
     pm = new Mapper<Position>(Position, world);
   }

@@ -147,6 +147,7 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
     if (_isOfType(_nodes, node.name.name, 'EntitySystem') || _isOfType(_nodes, node.name.name, 'Manager')) {
       var fieldCollector = new FieldCollectingAstVisitor(_nodes);
+      var callSuperInitialize = false;
       node.visitChildren(fieldCollector);
       if (fieldCollector.mappers.length > 0 ||
           fieldCollector.managers.length > 0 ||
@@ -156,6 +157,7 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
           initializeMethodDeclaration = _createInitializeMethodDeclaration();
           node.members.add(initializeMethodDeclaration);
           _modified = true;
+          callSuperInitialize = true;
         }
         fieldCollector.mappers.forEach((mapper) {
           var mapperName = mapper.fields.variables[0].name.name;
@@ -171,6 +173,9 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
         };
         fieldCollector.managers.forEach((manager) => initField(manager, (String name, String type) => _createManagerAssignment(name, type)));
         fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _createSystemAssignment(name, type)));
+        if (callSuperInitialize) {
+          (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, _createSuperInitialize());
+        }
       }
     }
     return node;
@@ -192,7 +197,7 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
   }
 
   ExpressionStatement _createMapperAssignment(String mapperName, String mapperType) {
-    var rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, mapperName, 0));
+    var leftHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, mapperName, 0));
     var keyword = new KeywordToken(Keyword.NEW, 0);
     var arguments = [new TypeName(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, mapperType, 0)), null)];
     var typeArguments = new TypeArgumentList(new Token(TokenType.LT, 0), arguments, new Token(TokenType.GT, 0));
@@ -200,8 +205,8 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
     var name = null;
     var constructorName = new ConstructorName(new TypeName(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'Mapper', 0)), typeArguments), period, name);
     var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, mapperType, 0)), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'world', 0))], new Token(TokenType.CLOSE_PAREN, 0));
-    var leftHandSide = new InstanceCreationExpression(keyword, constructorName, argumentList);
-    var assigmentStatement = new AssignmentExpression(rightHandSide, new Token(TokenType.EQ, 0), leftHandSide);
+    var rightHandSide = new InstanceCreationExpression(keyword, constructorName, argumentList);
+    var assigmentStatement = new AssignmentExpression(leftHandSide, new Token(TokenType.EQ, 0), rightHandSide);
     return new ExpressionStatement(assigmentStatement, new Token(TokenType.SEMICOLON, 0));
   }
 
@@ -212,16 +217,24 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
     _createAssignmentFromWorldMethod(systemName, systemType, 'getSystem');
 
   ExpressionStatement _createAssignmentFromWorldMethod(String fieldName, String fieldType, String worldMethod) {
-    var rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, fieldName, 0));
+    var leftHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, fieldName, 0));
     var target = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'world', 0));
     var period = new Token(TokenType.PERIOD, 0);
     var methodName = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, worldMethod, 0));
     var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, fieldType, 0))], new Token(TokenType.CLOSE_PAREN, 0));
-    var leftHandSide = new MethodInvocation(target, period, methodName, argumentList);
-    var assigmentStatement = new AssignmentExpression(rightHandSide, new Token(TokenType.EQ, 0), leftHandSide);
+    var rightHandSide = new MethodInvocation(target, period, methodName, argumentList);
+    var assigmentStatement = new AssignmentExpression(leftHandSide, new Token(TokenType.EQ, 0), rightHandSide);
     return new ExpressionStatement(assigmentStatement, new Token(TokenType.SEMICOLON, 0));
   }
 
+  ExpressionStatement _createSuperInitialize() {
+    var target = new SimpleIdentifier(new KeywordToken(Keyword.SUPER, 0));
+    var period = new Token(TokenType.PERIOD, 0);
+    var methodName = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'initialize', 0));
+    var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [], new Token(TokenType.CLOSE_PAREN, 0));
+    var expression = new MethodInvocation(target, period, methodName, argumentList);
+    return new ExpressionStatement(expression, new Token(TokenType.SEMICOLON, 0));
+  }
 }
 
 class FieldCollectingAstVisitor extends SimpleAstVisitor {
