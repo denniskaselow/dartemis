@@ -116,6 +116,28 @@ If your game logic requires a delta you can set it by calling:
 world.delta = delta;
 ```
 
+Transformer options
+===================
+If you are importing libraries from other packages with `Manager`s or `EntitySystem`s you
+are using in your own code, you have to inform the transformer about them by passing
+a list of those libraries to the transformer:
+
+```yaml
+transformers:
+- dartemis
+    additionalLibraries:
+    - otherLib/otherLib.dart
+    - moreLibs/moreLibs.dart
+```
+
+If those libraries need to be transformed, you have to add the transformer to 
+their `pubspec.yaml`.
+
+Caution: The transformer is not tested with cases where a library is imported
+using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
+if it doesn't work and you have to use an alias.
+
+
 Documentation
 =============
 API

@@ -1,38 +1,82 @@
 part of transformer;
 
+/// This transformer will create/assign [Mapper], [EntitySystem] and [Manager]
+/// instances in the [initialize] methods of your [Manager]s and [EntitySystem]s.
+///
+/// If you are importing other libraries with [Manager]s or [EntitySystem]s which you
+/// are using in your own code, you have to inform the transformer about them by passing
+/// a list of those libraries to the transformer:
+///
+///     transformers:
+///     - dartemis
+///         additionalLibraries:
+///         - otherLib/otherLib.dart
+///         - moreLibs/moreLibs.dart
+///
+/// If those libraries need to be transformed, you have to add the transformer to
+/// their `pubspec.yaml`.
 class DartemisTransformer extends AggregateTransformer implements DeclaringAggregateTransformer {
 
-  Map<String, ClassHierarchyNode> nodes = {};
+  Map<String, ClassHierarchyNode> _nodes = {};
+  final BarbackSettings _settings;
 
-  DartemisTransformer.asPlugin();
+  DartemisTransformer.asPlugin(this._settings);
 
   @override
   apply(AggregateTransform transform) {
-    return transform.primaryInputs.toList().then((assets) {
-      return Future.wait(assets.map((asset) {
+    List<String> additionalLibraris = [];
+    if (null != _settings.configuration && null != _settings.configuration['additionalLibraries']) {
+      additionalLibraris.addAll(_settings.configuration['additionalLibraries']);
+    }
+    return Future.forEach(additionalLibraris, (String additionalLibrary) {
+      var assetId = new AssetId.parse(additionalLibrary.replaceFirst('/', '|lib/'));
+      return transform.getInput(assetId).then((asset) {
         return asset.readAsString().then((content) {
-          return new AssetWithCompilationUnit(asset, analyze(content));
+          var partPaths = [assetId.path];
+          partPaths.addAll(collectPartsContent(content));
+          return Future.forEach(partPaths, (partPath) {
+            return transform.getInput(new AssetId(assetId.package, partPath)).then((partAsset) {
+              return partAsset.readAsString().then((partContent) {
+                analyze(partContent);
+              });
+            });
+          });
         });
-      })).then((List<AssetWithCompilationUnit> assets) {
-        assets.forEach((asset) {
-          processContent(transform, asset);
+      });
+    }).then((_) {
+      return transform.primaryInputs.toList().then((assets) {
+        return Future.wait(assets.map((asset) {
+          return asset.readAsString().then((content) {
+            return new AssetWithCompilationUnit(asset, analyze(content));
+          });
+        })).then((List<AssetWithCompilationUnit> assets) {
+          assets.forEach((asset) {
+            processContent(transform, asset);
+          });
         });
       });
     });
+  }
+
+  List<String> collectPartsContent(String content) {
+    var libUnit = parseCompilationUnit(content);
+    var partFinder = new PartFindingVisitor();
+    libUnit.visitChildren(partFinder);
+    return partFinder.partPaths;
   }
 
   CompilationUnit analyze(String content) {
     var unit = parseCompilationUnit(content);
     var builder = new ClassHierarchyBuildingVisitor();
     unit.visitChildren(builder);
-    nodes.addAll(builder.nodes);
+    _nodes.addAll(builder.nodes);
     return unit;
   }
 
   void processContent(AggregateTransform transform, AssetWithCompilationUnit asset) {
-    var mapperInitializer = new MapperInitializingAstVisitor(nodes);
+    var mapperInitializer = new MapperInitializingAstVisitor(_nodes);
     asset.unit.visitChildren(mapperInitializer);
-    if (mapperInitializer.modified) {
+    if (mapperInitializer._modified) {
       transform.addOutput(new Asset.fromString(asset.asset.id, asset.unit.toSource()));
     }
   }
@@ -57,13 +101,24 @@ class AssetWithCompilationUnit {
   AssetWithCompilationUnit(this.asset, this.unit);
 }
 
+class PartFindingVisitor extends SimpleAstVisitor {
+  List<String> partPaths = [];
+
+  @override
+  visitPartDirective(PartDirective node) {
+    partPaths.add('lib/${node.uri.stringValue}');
+  }
+}
+
 class ClassHierarchyBuildingVisitor extends SimpleAstVisitor {
   Map<String, ClassHierarchyNode> nodes = {};
 
+  @override
   visitClassDeclaration(ClassDeclaration node) {
     if (null == node.extendsClause) return;
     nodes[node.name.name] = new ClassHierarchyNode(node.name.name, node.extendsClause.superclass.name.name);
   }
+
 }
 
 class ClassHierarchyNode {
@@ -74,15 +129,15 @@ class ClassHierarchyNode {
 
 class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 
-  Map<String, ClassHierarchyNode> nodes;
-  var modified = false;
+  Map<String, ClassHierarchyNode> _nodes;
+  var _modified = false;
 
-  MapperInitializingAstVisitor(this.nodes);
+  MapperInitializingAstVisitor(this._nodes);
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
-    if (_isOfType(nodes, node.name.name, 'EntitySystem') || _isOfType(nodes, node.name.name, 'Manager')) {
-      var fieldCollector = new FieldCollectingAstVisitor(nodes);
+    if (_isOfType(_nodes, node.name.name, 'EntitySystem') || _isOfType(_nodes, node.name.name, 'Manager')) {
+      var fieldCollector = new FieldCollectingAstVisitor(_nodes);
       node.visitChildren(fieldCollector);
       if (fieldCollector.mappers.length > 0 ||
           fieldCollector.managers.length > 0 ||
@@ -91,19 +146,19 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
         if (null == node.getMethod('initialize')) {
           initializeMethodDeclaration = _createInitializeMethodDeclaration();
           node.members.add(initializeMethodDeclaration);
-          modified = true;
+          _modified = true;
         }
         fieldCollector.mappers.forEach((mapper) {
           var mapperName = mapper.fields.variables[0].name.name;
           var mapperType = mapper.fields.type.typeArguments.arguments[0].name.name;
           (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, _createMapperAssignment(mapperName, mapperType));
-          modified = true;
+          _modified = true;
         });
         var initField = (FieldDeclaration node, ExpressionStatement createAssignment(String name, String type)) {
           var managerName = node.fields.variables[0].name.name;
           var managerType = node.fields.type.name.name;
           (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, createAssignment(managerName, managerType));
-          modified = true;
+          _modified = true;
         };
         fieldCollector.managers.forEach((manager) => initField(manager, (String name, String type) => _createManagerAssignment(name, type)));
         fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _createSystemAssignment(name, type)));
@@ -168,6 +223,7 @@ class FieldCollectingAstVisitor extends SimpleAstVisitor {
 
   FieldCollectingAstVisitor(this.nodes);
 
+  @override
   visitFieldDeclaration(FieldDeclaration node) {
     if (null != node.fields.type) {
       var typeName = node.fields.type.name.name;

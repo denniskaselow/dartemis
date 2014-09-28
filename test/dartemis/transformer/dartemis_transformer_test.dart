@@ -5,21 +5,26 @@ import "dart:async";
 import "package:unittest/unittest.dart";
 import 'package:analyzer/analyzer.dart';
 import "package:mock/mock.dart";
-import "package:barback/barback.dart" show AggregateTransform, Asset;
+import "package:barback/barback.dart" show AggregateTransform, Asset, AssetId, BarbackSettings;
 import "package:dartemis/transformer.dart";
 
 void main() {
   group('DartemisTransformer', () {
+    DartemisTransformer transformer;
+
     AggregateTransformMock transformMock;
     AssetMock assetMock;
     AssetMock assetMockForVoidEntitySystem;
-    DartemisTransformer transformer;
+    BarbackSettingsMock barbackSettingsMock;
 
     setUp(() {
-      transformer = new DartemisTransformer.asPlugin();
       transformMock = new AggregateTransformMock();
       assetMock = new AssetMock();
       assetMockForVoidEntitySystem = new AssetMock();
+      barbackSettingsMock = new BarbackSettingsMock();
+
+      transformer = new DartemisTransformer.asPlugin(barbackSettingsMock);
+
       assetMockForVoidEntitySystem.when(callsTo('readAsString')).alwaysReturn(new Future.value(VOID_ENTITY_SYSTEM));
       transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock, assetMockForVoidEntitySystem]));
     });
@@ -97,6 +102,30 @@ void main() {
       });
     });
 
+    group('initializes Manager from other Library in', () {
+
+      test('system without initialize', () {
+        AssetMock assetOtherLibraryMock = new AssetMock();
+        AssetMock assetPartOfOtherLibraryMock = new AssetMock();
+
+        transformMock.when(callsTo('getInput', new AssetId.parse('otherLib|lib/otherLib.dart'))).alwaysReturn(new Future.value(assetOtherLibraryMock));
+        transformMock.when(callsTo('getInput', new AssetId.parse('otherLib|lib/src/manager.dart'))).alwaysReturn(new Future.value(assetPartOfOtherLibraryMock));
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY));
+        assetOtherLibraryMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(OTHER_LIBRARY));
+        assetPartOfOtherLibraryMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(OTHER_LIBRARY_MANAGER));
+        barbackSettingsMock.when(callsTo('get configuration')).alwaysReturn({'additionalLibraries': ['otherLib/otherLib.dart']});
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY_RESULT).toSource()));
+          }));
+        }));
+      });
+    });
+
     group('initializes everything in', () {
 
       test('managers and sytems', () {
@@ -123,6 +152,15 @@ void main() {
       });
 
       test('for classes without superclass', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(CLASS_WITHOUT_SUPERCLASS));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
+        }));
+      });
+
+      test('for BarbackSetting without additionalLibraries', () {
+        barbackSettingsMock.when(callsTo('get configuration')).alwaysReturn({'additionalLibraries': null});
         assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(CLASS_WITHOUT_SUPERCLASS));
 
         transformer.apply(transformMock).then(expectAsync((_) {
@@ -256,6 +294,39 @@ class VoidEntitySystem extends EntitySystem {
 }
 ''';
 
+const SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY = '''
+class SimpleSystem extends EntitySystem {
+  SimpleManager sm;
+  OtherSystem os;
+}
+''';
+
+const SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY_RESULT = '''
+class SimpleSystem extends EntitySystem {
+  SimpleManager sm;
+  OtherSystem os;
+  @override
+  void initialize() {
+    os = world.getSystem(OtherSystem);
+    sm = world.getManager(SimpleManager);
+  }
+}
+''';
+
+const OTHER_LIBRARY = '''
+  library otherLib;
+
+  part 'src/manager.dart';
+
+  class OtherSystem extends EntitySystem {}
+''';
+
+const OTHER_LIBRARY_MANAGER = '''
+  part of otherLib;
+
+  class SimpleManager extends Manager {}
+''';
+
 const EVERYTHING_COMBINED = '''
 class SimpleManager extends Manager {
   OtherManager om;
@@ -304,3 +375,4 @@ class OtherSystem extends VoidEntitySystem {
 
 class AggregateTransformMock extends Mock implements AggregateTransform {}
 class AssetMock extends Mock implements Asset {}
+class BarbackSettingsMock extends Mock implements BarbackSettings {}
