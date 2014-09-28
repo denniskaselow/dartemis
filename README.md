@@ -1,8 +1,18 @@
 dartemis
 ========
-
 [![](https://drone.io/denniskaselow/dartemis/status.png)](https://drone.io/denniskaselow/dartemis/latest)
 
+Content
+=======
+* [About](#about)
+* [Getting Started](#getting-started)
+* [Transformer](#transformer)
+* [Documentation](#documentation)
+* [Example Games](#example-games-using-dartemis)
+* [Add Ons](#add-ons)
+
+About
+=====
 **dartemis** is a Dart port of the Entity System Framework **Artemis**.
 
 The original has been written in Java by Arni Arent and Tiago Costa and can be found here: http://gamadu.com/artemis with the source available here: https://code.google.com/p/artemis-framework/
@@ -20,7 +30,6 @@ Some useful links about what an Entity System/Entity Component System is:
 
 Getting started
 ===============
-
 1. Add dartemis to your project by adding it to your **pubspec.yaml** and include the dartemis transformer
 
 ```yaml
@@ -115,8 +124,8 @@ If your game logic requires a delta you can set it by calling:
 world.delta = delta;
 ```
 
-Transformer options
-===================
+Transformer
+===========
 If you are importing libraries from other packages with `Manager`s or `EntitySystem`s you
 are using in your own code, you have to inform the transformer about them by passing
 a list of those libraries to the transformer:
@@ -136,7 +145,6 @@ Caution: The transformer is not tested with cases where a library is imported
 using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
 if it doesn't work and you have to use an alias.
 
-
 Documentation
 =============
 API
@@ -148,7 +156,6 @@ Example Games using dartemis
 * [VDrones](http://vdrones.appspot.com/) - An arcade game (with weekly updates), ([Source](https://github.com/davidB/vdrones))
 * [GitHub Space Off](http://denniskaselow.github.com/game-off-2012/) - Originally created for the GitHub Game Off 2012, ([Source](https://github.com/denniskaselow/game-off-2012))
 * [darteroids](http://denniskaselow.github.com/dartemis/example/darteroids/web/darteroids.html) - Very simple example included in the example folder of dartemis, ([Source](https://github.com/denniskaselow/dartemis/tree/master/example/web))
-
 
 Add-ons
 =======
