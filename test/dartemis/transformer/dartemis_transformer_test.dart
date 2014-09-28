@@ -14,19 +14,16 @@ void main() {
 
     AggregateTransformMock transformMock;
     AssetMock assetMock;
-    AssetMock assetMockForVoidEntitySystem;
     BarbackSettingsMock barbackSettingsMock;
 
     setUp(() {
       transformMock = new AggregateTransformMock();
       assetMock = new AssetMock();
-      assetMockForVoidEntitySystem = new AssetMock();
       barbackSettingsMock = new BarbackSettingsMock();
 
       transformer = new DartemisTransformer.asPlugin(barbackSettingsMock);
 
-      assetMockForVoidEntitySystem.when(callsTo('readAsString')).alwaysReturn(new Future.value(VOID_ENTITY_SYSTEM));
-      transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock, assetMockForVoidEntitySystem]));
+      transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock]));
     });
     group('initializes Mapper in', () {
 
@@ -286,11 +283,6 @@ class SomeClass {
 const SOME_OTHER_CLASS_WITH_MAPPER = '''
 class SomeOtherClass extends NotAnEntitySystem {
   Mapper<Position> pm;
-}
-''';
-
-const VOID_ENTITY_SYSTEM = '''
-class VoidEntitySystem extends EntitySystem {
 }
 ''';
 

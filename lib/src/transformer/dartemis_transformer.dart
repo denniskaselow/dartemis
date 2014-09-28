@@ -17,7 +17,16 @@ part of transformer;
 /// their `pubspec.yaml`.
 class DartemisTransformer extends AggregateTransformer implements DeclaringAggregateTransformer {
 
-  Map<String, ClassHierarchyNode> _nodes = {};
+  Map<String, ClassHierarchyNode> _nodes = {'DelayedEntityProcessingSystem': new ClassHierarchyNode('DelayedEntityProcessingSystem', 'EntitySystem'),
+                                            'EntityProcessingSystem': new ClassHierarchyNode('EntityProcessingSystem', 'EntitySystem'),
+                                            'IntervalEntityProcessingSystem': new ClassHierarchyNode('IntervalEntityProcessingSystem', 'EntitySystem'),
+                                            'IntervalEntitySystem': new ClassHierarchyNode('IntervalEntitySystem', 'EntitySystem'),
+                                            'VoidEntitySystem': new ClassHierarchyNode('VoidEntitySystem', 'EntitySystem'),
+                                            'GroupManager': new ClassHierarchyNode('GroupManager', 'Manager'),
+                                            'PlayerManager': new ClassHierarchyNode('PlayerManager', 'Manager'),
+                                            'TagManager': new ClassHierarchyNode('TagManager', 'Manager'),
+                                            'TeamManager': new ClassHierarchyNode('TeamManager', 'Manager'),
+                                            };
   final BarbackSettings _settings;
 
   DartemisTransformer.asPlugin(this._settings);
