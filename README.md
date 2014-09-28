@@ -21,7 +21,7 @@ Some useful links about what an Entity System/Entity Component System is:
 Getting started
 ===============
 
-1\. Add dartemis to your project by adding it to your **pubspec.yaml** and include the dartemis transformer
+1. Add dartemis to your project by adding it to your **pubspec.yaml** and include the dartemis transformer
 
 ```yaml
 dependencies:
@@ -29,18 +29,17 @@ dependencies:
 transformers:
 - dartemis
 ```
-
-2\. Import it in your project:
+2. Import it in your project:
 
 ```dart
 import 'package:dartemis/dartemis.dart';
 ```
-3\. Create a world:
+3. Create a world:
 
 ```dart
 World world = new World();
 ```
-4\. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
+4. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
 
 ```dart
 Entity entity  = world.createEntity();
@@ -74,7 +73,7 @@ class Position extends ComponentPoolable {
 ```
 By using a factory constructor and calling the factory constructor in `Poolable`, dartemis is able to reuse destroyed components and they will not be garbage collected. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/)
 
-5\. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
+5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
 ```dart
 class MovementSystem extends EntityProcessingSystem {
@@ -96,17 +95,17 @@ class MovementSystem extends EntityProcessingSystem {
     }
 }
 ```
-6\. Add your system to the world:
+6. Add your system to the world:
 
 ```dart
 world.addSystem(new MovementSystem());
 ```
-7\. Initialize the world:
+7. Initialize the world:
 
 ```dart
 world.initialize();
 ```
-8\. In your game loop you then process your systems:
+8. In your game loop you then process your systems:
 
 ```dart
 world.process();
