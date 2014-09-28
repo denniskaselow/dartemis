@@ -83,7 +83,7 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
   }
 
   void processContent(AggregateTransform transform, AssetWithCompilationUnit asset) {
-    var mapperInitializer = new MapperInitializingAstVisitor(_nodes);
+    var mapperInitializer = new FieldInitializingAstVisitor(_nodes);
     asset.unit.visitChildren(mapperInitializer);
     if (mapperInitializer._modified) {
       transform.addOutput(new Asset.fromString(asset.asset.id, asset.unit.toSource()));
@@ -136,12 +136,12 @@ class ClassHierarchyNode {
   ClassHierarchyNode(this.name, this.parent);
 }
 
-class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
+class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 
   Map<String, ClassHierarchyNode> _nodes;
   var _modified = false;
 
-  MapperInitializingAstVisitor(this._nodes);
+  FieldInitializingAstVisitor(this._nodes);
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
@@ -159,22 +159,23 @@ class MapperInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
           _modified = true;
           callSuperInitialize = true;
         }
+        var initializeStatements = (initializeMethodDeclaration.body as BlockFunctionBody).block.statements;
         fieldCollector.mappers.forEach((mapper) {
           var mapperName = mapper.fields.variables[0].name.name;
           var mapperType = mapper.fields.type.typeArguments.arguments[0].name.name;
-          (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, _createMapperAssignment(mapperName, mapperType));
+          initializeStatements.insert(0, _createMapperAssignment(mapperName, mapperType));
           _modified = true;
         });
         var initField = (FieldDeclaration node, ExpressionStatement createAssignment(String name, String type)) {
           var managerName = node.fields.variables[0].name.name;
           var managerType = node.fields.type.name.name;
-          (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, createAssignment(managerName, managerType));
+          initializeStatements.insert(0, createAssignment(managerName, managerType));
           _modified = true;
         };
         fieldCollector.managers.forEach((manager) => initField(manager, (String name, String type) => _createManagerAssignment(name, type)));
         fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _createSystemAssignment(name, type)));
         if (callSuperInitialize) {
-          (initializeMethodDeclaration.body as BlockFunctionBody).block.statements.insert(0, _createSuperInitialize());
+          initializeStatements.insert(0, _createSuperInitialize());
         }
       }
     }
