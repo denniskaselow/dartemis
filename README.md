@@ -148,7 +148,7 @@ Caution: The transformer is not tested with cases where a library is imported
 using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
 if it doesn't work and you have to use an alias.
 
-Extra Caution: Debugging in a transformed file is **hard**.
+Extra Caution: Debugging a transformed file in the Dart Editor is not possible but works fine in Dartium.
 
 Documentation
 =============

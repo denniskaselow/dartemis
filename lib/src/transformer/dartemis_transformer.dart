@@ -56,9 +56,9 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
       return transform.primaryInputs.toList().then((assets) {
         return Future.wait(assets.map((asset) {
           return asset.readAsString().then((content) {
-            return new AssetWithCompilationUnit(asset, analyze(content));
+            return new AssetWrapper(asset, analyze(content), content);
           });
-        })).then((List<AssetWithCompilationUnit> assets) {
+        })).then((List<AssetWrapper> assets) {
           assets.forEach((asset) {
             processContent(transform, asset);
           });
@@ -82,11 +82,11 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
     return unit;
   }
 
-  void processContent(AggregateTransform transform, AssetWithCompilationUnit asset) {
-    var mapperInitializer = new FieldInitializingAstVisitor(_nodes);
+  void processContent(AggregateTransform transform, AssetWrapper asset) {
+    var mapperInitializer = new FieldInitializingAstVisitor(_nodes, asset);
     asset.unit.visitChildren(mapperInitializer);
     if (mapperInitializer._modified) {
-      transform.addOutput(new Asset.fromString(asset.asset.id, asset.unit.toSource()));
+      transform.addOutput(new Asset.fromString(asset.asset.id, asset.content));
     }
   }
 
@@ -104,10 +104,22 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
   }
 }
 
-class AssetWithCompilationUnit {
+class AssetWrapper {
   Asset asset;
   CompilationUnit unit;
-  AssetWithCompilationUnit(this.asset, this.unit);
+  String content;
+  int _offset = 0;
+  AssetWrapper(this.asset, this.unit, this.content);
+
+  void insert(int pos, String toInsert) {
+    content = content.substring(0, pos + _offset) + toInsert + content.substring(pos + _offset);
+    _offset += toInsert.length;
+  }
+
+  void insertAtCursor(String toInsert) {
+    content = content.replaceFirst(_cursor, toInsert);
+    _offset += toInsert.length - _cursor.length;
+  }
 }
 
 class PartFindingVisitor extends SimpleAstVisitor {
@@ -127,7 +139,6 @@ class ClassHierarchyBuildingVisitor extends SimpleAstVisitor {
     if (null == node.extendsClause) return;
     nodes[node.name.name] = new ClassHierarchyNode(node.name.name, node.extendsClause.superclass.name.name);
   }
-
 }
 
 class ClassHierarchyNode {
@@ -139,9 +150,10 @@ class ClassHierarchyNode {
 class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 
   Map<String, ClassHierarchyNode> _nodes;
+  AssetWrapper _assetWrapper;
   var _modified = false;
 
-  FieldInitializingAstVisitor(this._nodes);
+  FieldInitializingAstVisitor(this._nodes, this._assetWrapper);
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
@@ -153,88 +165,32 @@ class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
           fieldCollector.managers.length > 0 ||
           fieldCollector.systems.length > 0 ) {
         var initializeMethodDeclaration = node.getMethod('initialize');
-        if (null == node.getMethod('initialize')) {
-          initializeMethodDeclaration = _createInitializeMethodDeclaration();
-          node.members.add(initializeMethodDeclaration);
+        if (null == initializeMethodDeclaration) {
+          _assetWrapper.insert(node.endToken.offset, _initializeTemplate);
           _modified = true;
           callSuperInitialize = true;
+        } else {
+          var posOfOpeningBrace = initializeMethodDeclaration.body.beginToken.offset;
+          _assetWrapper.insert(posOfOpeningBrace + 1, _cursor);
         }
-        var initializeStatements = (initializeMethodDeclaration.body as BlockFunctionBody).block.statements;
         fieldCollector.mappers.forEach((mapper) {
           var mapperName = mapper.fields.variables[0].name.name;
           var mapperType = mapper.fields.type.typeArguments.arguments[0].name.name;
-          initializeStatements.insert(0, _createMapperAssignment(mapperName, mapperType));
+          _assetWrapper.insertAtCursor(_mapperInitializer(mapperName, mapperType));
           _modified = true;
         });
-        var initField = (FieldDeclaration node, ExpressionStatement createAssignment(String name, String type)) {
-          var managerName = node.fields.variables[0].name.name;
-          var managerType = node.fields.type.name.name;
-          initializeStatements.insert(0, createAssignment(managerName, managerType));
+        var initField = (FieldDeclaration node, String initializer(String name, String type)) {
+          var name = node.fields.variables[0].name.name;
+          var type = node.fields.type.name.name;
+          _assetWrapper.insertAtCursor(initializer(name, type));
           _modified = true;
         };
-        fieldCollector.managers.forEach((manager) => initField(manager, (String name, String type) => _createManagerAssignment(name, type)));
-        fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _createSystemAssignment(name, type)));
-        if (callSuperInitialize) {
-          initializeStatements.insert(0, _createSuperInitialize());
-        }
+        fieldCollector.managers.forEach((manager) => initField(manager, (String name, String type) => _managerInitializer(name, type)));
+        fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _systemInitializer(name, type)));
+        _assetWrapper.insertAtCursor('\n  ');
       }
     }
     return node;
-  }
-
-  MethodDeclaration _createInitializeMethodDeclaration() {
-    var comment = null;
-    var metadata = [new Annotation(new Token(TokenType.AT, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'override', 0)), null, null, null)];
-    var externalKeyword = null;
-    var modifierKeyword = null;
-    var returnType = new TypeName(new SimpleIdentifier(new KeywordToken(Keyword.VOID, 0)), null);
-    var propertyKeyword = null;
-    var operatorKeyword = null;
-    var name = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'initialize', 0));
-    var parameters = new FormalParameterList(new BeginToken(TokenType.OPEN_PAREN, 0), null, null, null, new Token(TokenType.CLOSE_PAREN, 0));
-    var block = new Block(new BeginToken(TokenType.OPEN_CURLY_BRACKET, 0), [], new Token(TokenType.CLOSE_CURLY_BRACKET, 0));
-    var body = new BlockFunctionBody(null, null, block);
-    return new MethodDeclaration(comment, metadata, externalKeyword, modifierKeyword, returnType, propertyKeyword, operatorKeyword, name, parameters, body);
-  }
-
-  ExpressionStatement _createMapperAssignment(String mapperName, String mapperType) {
-    var leftHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, mapperName, 0));
-    var keyword = new KeywordToken(Keyword.NEW, 0);
-    var arguments = [new TypeName(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, mapperType, 0)), null)];
-    var typeArguments = new TypeArgumentList(new Token(TokenType.LT, 0), arguments, new Token(TokenType.GT, 0));
-    var period = null;
-    var name = null;
-    var constructorName = new ConstructorName(new TypeName(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'Mapper', 0)), typeArguments), period, name);
-    var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, mapperType, 0)), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'world', 0))], new Token(TokenType.CLOSE_PAREN, 0));
-    var rightHandSide = new InstanceCreationExpression(keyword, constructorName, argumentList);
-    var assigmentStatement = new AssignmentExpression(leftHandSide, new Token(TokenType.EQ, 0), rightHandSide);
-    return new ExpressionStatement(assigmentStatement, new Token(TokenType.SEMICOLON, 0));
-  }
-
-  ExpressionStatement _createManagerAssignment(String managerName, String managerType) =>
-    _createAssignmentFromWorldMethod(managerName, managerType, 'getManager');
-
-  ExpressionStatement _createSystemAssignment(String systemName, String systemType) =>
-    _createAssignmentFromWorldMethod(systemName, systemType, 'getSystem');
-
-  ExpressionStatement _createAssignmentFromWorldMethod(String fieldName, String fieldType, String worldMethod) {
-    var leftHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, fieldName, 0));
-    var target = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'world', 0));
-    var period = new Token(TokenType.PERIOD, 0);
-    var methodName = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, worldMethod, 0));
-    var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, fieldType, 0))], new Token(TokenType.CLOSE_PAREN, 0));
-    var rightHandSide = new MethodInvocation(target, period, methodName, argumentList);
-    var assigmentStatement = new AssignmentExpression(leftHandSide, new Token(TokenType.EQ, 0), rightHandSide);
-    return new ExpressionStatement(assigmentStatement, new Token(TokenType.SEMICOLON, 0));
-  }
-
-  ExpressionStatement _createSuperInitialize() {
-    var target = new SimpleIdentifier(new KeywordToken(Keyword.SUPER, 0));
-    var period = new Token(TokenType.PERIOD, 0);
-    var methodName = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'initialize', 0));
-    var argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), [], new Token(TokenType.CLOSE_PAREN, 0));
-    var expression = new MethodInvocation(target, period, methodName, argumentList);
-    return new ExpressionStatement(expression, new Token(TokenType.SEMICOLON, 0));
   }
 }
 
@@ -269,3 +225,14 @@ bool _isOfType(Map<String, ClassHierarchyNode> nodes, String className, String s
   }
   return _isOfType(nodes, nodes[className].parent, superclassName);
 }
+
+const String _cursor = '|-dartemisTransformerCursor-|';
+const String _initializeTemplate = '''
+  @override
+  void initialize() {
+    super.initialize();$_cursor}
+''';
+
+String _mapperInitializer(String name, String type) => '\n    $name = new Mapper<$type>($type, world);$_cursor';
+String _managerInitializer(String name, String type) => '\n    $name = world.getManager($type);$_cursor';
+String _systemInitializer(String name, String type) => '\n    $name = world.getSystem($type);$_cursor';

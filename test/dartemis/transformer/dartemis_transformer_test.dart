@@ -3,7 +3,6 @@ library dartemis_transformer_test;
 import "dart:async";
 
 import "package:unittest/unittest.dart";
-import 'package:analyzer/analyzer.dart';
 import "package:mock/mock.dart";
 import "package:barback/barback.dart" show AggregateTransform, Asset, AssetId, BarbackSettings;
 import "package:dartemis/transformer.dart";
@@ -35,7 +34,7 @@ void main() {
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT).toSource()));
+            expect(content, equals(SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT));
           }));
         }));
       });
@@ -48,7 +47,7 @@ void main() {
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_INITIALIZE_WITH_MAPPER_RESULT).toSource()));
+            expect(content, equals(SYSTEM_WITH_INITIALIZE_WITH_MAPPER_RESULT));
           }));
         }));
       });
@@ -61,7 +60,7 @@ void main() {
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT).toSource()));
+            expect(content, equals(MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT));
           }));
         }));
       });
@@ -77,7 +76,7 @@ void main() {
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER_RESULT).toSource()));
+            expect(content, equals(SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER_RESULT));
           }));
         }));
       });
@@ -93,7 +92,7 @@ void main() {
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM_RESULT).toSource()));
+            expect(content, equals(SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM_RESULT));
           }));
         }));
       });
@@ -117,7 +116,7 @@ void main() {
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY_RESULT).toSource()));
+            expect(content, equals(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY_RESULT));
           }));
         }));
       });
@@ -133,7 +132,7 @@ void main() {
           logs.verify(happenedOnce);
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(parseCompilationUnit(EVERYTHING_COMBINED_RESULT).toSource()));
+            expect(content, equals(EVERYTHING_COMBINED_RESULT));
           }));
         }));
       });
@@ -304,8 +303,8 @@ class SimpleSystem extends EntitySystem {
   @override
   void initialize() {
     super.initialize();
-    os = world.getSystem(OtherSystem);
     sm = world.getManager(SimpleManager);
+    os = world.getSystem(OtherSystem);
   }
 }
 ''';
@@ -347,8 +346,8 @@ class SimpleManager extends Manager {
   @override
   void initialize() {
     super.initialize();
-    ss = world.getSystem(SimpleSystem);
     om = world.getManager(OtherManager);
+    ss = world.getSystem(SimpleSystem);
   }
 }
 class OtherManager extends Manager {
@@ -365,8 +364,8 @@ class SimpleSystem extends EntitySystem {
   @override
   void initialize() {
     super.initialize();
-    sm = world.getManager(SimpleManager);
     pm = new Mapper<Position>(Position, world);
+    sm = world.getManager(SimpleManager);
   }
 }
 class OtherSystem extends VoidEntitySystem {
