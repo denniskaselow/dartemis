@@ -18,7 +18,7 @@ void main() {
     test('ComponentManager correctly associates entity and components', () {
       Entity entity = world.createEntity();
       Component componentA = new ComponentA();
-      Component componentC = new ComponentPoolableC();
+      Component componentC = new PooledComponentC();
       entity.addComponent(componentA);
       entity.addComponent(componentC);
 
@@ -31,14 +31,14 @@ void main() {
     test('ComponentManager correctly associates multiple entity and components', () {
       Entity entity1 = world.createEntity();
       Component component1A = new ComponentA();
-      Component component1C = new ComponentPoolableC();
+      Component component1C = new PooledComponentC();
       entity1.addComponent(component1A);
       entity1.addComponent(component1C);
 
       Entity entity2 = world.createEntity();
       Component component2A = new ComponentA();
       Component component2B = new ComponentB();
-      Component component2C = new ComponentPoolableC();
+      Component component2C = new PooledComponentC();
       entity2.addComponent(component2A);
       entity2.addComponent(component2B);
       entity2.addComponent(component2C);
@@ -58,7 +58,7 @@ void main() {
     test('ComponentManager removes Components of deleted Entity', () {
       Entity entity = world.createEntity();
       Component componentA = new ComponentA();
-      Component componentC = new ComponentPoolableC();
+      Component componentC = new PooledComponentC();
       entity.addComponent(componentA);
       entity.addComponent(componentC);
       world.addEntity(entity);

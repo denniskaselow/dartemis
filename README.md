@@ -65,15 +65,15 @@ A `Component` is a pretty simple structure and should not contain any logic:
         Position(this.x, this.y);
     }
     ```
-Or if you want to use a `ComponentPoolable`:
+Or if you want to use a `PooledComponent`:
 
     ```dart
-    class Position extends ComponentPoolable {
+    class Position extends PooledComponent {
         num x, y;
     
         Position._();
         factory Position(num x, num y) {
-            Position position = new Poolable.of(Position, _constructor);
+            Position position = new Pooled.of(Position, _constructor);
             position.x = x;
             position.y = y;
             return position;
@@ -81,7 +81,7 @@ Or if you want to use a `ComponentPoolable`:
         static Position _constructor() => new Position._();
     }
     ```
-By using a factory constructor and calling the factory constructor in `Poolable`, dartemis is able to reuse destroyed components and they will not be garbage collected. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/)
+By using a factory constructor and calling the factory constructor in `Pooled`, dartemis is able to reuse destroyed components and they will not be garbage collected. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/)
 
 5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
@@ -143,7 +143,7 @@ transformers:
     - moreLibs/moreLibs.dart
 ```
 
-If those libraries need to be transformed, you have to add the transformer to 
+If those libraries need to be transformed as well, you have to add the transformer to 
 their `pubspec.yaml`.
 
 Caution: The transformer is not tested with cases where a library is imported

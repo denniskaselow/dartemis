@@ -1,5 +1,8 @@
 # Changelog
 ##0.7.0
+### Breaking API Changes
+* renamed Poolable to Pooled
+* renamed ComponentPoolable to PooledComponent 
 ### API Changes
 * deprecated `ComponentMapper` use `Mapper` instead
 * deprecated `ComponentMapper#get(Entity)`, use `Mapper[Entity]` instead

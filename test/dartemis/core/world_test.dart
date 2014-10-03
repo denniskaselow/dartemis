@@ -91,7 +91,7 @@ void main() {
       entityAB = world.createAndAddEntity([new ComponentA(), new ComponentB()]);
       entityAC = world.createEntity();
       entityAC.addComponent(new ComponentA());
-      entityAC.addComponent(new ComponentPoolableC());
+      entityAC.addComponent(new PooledComponentC());
       entityAC.addToWorld();
       systemStarter = (EntitySystem es) {
         es = world.addSystem(es);
@@ -137,7 +137,7 @@ void main() {
       es = world.addSystem(es);
       world.initialize();
       world.process();
-      entityAB.addComponent(new ComponentPoolableC());
+      entityAB.addComponent(new PooledComponentC());
       world.process();
     });
     test('Adding a component will get the entity processed if the world is notified of the change', () {
@@ -147,7 +147,7 @@ void main() {
       world.initialize();
       world.process();
       es.expectedEntities = [entityAB, entityAC];
-      entityAB.addComponent(new ComponentPoolableC());
+      entityAB.addComponent(new PooledComponentC());
       entityAB.changedInWorld();
       world.process();
     });

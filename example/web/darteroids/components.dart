@@ -1,12 +1,12 @@
 part of darteroids;
 
-class CircularBody extends ComponentPoolable {
+class CircularBody extends PooledComponent {
   num radius;
   String color;
 
   CircularBody._();
   factory CircularBody.down(num radius, String color) {
-    CircularBody body = new Poolable.of(CircularBody, _constructor);
+    CircularBody body = new Pooled.of(CircularBody, _constructor);
     body.radius = radius;
     body.color = color;
     return body;
@@ -14,12 +14,12 @@ class CircularBody extends ComponentPoolable {
   static CircularBody _constructor() => new CircularBody._();
 }
 
-class Position extends ComponentPoolable {
+class Position extends PooledComponent {
   num _x, _y;
 
   Position._();
   factory Position(num x, num y) {
-    Position position = new Poolable.of(Position, _constructor);
+    Position position = new Pooled.of(Position, _constructor);
     position.x = x;
     position.y = y;
     return position;
@@ -33,12 +33,12 @@ class Position extends ComponentPoolable {
   get y => _y;
 }
 
-class Velocity extends ComponentPoolable {
+class Velocity extends PooledComponent {
   num x, y;
 
   Velocity._();
   factory Velocity([num x = 0, num y = 0]) {
-    Velocity velocity = new Poolable.of(Velocity, _constructor);
+    Velocity velocity = new Pooled.of(Velocity, _constructor);
     velocity.x = x;
     velocity.y = y;
     return velocity;
@@ -46,15 +46,15 @@ class Velocity extends ComponentPoolable {
   static Velocity _constructor() => new Velocity._();
 }
 
-class PlayerDestroyer extends ComponentPoolable {
+class PlayerDestroyer extends PooledComponent {
   PlayerDestroyer._();
-  factory PlayerDestroyer() => new Poolable.of(PlayerDestroyer, _constructor);
+  factory PlayerDestroyer() => new Pooled.of(PlayerDestroyer, _constructor);
   static PlayerDestroyer _constructor() => new PlayerDestroyer._();
 }
 
-class AsteroidDestroyer extends ComponentPoolable {
+class AsteroidDestroyer extends PooledComponent {
   AsteroidDestroyer._();
-  factory AsteroidDestroyer() => new Poolable.of(AsteroidDestroyer, _constructor);
+  factory AsteroidDestroyer() => new Pooled.of(AsteroidDestroyer, _constructor);
   static AsteroidDestroyer _constructor() => new AsteroidDestroyer._();
 }
 
@@ -74,12 +74,12 @@ class Cannon extends Component {
   }
 }
 
-class Decay extends ComponentPoolable {
+class Decay extends PooledComponent {
   num timer;
 
   Decay._();
   factory Decay(num timer) {
-    Decay decay = new Poolable.of(Decay, _constructor);
+    Decay decay = new Pooled.of(Decay, _constructor);
     decay.timer = timer;
     return decay;
   }

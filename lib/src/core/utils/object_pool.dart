@@ -5,20 +5,20 @@ part of dartemis;
 /// reuse.
 class ObjectPool {
 
-  static Map<Type, Bag<Poolable>> _objectPools = new Map<Type, Bag<Poolable>>();
+  static Map<Type, Bag<Pooled>> _objectPools = new Map<Type, Bag<Pooled>>();
 
   /// Returns a pooled object of [Type] [type]. If there is no object in the pool
-  /// it will create a new one using [createPoolable].
-  static Poolable get(Type type, CreatePoolable createPoolable) {
-    Bag<Poolable> pool = _getPool(type);
+  /// it will create a new one using [createPooled].
+  static Pooled get(Type type, CreatePooled createPooled) {
+    Bag<Pooled> pool = _getPool(type);
     var obj = pool.removeLast();
     if (null == obj) {
-      obj = createPoolable();
+      obj = createPooled();
     }
     return obj;
   }
 
-  static Bag<Poolable> _getPool(Type type) {
+  static Bag<Pooled> _getPool(Type type) {
     var pooledObjects = _objectPools[type];
     if (null == pooledObjects) {
       pooledObjects = new Bag();
@@ -27,35 +27,35 @@ class ObjectPool {
     return pooledObjects;
   }
 
-  /// Adds a [poolable] to the [ObjectPool].
-  static void add(Poolable poolable) {
-    _objectPools[poolable.runtimeType].add(poolable);
+  /// Adds a [Pooled] object to the [ObjectPool].
+  static void add(Pooled pooled) {
+    _objectPools[pooled.runtimeType].add(pooled);
   }
 
-  /// Add a specific [amount] of [Poolable]s for later reuse.
-  static void addMany(Type type, CreatePoolable createPoolable, int amount) {
-    Bag<Poolable> pool = _getPool(type);
+  /// Add a specific [amount] of [Pooled]s for later reuse.
+  static void addMany(Type type, CreatePooled createPooled, int amount) {
+    Bag<Pooled> pool = _getPool(type);
     for (int i = 0; i < amount; i++) {
-      pool.add(createPoolable());
+      pool.add(createPooled());
     }
   }
 }
 
-/// Create a [Poolable] object with a zero argument constructor.
-typedef Poolable CreatePoolable();
+/// Create a [Pooled] object with a zero argument constructor.
+typedef Pooled CreatePooled();
 
 /// Objects of this class can be pooled in the [ObjectPool] for later reuse.
 ///
 /// Should be added as a mixin.
-abstract class Poolable {
+abstract class Pooled {
 
-  /// Creates a new [Poolable] of [Type] [type].
+  /// Creates a new [Pooled] of [Type] [type].
   ///
-  /// The instance created with [createPoolable] should be created with
+  /// The instance created with [createPooled] should be created with
   /// a zero-argument contructor because it will only be called once. All fields
   /// of the created object should be set in the calling factory constructor.
-  factory Poolable.of(Type type, CreatePoolable createPoolable) {
-    return ObjectPool.get(type, createPoolable);
+  factory Pooled.of(Type type, CreatePooled createPooled) {
+    return ObjectPool.get(type, createPooled);
   }
 
   /// If you need to do some cleanup before this object moves into the Pool of
