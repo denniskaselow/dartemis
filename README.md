@@ -32,100 +32,102 @@ Getting started
 ===============
 1. Add dartemis to your project by adding it to your **pubspec.yaml** and include the dartemis transformer
 
-```yaml
-dependencies:
-  dartemis: any
-transformers:
-- dartemis
-```
+    ```yaml
+    dependencies:
+      dartemis: any
+    transformers:
+    - dartemis
+    ```
+
 2. Import it in your project:
 
-```dart
-import 'package:dartemis/dartemis.dart';
-```
+    ```dart
+    import 'package:dartemis/dartemis.dart';
+    ```
 3. Create a world:
 
-```dart
-World world = new World();
-```
+    ```dart
+    World world = new World();
+    ```
 4. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
 
-```dart
-Entity entity  = world.createEntity();
-entity.addComponent(new Position(world, 0, 0));
-entity.addComponent(new Velocity(world, 1, 1));
-entity.addToWorld();
-```
+    ```dart
+    Entity entity  = world.createEntity();
+    entity.addComponent(new Position(world, 0, 0));
+    entity.addComponent(new Velocity(world, 1, 1));
+    entity.addToWorld();
+    ```
 A `Component` is a pretty simple structure and should not contain any logic:
 
-```dart
-class Position extends Component {
-    num x, y;
-    Position(this.x, this.y);
-}
-```
+    ```dart
+    class Position extends Component {
+        num x, y;
+        Position(this.x, this.y);
+    }
+    ```
 Or if you want to use a `ComponentPoolable`:
 
-```dart
-class Position extends ComponentPoolable {
-    num x, y;
-
-    Position._();
-    factory Position(num x, num y) {
-        Position position = new Poolable.of(Position, _constructor);
-        position.x = x;
-        position.y = y;
-        return position;
+    ```dart
+    class Position extends ComponentPoolable {
+        num x, y;
+    
+        Position._();
+        factory Position(num x, num y) {
+            Position position = new Poolable.of(Position, _constructor);
+            position.x = x;
+            position.y = y;
+            return position;
+        }
+        static Position _constructor() => new Position._();
     }
-    static Position _constructor() => new Position._();
-}
-```
+    ```
 By using a factory constructor and calling the factory constructor in `Poolable`, dartemis is able to reuse destroyed components and they will not be garbage collected. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/)
 
 5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
-```dart
-class MovementSystem extends EntityProcessingSystem {
-    Mapper<Position> positionMapper;
-    Mapper<Velocity> velocityMapper;
+    ```dart
+    class MovementSystem extends EntityProcessingSystem {
+        Mapper<Position> positionMapper;
+        Mapper<Velocity> velocityMapper;
 
-    MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
+        MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
 
-    void initialize() {
-      // initialize your system
-      // Mappers, Systems and Managers will be assigned here through code generation by the transformer
-      // if you don't want to use the transformer, do it this way:
-      positionMapper = new Mapper<Position>(Position, world);
-      velocityMapper = new Mapper<Velocity>(Velocity, world);
+        void initialize() {
+          // initialize your system
+          // Mappers, Systems and Managers will be assigned here
+          // through code generation by the transformer
+          // if you don't want to use the transformer, do it this way:
+          positionMapper = new Mapper<Position>(Position, world);
+          velocityMapper = new Mapper<Velocity>(Velocity, world);
+        }
+
+        void processEntity(Entity entity) {
+          Position position = positionMapper[entity];
+          Velocity vel = velocityMapper[entity];
+          position.x += vel.x;
+          position.y += vel.y;
+        }
     }
-
-    void processEntity(Entity entity) {
-      Position position = positionMapper[entity];
-      Velocity vel = velocityMapper[entity];
-      position.x += vel.x;
-      position.y += vel.y;
-    }
-}
-```
+    ```
 6. Add your system to the world:
 
-```dart
-world.addSystem(new MovementSystem());
-```
+    ```dart
+    world.addSystem(new MovementSystem());
+    ```
 7. Initialize the world:
 
-```dart
-world.initialize();
-```
+    ```dart
+    world.initialize();
+    ```
 8. In your game loop you then process your systems:
 
-```dart
-world.process();
-```
+    ```dart
+    world.process();
+    ```
 If your game logic requires a delta you can set it by calling:
-```dart
-world.delta = delta;
-```
+    ```dart
+    world.delta = delta;
+    ```
 
 Transformer
 ===========
