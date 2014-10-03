@@ -1,9 +1,7 @@
 part of dartemis;
 
-/**
- * A system that processes entities at a interval in milliseconds.
- * A typical usage would be a collision system or physics system.
- */
+/// A system that processes entities at a interval in milliseconds.
+/// A typical usage would be a collision system or physics system.
 abstract class IntervalEntitySystem extends EntitySystem {
   num _acc = 0;
   num _delta = 0;
@@ -24,11 +22,9 @@ abstract class IntervalEntitySystem extends EntitySystem {
     return false;
   }
 
-  /**
-   * Resets the accumulated delta to 0.
-   *
-   * Call `super.end()` if you overwrite this function.
-   */
+  /// Resets the accumulated delta to 0.
+  ///
+  /// Call `super.end()` if you overwrite this function.
   void end() {
     _delta = 0;
   }

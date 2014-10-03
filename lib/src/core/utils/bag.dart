@@ -1,41 +1,29 @@
 part of dartemis;
 
-/**
- * Collection type a bit like List but does not preserve the order of its
- * entities, speedwise it is very good, especially suited for games.
- */
+/// Collection type a bit like List but does not preserve the order of its
+/// entities, speedwise it is very good, especially suited for games.
 class Bag<E> extends Object with IterableMixin<E> {
   List _data;
   int _size = 0;
 
   Bag({int capacity: 16}): _data = new List(capacity);
 
-  /**
-   * Creates a new [Bag] with the elements of [iterable].
-   */
+  /// Creates a new [Bag] with the elements of [iterable].
   Bag.from(Iterable<E> iterable)
       : _data = iterable.toList(growable: false),
         _size = iterable.length;
 
-  /**
-   * Returns the element at the specified [index] in the bag.
-   */
+  /// Returns the element at the specified [index] in the bag.
   E operator [](int index) => _data[index];
 
-  /**
-   * Returns the number of elements in this bag.
-   */
+  /// Returns the number of elements in this bag.
   int get size => _size;
 
-  /**
-   * Returns [:true:] if this list contains no elements.
-   */
+  /// Returns [:true:] if this list contains no elements.
   bool get isEmpty => _size == 0;
 
-  /**
-   * Removes the element at the specified [index] in this bag. Does this by
-   * overwriting with the last element and then removing the last element.
-   */
+  /// Removes the element at the specified [index] in this bag. Does this by
+  /// overwriting with the last element and then removing the last element.
   E removeAt(int index) {
     // make copy of element to remove so it can be returned
     var o = _data[index];
@@ -47,9 +35,7 @@ class Bag<E> extends Object with IterableMixin<E> {
     return o;
   }
 
-  /**
-   * Remove and return the last object in the bag.
-   */
+  /// Remove and return the last object in the bag.
   E removeLast() {
     if (_size > 0) {
       E current = _data[--_size];
@@ -59,13 +45,11 @@ class Bag<E> extends Object with IterableMixin<E> {
     return null;
   }
 
-  /**
-   * Removes the first occurrence of the specified element from this bag, if
-   * it is present. If the Bag does not contain the element, it is unchanged.
-   * Does this by overwriting with the last element and then removing the last
-   * element.
-   * Returns [:true:] if this list contained the specified [element].
-   */
+  /// Removes the first occurrence of the specified element from this bag, if
+  /// it is present. If the Bag does not contain the element, it is unchanged.
+  /// Does this by overwriting with the last element and then removing the last
+  /// element.
+  /// Returns [:true:] if this list contained the specified [element].
   bool remove(E element) {
     for (int i = 0; i < _size; i++) {
       E current = _data[i];
@@ -82,12 +66,10 @@ class Bag<E> extends Object with IterableMixin<E> {
     return false;
   }
 
-  /**
-   * Removes from this Bag all of its elements that are contained in the
-   * specified [bag].
-   *
-   * Returns [:true:] if this Bag changed as a result of the call
-   */
+  /// Removes from this Bag all of its elements that are contained in the
+  /// specified [bag].
+  ///
+  /// Returns [:true:] if this Bag changed as a result of the call
   bool removeAll(Bag<E> bag) {
     bool modified = false;
 
@@ -108,15 +90,11 @@ class Bag<E> extends Object with IterableMixin<E> {
     return modified;
   }
 
-  /**
-   * Returns the number of elements the bag can hold without growing.
-   */
+  /// Returns the number of elements the bag can hold without growing.
   int get capacity => _data.length;
 
-  /**
-   * Adds the specified [element] to the end of this bag. If needed also
-   * increases the capacity of the bag.
-   */
+  /// Adds the specified [element] to the end of this bag. If needed also
+  /// increases the capacity of the bag.
   void add(E element) {
     // is size greater than capacity increase capacity
     if (_size == _data.length) {
@@ -125,9 +103,7 @@ class Bag<E> extends Object with IterableMixin<E> {
     _data[_size++] = element;
   }
 
-  /**
-   * Sets [element] at specified [index] in the bag.
-   */
+  /// Sets [element] at specified [index] in the bag.
   void operator []=(int index, E element) {
     if (index >= _data.length) {
       _growTo(index * 2);
@@ -155,10 +131,8 @@ class Bag<E> extends Object with IterableMixin<E> {
     }
   }
 
-  /**
-   * Removes all of the elements from this bag. The bag will be empty after
-   * this call returns.
-   */
+  /// Removes all of the elements from this bag. The bag will be empty after
+  /// this call returns.
   void clear() {
     // null all elements so gc can clean up
     for (int i = 0; i < _size; i++) {
@@ -167,9 +141,7 @@ class Bag<E> extends Object with IterableMixin<E> {
     _size = 0;
   }
 
-  /**
-   * Add all [items] into this bag.
-   */
+  /// Add all [items] into this bag.
   void addAll(Bag<E> items) {
     for (int i = 0; items.size > i; i++) {
       add(items[i]);

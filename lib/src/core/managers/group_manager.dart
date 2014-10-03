@@ -1,12 +1,10 @@
 part of dartemis;
 
-/**
- * If you need to group your entities together, e.g. tanks going into "units"
- * group or explosions into "effects", then use this manager. You must retrieve
- * it using world instance.
- *
- * An [Entity] can only belong to several groups (0,n) at a time.
- */
+/// If you need to group your entities together, e.g. tanks going into "units"
+/// group or explosions into "effects", then use this manager. You must retrieve
+/// it using world instance.
+///
+/// An [Entity] can only belong to several groups (0,n) at a time.
 class GroupManager extends Manager {
   final Map<String, Bag<Entity>> _entitiesByGroup;
   final Map<Entity, Bag<String>> _groupsByEntity;
@@ -15,9 +13,7 @@ class GroupManager extends Manager {
       : _entitiesByGroup = new Map<String, Bag<Entity>>(),
         _groupsByEntity = new Map<Entity, Bag<String>>();
 
-  /**
-   * Set the group of the entity.
-   */
+  /// Set the group of the entity.
   void add(Entity e, String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities == null) {
@@ -34,9 +30,7 @@ class GroupManager extends Manager {
     groups.add(group);
   }
 
-  /**
-   * Remove the entity from the specified group.
-   */
+  /// Remove the entity from the specified group.
   void remove(Entity e, String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities != null) {
@@ -62,9 +56,7 @@ class GroupManager extends Manager {
     }
   }
 
-  /**
-   * Get all entities that belong to the provided group.
-   */
+  /// Get all entities that belong to the provided group.
   Iterable<Entity> getEntities(String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities == null) {
@@ -74,22 +66,16 @@ class GroupManager extends Manager {
     return entities;
   }
 
-  /**
-   * Returns the groups the entity belongs to, null if none.
-   */
+  /// Returns the groups the entity belongs to, null if none.
   Iterable<String> getGroups(Entity e) {
     var result = _groupsByEntity[e];
     return result == null ? null : result;
   }
 
-  /**
-   * Checks if the entity belongs to any group.
-   */
+  /// Checks if the entity belongs to any group.
   bool isInAnyGroup(Entity e) => getGroups(e) != null;
 
-  /**
-   * Check if the entity is in the supplied group.
-   */
+  /// Check if the entity is in the supplied group.
   bool isInGroup(Entity e, String group) {
     Bag<String> groups = _groupsByEntity[e];
     return (groups != null) && groups.contains(group);

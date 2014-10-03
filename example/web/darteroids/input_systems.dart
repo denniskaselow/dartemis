@@ -1,10 +1,10 @@
 part of darteroids;
 
 class PlayerControlSystem extends IntervalEntitySystem {
-  static const int UP = 87;
-  static const int DOWN = 83;
-  static const int LEFT = 65;
-  static const int RIGHT = 68;
+  static const int up = 87;
+  static const int down = 83;
+  static const int left = 65;
+  static const int right = 68;
 
   bool moveUp = false;
   bool moveDown = false;
@@ -31,7 +31,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   }
 
   void processEntities(Iterable<Entity> entities) {
-    Entity player = tagManager.getEntity(TAG_PLAYER);
+    Entity player = tagManager.getEntity(tagPlayer);
     Velocity velocity = velocityMapper[player];
     Cannon cannon = cannonMapper[player];
 
@@ -53,16 +53,16 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   void handleKeyDown(KeyboardEvent e) {
     int keyCode = e.keyCode;
-    if (keyCode == UP) {
+    if (keyCode == up) {
       moveUp = true;
       moveDown = false;
-    } else if (keyCode == DOWN) {
+    } else if (keyCode == down) {
       moveUp = false;
       moveDown = true;
-    } else if (keyCode == LEFT) {
+    } else if (keyCode == left) {
       moveLeft = true;
       moveRight = false;
-    } else if (keyCode == RIGHT) {
+    } else if (keyCode == right) {
       moveLeft = false;
       moveRight = true;
     }
@@ -70,13 +70,13 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   void handleKeyUp(KeyboardEvent e) {
     int keyCode = e.keyCode;
-    if (keyCode == UP) {
+    if (keyCode == up) {
       moveUp = false;
-    } else if (keyCode == DOWN) {
+    } else if (keyCode == down) {
       moveDown = false;
-    } else if (keyCode == LEFT) {
+    } else if (keyCode == left) {
       moveLeft = false;
-    } else if (keyCode == RIGHT) {
+    } else if (keyCode == right) {
       moveRight = false;
     }
   }

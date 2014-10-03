@@ -1,13 +1,11 @@
 part of dartemis;
 
-/**
- * Use this class together with PlayerManager.
- *
- * You may sometimes want to create teams in your game, so that
- * some players are team mates.
- *
- * A player can only belong to a single team.
- */
+/// Use this class together with PlayerManager.
+///
+/// You may sometimes want to create teams in your game, so that
+/// some players are team mates.
+///
+/// A player can only belong to a single team.
 class TeamManager extends Manager {
   Map<String, Bag<String>> _playersByTeam;
   Map<String, String> _teamByPlayer;

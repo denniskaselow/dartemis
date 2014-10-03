@@ -29,15 +29,15 @@ class CircleRenderingSystem extends EntityProcessingSystem {
 
       drawCirle(pos, body);
 
-      if (pos.x + body.radius > MAXWIDTH) {
-        drawCirle(pos, body, offsetX : -MAXWIDTH);
+      if (pos.x + body.radius > maxWidth) {
+        drawCirle(pos, body, offsetX : -maxWidth);
       } else if (pos.x - body.radius < 0) {
-        drawCirle(pos, body, offsetX : MAXWIDTH);
+        drawCirle(pos, body, offsetX : maxWidth);
       }
-      if (pos.y + body.radius > MAXHEIGHT) {
-        drawCirle(pos, body, offsetY : -MAXHEIGHT);
+      if (pos.y + body.radius > maxHeight) {
+        drawCirle(pos, body, offsetY : -maxHeight);
       } else if (pos.y - body.radius < 0) {
-        drawCirle(pos, body, offsetY : MAXHEIGHT);
+        drawCirle(pos, body, offsetY : maxHeight);
       }
 
 
@@ -68,7 +68,7 @@ class BackgroundRenderSystem extends VoidEntitySystem {
       context.fillStyle = "black";
 
       context.beginPath();
-      context.rect(0, 0, MAXWIDTH, MAXHEIGHT + HUDHEIGHT);
+      context.rect(0, 0, maxWidth, maxHeight + hudHeight);
       context.closePath();
 
       context.fill();
@@ -91,19 +91,19 @@ class HudRenderSystem extends VoidEntitySystem {
       context.fillStyle = "#555";
 
       context.beginPath();
-      context.rect(0, MAXHEIGHT, MAXWIDTH, MAXHEIGHT + HUDHEIGHT);
+      context.rect(0, maxHeight, maxWidth, maxHeight + hudHeight);
       context.closePath();
 
       context.fill();
 
-      Entity player = tagManager.getEntity(TAG_PLAYER);
+      Entity player = tagManager.getEntity(tagPlayer);
       Status status = statusMapper[player];
 
-      context.fillStyle = PLAYER_COLOR;
+      context.fillStyle = playerColor;
       for (int i = 0; i < status.lifes; i++) {
 
         context.beginPath();
-        context.arc(50 + i * 50, MAXHEIGHT + HUDHEIGHT~/2, 15, 0, PI * 2, false);
+        context.arc(50 + i * 50, maxHeight + hudHeight~/2, 15, 0, PI * 2, false);
         context.closePath();
 
         context.fill();

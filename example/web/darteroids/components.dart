@@ -5,7 +5,7 @@ class CircularBody extends ComponentPoolable {
   String color;
 
   CircularBody._();
-  factory CircularBody(num radius, String color) {
+  factory CircularBody.down(num radius, String color) {
     CircularBody body = new Poolable.of(CircularBody, _constructor);
     body.radius = radius;
     body.color = color;
@@ -26,10 +26,10 @@ class Position extends ComponentPoolable {
   }
   static Position _constructor() => new Position._();
 
-  set x(num x) => _x = x % MAXWIDTH;
+  set x(num x) => _x = x % maxWidth;
   get x => _x;
 
-  set y(num y) => _y = y % MAXHEIGHT;
+  set y(num y) => _y = y % maxHeight;
   get y => _y;
 }
 

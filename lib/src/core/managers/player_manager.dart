@@ -1,10 +1,8 @@
 part of dartemis;
 
-/**
- * You may sometimes want to specify to which player an entity belongs to.
- *
- * An entity can only belong to a single player at a time.
- */
+/// You may sometimes want to specify to which player an entity belongs to.
+///
+/// An entity can only belong to a single player at a time.
 class PlayerManager extends Manager {
   Map<Entity, String> _playerByEntity;
   Map<String, Bag<Entity>> _entitiesByPlayer;

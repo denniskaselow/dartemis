@@ -59,15 +59,11 @@ class EntityManager extends Manager {
   }
 
 
-  /**
-   * Check if this entity is active.
-   * Active means the entity is being actively processed.
-   */
+  /// Check if this entity is active.
+  /// Active means the entity is being actively processed.
   bool isActive(int entityId) => _entities[entityId] != null;
 
-  /**
-   * Check if the specified entityId is enabled.
-   */
+  /// Check if the specified entityId is enabled.
   bool isEnabled(int entityId) {
     if (_disabled.size > entityId) {
       return _disabled[entityId] != true;
@@ -75,37 +71,25 @@ class EntityManager extends Manager {
     return true;
   }
 
-  /**
-   * Get a entity with this id.
-   */
+  /// Get a entity with this id.
   Entity _getEntity(int entityId) => _entities[entityId];
 
-  /**
-   * Get how many entities are active in this world.
-   */
+  /// Get how many entities are active in this world.
   int get activeEntityCount => _active;
 
-  /**
-   * Get how many entities have been created in the world since start.
-   * Note: A created entity may not have been added to the world, thus
-   * created count is always equal or larger than added count.
-   */
+  /// Get how many entities have been created in the world since start.
+  /// Note: A created entity may not have been added to the world, thus
+  /// created count is always equal or larger than added count.
   int get totalCreated => _created;
 
-  /**
-   * Get how many entities have been added to the world since start.
-   */
+  /// Get how many entities have been added to the world since start.
   int get totalAdded => _added;
 
-  /**
-   * Get how many entities have been deleted from the world since start.
-   */
+  /// Get how many entities have been deleted from the world since start.
   int get totalDeleted => _deleted;
 }
 
-/**
- * Used only internally to generate distinct ids for entities and reuse them.
- */
+/// Used only internally to generate distinct ids for entities and reuse them.
 class _IdentifierPool {
 
   Bag<int> _ids;

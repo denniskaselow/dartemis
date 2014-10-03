@@ -4,16 +4,16 @@ part of dartemis_mirrors;
 @deprecated
 class World extends core.World {
 
-  static const Symbol QN_ENTITY_SYSTEM = #dartemis.EntitySystem;
-  static const Symbol QN_MANAGER = #dartemis.Manager;
+  static const Symbol qnEntitySystem = #dartemis.EntitySystem;
+  static const Symbol qnManager = #dartemis.Manager;
 
   void initializeManager(Manager manager) {
-    _injectFields(manager, QN_MANAGER);
+    _injectFields(manager, qnManager);
     super.initializeManager(manager);
   }
 
   void initializeSystem(EntitySystem system) {
-    _injectFields(system, QN_ENTITY_SYSTEM);
+    _injectFields(system, qnEntitySystem);
     super.initializeSystem(system);
   }
 

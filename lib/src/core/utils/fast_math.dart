@@ -1,9 +1,7 @@
 part of dartemis;
 
-/**
- * Using these function will save you some time if you are doing A LOT of
- * calculation.
- */
+/// Using these function will save you some time if you are doing A LOT of
+/// calculation.
 class FastMath {
 
   static const double PI = Math.PI;

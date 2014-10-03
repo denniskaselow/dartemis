@@ -48,7 +48,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
     num velX = shooterVel.x + bulletSpeed * (dirX / distance);
     num velY = shooterVel.y + bulletSpeed * (dirY / distance);
     bullet.addComponent(new Velocity(velX, velY));
-    bullet.addComponent(new CircularBody(2, "red"));
+    bullet.addComponent(new CircularBody.down(2, "red"));
     bullet.addComponent(new Decay(5000));
     bullet.addComponent(new AsteroidDestroyer());
     bullet.addToWorld();
@@ -83,7 +83,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     Position destroyerPos = positionMapper[entity];
 
-    groupManager.getEntities(GROUP_ASTEROIDS).forEach((Entity asteroid) {
+    groupManager.getEntities(groupAsteroids).forEach((Entity asteroid) {
       Position asteroidPos = positionMapper[asteroid];
       CircularBody asteroidBody = bodyMapper[asteroid];
 
@@ -105,10 +105,10 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
     num vy = generateRandomVelocity();
     asteroid.addComponent(new Velocity(vx, vy));
     num radius = asteroidBody.radius / sqrtOf2;
-    asteroid.addComponent(new CircularBody(radius, ASTEROID_COLOR));
+    asteroid.addComponent(new CircularBody.down(radius, asteroidColor));
     asteroid.addComponent(new PlayerDestroyer());
     asteroid.addToWorld();
-    groupManager.add(asteroid, GROUP_ASTEROIDS);
+    groupManager.add(asteroid, groupAsteroids);
   }
 
 }
@@ -122,7 +122,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
 
   void processEntities(Iterable<Entity> entities) {
-    Entity player = tagManager.getEntity(TAG_PLAYER);
+    Entity player = tagManager.getEntity(tagPlayer);
     Position playerPos = positionMapper[player];
     Status playerStatus = statusMapper[player];
     CircularBody playerBody = bodyMapper[player];
@@ -135,8 +135,8 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
         if (Utils.doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x, playerPos.y, playerBody.radius)) {
           playerStatus.lifes--;
           playerStatus.invisiblityTimer = 5000;
-          playerPos.x = MAXWIDTH~/2;
-          playerPos.y = MAXHEIGHT~/2;
+          playerPos.x = maxWidth~/2;
+          playerPos.y = maxHeight~/2;
           return;
         }
       });
