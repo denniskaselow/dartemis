@@ -120,6 +120,11 @@ class AssetWrapper {
     content = content.replaceFirst(_cursor, toInsert);
     _offset += toInsert.length - _cursor.length;
   }
+
+  void replace(String from, String to, int pos) {
+    content = content.replaceFirst(from, to, pos + _offset);
+    _offset += to.length - from.length;
+  }
 }
 
 class PartFindingVisitor extends SimpleAstVisitor {
@@ -157,7 +162,8 @@ class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
-    if (_isOfType(_nodes, node.name.name, 'EntitySystem') || _isOfType(_nodes, node.name.name, 'Manager')) {
+    var className = node.name.name;
+    if (_isOfType(_nodes, className, 'EntitySystem') || _isOfType(_nodes, className, 'Manager')) {
       var fieldCollector = new FieldCollectingAstVisitor(_nodes);
       var callSuperInitialize = false;
       node.visitChildren(fieldCollector);
@@ -189,6 +195,11 @@ class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
         fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _systemInitializer(name, type)));
         _assetWrapper.insertAtCursor('\n  ');
       }
+    } else if (_isOfType(_nodes, className, 'Component')) {
+      _assetWrapper.replace('Component', 'PooledComponent', node.extendsClause.superclass.offset);
+      _assetWrapper.insert(node.leftBracket.offset + 1, _pooledComponentTemplate(className));
+      _assetWrapper.insertAtCursor('\n  ');
+      _modified = true;
     }
     return node;
   }
@@ -231,6 +242,15 @@ const String _initializeTemplate = '''
   @override
   void initialize() {
     super.initialize();$_cursor}
+''';
+String _pooledComponentTemplate(String className) => '''
+
+  ${className}._();
+  factory ${className}() {
+    ${className} pooledComponent = new Pooled.of(${className}, _ctor);
+    return pooledComponent;
+  }
+  static ${className} _constructor() => new ${className}._();
 ''';
 
 String _mapperInitializer(String name, String type) => '\n    $name = new Mapper<$type>($type, world);$_cursor';

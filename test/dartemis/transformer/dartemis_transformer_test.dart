@@ -122,6 +122,22 @@ void main() {
       });
     });
 
+    group('converts into PooledComponent', () {
+
+      test('a simple component', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SIMPLE_COMPONENT));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(SIMPLE_POOLED_COMPONENT));
+          }));
+        }));
+      });
+    });
+
     group('initializes everything in', () {
 
       test('managers and sytems', () {
@@ -310,17 +326,32 @@ class SimpleSystem extends EntitySystem {
 ''';
 
 const OTHER_LIBRARY = '''
-  library otherLib;
+library otherLib;
 
-  part 'src/manager.dart';
+part 'src/manager.dart';
 
-  class OtherSystem extends EntitySystem {}
+class OtherSystem extends EntitySystem {}
 ''';
 
 const OTHER_LIBRARY_MANAGER = '''
-  part of otherLib;
+part of otherLib;
 
-  class SimpleManager extends Manager {}
+class SimpleManager extends Manager {}
+''';
+
+const SIMPLE_COMPONENT = '''
+class SimpleComponent extends Component {}
+''';
+
+const SIMPLE_POOLED_COMPONENT = '''
+class SimpleComponent extends PooledComponent {
+  SimpleComponent._();
+  factory SimpleComponent() {
+    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
+    return pooledComponent;
+  }
+  static SimpleComponent _constructor() => new SimpleComponent._();
+}
 ''';
 
 const EVERYTHING_COMBINED = '''
