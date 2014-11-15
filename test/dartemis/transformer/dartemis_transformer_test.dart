@@ -122,9 +122,9 @@ void main() {
       });
     });
 
-    group('converts into PooledComponent', () {
+    group('converts', () {
 
-      test('a simple component', () {
+      test('a simple component into a PooledComponent', () {
         assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SIMPLE_COMPONENT));
 
         transformer.apply(transformMock).then(expectAsync((_) {
@@ -133,6 +133,18 @@ void main() {
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
             expect(content, equals(SIMPLE_POOLED_COMPONENT));
+          }));
+        }));
+      });
+      test('a simple component with data into a PooledComponent', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SIMPLE_COMPONENT_WITH_DATA));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(SIMPLE_POOLED_COMPONENT_WITH_DATA));
           }));
         }));
       });
@@ -345,12 +357,33 @@ class SimpleComponent extends Component {}
 
 const SIMPLE_POOLED_COMPONENT = '''
 class SimpleComponent extends PooledComponent {
+  static SimpleComponent _ctor() => new SimpleComponent._();
   SimpleComponent._();
+
   factory SimpleComponent() {
     SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
     return pooledComponent;
   }
-  static SimpleComponent _constructor() => new SimpleComponent._();
+}
+''';
+
+const SIMPLE_COMPONENT_WITH_DATA = '''
+class SimpleComponent extends Component {
+  String data;
+  SimpleComponent(this.data);
+}
+''';
+
+const SIMPLE_POOLED_COMPONENT_WITH_DATA = '''
+class SimpleComponent extends PooledComponent {
+  static SimpleComponent _ctor() => new SimpleComponent._();
+  SimpleComponent._();
+  String data;
+  factory SimpleComponent(data) {
+    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
+    pooledComponent.data = data;
+    return pooledComponent;
+  }
 }
 ''';
 

@@ -104,28 +104,6 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
   }
 }
 
-class AssetWrapper {
-  Asset asset;
-  CompilationUnit unit;
-  String content;
-  int _offset = 0;
-  AssetWrapper(this.asset, this.unit, this.content);
-
-  void insert(int pos, String toInsert) {
-    content = content.substring(0, pos + _offset) + toInsert + content.substring(pos + _offset);
-    _offset += toInsert.length;
-  }
-
-  void insertAtCursor(String toInsert) {
-    content = content.replaceFirst(_cursor, toInsert);
-    _offset += toInsert.length - _cursor.length;
-  }
-
-  void replace(String from, String to, int pos) {
-    content = content.replaceFirst(from, to, pos + _offset);
-    _offset += to.length - from.length;
-  }
-}
 
 class PartFindingVisitor extends SimpleAstVisitor {
   List<String> partPaths = [];
@@ -197,11 +175,42 @@ class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
       }
     } else if (_isOfType(_nodes, className, 'Component')) {
       _assetWrapper.replace('Component', 'PooledComponent', node.extendsClause.superclass.offset);
-      _assetWrapper.insert(node.leftBracket.offset + 1, _pooledComponentTemplate(className));
-      _assetWrapper.insertAtCursor('\n  ');
+      var componentModifier = new ComponentCtorToFactoryCtorConvertingAstVisitor(_assetWrapper, className);
+      node.visitChildren(componentModifier);
+      if (componentModifier.modified == false) {
+        var pooledComponent = _pooledComponentTemplate(className);
+        pooledComponent = pooledComponent.replaceFirst(_cursor, '');
+        _assetWrapper.insert(node.leftBracket.offset + 1, pooledComponent);
+      } else {
+        _assetWrapper.insert(node.leftBracket.offset + 2, _pooledComponentBasicCtor(className));
+        _assetWrapper.insertAtCursor('');
+      }
       _modified = true;
     }
     return node;
+  }
+}
+
+class ComponentCtorToFactoryCtorConvertingAstVisitor extends SimpleAstVisitor {
+  AssetWrapper _assetWrapper;
+  String _className;
+  bool modified = false;
+  ComponentCtorToFactoryCtorConvertingAstVisitor(this._assetWrapper, this._className);
+
+  @override
+  visitConstructorDeclaration(ConstructorDeclaration node) {
+    _assetWrapper.insert(node.beginToken.offset, 'factory ');
+    if (node.body is EmptyFunctionBody) {
+      _assetWrapper.replace(node.body.beginToken.lexeme, _pooledComponentFactoryCtorBody(_className), node.body.beginToken.offset);
+      node.parameters.parameters.forEach((param) {
+        if (param is FieldFormalParameter && param.thisToken != null) {
+          _assetWrapper.replace('this.', '', param.thisToken.offset);
+          _assetWrapper.insertAtCursor('pooledComponent.${param.identifier.name} = ${param.identifier.name};\n    ${_cursor}');
+        }
+        print(param);
+      });
+    }
+    modified = true;
   }
 }
 
@@ -243,15 +252,22 @@ const String _initializeTemplate = '''
   void initialize() {
     super.initialize();$_cursor}
 ''';
+
 String _pooledComponentTemplate(String className) => '''
 
-  ${className}._();
-  factory ${className}() {
-    ${className} pooledComponent = new Pooled.of(${className}, _ctor);
-    return pooledComponent;
-  }
-  static ${className} _constructor() => new ${className}._();
+${_pooledComponentBasicCtor(className)}
+  factory ${className}()${_pooledComponentFactoryCtorBody(className)}
 ''';
+
+String _pooledComponentBasicCtor(String className) => '''
+  static ${className} _ctor() => new ${className}._();
+  ${className}._();
+''';
+
+String _pooledComponentFactoryCtorBody(String className) => ''' {
+    ${className} pooledComponent = new Pooled.of(${className}, _ctor);
+    ${_cursor}return pooledComponent;
+  }''';
 
 String _mapperInitializer(String name, String type) => '\n    $name = new Mapper<$type>($type, world);$_cursor';
 String _managerInitializer(String name, String type) => '\n    $name = world.getManager($type);$_cursor';
