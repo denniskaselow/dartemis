@@ -148,6 +148,18 @@ void main() {
           }));
         }));
       });
+      test('a simple component with optional data into a PooledComponent', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA));
+          }));
+        }));
+      });
     });
 
     group('initializes everything in', () {
@@ -380,6 +392,26 @@ class SimpleComponent extends PooledComponent {
   SimpleComponent._();
   String data;
   factory SimpleComponent(data) {
+    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
+    pooledComponent.data = data;
+    return pooledComponent;
+  }
+}
+''';
+
+const SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
+class SimpleComponent extends Component {
+  String data;
+  SimpleComponent([this.data = 'default']);
+}
+''';
+
+const SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
+class SimpleComponent extends PooledComponent {
+  static SimpleComponent _ctor() => new SimpleComponent._();
+  SimpleComponent._();
+  String data;
+  factory SimpleComponent([data = 'default']) {
     SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
     pooledComponent.data = data;
     return pooledComponent;

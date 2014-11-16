@@ -173,7 +173,9 @@ class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
         fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _systemInitializer(name, type)));
         _assetWrapper.insertAtCursor('\n  ');
       }
-    } else if (_isOfType(_nodes, className, 'Component')) {
+    } else if (_isOfType(_nodes, className, 'Component')
+        && !_isOfType(_nodes, className, 'PooledComponent')
+        && className != 'PooledComponent') {
       _assetWrapper.replace('Component', 'PooledComponent', node.extendsClause.superclass.offset);
       var componentModifier = new ComponentCtorToFactoryCtorConvertingAstVisitor(_assetWrapper, className);
       node.visitChildren(componentModifier);
@@ -203,11 +205,13 @@ class ComponentCtorToFactoryCtorConvertingAstVisitor extends SimpleAstVisitor {
     if (node.body is EmptyFunctionBody) {
       _assetWrapper.replace(node.body.beginToken.lexeme, _pooledComponentFactoryCtorBody(_className), node.body.beginToken.offset);
       node.parameters.parameters.forEach((param) {
+        if (param is DefaultFormalParameter) {
+          param = param.parameter;
+        }
         if (param is FieldFormalParameter && param.thisToken != null) {
           _assetWrapper.replace('this.', '', param.thisToken.offset);
           _assetWrapper.insertAtCursor('pooledComponent.${param.identifier.name} = ${param.identifier.name};\n    ${_cursor}');
         }
-        print(param);
       });
     }
     modified = true;
