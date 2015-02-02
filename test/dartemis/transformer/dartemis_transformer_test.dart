@@ -39,6 +39,19 @@ void main() {
         }));
       });
 
+      test('sytem without initialize', () {
+        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER));
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          var logs = transformMock.getLogs(callsTo('addOutput'));
+          logs.verify(happenedOnce);
+          var resultAsset = logs.first as LogEntry;
+          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+            expect(content, equals(SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT));
+          }));
+        }));
+      });
+
       test('sytem with initialize', () {
         assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE_WITH_MAPPER));
 
@@ -224,8 +237,25 @@ class SimpleSystem extends VoidEntitySystem {
 }
 ''';
 
+const SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER = '''
+class SimpleSystem extends VoidEntitySystem with SomeMixin {
+  Mapper<Position> pm;
+}
+''';
+
 const SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT = '''
 class SimpleSystem extends VoidEntitySystem {
+  Mapper<Position> pm;
+  @override
+  void initialize() {
+    super.initialize();
+    pm = new Mapper<Position>(Position, world);
+  }
+}
+''';
+
+const SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT = '''
+class SimpleSystem extends VoidEntitySystem with SomeMixin {
   Mapper<Position> pm;
   @override
   void initialize() {
