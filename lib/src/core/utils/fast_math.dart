@@ -10,9 +10,9 @@ class FastMath {
   static const double TWO_PI = 2.0 * PI;
   static const double THREE_PI_HALVES = TWO_PI - HALF_PI;
 
-  static const double _sin_a = -4 / SQUARED_PI;
-  static const double _sin_b = 4 / PI;
-  static const double _sin_p = 9 / 40;
+  static const double _sin_a = -4.0 / SQUARED_PI;
+  static const double _sin_b = 4.0 / PI;
+  static const double _sin_p = 9.0 / 40.0;
 
   static const double _asin_a = -0.0481295276831013447;
   static const double _asin_b = -0.343835993947915197;
