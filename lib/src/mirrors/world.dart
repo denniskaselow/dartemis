@@ -1,7 +1,5 @@
 part of dartemis_mirrors;
 
-/// Use the normal world instead and include the dartemis transformer in pubspec.yaml
-@deprecated
 class World extends core.World {
 
   static const Symbol qnEntitySystem = #dartemis.EntitySystem;
