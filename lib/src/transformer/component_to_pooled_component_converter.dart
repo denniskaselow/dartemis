@@ -131,6 +131,7 @@ class _ComponentConstructorToFactoryConstructorConvertingAstVisitor extends Simp
     var formalParameters = <FormalParameter>[];
     var assignmentStatements = <Statement>[];
     node.parameters.parameters.forEach((parameter) {
+      bool addStatement = true;
       var modifiedParameter = new SimpleFormalParameter(null, null, null, null, new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
       if (parameter is FieldFormalParameter) {
         formalParameters.add(modifiedParameter);
@@ -139,15 +140,29 @@ class _ComponentConstructorToFactoryConstructorConvertingAstVisitor extends Simp
           parameter.parameter = modifiedParameter;
         }
         formalParameters.add(parameter);
+      } else if (parameter is SimpleFormalParameter) {
+        formalParameters.add(parameter);
+        addStatement = false;
+      } else {
+        throw '${parameter.runtimeType} is not yet supported as a parameter for a Component, please open an issue at https://github.com/denniskaselow/dartemis/issues';
       }
-      Expression leftHandSide = new PrefixedIdentifier(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0)), new Token(TokenType.PERIOD, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
+      if (addStatement) {
+        Expression leftHandSide = new PrefixedIdentifier(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0)), new Token(TokenType.PERIOD, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
+        Token operator = new Token(TokenType.EQ, 0);
+        Expression rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0));
+        Token semicolon = new Token(TokenType.SEMICOLON, 0);
+        assignmentStatements.add(new ExpressionStatement(new AssignmentExpression(leftHandSide, operator, rightHandSide), semicolon));
+      }
+    });
+    node.initializers.forEach((ConstructorFieldInitializer initializer) {
+      Expression leftHandSide = new PrefixedIdentifier(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0)), new Token(TokenType.PERIOD, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, initializer.fieldName.name, 0)));
       Token operator = new Token(TokenType.EQ, 0);
-      Expression rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0));
       Token semicolon = new Token(TokenType.SEMICOLON, 0);
-      assignmentStatements.add(new ExpressionStatement(new AssignmentExpression(leftHandSide, operator, rightHandSide), semicolon));
+      assignmentStatements.add(new ExpressionStatement(new AssignmentExpression(leftHandSide, operator, initializer.expression), semicolon));
     });
     node.parameters = _createFormalParameterList(formalParameters);
     node.body = new BlockFunctionBody(null, null, _createPooledComponentCreationBlock(node.returnType.name, assignmentStatements));
+    node.initializers.clear();
     _count++;
   }
 }
