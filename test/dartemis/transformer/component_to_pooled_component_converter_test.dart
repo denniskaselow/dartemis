@@ -25,6 +25,14 @@ void main() {
       var result = formatter.format(component.toSource());
       expect(result, equals(formatter.format(SIMPLE_POOLED_COMPONENT_WITH_DATA)));
     });
+    test('SimpleComponent with optional data', () {
+      var component = getClassDeclaration(SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA);
+
+      converter.convert(component);
+
+      var result = formatter.format(component.toSource());
+      expect(result, equals(formatter.format(SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA)));
+    });
   });
 }
 
@@ -63,6 +71,28 @@ const SIMPLE_POOLED_COMPONENT_WITH_DATA = '''
 class SimpleComponent extends PooledComponent {
   String data;
   factory SimpleComponent(data) {
+    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
+    pooledComponent.data = data;
+    return pooledComponent;
+  }
+  static SimpleComponent _ctor() => new SimpleComponent._();
+  SimpleComponent._();
+}
+''';
+
+
+
+const SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
+class SimpleComponent extends Component {
+  String data;
+  SimpleComponent([this.data = 'default']);
+}
+''';
+
+const SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
+class SimpleComponent extends PooledComponent {
+  String data;
+  factory SimpleComponent([data = 'default']) {
     SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
     pooledComponent.data = data;
     return pooledComponent;

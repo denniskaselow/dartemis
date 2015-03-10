@@ -131,14 +131,20 @@ class _ComponentConstructorToFactoryConstructorConvertingAstVisitor extends Simp
     var formalParameters = <FormalParameter>[];
     var assignmentStatements = <Statement>[];
     node.parameters.parameters.forEach((parameter) {
+      var modifiedParameter = new SimpleFormalParameter(null, null, null, null, new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
       if (parameter is FieldFormalParameter) {
-        formalParameters.add(new SimpleFormalParameter(null, null, null, null, new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0))));
-        Expression leftHandSide = new PrefixedIdentifier(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0)), new Token(TokenType.PERIOD, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
-        Token operator = new Token(TokenType.EQ, 0);
-        Expression rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0));
-        Token semicolon = new Token(TokenType.SEMICOLON, 0);
-        assignmentStatements.add(new ExpressionStatement(new AssignmentExpression(leftHandSide, operator, rightHandSide), semicolon));
+        formalParameters.add(modifiedParameter);
+      } else if (parameter is DefaultFormalParameter) {
+        if (parameter.parameter is FieldFormalParameter) {
+          parameter.parameter = modifiedParameter;
+        }
+        formalParameters.add(parameter);
       }
+      Expression leftHandSide = new PrefixedIdentifier(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0)), new Token(TokenType.PERIOD, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
+      Token operator = new Token(TokenType.EQ, 0);
+      Expression rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0));
+      Token semicolon = new Token(TokenType.SEMICOLON, 0);
+      assignmentStatements.add(new ExpressionStatement(new AssignmentExpression(leftHandSide, operator, rightHandSide), semicolon));
     });
     node.parameters = _createFormalParameterList(formalParameters);
     node.body = new BlockFunctionBody(null, null, _createPooledComponentCreationBlock(node.returnType.name, assignmentStatements));
