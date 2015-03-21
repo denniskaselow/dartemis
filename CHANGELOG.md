@@ -7,7 +7,8 @@
 * deprecated `ComponentMapper` use `Mapper` instead
 * deprecated `ComponentMapper#get(Entity)`, use `Mapper[Entity]` instead
 ### Enhancements
-* created a code generating transformer to insert `Manager`, `System`s and `Mapper`s into `Manager` and `System` instances 
+* created a code generating transformer to insert `Manager`, `System`s and `Mapper`s into `Manager` and `System` instances
+* properties have been added to the world, accessible using the `[]` operator 
 ### Bugfixes
 * DelayedEntityProcessingSystem keeps running until all current entities have expired
 ### Internal

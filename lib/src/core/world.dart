@@ -26,6 +26,8 @@ class World {
   int _frame = 0;
   double _time = 0.0;
 
+  /// World-related properties that can be written and read by the user.
+  final Map<String, dynamic> properties = new Map<String, dynamic>();
   /// Returns the current frame.
   int get frame => _frame;
   /// Returns the time that has elapsed since the game has started (sum of all
@@ -193,4 +195,12 @@ class World {
   /// Disable the [Entity e] from being processed. Won't delete it, it will
   /// continue to exist but won't get processed.
   void disable(Entity e) => _disable.add(e);
+
+  /// Returns the value for [key] from [properties].
+  dynamic operator [](String key) => properties[key];
+
+  /// Set the [value] of [key] in [properties].
+  void operator []=(String key, dynamic value) {
+    properties[key] = value;
+  }
 }

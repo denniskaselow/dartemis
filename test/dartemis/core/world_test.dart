@@ -80,6 +80,11 @@ void main() {
       world.process();
       expect(world.time, equals(30));
     });
+    test('world allows access to properties', () {
+      world['key'] = 'value';
+
+      expect(world['key'], equals('value'));
+    });
   });
   group('integration tests for World.process()', () {
     World world;
