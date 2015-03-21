@@ -84,7 +84,7 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
   }
 
   void processContent(AggregateTransform transform, AssetWrapper asset) {
-    var mapperInitializer = new FieldInitializingAstVisitor(_nodes);
+    var mapperInitializer = new ClassModifyingAstVisitor(_nodes);
     asset.unit.visitChildren(mapperInitializer);
     if (mapperInitializer._modified) {
       transform.addOutput(new Asset.fromString(asset.asset.id, formatter.format(asset.unit.toSource())));
@@ -131,14 +131,14 @@ class ClassHierarchyNode {
   ClassHierarchyNode(this.name, this.parent);
 }
 
-class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
+class ClassModifyingAstVisitor extends SimpleAstVisitor<AstNode> {
 
   Map<String, ClassHierarchyNode> _nodes;
   var _modified = false;
   InitializeMethodConverter initializeMethodConverter;
   var componentToPooledComponentConverter = new ComponentToPooledComponentConverter();
 
-  FieldInitializingAstVisitor(this._nodes) {
+  ClassModifyingAstVisitor(this._nodes) {
     initializeMethodConverter = new InitializeMethodConverter(_nodes);
   }
 

@@ -3,7 +3,7 @@ library dartemis_transformer_test;
 import "dart:async";
 
 import "package:unittest/unittest.dart";
-import "package:mock/mock.dart";
+import "package:mockito/mockito.dart";
 import "package:barback/barback.dart" show AggregateTransform, Asset, AssetId, BarbackSettings;
 import "package:dartemis/transformer.dart";
 
@@ -22,7 +22,7 @@ void main() {
 
       transformer = new DartemisTransformer.asPlugin(barbackSettingsMock);
 
-      transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock]));
+      when(transformMock.primaryInputs).thenReturn(new Stream.fromIterable([assetMock]));
     });
 
     group('initializes Manager from other Library in', () {
@@ -31,18 +31,15 @@ void main() {
         AssetMock assetOtherLibraryMock = new AssetMock();
         AssetMock assetPartOfOtherLibraryMock = new AssetMock();
 
-        transformMock.when(callsTo('getInput', new AssetId.parse('otherLib|lib/otherLib.dart'))).alwaysReturn(new Future.value(assetOtherLibraryMock));
-        transformMock.when(callsTo('getInput', new AssetId.parse('otherLib|lib/src/manager.dart'))).alwaysReturn(new Future.value(assetPartOfOtherLibraryMock));
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY));
-        assetOtherLibraryMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(OTHER_LIBRARY));
-        assetPartOfOtherLibraryMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(OTHER_LIBRARY_MANAGER));
-        barbackSettingsMock.when(callsTo('get configuration')).alwaysReturn({'additionalLibraries': ['otherLib/otherLib.dart']});
+        when(transformMock.getInput(new AssetId.parse('otherLib|lib/otherLib.dart'))).thenReturn(new Future.value(assetOtherLibraryMock));
+        when(transformMock.getInput(new AssetId.parse('otherLib|lib/src/manager.dart'))).thenReturn(new Future.value(assetPartOfOtherLibraryMock));
+        when(assetMock.readAsString()).thenReturn(new Future.value(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY));
+        when(assetOtherLibraryMock.readAsString()).thenReturn(new Future.value(OTHER_LIBRARY));
+        when(assetPartOfOtherLibraryMock.readAsString()).thenReturn(new Future.value(OTHER_LIBRARY_MANAGER));
+        when(barbackSettingsMock.configuration).thenReturn({'additionalLibraries': ['otherLib/otherLib.dart']});
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+          verify(transformMock.addOutput(captureAny)).captured.single.readAsString().then(expectAsync((content) {
             expect(content, equals(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY_RESULT));
           }));
         }));
@@ -52,13 +49,10 @@ void main() {
     group('initializes everything in', () {
 
       test('managers and sytems', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(EVERYTHING_COMBINED));
+        when(assetMock.readAsString()).thenReturn(new Future.value(EVERYTHING_COMBINED));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
+          verify(transformMock.addOutput(captureAny)).captured.single.readAsString().then(expectAsync((content) {
             expect(content, equals(EVERYTHING_COMBINED_RESULT));
           }));
         }));
@@ -67,37 +61,37 @@ void main() {
 
     group('doesn\'t crash', () {
       test('for system with dynamic fields', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_DYNAMIC_FIELD));
+        when(assetMock.readAsString()).thenReturn(new Future.value(SYSTEM_WITH_DYNAMIC_FIELD));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
+          verifyNever(transformMock.addOutput(captureAny));
         }));
       });
 
       test('for classes without superclass', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(CLASS_WITHOUT_SUPERCLASS));
+        when(assetMock.readAsString()).thenReturn(new Future.value(CLASS_WITHOUT_SUPERCLASS));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
+          verifyNever(transformMock.addOutput(captureAny));
         }));
       });
 
       test('for BarbackSetting without additionalLibraries', () {
-        barbackSettingsMock.when(callsTo('get configuration')).alwaysReturn({'additionalLibraries': null});
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(CLASS_WITHOUT_SUPERCLASS));
+        when(barbackSettingsMock.configuration).thenReturn({'additionalLibraries': null});
+        when(assetMock.readAsString()).thenReturn(new Future.value(CLASS_WITHOUT_SUPERCLASS));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
+          verifyNever(transformMock.addOutput(captureAny));
         }));
       });
     });
 
     group('doesn\'t create instance', () {
       test('in unrelated classes', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SOME_OTHER_CLASS_WITH_MAPPER));
+        when(assetMock.readAsString()).thenReturn(new Future.value(SOME_OTHER_CLASS_WITH_MAPPER));
 
         transformer.apply(transformMock).then(expectAsync((_) {
-          transformMock.getLogs(callsTo('addOutput')).verify(neverHappened);
+          verifyNever(transformMock.addOutput(captureAny));
         }));
       });
     });
