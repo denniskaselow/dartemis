@@ -65,7 +65,7 @@ A `Component` is a pretty simple structure and should not contain any logic:
         Position(this.x, this.y);
     }
     ```
-Or if you want to use a `PooledComponent`:
+Or if you want to use a `PooledComponent` (not needed if you use the transformer):
 
     ```dart
     class Position extends PooledComponent {
@@ -150,7 +150,12 @@ Caution: The transformer is not tested with cases where a library is imported
 using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
 if it doesn't work and you have to use an alias.
 
-Extra Caution: Debugging a transformed file in the Dart Editor is not possible but works fine in Dartium.
+If you have a component wth a constructor with a function body, use `this` to reference class variables and methods.
+The transformer will not analyze whether a variable in the body is locally scoped or not and only turns `this` into
+`pooledComponent`.
+
+Extra Caution: Debugging a transformed file in the Dart Editor is not possible because lines don't match
+but it works fine in Dartium.
 
 Documentation
 =============

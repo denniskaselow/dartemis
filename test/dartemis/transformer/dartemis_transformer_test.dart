@@ -24,92 +24,6 @@ void main() {
 
       transformMock.when(callsTo('get primaryInputs')).alwaysReturn(new Stream.fromIterable([assetMock]));
     });
-    group('initializes Mapper in', () {
-
-      test('sytem without initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT));
-          }));
-        }));
-      });
-
-      test('sytem without initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT));
-          }));
-        }));
-      });
-
-      test('sytem with initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITH_INITIALIZE_WITH_MAPPER));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SYSTEM_WITH_INITIALIZE_WITH_MAPPER_RESULT));
-          }));
-        }));
-      });
-
-      test('manager without initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT));
-          }));
-        }));
-      });
-    });
-
-    group('initializes Manager in', () {
-
-      test('sytem without initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER_RESULT));
-          }));
-        }));
-      });
-    });
-
-    group('initializes System in', () {
-
-      test('system without initialize', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM_RESULT));
-          }));
-        }));
-      });
-    });
 
     group('initializes Manager from other Library in', () {
 
@@ -130,46 +44,6 @@ void main() {
           var resultAsset = logs.first as LogEntry;
           (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
             expect(content, equals(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY_RESULT));
-          }));
-        }));
-      });
-    });
-
-    group('converts', () {
-
-      test('a simple component into a PooledComponent', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SIMPLE_COMPONENT));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SIMPLE_POOLED_COMPONENT));
-          }));
-        }));
-      });
-      test('a simple component with data into a PooledComponent', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SIMPLE_COMPONENT_WITH_DATA));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SIMPLE_POOLED_COMPONENT_WITH_DATA));
-          }));
-        }));
-      });
-      test('a simple component with optional data into a PooledComponent', () {
-        assetMock.when(callsTo('readAsString')).alwaysReturn(new Future.value(SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA));
-
-        transformer.apply(transformMock).then(expectAsync((_) {
-          var logs = transformMock.getLogs(callsTo('addOutput'));
-          logs.verify(happenedOnce);
-          var resultAsset = logs.first as LogEntry;
-          (resultAsset.args[0] as Asset).readAsString().then(expectAsync((content) {
-            expect(content, equals(SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA));
           }));
         }));
       });
@@ -231,117 +105,6 @@ void main() {
 }
 
 
-const SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER = '''
-class SimpleSystem extends VoidEntitySystem {
-  Mapper<Position> pm;
-}
-''';
-
-const SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER = '''
-class SimpleSystem extends VoidEntitySystem with SomeMixin {
-  Mapper<Position> pm;
-}
-''';
-
-const SYSTEM_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT = '''
-class SimpleSystem extends VoidEntitySystem {
-  Mapper<Position> pm;
-  @override
-  void initialize() {
-    super.initialize();
-    pm = new Mapper<Position>(Position, world);
-  }
-}
-''';
-
-const SYSTEM_WITH_MIXIN_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT = '''
-class SimpleSystem extends VoidEntitySystem with SomeMixin {
-  Mapper<Position> pm;
-  @override
-  void initialize() {
-    super.initialize();
-    pm = new Mapper<Position>(Position, world);
-  }
-}
-''';
-
-const SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER = '''
-class SimpleSystem extends VoidEntitySystem {
-  SimpleManager sm;
-}
-class SimpleManager extends Manager {
-}
-''';
-
-const SYSTEM_WITHOUT_INITIALIZE_WITH_MANAGER_RESULT = '''
-class SimpleSystem extends VoidEntitySystem {
-  SimpleManager sm;
-  @override
-  void initialize() {
-    super.initialize();
-    sm = world.getManager(SimpleManager);
-  }
-}
-class SimpleManager extends Manager {
-}
-''';
-
-const MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER = '''
-class SimpleManager extends Manager {
-  Mapper<Position> pm;
-}
-''';
-
-const MANAGER_WITHOUT_INITIALIZE_WITH_MAPPER_RESULT = '''
-class SimpleManager extends Manager {
-  Mapper<Position> pm;
-  @override
-  void initialize() {
-    super.initialize();
-    pm = new Mapper<Position>(Position, world);
-  }
-}
-''';
-
-const SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM = '''
-class SimpleSystem extends VoidEntitySystem {
-  OtherSystem om;
-}
-class OtherSystem extends EntitySystem {
-}
-''';
-
-const SYSTEM_WITHOUT_INITIALIZE_WITH_OTHER_SYSTEM_RESULT = '''
-class SimpleSystem extends VoidEntitySystem {
-  OtherSystem om;
-  @override
-  void initialize() {
-    super.initialize();
-    om = world.getSystem(OtherSystem);
-  }
-}
-class OtherSystem extends EntitySystem {
-}
-''';
-
-const SYSTEM_WITH_INITIALIZE_WITH_MAPPER = '''
-class SimpleSystem extends VoidEntitySystem {
-  Mapper<Position> pm;
-  @override
-  void initialize() {}
-}
-''';
-
-const SYSTEM_WITH_INITIALIZE_WITH_MAPPER_RESULT = '''
-class SimpleSystem extends VoidEntitySystem {
-  Mapper<Position> pm;
-  @override
-  void initialize() {
-    pm = new Mapper<Position>(Position, world);
-  }
-}
-''';
-
 const SYSTEM_WITH_DYNAMIC_FIELD = '''
 class SimpleSystem extends VoidEntitySystem {
   var something;
@@ -370,11 +133,10 @@ const SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY_RESULT = '''
 class SimpleSystem extends EntitySystem {
   SimpleManager sm;
   OtherSystem os;
-  @override
-  void initialize() {
+  @override void initialize() {
     super.initialize();
-    sm = world.getManager(SimpleManager);
     os = world.getSystem(OtherSystem);
+    sm = world.getManager(SimpleManager);
   }
 }
 ''';
@@ -391,62 +153,6 @@ const OTHER_LIBRARY_MANAGER = '''
 part of otherLib;
 
 class SimpleManager extends Manager {}
-''';
-
-const SIMPLE_COMPONENT = '''
-class SimpleComponent extends Component {}
-''';
-
-const SIMPLE_POOLED_COMPONENT = '''
-class SimpleComponent extends PooledComponent {
-  static SimpleComponent _ctor() => new SimpleComponent._();
-  SimpleComponent._();
-
-  factory SimpleComponent() {
-    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
-    return pooledComponent;
-  }
-}
-''';
-
-const SIMPLE_COMPONENT_WITH_DATA = '''
-class SimpleComponent extends Component {
-  String data;
-  SimpleComponent(this.data);
-}
-''';
-
-const SIMPLE_POOLED_COMPONENT_WITH_DATA = '''
-class SimpleComponent extends PooledComponent {
-  static SimpleComponent _ctor() => new SimpleComponent._();
-  SimpleComponent._();
-  String data;
-  factory SimpleComponent(data) {
-    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
-    pooledComponent.data = data;
-    return pooledComponent;
-  }
-}
-''';
-
-const SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
-class SimpleComponent extends Component {
-  String data;
-  SimpleComponent([this.data = 'default']);
-}
-''';
-
-const SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
-class SimpleComponent extends PooledComponent {
-  static SimpleComponent _ctor() => new SimpleComponent._();
-  SimpleComponent._();
-  String data;
-  factory SimpleComponent([data = 'default']) {
-    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
-    pooledComponent.data = data;
-    return pooledComponent;
-  }
-}
 ''';
 
 const EVERYTHING_COMBINED = '''
@@ -469,17 +175,15 @@ const EVERYTHING_COMBINED_RESULT = '''
 class SimpleManager extends Manager {
   OtherManager om;
   SimpleSystem ss;
-  @override
-  void initialize() {
+  @override void initialize() {
     super.initialize();
-    om = world.getManager(OtherManager);
     ss = world.getSystem(SimpleSystem);
+    om = world.getManager(OtherManager);
   }
 }
 class OtherManager extends Manager {
   Mapper<Position> pm;
-  @override
-  void initialize() {
+  @override void initialize() {
     super.initialize();
     pm = new Mapper<Position>(Position, world);
   }
@@ -487,15 +191,13 @@ class OtherManager extends Manager {
 class SimpleSystem extends EntitySystem {
   SimpleManager sm;
   Mapper<Position> pm;
-  @override
-  void initialize() {
+  @override void initialize() {
     super.initialize();
     pm = new Mapper<Position>(Position, world);
     sm = world.getManager(SimpleManager);
   }
 }
-class OtherSystem extends VoidEntitySystem {
-}
+class OtherSystem extends VoidEntitySystem {}
 ''';
 
 class AggregateTransformMock extends Mock implements AggregateTransform {}

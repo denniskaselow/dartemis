@@ -28,6 +28,7 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
                                             'TeamManager': new ClassHierarchyNode('TeamManager', 'Manager'),
                                             };
   final BarbackSettings _settings;
+  final DartFormatter formatter = new DartFormatter();
 
   DartemisTransformer.asPlugin(this._settings);
 
@@ -56,7 +57,7 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
       return transform.primaryInputs.toList().then((assets) {
         return Future.wait(assets.map((asset) {
           return asset.readAsString().then((content) {
-            return new AssetWrapper(asset, analyze(content), content);
+            return new AssetWrapper(asset, analyze(content));
           });
         })).then((List<AssetWrapper> assets) {
           assets.forEach((asset) {
@@ -83,10 +84,10 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
   }
 
   void processContent(AggregateTransform transform, AssetWrapper asset) {
-    var mapperInitializer = new FieldInitializingAstVisitor(_nodes, asset);
+    var mapperInitializer = new FieldInitializingAstVisitor(_nodes);
     asset.unit.visitChildren(mapperInitializer);
     if (mapperInitializer._modified) {
-      transform.addOutput(new Asset.fromString(asset.asset.id, asset.content));
+      transform.addOutput(new Asset.fromString(asset.asset.id, formatter.format(asset.unit.toSource())));
     }
   }
 
@@ -133,111 +134,25 @@ class ClassHierarchyNode {
 class FieldInitializingAstVisitor extends SimpleAstVisitor<AstNode> {
 
   Map<String, ClassHierarchyNode> _nodes;
-  AssetWrapper _assetWrapper;
   var _modified = false;
+  InitializeMethodConverter initializeMethodConverter;
+  var componentToPooledComponentConverter = new ComponentToPooledComponentConverter();
 
-  FieldInitializingAstVisitor(this._nodes, this._assetWrapper);
+  FieldInitializingAstVisitor(this._nodes) {
+    initializeMethodConverter = new InitializeMethodConverter(_nodes);
+  }
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
     var className = node.name.name;
     if (_isOfType(_nodes, className, 'EntitySystem') || _isOfType(_nodes, className, 'Manager')) {
-      var fieldCollector = new FieldCollectingAstVisitor(_nodes);
-      var callSuperInitialize = false;
-      node.visitChildren(fieldCollector);
-      if (fieldCollector.mappers.length > 0 ||
-          fieldCollector.managers.length > 0 ||
-          fieldCollector.systems.length > 0 ) {
-        var initializeMethodDeclaration = node.getMethod('initialize');
-        if (null == initializeMethodDeclaration) {
-          _assetWrapper.insert(node.endToken.offset, _initializeTemplate);
-          _modified = true;
-          callSuperInitialize = true;
-        } else {
-          var posOfOpeningBrace = initializeMethodDeclaration.body.beginToken.offset;
-          _assetWrapper.insert(posOfOpeningBrace + 1, _cursor);
-        }
-        fieldCollector.mappers.forEach((mapper) {
-          var mapperName = mapper.fields.variables[0].name.name;
-          var mapperType = mapper.fields.type.typeArguments.arguments[0].name.name;
-          _assetWrapper.insertAtCursor(_mapperInitializer(mapperName, mapperType));
-          _modified = true;
-        });
-        var initField = (FieldDeclaration node, String initializer(String name, String type)) {
-          var name = node.fields.variables[0].name.name;
-          var type = node.fields.type.name.name;
-          _assetWrapper.insertAtCursor(initializer(name, type));
-          _modified = true;
-        };
-        fieldCollector.managers.forEach((manager) => initField(manager, (String name, String type) => _managerInitializer(name, type)));
-        fieldCollector.systems.forEach((system) => initField(system, (String name, String type) => _systemInitializer(name, type)));
-        _assetWrapper.insertAtCursor('\n  ');
-      }
+      _modified = initializeMethodConverter.convert(node) || _modified;
     } else if (_isOfType(_nodes, className, 'Component')
         && !_isOfType(_nodes, className, 'PooledComponent')
         && className != 'PooledComponent') {
-      _assetWrapper.replace('Component', 'PooledComponent', node.extendsClause.superclass.offset);
-      var componentModifier = new ComponentCtorToFactoryCtorConvertingAstVisitor(_assetWrapper, className);
-      node.visitChildren(componentModifier);
-      if (componentModifier.modified == false) {
-        var pooledComponent = _pooledComponentTemplate(className);
-        pooledComponent = pooledComponent.replaceFirst(_cursor, '');
-        _assetWrapper.insert(node.leftBracket.offset + 1, pooledComponent);
-      } else {
-        _assetWrapper.insert(node.leftBracket.offset + 2, _pooledComponentBasicCtor(className));
-        _assetWrapper.insertAtCursor('');
-      }
-      _modified = true;
+      _modified = componentToPooledComponentConverter.convert(node) || _modified;
     }
     return node;
-  }
-}
-
-class ComponentCtorToFactoryCtorConvertingAstVisitor extends SimpleAstVisitor {
-  AssetWrapper _assetWrapper;
-  String _className;
-  bool modified = false;
-  ComponentCtorToFactoryCtorConvertingAstVisitor(this._assetWrapper, this._className);
-
-  @override
-  visitConstructorDeclaration(ConstructorDeclaration node) {
-    _assetWrapper.insert(node.beginToken.offset, 'factory ');
-    if (node.body is EmptyFunctionBody) {
-      _assetWrapper.replace(node.body.beginToken.lexeme, _pooledComponentFactoryCtorBody(_className), node.body.beginToken.offset);
-      node.parameters.parameters.forEach((param) {
-        if (param is DefaultFormalParameter) {
-          param = param.parameter;
-        }
-        if (param is FieldFormalParameter && param.thisToken != null) {
-          _assetWrapper.replace('this.', '', param.thisToken.offset);
-          _assetWrapper.insertAtCursor('pooledComponent.${param.identifier.name} = ${param.identifier.name};\n    ${_cursor}');
-        }
-      });
-    }
-    modified = true;
-  }
-}
-
-class FieldCollectingAstVisitor extends SimpleAstVisitor {
-  List<FieldDeclaration> mappers = <FieldDeclaration>[];
-  List<FieldDeclaration> managers = <FieldDeclaration>[];
-  List<FieldDeclaration> systems = <FieldDeclaration>[];
-  Map<String, ClassHierarchyNode> nodes;
-
-  FieldCollectingAstVisitor(this.nodes);
-
-  @override
-  visitFieldDeclaration(FieldDeclaration node) {
-    if (null != node.fields.type) {
-      var typeName = node.fields.type.name.name;
-      if (typeName == 'Mapper') {
-        mappers.add(node);
-      } else if (_isOfType(nodes, typeName, 'Manager')) {
-        managers.add(node);
-      } else if (_isOfType(nodes, typeName, 'EntitySystem')) {
-        systems.add(node);
-      }
-    }
   }
 }
 
@@ -249,30 +164,3 @@ bool _isOfType(Map<String, ClassHierarchyNode> nodes, String className, String s
   }
   return _isOfType(nodes, nodes[className].parent, superclassName);
 }
-
-const String _cursor = '|-dartemisTransformerCursor-|';
-const String _initializeTemplate = '''
-  @override
-  void initialize() {
-    super.initialize();$_cursor}
-''';
-
-String _pooledComponentTemplate(String className) => '''
-
-${_pooledComponentBasicCtor(className)}
-  factory ${className}()${_pooledComponentFactoryCtorBody(className)}
-''';
-
-String _pooledComponentBasicCtor(String className) => '''
-  static ${className} _ctor() => new ${className}._();
-  ${className}._();
-''';
-
-String _pooledComponentFactoryCtorBody(String className) => ''' {
-    ${className} pooledComponent = new Pooled.of(${className}, _ctor);
-    ${_cursor}return pooledComponent;
-  }''';
-
-String _mapperInitializer(String name, String type) => '\n    $name = new Mapper<$type>($type, world);$_cursor';
-String _managerInitializer(String name, String type) => '\n    $name = world.getManager($type);$_cursor';
-String _systemInitializer(String name, String type) => '\n    $name = world.getSystem($type);$_cursor';

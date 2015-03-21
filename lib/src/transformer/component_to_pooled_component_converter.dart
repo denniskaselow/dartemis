@@ -3,9 +3,9 @@ part of transformer;
 
 class ComponentToPooledComponentConverter {
 
-  void convert(ClassDeclaration unit) {
+  bool convert(ClassDeclaration unit) {
     var className = unit.name.name;
-    unit.extendsClause.superclass.name = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'PooledComponent', 0));
+    unit.extendsClause.superclass.name = AstFactory.identifier3('PooledComponent');
 
     var constructorVisitor = new _ComponentConstructorToFactoryConstructorConvertingAstVisitor();
     unit.visitChildren(constructorVisitor);
@@ -15,110 +15,66 @@ class ComponentToPooledComponentConverter {
     }
     unit.members.add(_createStaticConstructorMethod(className));
     unit.members.add(_createHiddenConstructor(className));
+    return true;
   }
 
   MethodDeclaration _createStaticConstructorMethod(String className) {
-    Comment comment = null;
-    List<Annotation> metadata = null;
-    Token externalKeyword = null;
-    Token modifierKeyword = new KeywordToken(Keyword.STATIC, 0);
-    TypeName returnType = new TypeName(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, className, 0)), null);
-    Token propertyKeyword = null;
-    Token operatorKeyword = null;
-    SimpleIdentifier name = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, '_ctor', 0));
+    TypeName returnType = new TypeName(AstFactory.identifier3(className), null);
+    SimpleIdentifier name = AstFactory.identifier3('_ctor');
     FormalParameterList parameters = _createFormalParameterList();
     FunctionBody body = _createExpressionFunctionBody(className);
-    return new MethodDeclaration(comment, metadata, externalKeyword, modifierKeyword, returnType, propertyKeyword, operatorKeyword, name, parameters, body);
+    return AstFactory.methodDeclaration2(Keyword.STATIC, returnType, null, null, name, parameters, body);
   }
 
   ExpressionFunctionBody _createExpressionFunctionBody(String className) {
-    Token asyncKeyword = null;
-    Token functionDefinition = new Token(TokenType.FUNCTION, 0);
     Expression expression = _createInstanceCreationExpression(className, '_');
-    Token semicolon = new Token(TokenType.SEMICOLON, 0);
-    return new ExpressionFunctionBody(asyncKeyword, functionDefinition, expression, semicolon);
+    return AstFactory.expressionFunctionBody(expression);
   }
 
   ConstructorDeclaration _createFactoryConstructor(String className) {
-    var comment = null;
-    var metadata = null;
-    var externalKeyword = null;
-    var constKeyword = null;
-    var factoryKeyword = new KeywordToken(Keyword.FACTORY, 0);
-    var returnType = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, className, 0));
-    var period = null;
+    var returnType = AstFactory.identifier3(className);
     var name = null;
     var parameters = _createFormalParameterList();
-    var separator = null;
     var initializers = null;
-    var redirectedConstructor = null;
     var body = new BlockFunctionBody(null, null, _createPooledComponentCreationBlock(className));
-
-    return new ConstructorDeclaration(comment, metadata, externalKeyword, constKeyword, factoryKeyword, returnType, period, name, parameters, separator, initializers, redirectedConstructor, body);
+    return AstFactory.constructorDeclaration2(null, Keyword.FACTORY, returnType, name, parameters, initializers, body);
   }
 
   ConstructorDeclaration _createHiddenConstructor(String className) {
-    var comment = null;
-    var metadata = null;
-    var externalKeyword = null;
-    var constKeyword = null;
-    var factoryKeyword = null;
-    var returnType = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, className, 0));
-    var period = new Token(TokenType.PERIOD, 0);
-    var name = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, '_', 0));
+    var returnType = AstFactory.identifier3(className);
     var parameters = _createFormalParameterList();
-    var separator = null;
-    var initializers = null;
-    var redirectedConstructor = null;
-    var body = new EmptyFunctionBody(new Token(TokenType.SEMICOLON, 0));
-
-    return new ConstructorDeclaration(comment, metadata, externalKeyword, constKeyword, factoryKeyword, returnType, period, name, parameters, separator, initializers, redirectedConstructor, body);
+    var body = AstFactory.emptyFunctionBody();
+    return AstFactory.constructorDeclaration2(null, null, returnType, '_', parameters, null, body);
   }
-
 }
 
 FormalParameterList _createFormalParameterList([List<FormalParameter> parameters = const <FormalParameter>[]]) {
-  Token leftParenthesis = new BeginToken(TokenType.OPEN_PAREN, 0);
-  Token leftDelimiter = null;
-  Token rightDelimiter = null;
-  Token rightParenthesis = new StringToken(TokenType.CLOSE_PAREN, ')', 0);
-  return new FormalParameterList(leftParenthesis, parameters, leftDelimiter, rightDelimiter, rightParenthesis);
+  return AstFactory.formalParameterList(parameters);
 }
 
 Block _createPooledComponentCreationBlock(String className, [List<Statement> fieldAssignments = const <Statement>[]]) {
-  Token leftBracket = new BeginToken(TokenType.OPEN_CURLY_BRACKET, 0);
   List<Statement> statements = <Statement>[];
   List<VariableDeclaration> variables = <VariableDeclaration>[];
   variables.add(_createVariableDeclaration(className));
-  VariableDeclarationList variableList = new VariableDeclarationList(null, null, null, new TypeName(new SimpleIdentifier(new StringToken(TokenType.STRING, className, 0)), null), variables);
-  var variableDeclarationStatement = new VariableDeclarationStatement(variableList, new Token(TokenType.SEMICOLON, 0));
-  Expression expression = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0));
-  var returnStatement = new ReturnStatement(new KeywordToken(Keyword.RETURN, 0), expression, new Token(TokenType.SEMICOLON, 0));
+  var variableDeclarationStatement = AstFactory.variableDeclarationStatement(null, AstFactory.typeName3(AstFactory.identifier3(className)), variables);
+  Expression expression = AstFactory.identifier3('pooledComponent');
+  var returnStatement = AstFactory.returnStatement2(expression);
   statements.add(variableDeclarationStatement);
   fieldAssignments.forEach((statement) => statements.add(statement));
   statements.add(returnStatement);
-  Token rightBracket = new Token(TokenType.CLOSE_CURLY_BRACKET, 0);
-  return new Block(leftBracket, statements, rightBracket);
+  return AstFactory.block(statements);
 }
 
 VariableDeclaration _createVariableDeclaration(String className) {
-  Comment comment = null;
-  List<Annotation> metadata = null;
-  SimpleIdentifier name = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0));
-  Token equals = new Token(TokenType.EQ, 0);
   List<Expression> arguments = <Expression>[];
-  arguments.add(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, className, 0)));
-  arguments.add(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, '_ctor', 0)));
+  arguments.add(AstFactory.identifier3(className));
+  arguments.add(AstFactory.identifier3('_ctor'));
   Expression initializer = _createInstanceCreationExpression('Pooled', 'of', arguments);
-  return new VariableDeclaration(comment, metadata, name, equals, initializer);
+  return AstFactory.variableDeclaration2('pooledComponent', initializer);
 }
 
 InstanceCreationExpression _createInstanceCreationExpression(String className, String constructorName, [List<Expression> arguments = null]) {
-  var newToken = new KeywordToken(Keyword.NEW, 0);
-  Token period = new Token(TokenType.PERIOD, 0);
-  SimpleIdentifier name = new SimpleIdentifier(new StringToken(TokenType.STRING, constructorName, 0));
-  ArgumentList argumentList = new ArgumentList(new BeginToken(TokenType.OPEN_PAREN, 0), arguments , new Token(TokenType.CLOSE_PAREN, 0));
-  return new InstanceCreationExpression(newToken, new ConstructorName(new TypeName(new SimpleIdentifier(new StringToken(TokenType.STRING, className, 0)), null), period, name), argumentList);
+  return AstFactory.instanceCreationExpression3(Keyword.NEW, AstFactory.typeName4(className), constructorName, arguments);
 }
 
 class _ComponentConstructorToFactoryConstructorConvertingAstVisitor extends SimpleAstVisitor {
@@ -127,12 +83,12 @@ class _ComponentConstructorToFactoryConstructorConvertingAstVisitor extends Simp
 
   @override
   visitConstructorDeclaration(ConstructorDeclaration node) {
-    node.factoryKeyword = new KeywordToken(Keyword.FACTORY, 0);
+    node.factoryKeyword = TokenFactory.tokenFromKeyword(Keyword.FACTORY);
     var formalParameters = <FormalParameter>[];
     var assignmentStatements = <Statement>[];
     node.parameters.parameters.forEach((parameter) {
       bool addStatement = true;
-      var modifiedParameter = new SimpleFormalParameter(null, null, null, null, new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
+      var modifiedParameter = AstFactory.simpleFormalParameter3(parameter.identifier.name);
       if (parameter is FieldFormalParameter) {
         formalParameters.add(modifiedParameter);
       } else if (parameter is DefaultFormalParameter) {
@@ -147,22 +103,37 @@ class _ComponentConstructorToFactoryConstructorConvertingAstVisitor extends Simp
         throw '${parameter.runtimeType} is not yet supported as a parameter for a Component, please open an issue at https://github.com/denniskaselow/dartemis/issues';
       }
       if (addStatement) {
-        Expression leftHandSide = new PrefixedIdentifier(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0)), new Token(TokenType.PERIOD, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0)));
-        Token operator = new Token(TokenType.EQ, 0);
-        Expression rightHandSide = new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, parameter.identifier.name, 0));
-        Token semicolon = new Token(TokenType.SEMICOLON, 0);
-        assignmentStatements.add(new ExpressionStatement(new AssignmentExpression(leftHandSide, operator, rightHandSide), semicolon));
+
+        Expression leftHandSide = AstFactory.identifier5('pooledComponent', parameter.identifier.name);
+        Expression rightHandSide = AstFactory.identifier3(parameter.identifier.name);
+        assignmentStatements.add(AstFactory.expressionStatement(AstFactory.assignmentExpression(leftHandSide, TokenType.EQ, rightHandSide)));
       }
     });
     node.initializers.forEach((ConstructorFieldInitializer initializer) {
-      Expression leftHandSide = new PrefixedIdentifier(new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, 'pooledComponent', 0)), new Token(TokenType.PERIOD, 0), new SimpleIdentifier(new StringToken(TokenType.IDENTIFIER, initializer.fieldName.name, 0)));
-      Token operator = new Token(TokenType.EQ, 0);
-      Token semicolon = new Token(TokenType.SEMICOLON, 0);
-      assignmentStatements.add(new ExpressionStatement(new AssignmentExpression(leftHandSide, operator, initializer.expression), semicolon));
+      Expression leftHandSide = AstFactory.identifier5('pooledComponent', initializer.fieldName.name);
+      assignmentStatements.add(AstFactory.expressionStatement(AstFactory.assignmentExpression(leftHandSide, TokenType.EQ, initializer.expression)));
     });
+    if (node.body is BlockFunctionBody) {
+      node.body.visitChildren(new StatementVisitor());
+      (node.body as BlockFunctionBody).block.statements.forEach((statement) {
+        assignmentStatements.add(statement);
+      });
+    }
     node.parameters = _createFormalParameterList(formalParameters);
-    node.body = new BlockFunctionBody(null, null, _createPooledComponentCreationBlock(node.returnType.name, assignmentStatements));
+    node.body = AstFactory.blockFunctionBody(_createPooledComponentCreationBlock(node.returnType.name, assignmentStatements));
     node.initializers.clear();
     _count++;
+  }
+}
+
+class StatementVisitor extends RecursiveAstVisitor {
+
+  @override
+  visitPropertyAccess(PropertyAccess node) {
+    super.visitPropertyAccess(node);
+    if (node.target is ThisExpression) {
+      node.target = AstFactory.identifier3('pooledComponent');
+    }
+    return null;
   }
 }

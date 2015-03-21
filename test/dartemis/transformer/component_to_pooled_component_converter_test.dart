@@ -18,20 +18,36 @@ void main() {
       expect(result, equals(formatter.format(SIMPLE_POOLED_COMPONENT)));
     });
     test('component with data', () {
-      var component = getClassDeclaration(SIMPLE_COMPONENT_WITH_DATA);
+      var component = getClassDeclaration(COMPONENT_WITH_DATA);
 
       converter.convert(component);
 
       var result = formatter.format(component.toSource());
-      expect(result, equals(formatter.format(SIMPLE_POOLED_COMPONENT_WITH_DATA)));
+      expect(result, equals(formatter.format(POOLED_COMPONENT_WITH_DATA)));
     });
     test('component with optional data', () {
-      var component = getClassDeclaration(SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA);
+      var component = getClassDeclaration(COMPONENT_WITH_OPTIONAL_PARAM_DATA);
 
       converter.convert(component);
 
       var result = formatter.format(component.toSource());
-      expect(result, equals(formatter.format(SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA)));
+      expect(result, equals(formatter.format(POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA)));
+    });
+    test('component with initializer', () {
+      var component = getClassDeclaration(COMPONENT_WITH_INITIALIZER);
+
+      converter.convert(component);
+
+      var result = formatter.format(component.toSource());
+      expect(result, equals(formatter.format(POOLED_COMPONENT_WITH_INITIALIZER)));
+    });
+    test('component with simple constructor block', () {
+      var component = getClassDeclaration(COMPONENT_WITH_SIMPLE_CONSTRUCTOR_BLOCK);
+
+      converter.convert(component);
+
+      var result = formatter.format(component.toSource());
+      expect(result, equals(formatter.format(POOLED_COMPONENT_WITH_SIMPLE_CONSTRUCTOR_BLOCK)));
     });
     test('component with initializer', () {
       var component = getClassDeclaration(SIMPLE_COMPONENT_WITH_INITIALIZER);
@@ -68,14 +84,14 @@ class SimpleComponent extends PooledComponent {
 
 
 
-const SIMPLE_COMPONENT_WITH_DATA = '''
+const COMPONENT_WITH_DATA = '''
 class SimpleComponent extends Component {
   String data;
   SimpleComponent(this.data);
 }
 ''';
 
-const SIMPLE_POOLED_COMPONENT_WITH_DATA = '''
+const POOLED_COMPONENT_WITH_DATA = '''
 class SimpleComponent extends PooledComponent {
   String data;
   factory SimpleComponent(data) {
@@ -90,14 +106,14 @@ class SimpleComponent extends PooledComponent {
 
 
 
-const SIMPLE_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
+const COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
 class SimpleComponent extends Component {
   String data;
   SimpleComponent([this.data = 'default']);
 }
 ''';
 
-const SIMPLE_POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
+const POOLED_COMPONENT_WITH_OPTIONAL_PARAM_DATA = '''
 class SimpleComponent extends PooledComponent {
   String data;
   factory SimpleComponent([data = 'default']) {
@@ -111,19 +127,43 @@ class SimpleComponent extends PooledComponent {
 ''';
 
 
-const SIMPLE_COMPONENT_WITH_INITIALIZER = '''
+const COMPONENT_WITH_INITIALIZER = '''
 class SimpleComponent extends Component {
   double data;
   SimpleComponent(num data) : data = data.toDouble();
 }
 ''';
 
-const SIMPLE_POOLED_COMPONENT_WITH_INITIALIZER = '''
+const POOLED_COMPONENT_WITH_INITIALIZER = '''
 class SimpleComponent extends PooledComponent {
   double data;
   factory SimpleComponent(num data) {
     SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
     pooledComponent.data = data.toDouble();
+    return pooledComponent;
+  }
+  static SimpleComponent _ctor() => new SimpleComponent._();
+  SimpleComponent._();
+}
+''';
+
+
+
+const COMPONENT_WITH_SIMPLE_CONSTRUCTOR_BLOCK = '''
+class SimpleComponent extends Component {
+  double x;
+  SimpleComponent(num x) {
+    this.x = x.toDouble();
+  }
+}
+''';
+
+const POOLED_COMPONENT_WITH_SIMPLE_CONSTRUCTOR_BLOCK = '''
+class SimpleComponent extends PooledComponent {
+  double x;
+  factory SimpleComponent(num x) {
+    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
+    pooledComponent.x = x.toDouble();
     return pooledComponent;
   }
   static SimpleComponent _ctor() => new SimpleComponent._();
