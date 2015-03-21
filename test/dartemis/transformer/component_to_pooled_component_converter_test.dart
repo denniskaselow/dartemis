@@ -49,14 +49,6 @@ void main() {
       var result = formatter.format(component.toSource());
       expect(result, equals(formatter.format(POOLED_COMPONENT_WITH_SIMPLE_CONSTRUCTOR_BLOCK)));
     });
-    test('component with initializer', () {
-      var component = getClassDeclaration(SIMPLE_COMPONENT_WITH_INITIALIZER);
-
-      converter.convert(component);
-
-      var result = formatter.format(component.toSource());
-      expect(result, equals(formatter.format(SIMPLE_POOLED_COMPONENT_WITH_INITIALIZER)));
-    });
   });
 }
 
