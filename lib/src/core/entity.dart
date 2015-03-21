@@ -41,11 +41,6 @@ class Entity {
     _systemBits &= ~bit;
   }
 
-  void _reset() {
-    _systemBits = 0;
-    _typeBits = 0;
-  }
-
   String toString() => "Entity[$id]";
 
   /// Add a [component] to this entity.

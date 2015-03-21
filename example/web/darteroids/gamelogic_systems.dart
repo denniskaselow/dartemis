@@ -87,7 +87,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
       Position asteroidPos = positionMapper[asteroid];
       CircularBody asteroidBody = bodyMapper[asteroid];
 
-      if (Utils.doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x, asteroidPos.y, asteroidBody.radius)) {
+      if (doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x, asteroidPos.y, asteroidBody.radius)) {
         asteroid.deleteFromWorld();
         entity.deleteFromWorld();
         if (asteroidBody.radius > 10) {
@@ -97,6 +97,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
       }
     });
   }
+
 
   void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
     Entity asteroid = world.createEntity();
@@ -132,7 +133,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
         Position pos = positionMapper[entity];
         CircularBody body = bodyMapper[entity];
 
-        if (Utils.doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x, playerPos.y, playerBody.radius)) {
+        if (doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x, playerPos.y, playerBody.radius)) {
           playerStatus.lifes--;
           playerStatus.invisiblityTimer = 5000;
           playerPos.x = maxWidth~/2;

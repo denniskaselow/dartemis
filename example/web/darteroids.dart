@@ -105,3 +105,11 @@ num generateRandomVelocity() {
   velocity = velocity * (random.nextBool() ? 1 : -1);
   return velocity;
 }
+
+bool doCirclesCollide(num x1, num y1, num radius1, num x2, num y2, num
+    radius2) {
+  num dx = x2 - x1;
+  num dy = y2 - y1;
+  num d = radius1 + radius2;
+  return (dx * dx + dy * dy) < (d * d);
+}

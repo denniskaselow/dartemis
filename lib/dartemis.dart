@@ -2,12 +2,8 @@ library dartemis;
 
 import 'dart:core';
 import 'dart:collection';
-import 'dart:math' as Math;
 
 part 'src/core/utils/bag.dart';
-part 'src/core/utils/fast_math.dart';
-part 'src/core/utils/trigometry_lookup_table.dart';
-part 'src/core/utils/utils.dart';
 part 'src/core/utils/object_pool.dart';
 
 part 'src/core/component.dart';
