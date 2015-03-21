@@ -1,6 +1,6 @@
 library world_test;
 
-import "package:mock/mock.dart";
+import "package:mockito/mockito.dart";
 import "package:unittest/unittest.dart";
 
 import "package:dartemis/dartemis.dart";
@@ -17,32 +17,32 @@ void main() {
       world.addSystem(system);
       world.initialize();
 
-      system.getLogs(callsTo('initialize')).verify(happenedExactly(1));
+      verify(system.initialize()).called(1);
     });
     test('world processes added system', () {
       MockEntitySystem system = new MockEntitySystem();
-      system.when(callsTo('get passive')).alwaysReturn(false);
+      when(system.passive).thenReturn(false);
 
       world.addSystem(system);
       world.process();
 
-      system.getLogs(callsTo('process')).verify(happenedExactly(1));
+      verify(system.process()).called(1);
     });
     test('world does not process passive system', () {
       MockEntitySystem system = new MockEntitySystem();
-      system.when(callsTo('get passive')).alwaysReturn(true);
+      when(system.passive).thenReturn(true);
 
       world.addSystem(system, passive : true);
       world.process();
 
-      system.getLogs(callsTo('process')).verify(neverHappened);
+      verifyNever(system.process());
     });
     test('world initializes added managers', () {
       MockManager manager = new MockManager();
       world.addManager(manager);
       world.initialize();
 
-      manager.getLogs(callsTo('initialize')).verify(happenedExactly(1));
+      verify(manager.initialize()).called(1);
     });
     test('world deletes all entites', () {
       world.initialize();

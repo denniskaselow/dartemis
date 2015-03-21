@@ -1,30 +1,14 @@
 part of darteroids;
 
-class CircularBody extends PooledComponent {
+class CircularBody extends Component {
   num radius;
   String color;
-
-  CircularBody._();
-  factory CircularBody.down(num radius, String color) {
-    CircularBody body = new Pooled.of(CircularBody, _constructor);
-    body.radius = radius;
-    body.color = color;
-    return body;
-  }
-  static CircularBody _constructor() => new CircularBody._();
+  CircularBody.down(this.radius, this.color);
 }
 
-class Position extends PooledComponent {
+class Position extends Component {
   num _x, _y;
-
-  Position._();
-  factory Position(num x, num y) {
-    Position position = new Pooled.of(Position, _constructor);
-    position.x = x;
-    position.y = y;
-    return position;
-  }
-  static Position _constructor() => new Position._();
+  Position(this._x, this._y);
 
   set x(num x) => _x = x % maxWidth;
   get x => _x;
@@ -33,30 +17,14 @@ class Position extends PooledComponent {
   get y => _y;
 }
 
-class Velocity extends PooledComponent {
+class Velocity extends Component {
   num x, y;
-
-  Velocity._();
-  factory Velocity([num x = 0, num y = 0]) {
-    Velocity velocity = new Pooled.of(Velocity, _constructor);
-    velocity.x = x;
-    velocity.y = y;
-    return velocity;
-  }
-  static Velocity _constructor() => new Velocity._();
+  Velocity([this.x = 0, this.y = 0]);
 }
 
-class PlayerDestroyer extends PooledComponent {
-  PlayerDestroyer._();
-  factory PlayerDestroyer() => new Pooled.of(PlayerDestroyer, _constructor);
-  static PlayerDestroyer _constructor() => new PlayerDestroyer._();
-}
+class PlayerDestroyer extends Component {}
 
-class AsteroidDestroyer extends PooledComponent {
-  AsteroidDestroyer._();
-  factory AsteroidDestroyer() => new Pooled.of(AsteroidDestroyer, _constructor);
-  static AsteroidDestroyer _constructor() => new AsteroidDestroyer._();
-}
+class AsteroidDestroyer extends Component {}
 
 class Cannon extends Component {
   bool shoot = false;
@@ -74,16 +42,9 @@ class Cannon extends Component {
   }
 }
 
-class Decay extends PooledComponent {
+class Decay extends Component {
   num timer;
-
-  Decay._();
-  factory Decay(num timer) {
-    Decay decay = new Pooled.of(Decay, _constructor);
-    decay.timer = timer;
-    return decay;
-  }
-  static Decay _constructor() => new Decay._();
+  Decay(this.timer);
 }
 
 class Status extends Component {
