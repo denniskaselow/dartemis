@@ -11,8 +11,8 @@ class MovementSystem extends EntityProcessingSystem {
     Position pos = positionMapper[entity];
     Velocity vel = velocityMapper[entity];
 
-    pos.x += vel.x;
-    pos.y += vel.y;
+    pos.x += vel.x * world.delta / 10.0;
+    pos.y += vel.y * world.delta / 10.0;
   }
 }
 

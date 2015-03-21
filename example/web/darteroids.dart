@@ -1,5 +1,6 @@
 library darteroids;
 
+import 'dart:async';
 import 'dart:html' hide Entity;
 import 'dart:math';
 import 'package:dartemis/dartemis.dart';
@@ -63,13 +64,14 @@ class Darteroids {
     world.addSystem(new MovementSystem());
     world.addSystem(new AsteroidDestructionSystem());
     world.addSystem(new PlayerCollisionDetectionSystem());
-    world.addSystem(new BackgroundRenderSystem(context2d));
-    world.addSystem(new CircleRenderingSystem(context2d));
-    world.addSystem(new HudRenderSystem(context2d));
+    world.addSystem(new BackgroundRenderSystem(context2d), group: 1);
+    world.addSystem(new CircleRenderingSystem(context2d), group: 1);
+    world.addSystem(new HudRenderSystem(context2d), group: 1);
 
     world.initialize();
 
-    gameLoop(0);
+    physicsLoop();
+    renderLoop(16.66);
   }
 
   void addAsteroids(GroupManager groupManager) {
@@ -87,17 +89,21 @@ class Darteroids {
     }
   }
 
-  void gameLoop(num time) {
-    world.delta = time - lastTime;
-    lastTime = time;
+  void physicsLoop() {
+    world.delta = 5.0;
     world.process();
 
-    requestRedraw();
+    new Future.delayed(new Duration(milliseconds: 5), physicsLoop);
   }
 
-  void requestRedraw() {
-    window.requestAnimationFrame(gameLoop);
+  void renderLoop(num time) {
+    world.delta = time - lastTime;
+    lastTime = time;
+    world.process(1);
+
+    window.animationFrame.then(renderLoop);
   }
+
 }
 
 num generateRandomVelocity() {

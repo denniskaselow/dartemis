@@ -17,7 +17,9 @@ abstract class EntitySystem implements EntityObserver {
   int _excluded;
   int _one;
   bool _dummy;
+
   bool _passive;
+  int _group;
 
   EntitySystem(Aspect aspect)
       : _actives = new Bag<Entity>(),
@@ -29,7 +31,13 @@ abstract class EntitySystem implements EntityObserver {
   }
 
   bool get passive => _passive;
+  int get group => _group;
   World get world => _world;
+  /// Returns how often the system in this [group] have been processed.
+  int get frame => world._frame[_group];
+  /// Returns the time that has elapsed for the systems in this [group] since the game has
+  /// started (sum of all deltas).
+  double get time => world._time[_group];
 
   /// Called before processing of entities begins.
   void begin() {}

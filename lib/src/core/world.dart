@@ -23,16 +23,16 @@ class World {
   final Bag<Manager> _managersBag = new Bag<Manager>();
 
   num delta = 0;
-  int _frame = 0;
-  double _time = 0.0;
+  Map<int, int> _frame = {0: 0};
+  Map<int, double> _time = {0: 0.0};
 
   /// World-related properties that can be written and read by the user.
   final Map<String, dynamic> properties = new Map<String, dynamic>();
-  /// Returns the current frame.
-  int get frame => _frame;
-  /// Returns the time that has elapsed since the game has started (sum of all
-  /// deltas).
-  double get time => _time;
+  /// Returns the current frame/how often the systems in [group] have been processed.
+  int frame([int group = 0]) => _frame[group];
+  /// Returns the time that has elapsed for the systems in the [group] since the game has
+  /// started (sum of all deltas).
+  double time([int group = 0]) => _time[group];
 
   World() {
     addManager(_entityManager);
@@ -102,14 +102,18 @@ class World {
   /// Gives you all the systems in this world for possible iteration.
   Iterable<EntitySystem> get systems => _systemsList;
 
-  /// Adds a system to this world that will be processed by World.process().
-  /// If [passive] is set to true the system will not be processed by the world.
-  EntitySystem addSystem(EntitySystem system, {bool passive: false}) {
+  /// Adds a [system] to this world that will be processed by [process()].
+  /// If [passive] is set to true the [system] will not be processed by the world.
+  /// If a [group] is set, this [system] will only be processed when calling [process()] with the same [group].
+  EntitySystem addSystem(EntitySystem system, {bool passive: false, int group: 0}) {
     system._world = this;
     system._passive = passive;
+    system._group = group;
 
     _systems[system.runtimeType] = system;
     _systemsList.add(system);
+    _time.putIfAbsent(group, () => 0.0);
+    _frame.putIfAbsent(group, () => 0);
 
     return system;
   }
@@ -135,15 +139,13 @@ class World {
   }
 
   /// Processes all changes to entities and executes all non-passive systems.
-  void process() {
-    _frame++;
-    _time += delta;
+  void process([int group = 0]) {
+    _frame[group]++;
+    _time[group] += delta;
     processEntityChanges();
 
-    _systemsList.forEach((system) {
-      if (!system.passive) {
-        system.process();
-      }
+    _systemsList.where((system) => !system.passive && system.group == group).forEach((system) {
+      system.process();
     });
   }
 
