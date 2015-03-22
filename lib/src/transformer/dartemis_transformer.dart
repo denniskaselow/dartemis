@@ -16,17 +16,17 @@ part of transformer;
 /// If those libraries need to be transformed, you have to add the transformer to
 /// their `pubspec.yaml`.
 class DartemisTransformer extends AggregateTransformer implements DeclaringAggregateTransformer {
-
-  Map<String, ClassHierarchyNode> _nodes = {'DelayedEntityProcessingSystem': new ClassHierarchyNode('DelayedEntityProcessingSystem', 'EntitySystem'),
-                                            'EntityProcessingSystem': new ClassHierarchyNode('EntityProcessingSystem', 'EntitySystem'),
-                                            'IntervalEntityProcessingSystem': new ClassHierarchyNode('IntervalEntityProcessingSystem', 'EntitySystem'),
-                                            'IntervalEntitySystem': new ClassHierarchyNode('IntervalEntitySystem', 'EntitySystem'),
-                                            'VoidEntitySystem': new ClassHierarchyNode('VoidEntitySystem', 'EntitySystem'),
-                                            'GroupManager': new ClassHierarchyNode('GroupManager', 'Manager'),
-                                            'PlayerManager': new ClassHierarchyNode('PlayerManager', 'Manager'),
-                                            'TagManager': new ClassHierarchyNode('TagManager', 'Manager'),
-                                            'TeamManager': new ClassHierarchyNode('TeamManager', 'Manager'),
-                                            };
+  Map<String, ClassHierarchyNode> _nodes = {
+    'DelayedEntityProcessingSystem': new ClassHierarchyNode('DelayedEntityProcessingSystem', 'EntitySystem'),
+    'EntityProcessingSystem': new ClassHierarchyNode('EntityProcessingSystem', 'EntitySystem'),
+    'IntervalEntityProcessingSystem': new ClassHierarchyNode('IntervalEntityProcessingSystem', 'EntitySystem'),
+    'IntervalEntitySystem': new ClassHierarchyNode('IntervalEntitySystem', 'EntitySystem'),
+    'VoidEntitySystem': new ClassHierarchyNode('VoidEntitySystem', 'EntitySystem'),
+    'GroupManager': new ClassHierarchyNode('GroupManager', 'Manager'),
+    'PlayerManager': new ClassHierarchyNode('PlayerManager', 'Manager'),
+    'TagManager': new ClassHierarchyNode('TagManager', 'Manager'),
+    'TeamManager': new ClassHierarchyNode('TeamManager', 'Manager'),
+  };
   final BarbackSettings _settings;
   final DartFormatter formatter = new DartFormatter();
 
@@ -38,32 +38,37 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
     if (null != _settings.configuration && null != _settings.configuration['additionalLibraries']) {
       additionalLibraris.addAll(_settings.configuration['additionalLibraries']);
     }
+    return _analyzeAdditionalLibraries(additionalLibraris, transform).then((_) {
+      return transform.primaryInputs.toList().then((assets) {
+        return _processAssets(assets, transform);
+      });
+    });
+  }
+
+  Future _analyzeAdditionalLibraries(List<String> additionalLibraris, AggregateTransform transform) {
     return Future.forEach(additionalLibraris, (String additionalLibrary) {
       var assetId = new AssetId.parse(additionalLibrary.replaceFirst('/', '|lib/'));
       return transform.getInput(assetId).then((asset) {
         return asset.readAsString().then((content) {
           var partPaths = [assetId.path];
           partPaths.addAll(collectPartsContent(content));
-          return Future.forEach(partPaths, (partPath) {
-            return transform.getInput(new AssetId(assetId.package, partPath)).then((partAsset) {
-              return partAsset.readAsString().then((partContent) {
-                analyze(partContent);
-              });
-            });
-          });
+          return Future.forEach(partPaths, (String partPath) => transform
+              .getInput(new AssetId(assetId.package, partPath))
+              .then((partAsset) => partAsset.readAsString())
+              .then((partContent) => analyze(partContent)));
         });
       });
-    }).then((_) {
-      return transform.primaryInputs.toList().then((assets) {
-        return Future.wait(assets.map((asset) {
-          return asset.readAsString().then((content) {
-            return new AssetWrapper(asset, analyze(content));
-          });
-        })).then((List<AssetWrapper> assets) {
-          assets.forEach((asset) {
-            processContent(transform, asset);
-          });
-        });
+    });
+  }
+
+  Future _processAssets(List<Asset> assets, AggregateTransform transform) {
+    return Future.wait(assets.map((asset) {
+      return asset.readAsString().then((content) {
+        return new AssetWrapper(asset, analyze(content));
+      });
+    })).then((List<AssetWrapper> assetWrappers) {
+      assetWrappers.forEach((asset) {
+        processContent(transform, asset);
       });
     });
   }
@@ -105,7 +110,6 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
   }
 }
 
-
 class PartFindingVisitor extends SimpleAstVisitor {
   List<String> partPaths = [];
 
@@ -132,7 +136,6 @@ class ClassHierarchyNode {
 }
 
 class ClassModifyingAstVisitor extends SimpleAstVisitor<AstNode> {
-
   Map<String, ClassHierarchyNode> _nodes;
   var _modified = false;
   InitializeMethodConverter initializeMethodConverter;
@@ -147,9 +150,9 @@ class ClassModifyingAstVisitor extends SimpleAstVisitor<AstNode> {
     var className = node.name.name;
     if (_isOfType(_nodes, className, 'EntitySystem') || _isOfType(_nodes, className, 'Manager')) {
       _modified = initializeMethodConverter.convert(node) || _modified;
-    } else if (_isOfType(_nodes, className, 'Component')
-        && !_isOfType(_nodes, className, 'PooledComponent')
-        && className != 'PooledComponent') {
+    } else if (_isOfType(_nodes, className, 'Component') &&
+        !_isOfType(_nodes, className, 'PooledComponent') &&
+        className != 'PooledComponent') {
       _modified = componentToPooledComponentConverter.convert(node) || _modified;
     }
     return node;
