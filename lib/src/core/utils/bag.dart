@@ -20,7 +20,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   int get size => _size;
 
   /// Returns [:true:] if this list contains no elements.
-  bool get isEmpty => _size == 0;
+  bool get isEmpty => size == 0;
 
   /// Removes the element at the specified [index] in this bag. Does this by
   /// overwriting with the last element and then removing the last element.
@@ -30,7 +30,7 @@ class Bag<E> extends Object with IterableMixin<E> {
     // overwrite item to remove with last element
     _data[index] = _data[--_size];
     // null last element, so gc can do its work
-    _data[_size] = null;
+    _data[size] = null;
 
     return o;
   }
@@ -39,7 +39,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   E removeLast() {
     if (_size > 0) {
       E current = _data[--_size];
-      _data[_size] = null;
+      _data[size] = null;
       return current;
     }
     return null;
@@ -51,43 +51,19 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// element.
   /// Returns [:true:] if this list contained the specified [element].
   bool remove(E element) {
-    for (int i = 0; i < _size; i++) {
+    for (int i = 0; i < size; i++) {
       E current = _data[i];
 
       if (element == current) {
         // overwrite item to remove with last element
         _data[i] = _data[--_size];
         // null last element, so gc can do its work
-        _data[_size] = null;
+        _data[size] = null;
         return true;
       }
     }
 
     return false;
-  }
-
-  /// Removes from this Bag all of its elements that are contained in the
-  /// specified [bag].
-  ///
-  /// Returns [:true:] if this Bag changed as a result of the call
-  bool removeAll(Bag<E> bag) {
-    bool modified = false;
-
-    for (int i = 0; i < bag.size; i++) {
-      E o1 = bag[i];
-
-      for (int j = 0; j < size; j++) {
-        E o2 = _data[j];
-
-        if (o1 == o2) {
-          removeAt(j);
-          j--;
-          modified = true;
-          break;
-        }
-      }
-    }
-    return modified;
   }
 
   /// Returns the number of elements the bag can hold without growing.
@@ -97,7 +73,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// increases the capacity of the bag.
   void add(E element) {
     // is size greater than capacity increase capacity
-    if (_size == _data.length) {
+    if (size == _data.length) {
       _grow();
     }
     _data[_size++] = element;
@@ -114,10 +90,9 @@ class Bag<E> extends Object with IterableMixin<E> {
     _data[index] = element;
   }
 
-  void _grow() {
-    int newCapacity = ((_data.length * 3) / 2 + 1).toInt();
-    _growTo(newCapacity);
-  }
+  void _grow() => _growTo(_calculateNewCapacity(_data.length));
+
+  int _calculateNewCapacity(int requiredLength) => (requiredLength * 3) ~/ 2 + 1;
 
   void _growTo(int newCapacity) {
     List<E> oldData = _data;
@@ -153,5 +128,5 @@ class Bag<E> extends Object with IterableMixin<E> {
   Iterator<E> get iterator => _data.sublist(0, size).iterator;
 
   @override
-  int get length => _size;
+  int get length => size;
 }

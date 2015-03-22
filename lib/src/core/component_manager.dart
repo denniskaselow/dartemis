@@ -6,7 +6,7 @@ class ComponentManager extends Manager {
 
   ComponentManager()
       : _componentsByType = new Bag<Bag<Component>>(),
-        _deleted = new Bag<Entity>();
+        _deleted = new EntityBag();
 
   void initialize() {}
 

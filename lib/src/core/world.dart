@@ -10,11 +10,11 @@ class World {
   final EntityManager _entityManager = new EntityManager();
   final ComponentManager _componentManager = new ComponentManager();
 
-  final Bag<Entity> _added = new Bag<Entity>();
-  final Bag<Entity> _changed = new Bag<Entity>();
-  final Bag<Entity> _deleted = new Bag<Entity>();
-  final Bag<Entity> _enable = new Bag<Entity>();
-  final Bag<Entity> _disable = new Bag<Entity>();
+  final Bag<Entity> _added = new EntityBag();
+  final Bag<Entity> _changed = new EntityBag();
+  final Bag<Entity> _deleted = new EntityBag();
+  final Bag<Entity> _enable = new EntityBag();
+  final Bag<Entity> _disable = new EntityBag();
 
   final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
   final List<EntitySystem> _systemsList = new List<EntitySystem>();
@@ -185,9 +185,7 @@ class World {
 
   /// Delete the [Entity e] from the world.
   void deleteEntity(Entity e) {
-    if (!_deleted.contains(e)) {
-      _deleted.add(e);
-    }
+    _deleted.add(e);
   }
 
   /// (Re)enable the [Entity e] in the world, after it having being disabled.

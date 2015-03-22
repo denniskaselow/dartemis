@@ -22,7 +22,7 @@ abstract class EntitySystem implements EntityObserver {
   int _group;
 
   EntitySystem(Aspect aspect)
-      : _actives = new Bag<Entity>(),
+      : _actives = new EntityBag(),
         _all = aspect.all,
         _excluded = aspect.excluded,
         _one = aspect.one {
