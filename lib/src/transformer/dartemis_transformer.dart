@@ -89,7 +89,7 @@ class DartemisTransformer extends AggregateTransformer implements DeclaringAggre
   }
 
   void processContent(AggregateTransform transform, AssetWrapper asset) {
-    var mapperInitializer = new ClassModifyingAstVisitor(_nodes);
+    var mapperInitializer = new ClassModifyingAstVisitor(_nodes, _settings);
     asset.unit.visitChildren(mapperInitializer);
     if (mapperInitializer._modified) {
       transform.addOutput(new Asset.fromString(asset.asset.id, formatter.format(asset.unit.toSource())));
@@ -137,20 +137,23 @@ class ClassHierarchyNode {
 
 class ClassModifyingAstVisitor extends SimpleAstVisitor<AstNode> {
   Map<String, ClassHierarchyNode> _nodes;
+  BarbackSettings _settings;
   var _modified = false;
   InitializeMethodConverter initializeMethodConverter;
   var componentToPooledComponentConverter = new ComponentToPooledComponentConverter();
 
-  ClassModifyingAstVisitor(this._nodes) {
+  ClassModifyingAstVisitor(this._nodes, this._settings) {
     initializeMethodConverter = new InitializeMethodConverter(_nodes);
   }
 
   @override
   ClassDeclaration visitClassDeclaration(ClassDeclaration node) {
     var className = node.name.name;
-    if (_isOfType(_nodes, className, 'EntitySystem') || _isOfType(_nodes, className, 'Manager')) {
+    if (_settings.configuration['initializeMethod'] != false &&
+        (_isOfType(_nodes, className, 'EntitySystem') || _isOfType(_nodes, className, 'Manager'))) {
       _modified = initializeMethodConverter.convert(node) || _modified;
-    } else if (_isOfType(_nodes, className, 'Component') &&
+    } else if (_settings.configuration['pooling'] != false &&
+        _isOfType(_nodes, className, 'Component') &&
         !_isOfType(_nodes, className, 'PooledComponent') &&
         className != 'PooledComponent') {
       _modified = componentToPooledComponentConverter.convert(node) || _modified;

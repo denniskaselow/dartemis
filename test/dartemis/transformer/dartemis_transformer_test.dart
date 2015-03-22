@@ -19,6 +19,7 @@ void main() {
       transformMock = new AggregateTransformMock();
       assetMock = new AssetMock();
       barbackSettingsMock = new BarbackSettingsMock();
+      when(barbackSettingsMock.configuration).thenReturn({});
 
       transformer = new DartemisTransformer.asPlugin(barbackSettingsMock);
 
@@ -26,13 +27,14 @@ void main() {
     });
 
     group('initializes Manager from other Library in', () {
-
       test('system without initialize', () {
         AssetMock assetOtherLibraryMock = new AssetMock();
         AssetMock assetPartOfOtherLibraryMock = new AssetMock();
 
-        when(transformMock.getInput(new AssetId.parse('otherLib|lib/otherLib.dart'))).thenReturn(new Future.value(assetOtherLibraryMock));
-        when(transformMock.getInput(new AssetId.parse('otherLib|lib/src/manager.dart'))).thenReturn(new Future.value(assetPartOfOtherLibraryMock));
+        when(transformMock.getInput(new AssetId.parse('otherLib|lib/otherLib.dart')))
+            .thenReturn(new Future.value(assetOtherLibraryMock));
+        when(transformMock.getInput(new AssetId.parse('otherLib|lib/src/manager.dart')))
+            .thenReturn(new Future.value(assetPartOfOtherLibraryMock));
         when(assetMock.readAsString()).thenReturn(new Future.value(SYSTEM_WITH_CLASSES_FROM_OTHER_LIBRARY));
         when(assetOtherLibraryMock.readAsString()).thenReturn(new Future.value(OTHER_LIBRARY));
         when(assetPartOfOtherLibraryMock.readAsString()).thenReturn(new Future.value(OTHER_LIBRARY_MANAGER));
@@ -46,14 +48,33 @@ void main() {
       });
     });
 
-    group('initializes everything in', () {
-
-      test('managers and sytems', () {
+    group('transforms', () {
+      test('components, managers and sytems', () {
         when(assetMock.readAsString()).thenReturn(new Future.value(EVERYTHING_COMBINED));
 
         transformer.apply(transformMock).then(expectAsync((_) {
           verify(transformMock.addOutput(captureAny)).captured.single.readAsString().then(expectAsync((content) {
             expect(content, equals(EVERYTHING_COMBINED_RESULT));
+          }));
+        }));
+      });
+      test('no components if pooling is deactivated', () {
+        when(assetMock.readAsString()).thenReturn(new Future.value(EVERYTHING_COMBINED));
+        when(barbackSettingsMock.configuration).thenReturn({'pooling': false});
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          verify(transformMock.addOutput(captureAny)).captured.single.readAsString().then(expectAsync((content) {
+            expect(content, equals(EVERYTHING_COMBINED_RESULT_WITHOUT_POOLING));
+          }));
+        }));
+      });
+      test('no managers and sytems if initializeMethod is deactivated', () {
+        when(assetMock.readAsString()).thenReturn(new Future.value(EVERYTHING_COMBINED));
+        when(barbackSettingsMock.configuration).thenReturn({'initializeMethod': false});
+
+        transformer.apply(transformMock).then(expectAsync((_) {
+          verify(transformMock.addOutput(captureAny)).captured.single.readAsString().then(expectAsync((content) {
+            expect(content, equals(EVERYTHING_COMBINED_RESULT_WITHOUT_METHOD_INITIALIZE));
           }));
         }));
       });
@@ -97,7 +118,6 @@ void main() {
     });
   });
 }
-
 
 const SYSTEM_WITH_DYNAMIC_FIELD = '''
 class SimpleSystem extends VoidEntitySystem {
@@ -157,11 +177,16 @@ class SimpleManager extends Manager {
 class OtherManager extends Manager {
   Mapper<Position> pm;
 }
+class SimpleComponent extends Component {}
 class SimpleSystem extends EntitySystem {
   SimpleManager sm;
   Mapper<Position> pm;
 }
-class OtherSystem extends VoidEntitySystem {
+class OtherSystem extends VoidEntitySystem {}
+class SomePooledComponent extends PooledComponent {
+  static SomePooledComponent _ctor() => new SomePooledComponent._();
+  SomePooledComponent._();
+  factory SomePooledComponent() => new Pooled.of(SomePooledComponent, _ctor);
 }
 ''';
 
@@ -182,6 +207,14 @@ class OtherManager extends Manager {
     pm = new Mapper<Position>(Position, world);
   }
 }
+class SimpleComponent extends PooledComponent {
+  factory SimpleComponent() {
+    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
+    return pooledComponent;
+  }
+  static SimpleComponent _ctor() => new SimpleComponent._();
+  SimpleComponent._();
+}
 class SimpleSystem extends EntitySystem {
   SimpleManager sm;
   Mapper<Position> pm;
@@ -192,6 +225,74 @@ class SimpleSystem extends EntitySystem {
   }
 }
 class OtherSystem extends VoidEntitySystem {}
+class SomePooledComponent extends PooledComponent {
+  static SomePooledComponent _ctor() => new SomePooledComponent._();
+  SomePooledComponent._();
+  factory SomePooledComponent() => new Pooled.of(SomePooledComponent, _ctor);
+}
+''';
+
+const EVERYTHING_COMBINED_RESULT_WITHOUT_POOLING = '''
+class SimpleManager extends Manager {
+  OtherManager om;
+  SimpleSystem ss;
+  @override void initialize() {
+    super.initialize();
+    ss = world.getSystem(SimpleSystem);
+    om = world.getManager(OtherManager);
+  }
+}
+class OtherManager extends Manager {
+  Mapper<Position> pm;
+  @override void initialize() {
+    super.initialize();
+    pm = new Mapper<Position>(Position, world);
+  }
+}
+class SimpleComponent extends Component {}
+class SimpleSystem extends EntitySystem {
+  SimpleManager sm;
+  Mapper<Position> pm;
+  @override void initialize() {
+    super.initialize();
+    pm = new Mapper<Position>(Position, world);
+    sm = world.getManager(SimpleManager);
+  }
+}
+class OtherSystem extends VoidEntitySystem {}
+class SomePooledComponent extends PooledComponent {
+  static SomePooledComponent _ctor() => new SomePooledComponent._();
+  SomePooledComponent._();
+  factory SomePooledComponent() => new Pooled.of(SomePooledComponent, _ctor);
+}
+''';
+
+const EVERYTHING_COMBINED_RESULT_WITHOUT_METHOD_INITIALIZE = '''
+class SimpleManager extends Manager {
+  OtherManager om;
+  SimpleSystem ss;
+}
+class OtherManager extends Manager {
+  Mapper<Position> pm;
+}
+class SimpleComponent extends PooledComponent {
+  factory SimpleComponent() {
+    SimpleComponent pooledComponent = new Pooled.of(SimpleComponent, _ctor);
+    return pooledComponent;
+  }
+  static SimpleComponent _ctor() => new SimpleComponent._();
+  SimpleComponent._();
+}
+class SimpleSystem extends EntitySystem {
+  SimpleManager sm;
+  Mapper<Position> pm;
+}
+class OtherSystem extends VoidEntitySystem {}
+class SomePooledComponent extends PooledComponent {
+  static SomePooledComponent _ctor() => new SomePooledComponent._();
+  SomePooledComponent._();
+  factory SomePooledComponent() => new Pooled.of(SomePooledComponent, _ctor);
+}
 ''';
 
 class AggregateTransformMock extends Mock implements AggregateTransform {}

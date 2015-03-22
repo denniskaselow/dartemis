@@ -65,7 +65,7 @@ A `Component` is a pretty simple structure and should not contain any logic:
         Position(this.x, this.y);
     }
     ```
-Or if you want to use a `PooledComponent` (not needed if you use the transformer):
+Or if you want to use a `PooledComponent` (see [Transformer](#transformer) if you want to use them without having to write this code):
 
     ```dart
     class Position extends PooledComponent {
@@ -131,6 +131,10 @@ If your game logic requires a delta you can set it by calling:
 
 Transformer
 ===========
+The transformer converts your `Component`s into `PooledComponent`s and it creates the code
+required to initialize `Mapper`s, `Manager`s and `EntitySystem`s in your `Manager`s and 
+`EntitySystem`s `initialize()`-method.
+
 If you are importing libraries from other packages with `Manager`s or `EntitySystem`s you
 are using in your own code, you have to inform the transformer about them by passing
 a list of those libraries to the transformer:
@@ -146,7 +150,21 @@ transformers:
 If those libraries need to be transformed as well, you have to add the transformer to 
 their `pubspec.yaml`.
 
-Caution: The transformer is not tested with cases where a library is imported
+It's also possible to disable parts of the transformer:
+
+```yaml
+transformers:
+- dartemis
+    pooling: false
+    initializeMethod: false
+```
+
+If you set `pooling` to `false` your `Component`s will not be converted into `PooledComponent`s.
+If you set `initializeMethod` to `false` your `Mapper`s, `EntitySystem`s and `Manager`s will not contain
+generated code for the initialization.
+Setting both to false is the same as not including the transformer at all.
+
+**Caution**: The transformer is not tested with cases where a library is imported
 using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
 if it doesn't work and you have to use an alias.
 
@@ -154,7 +172,7 @@ If you have a component wth a constructor with a function body, use `this` to re
 The transformer will not analyze whether a variable in the body is locally scoped or not and only turns `this` into
 `pooledComponent`.
 
-Extra Caution: Debugging a transformed file in the Dart Editor is not possible because lines don't match
+**Extra Caution**: Debugging a transformed file in the Dart Editor is not possible because lines don't match
 but it works fine in Dartium.
 
 Documentation
