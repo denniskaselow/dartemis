@@ -164,15 +164,17 @@ If you set `initializeMethod` to `false` your `Mapper`s, `EntitySystem`s and `Ma
 generated code for the initialization.
 Setting both to false is the same as not including the transformer at all.
 
-**Caution**: The transformer is not tested with cases where a library is imported
-using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
-if it doesn't work and you have to use an alias.
-
-If you have a component wth a constructor with a function body, use `this` to reference class variables and methods.
+Caveats
+-------
+* If you have a component wth a constructor with a function body, use `this` to reference class variables and methods.
 The transformer will not analyze whether a variable in the body is locally scoped or not and only turns `this` into
 `pooledComponent`.
 
-**Extra Caution**: Debugging a transformed file in the Dart Editor is not possible because lines don't match
+* The transformer is not tested with cases where a library is imported
+using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
+if it doesn't work and you have to use an alias.
+
+* Debugging a transformed file in the Dart Editor is not possible because lines don't match
 but it works fine in Dartium.
 
 Documentation
