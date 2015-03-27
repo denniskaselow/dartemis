@@ -143,3 +143,4 @@ Example Games using dartemis
 Add-ons
 =======
 * [dartemis_toolbox](https://github.com/davidB/dartemis_toolbox/) - A set of addons to use with dartemis (like EntityStateMachine, ...) and other libraries for gamedev.
+* [dartemis_transformer](https://github.com/davidB/dartemis_transformer/) - A transformer to modify and generate code that turns Components into PooledComponents and initializes EntitySystems and Managers.
