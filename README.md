@@ -30,13 +30,11 @@ Some useful links about what an Entity System/Entity Component System is:
 
 Getting started
 ===============
-1. Add dartemis to your project by adding it to your **pubspec.yaml** and include the dartemis transformer
+1. Add dartemis to your project by adding it to your **pubspec.yaml**:
 
     ```yaml
     dependencies:
       dartemis: any
-    transformers:
-    - dartemis
     ```
 
 2. Import it in your project:
@@ -65,7 +63,8 @@ A `Component` is a pretty simple structure and should not contain any logic:
         Position(this.x, this.y);
     }
     ```
-Or if you want to use a `PooledComponent` (see [Transformer](#transformer) if you want to use them without having to write this code):
+Or if you want to use a `PooledComponent` (see [dartemis_transformer](https://pub.dartlang.org/packages/dartemis_transformer)
+if you want to use them without having to write this code):
 
     ```dart
     class Position extends PooledComponent {
@@ -94,9 +93,9 @@ By using a factory constructor and calling the factory constructor in `Pooled`, 
 
         void initialize() {
           // initialize your system
-          // Mappers, Systems and Managers will be assigned here
-          // through code generation by the transformer
-          // if you don't want to use the transformer, do it this way:
+          // Mappers, Systems and Managers have to be assigned here
+          // see [dartemis_transformer](https://pub.dartlang.org/packages/dartemis_transformer)
+          // if you don't want to write this code
           positionMapper = new Mapper<Position>(Position, world);
           velocityMapper = new Mapper<Velocity>(Velocity, world);
         }
@@ -128,54 +127,6 @@ If your game logic requires a delta you can set it by calling:
     ```dart
     world.delta = delta;
     ```
-
-Transformer
-===========
-The transformer converts your `Component`s into `PooledComponent`s and it creates the code
-required to initialize `Mapper`s, `Manager`s and `EntitySystem`s in your `Manager`s and 
-`EntitySystem`s `initialize()`-method.
-
-If you are importing libraries from other packages with `Manager`s or `EntitySystem`s you
-are using in your own code, you have to inform the transformer about them by passing
-a list of those libraries to the transformer:
-
-```yaml
-transformers:
-- dartemis
-    additionalLibraries:
-    - otherLib/otherLib.dart
-    - moreLibs/moreLibs.dart
-```
-
-If those libraries need to be transformed as well, you have to add the transformer to 
-their `pubspec.yaml`.
-
-It's also possible to disable parts of the transformer:
-
-```yaml
-transformers:
-- dartemis
-    pooling: false
-    initializeMethod: false
-```
-
-If you set `pooling` to `false` your `Component`s will not be converted into `PooledComponent`s.
-If you set `initializeMethod` to `false` your `Mapper`s, `EntitySystem`s and `Manager`s will not contain
-generated code for the initialization.
-Setting both to false is the same as not including the transformer at all.
-
-Caveats
--------
-* If you have a component wth a constructor with a function body, use `this` to reference class variables and methods.
-The transformer will not analyze whether a variable in the body is locally scoped or not and only turns `this` into
-`pooledComponent`.
-
-* The transformer is not tested with cases where a library is imported
-using an alias. Please file a [new issue](https://github.com/denniskaselow/dartemis/issues/new)
-if it doesn't work and you have to use an alias.
-
-* Debugging a transformed file in the Dart Editor is not possible because lines don't match
-but it works fine in Dartium.
 
 Documentation
 =============
