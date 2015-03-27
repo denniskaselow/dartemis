@@ -1,12 +1,13 @@
 dartemis
 ========
-[![](https://drone.io/denniskaselow/dartemis/status.png)](https://drone.io/denniskaselow/dartemis/latest)
+[![Build Status](https://drone.io/denniskaselow/dartemis/status.png)](https://drone.io/denniskaselow/dartemis/latest)
+[![Coverage Status](https://coveralls.io/repos/denniskaselow/dartemis/badge.svg?branch=master)](https://coveralls.io/r/denniskaselow/dartemis?branch=master)
+[![Pub](https://img.shields.io/pub/v/dartemis.svg)](https://pub.dartlang.org/packages/dartemis)
 
 Content
 =======
 * [About](#about)
 * [Getting Started](#getting-started)
-* [Transformer](#transformer)
 * [Documentation](#documentation)
 * [Example Games](#example-games-using-dartemis)
 * [Add Ons](#add-ons)
@@ -94,8 +95,7 @@ By using a factory constructor and calling the factory constructor in `Pooled`, 
         void initialize() {
           // initialize your system
           // Mappers, Systems and Managers have to be assigned here
-          // see [dartemis_transformer](https://pub.dartlang.org/packages/dartemis_transformer)
-          // if you don't want to write this code
+          // see dartemis_transformer if you don't want to write this code
           positionMapper = new Mapper<Position>(Position, world);
           velocityMapper = new Mapper<Velocity>(Velocity, world);
         }
