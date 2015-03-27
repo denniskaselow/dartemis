@@ -132,7 +132,7 @@ Documentation
 =============
 API
 ---
-[Reference Manual](http://www.dartdocs.org/documentation/dartemis/latest/index.html#dartemis)
+[Reference Manual](http://www.dartdocs.org/documentation/dartemis/0.7.0/index.html#dartemis)
 
 Example Games using dartemis
 ============================
