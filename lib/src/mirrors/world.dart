@@ -1,25 +1,17 @@
 part of dartemis_mirrors;
 
-/**
- * The primary instance for the framework. It contains all the managers.
- *
- * You must use this to create, delete and retrieve entities.
- *
- * It is also important to set the delta each game loop iteration, and
- * initialize before game loop.
- */
 class World extends core.World {
 
-  static const Symbol QN_ENTITY_SYSTEM = #dartemis.EntitySystem;
-  static const Symbol QN_MANAGER = #dartemis.Manager;
+  static const Symbol qnEntitySystem = #dartemis.EntitySystem;
+  static const Symbol qnManager = #dartemis.Manager;
 
   void initializeManager(Manager manager) {
-    _injectFields(manager, QN_MANAGER);
+    _injectFields(manager, qnManager);
     super.initializeManager(manager);
   }
 
   void initializeSystem(EntitySystem system) {
-    _injectFields(system, QN_ENTITY_SYSTEM);
+    _injectFields(system, qnEntitySystem);
     super.initializeSystem(system);
   }
 
@@ -70,12 +62,12 @@ skipping ${vm.qualifiedName} for injection because type cannot be accessed
   }
 
   void _injectMapper(InstanceMirror system, Iterable<List> vmsAndTypes) {
-    vmsAndTypes.where((vmAndType) => _isComponentMapper(vmAndType[0]))
+    vmsAndTypes.where((vmAndType) => _isMapper(vmAndType[0]))
         .forEach((vmAndType) {
           ClassMirror tacm = (vmAndType[0].type as ClassMirror).typeArguments
               .first as ClassMirror;
           system.setField(vmAndType[0].simpleName,
-              new ComponentMapper(tacm.reflectedType, this));
+              new Mapper(tacm.reflectedType, this));
     });
   }
 
@@ -83,6 +75,8 @@ skipping ${vm.qualifiedName} for injection because type cannot be accessed
 
   bool _isSystem(Type type) => getSystem(type) != null;
 
-  bool _isComponentMapper(VariableMirror vm) => (vm.type as
-      ClassMirror).qualifiedName == #dartemis.ComponentMapper;
+  bool _isMapper(VariableMirror vm) {
+    var qualifiedName = (vm.type as ClassMirror).qualifiedName;
+    return qualifiedName == #dartemis.Mapper || qualifiedName == #dartemis.ComponentMapper;
+  }
 }

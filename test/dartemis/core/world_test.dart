@@ -1,6 +1,6 @@
 library world_test;
 
-import "package:unittest/mock.dart";
+import "package:mockito/mockito.dart";
 import "package:unittest/unittest.dart";
 
 import "package:dartemis/dartemis.dart";
@@ -9,40 +9,77 @@ import "components_setup.dart";
 void main() {
   group('World tests', () {
     World world;
+    MockEntitySystem system;
     setUp(() {
       world = new World();
+      system = new MockEntitySystem();
+      when(system.passive).thenReturn(false);
+      when(system.group).thenReturn(0);
     });
     test('world initializes added system', () {
-      MockEntitySystem system = new MockEntitySystem();
       world.addSystem(system);
       world.initialize();
 
-      system.getLogs(callsTo('initialize')).verify(happenedExactly(1));
+      verify(system.initialize()).called(1);
     });
     test('world processes added system', () {
-      MockEntitySystem system = new MockEntitySystem();
-      system.when(callsTo('get passive')).alwaysReturn(false);
-
       world.addSystem(system);
       world.process();
 
-      system.getLogs(callsTo('process')).verify(happenedExactly(1));
+      verify(system.process()).called(1);
     });
     test('world does not process passive system', () {
-      MockEntitySystem system = new MockEntitySystem();
-      system.when(callsTo('get passive')).alwaysReturn(true);
+      when(system.passive).thenReturn(true);
 
       world.addSystem(system, passive : true);
       world.process();
 
-      system.getLogs(callsTo('process')).verify(neverHappened);
+      verifyNever(system.process());
+    });
+    test('world processes systems by group', () {
+      MockEntitySystem2 system2 = new MockEntitySystem2();
+      when(system2.passive).thenReturn(false);
+      when(system2.group).thenReturn(1);
+
+      world.addSystem(system);
+      world.addSystem(system2, group: 1);
+
+      world.process(0);
+      verify(system.process()).called(1);
+      verifyNever(system2.process());
+
+      world.process(1);
+      verifyNever(system.process());
+      verify(system2.process()).called(1);
+    });
+    test('world manages time and frames by group', () {
+      MockEntitySystem2 system2 = new MockEntitySystem2();
+      when(system2.passive).thenReturn(false);
+      when(system2.group).thenReturn(1);
+
+      world.addSystem(system);
+      world.addSystem(system2, group: 1);
+
+      world.delta = 10.0;
+      world.process(0);
+
+      world.delta = 20.0;
+      world.process(1);
+
+      world.delta = 15.0;
+      world.process(0);
+
+      expect(world.time(0), equals(25.0));
+      expect(world.time(1), equals(20.0));
+      expect(world.frame(0), equals(2));
+      expect(world.frame(1), equals(1));
     });
     test('world initializes added managers', () {
       MockManager manager = new MockManager();
       world.addManager(manager);
       world.initialize();
 
-      manager.getLogs(callsTo('initialize')).verify(happenedExactly(1));
+      verify(manager.initialize()).called(1);
     });
     test('world deletes all entites', () {
       world.initialize();
@@ -66,19 +103,24 @@ void main() {
       world.initialize();
 
       world.process();
-      expect(world.frame, equals(1));
+      expect(world.frame(), equals(1));
       world.process();
-      expect(world.frame, equals(2));
+      expect(world.frame(), equals(2));
     });
     test('world process increments time by delta', () {
       world.initialize();
 
       world.delta = 10;
       world.process();
-      expect(world.time, equals(10));
+      expect(world.time(), equals(10));
       world.delta = 20;
       world.process();
-      expect(world.time, equals(30));
+      expect(world.time(), equals(30));
+    });
+    test('world allows access to properties', () {
+      world['key'] = 'value';
+
+      expect(world['key'], equals('value'));
     });
   });
   group('integration tests for World.process()', () {
@@ -91,7 +133,7 @@ void main() {
       entityAB = world.createAndAddEntity([new ComponentA(), new ComponentB()]);
       entityAC = world.createEntity();
       entityAC.addComponent(new ComponentA());
-      entityAC.addComponent(new ComponentPoolableC());
+      entityAC.addComponent(new PooledComponentC());
       entityAC.addToWorld();
       systemStarter = (EntitySystem es) {
         es = world.addSystem(es);
@@ -137,7 +179,7 @@ void main() {
       es = world.addSystem(es);
       world.initialize();
       world.process();
-      entityAB.addComponent(new ComponentPoolableC());
+      entityAB.addComponent(new PooledComponentC());
       world.process();
     });
     test('Adding a component will get the entity processed if the world is notified of the change', () {
@@ -147,7 +189,7 @@ void main() {
       world.initialize();
       world.process();
       es.expectedEntities = [entityAB, entityAC];
-      entityAB.addComponent(new ComponentPoolableC());
+      entityAB.addComponent(new PooledComponentC());
       entityAB.changedInWorld();
       world.process();
     });
@@ -169,6 +211,7 @@ void main() {
 typedef void EntitySystemStarter(EntitySystem es);
 
 class MockEntitySystem extends Mock implements EntitySystem {}
+class MockEntitySystem2 extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
 
 class TestEntitySystem extends EntitySystem {

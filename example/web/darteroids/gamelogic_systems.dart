@@ -2,17 +2,17 @@ part of darteroids;
 
 class MovementSystem extends EntityProcessingSystem {
 
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<Velocity> velocityMapper;
+  Mapper<Position> positionMapper;
+  Mapper<Velocity> velocityMapper;
 
   MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
 
   void processEntity(Entity entity) {
-    Position pos = positionMapper.get(entity);
-    Velocity vel = velocityMapper.get(entity);
+    Position pos = positionMapper[entity];
+    Velocity vel = velocityMapper[entity];
 
-    pos.x += vel.x;
-    pos.y += vel.y;
+    pos.x += vel.x * world.delta / 10.0;
+    pos.y += vel.y * world.delta / 10.0;
   }
 }
 
@@ -20,18 +20,18 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   static const num bulletSpeed = 2.5;
 
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<Cannon> cannonMapper;
-  ComponentMapper<Velocity> velocityMapper;
+  Mapper<Position> positionMapper;
+  Mapper<Cannon> cannonMapper;
+  Mapper<Velocity> velocityMapper;
 
   BulletSpawningSystem() : super(Aspect.getAspectForAllOf([Cannon, Position, Velocity]));
 
   void processEntity(Entity entity) {
-    Cannon cannon = cannonMapper.get(entity);
+    Cannon cannon = cannonMapper[entity];
 
     if (cannon.canShoot) {
-      Position pos = positionMapper.get(entity);
-      Velocity vel = velocityMapper.get(entity);
+      Position pos = positionMapper[entity];
+      Velocity vel = velocityMapper[entity];
       fireBullet(pos, vel, cannon);
     } else if (cannon.cooldown > 0){
       cannon.cooldown -= world.delta;
@@ -48,7 +48,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
     num velX = shooterVel.x + bulletSpeed * (dirX / distance);
     num velY = shooterVel.y + bulletSpeed * (dirY / distance);
     bullet.addComponent(new Velocity(velX, velY));
-    bullet.addComponent(new CircularBody(2, "red"));
+    bullet.addComponent(new CircularBody.down(2, "red"));
     bullet.addComponent(new Decay(5000));
     bullet.addComponent(new AsteroidDestroyer());
     bullet.addToWorld();
@@ -57,12 +57,12 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
 class DecaySystem extends EntityProcessingSystem {
 
-  ComponentMapper<Decay> decayMapper;
+  Mapper<Decay> decayMapper;
 
   DecaySystem() : super(Aspect.getAspectForAllOf([Decay]));
 
   void processEntity(Entity entity) {
-    Decay decay = decayMapper.get(entity);
+    Decay decay = decayMapper[entity];
 
     if (decay.timer < 0) {
       entity.deleteFromWorld();
@@ -75,19 +75,19 @@ class DecaySystem extends EntityProcessingSystem {
 class AsteroidDestructionSystem extends EntityProcessingSystem {
   static final num sqrtOf2 = sqrt(2);
   GroupManager groupManager;
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<CircularBody> bodyMapper;
+  Mapper<Position> positionMapper;
+  Mapper<CircularBody> bodyMapper;
 
   AsteroidDestructionSystem() : super(Aspect.getAspectForAllOf([AsteroidDestroyer, Position]));
 
   void processEntity(Entity entity) {
-    Position destroyerPos = positionMapper.get(entity);
+    Position destroyerPos = positionMapper[entity];
 
-    groupManager.getEntities(GROUP_ASTEROIDS).forEach((Entity asteroid) {
-      Position asteroidPos = positionMapper.get(asteroid);
-      CircularBody asteroidBody = bodyMapper.get(asteroid);
+    groupManager.getEntities(groupAsteroids).forEach((Entity asteroid) {
+      Position asteroidPos = positionMapper[asteroid];
+      CircularBody asteroidBody = bodyMapper[asteroid];
 
-      if (Utils.doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x, asteroidPos.y, asteroidBody.radius)) {
+      if (doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x, asteroidPos.y, asteroidBody.radius)) {
         asteroid.deleteFromWorld();
         entity.deleteFromWorld();
         if (asteroidBody.radius > 10) {
@@ -98,6 +98,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
     });
   }
 
+
   void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
     Entity asteroid = world.createEntity();
     asteroid.addComponent(new Position(asteroidPos.x, asteroidPos.y));
@@ -105,38 +106,38 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
     num vy = generateRandomVelocity();
     asteroid.addComponent(new Velocity(vx, vy));
     num radius = asteroidBody.radius / sqrtOf2;
-    asteroid.addComponent(new CircularBody(radius, ASTEROID_COLOR));
+    asteroid.addComponent(new CircularBody.down(radius, asteroidColor));
     asteroid.addComponent(new PlayerDestroyer());
     asteroid.addToWorld();
-    groupManager.add(asteroid, GROUP_ASTEROIDS);
+    groupManager.add(asteroid, groupAsteroids);
   }
 
 }
 
 class PlayerCollisionDetectionSystem extends EntitySystem {
   TagManager tagManager;
-  ComponentMapper<Status> statusMapper;
-  ComponentMapper<Position> positionMapper;
-  ComponentMapper<CircularBody> bodyMapper;
+  Mapper<Status> statusMapper;
+  Mapper<Position> positionMapper;
+  Mapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem() : super(Aspect.getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
 
   void processEntities(Iterable<Entity> entities) {
-    Entity player = tagManager.getEntity(TAG_PLAYER);
-    Position playerPos = positionMapper.get(player);
-    Status playerStatus = statusMapper.get(player);
-    CircularBody playerBody = bodyMapper.get(player);
+    Entity player = tagManager.getEntity(tagPlayer);
+    Position playerPos = positionMapper[player];
+    Status playerStatus = statusMapper[player];
+    CircularBody playerBody = bodyMapper[player];
 
     if (!playerStatus.invisible) {
       entities.forEach((entity) {
-        Position pos = positionMapper.get(entity);
-        CircularBody body = bodyMapper.get(entity);
+        Position pos = positionMapper[entity];
+        CircularBody body = bodyMapper[entity];
 
-        if (Utils.doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x, playerPos.y, playerBody.radius)) {
+        if (doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x, playerPos.y, playerBody.radius)) {
           playerStatus.lifes--;
           playerStatus.invisiblityTimer = 5000;
-          playerPos.x = MAXWIDTH~/2;
-          playerPos.y = MAXHEIGHT~/2;
+          playerPos.x = maxWidth~/2;
+          playerPos.y = maxHeight~/2;
           return;
         }
       });

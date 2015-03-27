@@ -1,4 +1,23 @@
 # Changelog
+##0.7.0
+### Breaking API Changes
+* renamed `Poolable` to `Pooled`
+* renamed `ComponentPoolable` to `PooledComponent`
+* removed `FastMath` and `Utils`, unrelated to ECS
+* removed `removeAll` from `Bag`
+* `time` and `frame` getters have been moved from `World` to `EntitySystem`, `World` has methods instead
+### API Changes
+* deprecated `ComponentMapper` use `Mapper` instead
+* deprecated `ComponentMapper#get(Entity)`, use `Mapper[Entity]` instead
+* properties have been added to the `World`, can be accessed using the `[]` operator
+* `System`s can be assigned to a group when adding them to the `World`, `Word.process()` can be called for a specific group
+### Enhancements
+* performance improvement when removing entities
+### Bugfixes
+* DelayedEntityProcessingSystem keeps running until all current entities have expired
+### Internal
+* upgraded dependencies
+
 ##0.6.0
 ### API Changes
 * `Bag` is `Iterable` 

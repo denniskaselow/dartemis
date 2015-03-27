@@ -8,7 +8,7 @@ void main() {
   group('Bag tests', () {
     Bag<String> sut;
     setUp(() {
-      sut = new Bag<String>();
+      sut = new Bag<String>(capacity: 1);
       sut.add('A');
       sut.add('B');
     });

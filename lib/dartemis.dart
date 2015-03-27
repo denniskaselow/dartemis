@@ -2,16 +2,15 @@ library dartemis;
 
 import 'dart:core';
 import 'dart:collection';
-import 'dart:math' as Math;
+
+import 'package:bit_set/bit_set.dart';
 
 part 'src/core/utils/bag.dart';
-part 'src/core/utils/fast_math.dart';
-part 'src/core/utils/trigometry_lookup_table.dart';
-part 'src/core/utils/utils.dart';
+part 'src/core/utils/entity_bag.dart';
 part 'src/core/utils/object_pool.dart';
 
 part 'src/core/component.dart';
-part 'src/core/component_mapper.dart';
+part 'src/core/mapper.dart';
 part 'src/core/component_manager.dart';
 part 'src/core/component_type.dart';
 part 'src/core/component_type_manager.dart';

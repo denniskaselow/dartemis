@@ -21,12 +21,12 @@ void main() {
     });
     test('creating a new FreeListComponent reuses a removed instance', () {
       Entity e = world.createEntity();
-      Component c = new ComponentPoolableC();
+      Component c = new PooledComponentC();
       e.addComponent(c);
 
-      expect(new ComponentPoolableC(), isNot(same(c)));
-      e.removeComponent(ComponentPoolableC);
-      expect(new ComponentPoolableC(), same(c));
+      expect(new PooledComponentC(), isNot(same(c)));
+      e.removeComponent(PooledComponentC);
+      expect(new PooledComponentC(), same(c));
     });
   });
 }

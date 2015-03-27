@@ -1,9 +1,9 @@
 library utils._all_tests;
 
 import 'bag_test.dart' as bag;
-import 'fast_math_test.dart' as fastMath;
+import 'entity_bag_test.dart' as entity_bag;
 
 void main() {
   bag.main();
-  fastMath.main();
+  entity_bag.main();
 }

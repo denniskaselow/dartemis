@@ -1,62 +1,30 @@
 part of darteroids;
 
-class CircularBody extends ComponentPoolable {
+class CircularBody extends Component {
   num radius;
   String color;
-
-  CircularBody._();
-  factory CircularBody(num radius, String color) {
-    CircularBody body = new Poolable.of(CircularBody, _constructor);
-    body.radius = radius;
-    body.color = color;
-    return body;
-  }
-  static CircularBody _constructor() => new CircularBody._();
+  CircularBody.down(this.radius, this.color);
 }
 
-class Position extends ComponentPoolable {
+class Position extends Component {
   num _x, _y;
+  Position(this._x, this._y);
 
-  Position._();
-  factory Position(num x, num y) {
-    Position position = new Poolable.of(Position, _constructor);
-    position.x = x;
-    position.y = y;
-    return position;
-  }
-  static Position _constructor() => new Position._();
-
-  set x(num x) => _x = x % MAXWIDTH;
+  set x(num x) => _x = x % maxWidth;
   get x => _x;
 
-  set y(num y) => _y = y % MAXHEIGHT;
+  set y(num y) => _y = y % maxHeight;
   get y => _y;
 }
 
-class Velocity extends ComponentPoolable {
+class Velocity extends Component {
   num x, y;
-
-  Velocity._();
-  factory Velocity([num x = 0, num y = 0]) {
-    Velocity velocity = new Poolable.of(Velocity, _constructor);
-    velocity.x = x;
-    velocity.y = y;
-    return velocity;
-  }
-  static Velocity _constructor() => new Velocity._();
+  Velocity([this.x = 0, this.y = 0]);
 }
 
-class PlayerDestroyer extends ComponentPoolable {
-  PlayerDestroyer._();
-  factory PlayerDestroyer() => new Poolable.of(PlayerDestroyer, _constructor);
-  static PlayerDestroyer _constructor() => new PlayerDestroyer._();
-}
+class PlayerDestroyer extends Component {}
 
-class AsteroidDestroyer extends ComponentPoolable {
-  AsteroidDestroyer._();
-  factory AsteroidDestroyer() => new Poolable.of(AsteroidDestroyer, _constructor);
-  static AsteroidDestroyer _constructor() => new AsteroidDestroyer._();
-}
+class AsteroidDestroyer extends Component {}
 
 class Cannon extends Component {
   bool shoot = false;
@@ -74,16 +42,9 @@ class Cannon extends Component {
   }
 }
 
-class Decay extends ComponentPoolable {
+class Decay extends Component {
   num timer;
-
-  Decay._();
-  factory Decay(num timer) {
-    Decay decay = new Poolable.of(Decay, _constructor);
-    decay.timer = timer;
-    return decay;
-  }
-  static Decay _constructor() => new Decay._();
+  Decay(this.timer);
 }
 
 class Status extends Component {
