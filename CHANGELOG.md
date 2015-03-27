@@ -12,7 +12,6 @@
 * properties have been added to the `World`, can be accessed using the `[]` operator
 * `System`s can be assigned to a group when adding them to the `World`, `Word.process()` can be called for a specific group
 ### Enhancements
-* created a code generating transformer to insert `Manager`, `System`s and `Mapper`s into `Manager` and `System` instances
 * performance improvement when removing entities
 ### Bugfixes
 * DelayedEntityProcessingSystem keeps running until all current entities have expired
