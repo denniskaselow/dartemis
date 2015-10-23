@@ -1,6 +1,6 @@
 library delayedEntityProcessingSystem;
 
-import "package:unittest/unittest.dart";
+import "package:test/test.dart";
 
 import "package:dartemis/dartemis.dart";
 

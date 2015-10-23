@@ -1,6 +1,6 @@
 library bag_test;
 
-import "package:unittest/unittest.dart";
+import "package:test/test.dart";
 
 import "package:dartemis/dartemis.dart";
 

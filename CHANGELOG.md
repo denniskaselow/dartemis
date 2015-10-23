@@ -1,4 +1,8 @@
 # Changelog
+##0.7.1
+### Internal
+* upgraded dependencies
+
 ##0.7.0
 ### Breaking API Changes
 * renamed `Poolable` to `Pooled`

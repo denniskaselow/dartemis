@@ -1,6 +1,6 @@
 library world_test;
 
-import "package:unittest/unittest.dart";
+import 'package:test/test.dart';
 
 import "package:dartemis/dartemis_mirrors.dart";
 import "../core/components_setup.dart";
@@ -29,15 +29,15 @@ void main() {
       EntitySystemWithMapper system = world.getSystem(EntitySystemWithMapper);
 
       expect(system.mapperForA, isNotNull);
-      expect(system.mapperForA, new isInstanceOf<Mapper>('Mapper'));
+      expect(system.mapperForA, const isInstanceOf<Mapper>());
     });
     test('world injects Mapper into extended system', () {
       EntitySystemExtendingSystemWithMapper system = world.getSystem(EntitySystemExtendingSystemWithMapper);
 
       expect(system.mapperForA, isNotNull);
-      expect(system.mapperForA, new isInstanceOf<Mapper>('Mapper'));
+      expect(system.mapperForA, const isInstanceOf<Mapper>());
       expect(system.mapperForB, isNotNull);
-      expect(system.mapperForB, new isInstanceOf<Mapper>('Mapper'));
+      expect(system.mapperForB, const isInstanceOf<Mapper>());
     });
     test('world injects Managers into system', () {
       EntitySystemWithManager system = world.getSystem(EntitySystemWithManager);
@@ -64,15 +64,15 @@ void main() {
       ManagerWithMapper manager = world.getManager(ManagerWithMapper);
 
       expect(manager.mapperForA, isNotNull);
-      expect(manager.mapperForA, new isInstanceOf<Mapper>('Mapper'));
+      expect(manager.mapperForA, const isInstanceOf<Mapper>());
     });
     test('world injects Mapper into extended manager', () {
       ManagerExtendingManagerWithMapper manager = world.getManager(ManagerExtendingManagerWithMapper);
 
       expect(manager.mapperForA, isNotNull);
-      expect(manager.mapperForA, new isInstanceOf<Mapper>('Mapper'));
+      expect(manager.mapperForA, const isInstanceOf<Mapper>());
       expect(manager.mapperForB, isNotNull);
-      expect(manager.mapperForB, new isInstanceOf<Mapper>('Mapper'));
+      expect(manager.mapperForB, const isInstanceOf<Mapper>());
     });
     test('world injects Managers into manager', () {
       ManagerWithOtherManager manager = world.getManager(ManagerWithOtherManager);
