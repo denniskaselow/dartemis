@@ -3,18 +3,15 @@
 # Fast fail the script on failures.
 set -e
 
-dartanalyzer bin/dart_coveralls.dart lib/dart_coveralls.dart
-
-dart --checked test/test_all.dart
-
 # Install dart_coveralls; gather and send coverage data.
 if [ "$COVERALLS_TOKEN" ] && [ "$TRAVIS_DART_VERSION" = "stable" ]; then
   echo "Running coverage..."
-  dart bin/dart_coveralls.dart report \
+  pub global activate dart_coveralls
+  pub global run dart_coveralls report \
+    --token $COVERALLS_TOKEN \
     --retry 2 \
     --exclude-test-files \
-    --debug \
-    test/test_all.dart
+    test/all_tests.dart
   echo "Coverage complete."
 else
   if [ -z ${COVERALLS_TOKEN+x} ]; then echo "COVERALLS_TOKEN is unset"; fi
