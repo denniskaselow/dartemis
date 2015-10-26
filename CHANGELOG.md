@@ -1,4 +1,7 @@
 # Changelog
+##0.7.2
+### Bugfixes
+* removing an entity multiple times caused it to be added to the entity pool multiple times
 ##0.7.1
 ### Internal
 * upgraded dependencies

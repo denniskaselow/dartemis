@@ -73,7 +73,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// increases the capacity of the bag.
   void add(E element) {
     // is size greater than capacity increase capacity
-    if (size == _data.length) {
+    if (_size == _data.length) {
       _grow();
     }
     _data[_size++] = element;

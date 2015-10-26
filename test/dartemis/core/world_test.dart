@@ -173,6 +173,22 @@ void main() {
       EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_A]), expectedEntities);
       systemStarter(es);
     });
+    test('An entity that\'s been deleted twice, can only be reused once', () {
+      var componentA = new ComponentA();
+      var componentB = new ComponentB();
+      entityAB.deleteFromWorld();
+      entityAB.deleteFromWorld();
+
+      world.process();
+      var entityA = world.createAndAddEntity([componentA]);
+      var entityB = world.createAndAddEntity([componentB]);
+      world.process();
+
+      expect(entityA.getComponents()[0], equals(componentA));
+      expect(entityB.getComponents()[0], equals(componentB));
+      expect(entityA.getComponents().length, equals(1));
+      expect(entityB.getComponents().length, equals(1));
+    });
     test('Adding a component will not get the entity processed if the world is not notified of the change', () {
       List<Entity> expectedEntities = [entityAC];
       EntitySystem es = new TestEntitySystem(Aspect.getAspectForAllOf([COMPONENT_C]), expectedEntities);

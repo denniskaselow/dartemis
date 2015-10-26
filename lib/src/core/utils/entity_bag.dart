@@ -11,11 +11,12 @@ class EntityBag extends Bag<Entity> {
 
   @override
   void add(Entity element) {
-    super.add(element);
     if (element.id >= _entities.length) {
       _entities.setLength(_calculateNewCapacity(element.id));
     }
+    if (_entities[element.id]) return;
     _entities[element.id] = true;
+    super.add(element);
   }
 
   @override
