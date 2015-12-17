@@ -11,6 +11,9 @@ class EntityBag extends Bag<Entity> {
 
   @override
   void add(Entity element) {
+    if (_dirty) {
+      _refresh();
+    }
     if (element.id >= _entities.length) {
       _entities.setLength(_calculateNewCapacity(element.id));
     }

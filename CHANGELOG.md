@@ -1,4 +1,7 @@
 # Changelog
+##0.7.3
+### Bugfixes
+* adding an entity to a dirty EntityBag could lead to an inconsistency between the bitset and the list of entities 
 ##0.7.2
 ### Bugfixes
 * removing an entity multiple times caused it to be added to the entity pool multiple times
