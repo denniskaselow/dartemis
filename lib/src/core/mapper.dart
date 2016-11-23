@@ -2,17 +2,11 @@ part of dartemis;
 
 /// High performance component retrieval from entities. Use this wherever you
 /// need to retrieve components from entities often and fast.
-class Mapper<A extends Component> extends ComponentMapper<A> {
-  Mapper(Type componentType, World world) : super(componentType, world);
-}
-
-/// Use [Mapper] instead.
-@deprecated
-class ComponentMapper<A extends Component> {
+class Mapper<A extends Component> {
   ComponentType _type;
   Bag<Component> _components;
 
-  ComponentMapper(Type componentType, World world) {
+  Mapper(Type componentType, World world) {
     this._type = ComponentTypeManager.getTypeFor(componentType);
     _components = world.componentManager.getComponentsByType(this._type);
   }

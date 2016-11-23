@@ -1,7 +1,7 @@
 library darteroids;
 
 import 'dart:async';
-import 'dart:html' hide Entity;
+import 'dart:html';
 import 'dart:math';
 import 'package:dartemis/dartemis.dart';
 

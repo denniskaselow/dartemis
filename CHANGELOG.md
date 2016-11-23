@@ -1,5 +1,8 @@
 # Changelog
-##0.7.0
+##0.8.0#
+### Breaking API Changes
+* removed deprecated code
+##0.7.0#
 ### Breaking API Changes
 * renamed `Poolable` to `Pooled`
 * renamed `ComponentPoolable` to `PooledComponent`
