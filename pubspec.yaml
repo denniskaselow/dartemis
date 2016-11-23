@@ -9,8 +9,8 @@ dependencies:
   bit_set: ^0.1.0
 dev_dependencies:
   browser: ^0.10.0
-  unittest: ^0.11.5
-  mockito: ^0.8.2
+  test: ^0.12.16
+  mockito: ^1.0.1
 # only needed for running the example
 #  dartemis_transformer:
 #    path: ../dartemis_transformer

@@ -1,7 +1,7 @@
 library world_test;
 
 import "package:mockito/mockito.dart";
-import "package:unittest/unittest.dart";
+import "package:test/test.dart";
 
 import "package:dartemis/dartemis.dart";
 import "components_setup.dart";
