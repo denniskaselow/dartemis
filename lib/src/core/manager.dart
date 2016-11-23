@@ -19,4 +19,6 @@ abstract class Manager implements EntityObserver {
   void disabled(Entity e) {}
 
   void enabled(Entity e) {}
+
+  void destroy() {}
 }

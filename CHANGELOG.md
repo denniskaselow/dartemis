@@ -2,6 +2,8 @@
 ##0.8.0#
 ### Breaking API Changes
 * removed deprecated code
+### Enhancements
+* `world.destroy()` for cleaning up `EntitySystem`s and `Manager`s
 ##0.7.0#
 ### Breaking API Changes
 * renamed `Poolable` to `Pooled`

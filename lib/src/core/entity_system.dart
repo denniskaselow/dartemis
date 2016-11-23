@@ -125,4 +125,6 @@ abstract class EntitySystem implements EntityObserver {
     }
   }
 
+  void destroy() {}
+
 }

@@ -122,6 +122,23 @@ void main() {
 
       expect(world['key'], equals('value'));
     });
+    test('destroy calls destroy method on systems', () {
+      world.addSystem(system);
+      world.process();
+
+      world.destroy();
+
+      verify(system.destroy()).called(1);
+    });
+    test('destroy calls destroy method on managers', () {
+      MockManager manager = new MockManager();
+      world.addManager(manager);
+      world.initialize();
+
+      world.destroy();
+
+      verify(manager.destroy()).called(1);
+    });
   });
   group('integration tests for World.process()', () {
     World world;

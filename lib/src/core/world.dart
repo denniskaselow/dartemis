@@ -203,4 +203,10 @@ class World {
   void operator []=(String key, dynamic value) {
     properties[key] = value;
   }
+
+  /// Destroy the [World] by destroying all [EntitySystem]s and [Manager]s.
+  void destroy() {
+    _systemsList.forEach((system) => system.destroy());
+    _managersBag.forEach((manager) => manager.destroy());
+  }
 }
