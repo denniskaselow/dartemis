@@ -200,7 +200,7 @@ class World {
   dynamic operator [](String key) => properties[key];
 
   /// Set the [value] of [key] in [properties].
-  void operator []=(String key, dynamic value) {
+  void operator []=(String key, value) {
     properties[key] = value;
   }
 
