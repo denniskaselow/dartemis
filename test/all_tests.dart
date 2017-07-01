@@ -1,5 +1,5 @@
 import 'dartemis/core/_all_tests.dart' as core;
 
-main() {
+void main() {
   core.main();
 }

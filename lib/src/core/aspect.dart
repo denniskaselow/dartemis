@@ -59,7 +59,7 @@ class Aspect {
 
   /// Creates an aspect where an entity must possess one of the specified
   /// componens.
-  static getAspectForOneOf(List<Type> componentTypes) {
+  static Aspect getAspectForOneOf(List<Type> componentTypes) {
     Aspect aspect = new Aspect();
     aspect.oneOf(componentTypes);
     return aspect;

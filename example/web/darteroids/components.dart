@@ -11,10 +11,10 @@ class Position extends Component {
   Position(this._x, this._y);
 
   set x(num x) => _x = x % maxWidth;
-  get x => _x;
+  num get x => _x;
 
   set y(num y) => _y = y % maxHeight;
-  get y => _y;
+  num get y => _y;
 }
 
 class Velocity extends Component {
