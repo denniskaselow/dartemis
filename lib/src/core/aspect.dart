@@ -20,7 +20,6 @@ part of dartemis;
 /// is the same as:
 ///     Aspect.getAspectForAllOf([A, B, C]).exclude([U, V]).oneOf([X, Y, Z])
 class Aspect {
-
   int _all = 0;
   int _excluded = 0;
   int _one = 0;
@@ -83,12 +82,12 @@ class Aspect {
   int get one => _one;
 
   int _updateBitMask(int mask, List<Type> componentTypes) {
+    var result = mask;
     if (null != componentTypes) {
       componentTypes.forEach((componentType) {
-        mask = mask | ComponentTypeManager.getBit(componentType);
+        result |= ComponentTypeManager.getBit(componentType);
       });
     }
-    return mask;
+    return result;
   }
-
 }
