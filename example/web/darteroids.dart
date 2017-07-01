@@ -93,7 +93,7 @@ class Darteroids {
     world.delta = 5.0;
     world.process();
 
-    new Future.delayed(new Duration(milliseconds: 5), physicsLoop);
+    new Future.delayed(const Duration(milliseconds: 5), physicsLoop);
   }
 
   void renderLoop(num time) {
