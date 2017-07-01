@@ -68,9 +68,7 @@ class World {
   }
 
   /// Returns a [Manager] of the specified [managerType].
-  Manager getManager(Type managerType) {
-    return _managers[managerType];
-  }
+  Manager getManager(Type managerType) => _managers[managerType];
 
   /// Deletes the manager from this world.
   void deleteManager(Manager manager) {
@@ -97,9 +95,7 @@ class World {
   }
 
   /// Get an [Entity] having the specified [entityId].
-  Entity getEntity(int entityId) {
-    return _entityManager._getEntity(entityId);
-  }
+  Entity getEntity(int entityId) => _entityManager._getEntity(entityId);
 
   /// Gives you all the systems in this world for possible iteration.
   Iterable<EntitySystem> get systems => _systemsList;
@@ -128,9 +124,7 @@ class World {
   }
 
   /// Retrieve a system for specified system type.
-  EntitySystem getSystem(Type type) {
-    return _systems[type];
-  }
+  EntitySystem getSystem(Type type) => _systems[type];
 
   /// Performs an action on each entity.
   void _check(Bag<Entity> entities, void perform(EntityObserver, Entity)) {

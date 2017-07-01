@@ -72,18 +72,16 @@ class Entity {
   /// instance for the expected component.
   ///
   /// Returns the [Component].
-  Component getComponent(ComponentType type) {
-    return _componentManager._getComponent(this, type);
-  }
+  Component getComponent(ComponentType type) =>
+      _componentManager._getComponent(this, type);
 
   /// Slower retrieval of a [Component] from this entity. Minimize usage of this,
   /// but is fine to use e.g. when creating new entities and setting data in
   /// components.
   ///
   /// Returns [:null:] if none is found.
-  Component getComponentByClass(Type componentType) {
-    return getComponent(ComponentTypeManager.getTypeFor(componentType));
-  }
+  Component getComponentByClass(Type componentType) =>
+      getComponent(ComponentTypeManager.getTypeFor(componentType));
 
   /// Get all components belonging to this entity.
   Bag<Component> getComponents([Bag<Component> fillBag]) {

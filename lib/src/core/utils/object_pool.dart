@@ -4,7 +4,6 @@ part of dartemis;
 /// this class stores objects that are no longer used in the game for later
 /// reuse.
 class ObjectPool {
-
   static Map<Type, Bag<Pooled>> _objectPools = <Type, Bag<Pooled>>{};
 
   /// Returns a pooled object of [Type] [type]. If there is no object in the pool
@@ -46,15 +45,13 @@ typedef Pooled CreatePooled();
 ///
 /// Should be added as a mixin.
 abstract class Pooled {
-
   /// Creates a new [Pooled] of [Type] [type].
   ///
   /// The instance created with [createPooled] should be created with
   /// a zero-argument contructor because it will only be called once. All fields
   /// of the created object should be set in the calling factory constructor.
-  factory Pooled.of(Type type, CreatePooled createPooled) {
-    return ObjectPool.get(type, createPooled);
-  }
+  factory Pooled.of(Type type, CreatePooled createPooled) =>
+      ObjectPool.get(type, createPooled);
 
   /// If you need to do some cleanup before this object moves into the Pool of
   /// reusable objects.
