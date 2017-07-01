@@ -7,10 +7,10 @@ abstract class IntervalEntitySystem extends EntitySystem {
   num _delta = 0;
   final num _interval;
 
+  IntervalEntitySystem(this._interval, Aspect aspect) : super(aspect);
+
   /// Returns the accumulated delta since the system was last invoked.
   num get delta => _delta;
-
-  IntervalEntitySystem(this._interval, Aspect aspect): super(aspect);
 
   bool checkProcessing() {
     _acc += world.delta;
@@ -28,5 +28,4 @@ abstract class IntervalEntitySystem extends EntitySystem {
   void end() {
     _delta = 0;
   }
-
 }

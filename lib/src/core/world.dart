@@ -29,17 +29,17 @@ class World {
   /// World-related properties that can be written and read by the user.
   final Map<String, dynamic> properties = new Map<String, dynamic>();
 
+  World() {
+    addManager(_entityManager);
+    addManager(_componentManager);
+  }
+
   /// Returns the current frame/how often the systems in [group] have been processed.
   int frame([int group = 0]) => _frame[group];
 
   /// Returns the time that has elapsed for the systems in the [group] since the game has
   /// started (sum of all deltas).
   double time([int group = 0]) => _time[group];
-
-  World() {
-    addManager(_entityManager);
-    addManager(_componentManager);
-  }
 
   /// Makes sure all managers systems are initialized in the order they were
   /// added.
