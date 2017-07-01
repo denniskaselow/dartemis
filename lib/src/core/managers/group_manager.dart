@@ -10,8 +10,8 @@ class GroupManager extends Manager {
   final Map<Entity, Bag<String>> _groupsByEntity;
 
   GroupManager()
-      : _entitiesByGroup = new Map<String, Bag<Entity>>(),
-        _groupsByEntity = new Map<Entity, Bag<String>>();
+      : _entitiesByGroup = <String, Bag<Entity>>{},
+        _groupsByEntity = <Entity, Bag<String>>{};
 
   /// Set the group of the entity.
   void add(Entity e, String group) {

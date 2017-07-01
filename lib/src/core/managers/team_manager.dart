@@ -11,8 +11,8 @@ class TeamManager extends Manager {
   Map<String, String> _teamByPlayer;
 
   TeamManager() {
-    _playersByTeam = new Map<String, Bag<String>>();
-    _teamByPlayer = new Map<String, String>();
+    _playersByTeam = <String, Bag<String>>{};
+    _teamByPlayer = <String, String>{};
   }
 
   String getTeam(String player) => _teamByPlayer[player];

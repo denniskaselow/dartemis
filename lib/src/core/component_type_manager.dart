@@ -1,8 +1,7 @@
 part of dartemis;
 
 class ComponentTypeManager {
-
-  static var _componentTypes = new Map<Type, ComponentType>();
+  static var _componentTypes = <Type, ComponentType>{};
 
   static ComponentType getTypeFor(Type typeOfComponent) {
     ComponentType componentType = _componentTypes[typeOfComponent];

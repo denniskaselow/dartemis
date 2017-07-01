@@ -16,10 +16,10 @@ class World {
   final Bag<Entity> _enable = new EntityBag();
   final Bag<Entity> _disable = new EntityBag();
 
-  final Map<Type, EntitySystem> _systems = new Map<Type, EntitySystem>();
-  final List<EntitySystem> _systemsList = new List<EntitySystem>();
+  final Map<Type, EntitySystem> _systems = <Type, EntitySystem>{};
+  final List<EntitySystem> _systemsList = <EntitySystem>[];
 
-  final Map<Type, Manager> _managers = new Map<Type, Manager>();
+  final Map<Type, Manager> _managers = <Type, Manager>{};
   final Bag<Manager> _managersBag = new Bag<Manager>();
 
   num delta = 0;
@@ -27,7 +27,7 @@ class World {
   Map<int, double> _time = {0: 0.0};
 
   /// World-related properties that can be written and read by the user.
-  final Map<String, dynamic> properties = new Map<String, dynamic>();
+  final Map<String, dynamic> properties = <String, dynamic>{};
 
   World() {
     addManager(_entityManager);

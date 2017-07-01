@@ -5,7 +5,7 @@ part of dartemis;
 /// reuse.
 class ObjectPool {
 
-  static Map<Type, Bag<Pooled>> _objectPools = new Map<Type, Bag<Pooled>>();
+  static Map<Type, Bag<Pooled>> _objectPools = <Type, Bag<Pooled>>{};
 
   /// Returns a pooled object of [Type] [type]. If there is no object in the pool
   /// it will create a new one using [createPooled].

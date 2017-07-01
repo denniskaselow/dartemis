@@ -8,8 +8,8 @@ class PlayerManager extends Manager {
   Map<String, Bag<Entity>> _entitiesByPlayer;
 
   PlayerManager() {
-    _playerByEntity = new Map<Entity, String>();
-    _entitiesByPlayer = new Map<String, Bag<Entity>>();
+    _playerByEntity = <Entity, String>{};
+    _entitiesByPlayer = <String, Bag<Entity>>{};
   }
 
   void setPlayer(Entity e, String player) {
@@ -43,5 +43,4 @@ class PlayerManager extends Manager {
   String getPlayer(Entity e) => _playerByEntity[e];
 
   void deleted(Entity e) => removeFromPlayer(e);
-
 }
