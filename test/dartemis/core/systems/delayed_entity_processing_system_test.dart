@@ -81,7 +81,7 @@ class TestDelayedEntityProcessingSystem extends DelayedEntityProcessingSystem {
   }
 
   @override
-  num getRemainingDelay(Entity entity) => timerMapper[entity].time;
+  double getRemainingDelay(Entity entity) => timerMapper[entity].time;
 
   @override
   void processDelta(Entity entity, num accumulatedDelta) {

@@ -45,7 +45,7 @@ class EntityBag extends Bag<Entity> {
   }
 
   @override
-  bool contains(Entity element) => _entities[element.id];
+  bool contains(Object element) => element is Entity && _entities[element.id];
 
   @override
   int get size {
