@@ -19,7 +19,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   double _delay;
   double _acc = 0.0;
 
-  DelayedEntityProcessingSystem(Aspect aspect): super(aspect);
+  DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
 
   /// Check if the system is counting down towards processing.
   bool get running => _running;
@@ -72,8 +72,8 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   ///
   /// Cancels current delayed run and starts a new one.
   void restart(double delay) {
-    this._delay = delay;
-    this._acc = 0.0;
+    _delay = delay;
+    _acc = 0.0;
     _running = true;
   }
 
@@ -111,8 +111,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /// Stops the system from running, aborts current countdown.
   /// Call offerDelay or restart to run it again.
   void stop() {
-    this._running = false;
-    this._acc = 0.0;
+    _running = false;
+    _acc = 0.0;
   }
-
 }

@@ -7,8 +7,8 @@ class Mapper<A extends Component> {
   Bag<Component> _components;
 
   Mapper(Type componentType, World world) {
-    this._type = ComponentTypeManager.getTypeFor(componentType);
-    _components = world.componentManager.getComponentsByType(this._type);
+    _type = ComponentTypeManager.getTypeFor(componentType);
+    _components = world.componentManager.getComponentsByType(_type);
   }
 
   /// Use bracket operator instead.
