@@ -45,14 +45,14 @@ class Entity {
 
   /// Add a [component] to this entity.
   void addComponent(Component component) {
-    _componentManager._addComponent(this, ComponentTypeManager.getTypeFor(
-        component.runtimeType), component);
+    _componentManager._addComponent(this,
+        ComponentTypeManager.getTypeFor(component.runtimeType), component);
   }
 
   /// Removes the [Component] of [Type] [componentType] from this entity.
   void removeComponent(Type componentType) {
-    _componentManager._removeComponent(this, ComponentTypeManager.getTypeFor(
-        componentType));
+    _componentManager._removeComponent(
+        this, ComponentTypeManager.getTypeFor(componentType));
   }
 
   /// Faster removal of components by [type] from a entity.
@@ -87,9 +87,7 @@ class Entity {
 
   /// Get all components belonging to this entity.
   Bag<Component> getComponents([Bag<Component> fillBag]) {
-    if (null == fillBag) {
-      fillBag = new Bag<Component>();
-    }
+    fillBag ??= new Bag<Component>();
     return _componentManager.getComponentsFor(this, fillBag);
   }
 

@@ -12,9 +12,7 @@ class ObjectPool {
   static Pooled get(Type type, CreatePooled createPooled) {
     Bag<Pooled> pool = _getPool(type);
     var obj = pool.removeLast();
-    if (null == obj) {
-      obj = createPooled();
-    }
+    obj ??= createPooled();
     return obj;
   }
 

@@ -25,9 +25,7 @@ class EntityManager extends Manager {
 
   Entity _createEntityInstance() {
     Entity e = _deletedEntities.removeLast();
-    if (null == e) {
-      e = new Entity._(_world, _identifierPool.checkOut());
-    }
+    e ??= new Entity._(_world, _identifierPool.checkOut());
     _created++;
     e._uniqueId = _nextUniqueId++;
     return e;

@@ -24,9 +24,7 @@ class PlayerManager extends Manager {
 
   Iterable<Entity> getEntitiesOfPlayer(String player) {
     Bag<Entity> entities = _entitiesByPlayer[player];
-    if (entities == null) {
-      entities = new Bag<Entity>();
-    }
+    entities ??= new Bag<Entity>();
     return entities;
   }
 
