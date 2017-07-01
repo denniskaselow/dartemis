@@ -36,10 +36,7 @@ class Cannon extends Component {
     this.targetY = targetY;
   }
 
-  bool get canShoot {
-    if (shoot && cooldown <= 0) return true;
-    return false;
-  }
+  bool get canShoot => shoot && cooldown <= 0;
 }
 
 class Decay extends Component {
