@@ -7,7 +7,7 @@ import "components_setup.dart";
 
 void main() {
   group('ComponentType', () {
-    setUp(() => setUpComponents());
+    setUp(setUpComponents);
     test('returns correct bit', () {
       expect(ComponentTypeManager.getBit(COMPONENT_A), COMPONENT_A_BIT);
       expect(ComponentTypeManager.getBit(COMPONENT_B), COMPONENT_B_BIT);

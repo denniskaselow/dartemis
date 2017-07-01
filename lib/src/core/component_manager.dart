@@ -69,8 +69,8 @@ class ComponentManager extends Manager {
     return fillBag;
   }
 
-  void _forComponentsOfEntity(Entity e, void f(Bag<Component> components, int
-      index)) {
+  void _forComponentsOfEntity(
+      Entity e, void f(Bag<Component> components, int index)) {
     int componentBits = e._typeBits;
     int index = 0;
     while (componentBits > 0) {
@@ -85,7 +85,7 @@ class ComponentManager extends Manager {
   void deleted(Entity e) => _deleted.add(e);
 
   void clean() {
-    _deleted.forEach((entity) => _removeComponentsOfEntity(entity));
+    _deleted.forEach(_removeComponentsOfEntity);
     _deleted.clear();
   }
 }

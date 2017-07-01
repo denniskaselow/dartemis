@@ -8,7 +8,7 @@ import "components_setup.dart";
 
 void main() {
   group('Aspect Tests', () {
-    setUp(() => setUpComponents());
+    setUp(setUpComponents);
     test('getAspectForAll with one component', () {
       Aspect aspect = Aspect.getAspectForAllOf([COMPONENT_C]);
       expect(aspect.all, COMPONENT_C_BIT);

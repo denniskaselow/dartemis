@@ -28,8 +28,10 @@ class World {
 
   /// World-related properties that can be written and read by the user.
   final Map<String, dynamic> properties = new Map<String, dynamic>();
+
   /// Returns the current frame/how often the systems in [group] have been processed.
   int frame([int group = 0]) => _frame[group];
+
   /// Returns the time that has elapsed for the systems in the [group] since the game has
   /// started (sum of all deltas).
   double time([int group = 0]) => _time[group];
@@ -42,8 +44,8 @@ class World {
   /// Makes sure all managers systems are initialized in the order they were
   /// added.
   void initialize() {
-    _managersBag.forEach((manager) => initializeManager(manager));
-    _systemsList.forEach((system) => initializeSystem(system));
+    _managersBag.forEach(initializeManager);
+    _systemsList.forEach(initializeSystem);
   }
 
   void initializeManager(Manager manager) => manager.initialize();
@@ -105,7 +107,8 @@ class World {
   /// Adds a [system] to this world that will be processed by [process()].
   /// If [passive] is set to true the [system] will not be processed by the world.
   /// If a [group] is set, this [system] will only be processed when calling [process()] with the same [group].
-  EntitySystem addSystem(EntitySystem system, {bool passive: false, int group: 0}) {
+  EntitySystem addSystem(EntitySystem system,
+      {bool passive: false, int group: 0}) {
     system._world = this;
     system._passive = passive;
     system._group = group;
@@ -144,7 +147,9 @@ class World {
     _time[group] += delta;
     processEntityChanges();
 
-    _systemsList.where((system) => !system.passive && system.group == group).forEach((system) {
+    _systemsList
+        .where((system) => !system.passive && system.group == group)
+        .forEach((system) {
       system.process();
     });
   }

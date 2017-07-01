@@ -5,16 +5,14 @@ part of dartemis;
 /// no need to do that every game loop, but perhaps every 100 ms. or every
 /// second.
 abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
-
   /// Create a new [IntervalEntityProcessingSystem]. It requires at least one
   /// component.
-  IntervalEntityProcessingSystem(int interval, Aspect aspect): super(interval,
-      aspect);
+  IntervalEntityProcessingSystem(int interval, Aspect aspect)
+      : super(interval, aspect);
 
   /// Process an [entity] this system is interested in.
   void processEntity(Entity entity);
 
-  void processEntities(Iterable<Entity> entities) => entities.forEach((entity)
-      => processEntity(entity));
-
+  void processEntities(Iterable<Entity> entities) =>
+      entities.forEach(processEntity);
 }
