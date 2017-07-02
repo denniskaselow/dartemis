@@ -46,13 +46,14 @@ class GroupManager extends Manager {
   void removeFromAllGroups(Entity e) {
     Bag<String> groups = _groupsByEntity[e];
     if (groups != null) {
-      groups.forEach((group) {
-        Bag<Entity> entities = _entitiesByGroup[group];
-        if (entities != null) {
-          entities.remove(e);
-        }
-      });
-      groups.clear();
+      groups
+        ..forEach((group) {
+          Bag<Entity> entities = _entitiesByGroup[group];
+          if (entities != null) {
+            entities.remove(e);
+          }
+        })
+        ..clear();
     }
   }
 
@@ -82,5 +83,4 @@ class GroupManager extends Manager {
   }
 
   void deleted(Entity e) => removeFromAllGroups(e);
-
 }

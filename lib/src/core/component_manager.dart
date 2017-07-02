@@ -85,7 +85,8 @@ class ComponentManager extends Manager {
   void deleted(Entity e) => _deleted.add(e);
 
   void clean() {
-    _deleted.forEach(_removeComponentsOfEntity);
-    _deleted.clear();
+    _deleted
+      ..forEach(_removeComponentsOfEntity)
+      ..clear();
   }
 }

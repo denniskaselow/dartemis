@@ -14,8 +14,9 @@ void main() {
     test('creating a new Component creates a new instance', () {
       Entity e = world.createEntity();
       Component c = new ComponentA();
-      e.addComponent(c);
-      e.removeComponent(ComponentA);
+      e
+        ..addComponent(c)
+        ..removeComponent(ComponentA);
 
       expect(new ComponentA(), isNot(same(c)));
     });

@@ -25,13 +25,16 @@ void main() {
     test('isEnabled returns correct values for enabled/disabled', () {
       Entity a = world.createEntity();
       Entity b = world.createEntity();
-      world.disable(b);
-      world.processEntityChanges();
+      world
+        ..disable(b)
+        ..processEntityChanges();
 
       expect(world.entityManager.isEnabled(a.id), equals(true));
       expect(world.entityManager.isEnabled(b.id), equals(false));
     });
-    test('isEnabled does not fail if bag of disabled entities is smaller than amount of entities', () {
+    test(
+        'isEnabled does not fail if bag of disabled entities is smaller than amount of entities',
+        () {
       for (int i = 0; i < 16; i++) {
         world.createEntity();
       }

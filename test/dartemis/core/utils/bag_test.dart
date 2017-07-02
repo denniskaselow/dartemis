@@ -8,9 +8,7 @@ void main() {
   group('Bag tests', () {
     Bag<String> sut;
     setUp(() {
-      sut = new Bag<String>(capacity: 1);
-      sut.add('A');
-      sut.add('B');
+      sut = new Bag<String>(capacity: 1)..add('A')..add('B');
     });
     test('removing an element', () {
       sut.remove('A');

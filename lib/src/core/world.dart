@@ -105,9 +105,10 @@ class World {
   /// If a [group] is set, this [system] will only be processed when calling [process()] with the same [group].
   EntitySystem addSystem(EntitySystem system,
       {bool passive: false, int group: 0}) {
-    system._world = this;
-    system._passive = passive;
-    system._group = group;
+    system
+      .._world = this
+      .._passive = passive
+      .._group = group;
 
     _systems[system.runtimeType] = system;
     _systemsList.add(system);
@@ -128,11 +129,12 @@ class World {
 
   /// Performs an action on each entity.
   void _check(Bag<Entity> entities, void perform(EntityObserver, Entity)) {
-    entities.forEach((entity) {
-      _managersBag.forEach((manager) => perform(manager, entity));
-      _systemsList.forEach((system) => perform(system, entity));
-    });
-    entities.clear();
+    entities
+      ..forEach((entity) {
+        _managersBag.forEach((manager) => perform(manager, entity));
+        _systemsList.forEach((system) => perform(system, entity));
+      })
+      ..clear();
   }
 
   /// Processes all changes to entities and executes all non-passive systems.

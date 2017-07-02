@@ -9,8 +9,9 @@ void main() {
     test('delta returns accumulated time since last processing', () {
       World world = new World();
       var sut = new TestIntervalEntitySystem(40);
-      world.addSystem(sut);
-      world.delta = 16;
+      world
+        ..addSystem(sut)
+        ..delta = 16;
 
       expect(sut.checkProcessing(), equals(false));
       expect(sut.checkProcessing(), equals(false));

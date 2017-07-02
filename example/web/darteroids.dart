@@ -19,14 +19,14 @@ const int maxHeight = 600;
 const int hudHeight = 100;
 
 final Random random = new Random();
+final CanvasElement canvas = querySelector('#gamecontainer');
 
 void main() {
-  CanvasElement canvas = querySelector('#gamecontainer');
-  canvas.width = maxWidth;
-  canvas.height = maxHeight + hudHeight;
+  canvas
+    ..width = maxWidth
+    ..height = maxHeight + hudHeight;
 
-  Darteroids darteroids = new Darteroids(canvas);
-  darteroids.start();
+  new Darteroids(canvas).start();
 }
 
 class Darteroids {
@@ -42,56 +42,58 @@ class Darteroids {
   void start() {
     world = new World();
 
-    Entity player = world.createEntity();
-    player.addComponent(new Position(maxWidth~/2, maxHeight~/2));
-    player.addComponent(new Velocity());
-    player.addComponent(new CircularBody.down(20, playerColor));
-    player.addComponent(new Cannon());
-    player.addComponent(new Status(lifes : 3, invisiblityTimer : 5000));
-    player.addToWorld();
+    Entity player = world.createEntity()
+      ..addComponent(new Position(maxWidth ~/ 2, maxHeight ~/ 2))
+      ..addComponent(new Velocity())
+      ..addComponent(new CircularBody.down(20, playerColor))
+      ..addComponent(new Cannon())
+      ..addComponent(new Status(lifes: 3, invisiblityTimer: 5000))
+      ..addToWorld();
 
-    TagManager tagManager = new TagManager();
-    tagManager.register(player, tagPlayer);
+    TagManager tagManager = new TagManager()..register(player, tagPlayer);
     world.addManager(tagManager);
     GroupManager groupManager = new GroupManager();
     world.addManager(groupManager);
 
     addAsteroids(groupManager);
 
-    world.addSystem(new PlayerControlSystem(canvas));
-    world.addSystem(new BulletSpawningSystem());
-    world.addSystem(new DecaySystem());
-    world.addSystem(new MovementSystem());
-    world.addSystem(new AsteroidDestructionSystem());
-    world.addSystem(new PlayerCollisionDetectionSystem());
-    world.addSystem(new BackgroundRenderSystem(context2d), group: 1);
-    world.addSystem(new CircleRenderingSystem(context2d), group: 1);
-    world.addSystem(new HudRenderSystem(context2d), group: 1);
-
-    world.initialize();
+    world
+      ..addSystem(new PlayerControlSystem(canvas))
+      ..addSystem(new BulletSpawningSystem())
+      ..addSystem(new DecaySystem())
+      ..addSystem(new MovementSystem())
+      ..addSystem(new AsteroidDestructionSystem())
+      ..addSystem(new PlayerCollisionDetectionSystem())
+      ..addSystem(new BackgroundRenderSystem(context2d), group: 1)
+      ..addSystem(new CircleRenderingSystem(context2d), group: 1)
+      ..addSystem(new HudRenderSystem(context2d), group: 1)
+      ..initialize();
 
     physicsLoop();
     renderLoop(16.66);
   }
 
   void addAsteroids(GroupManager groupManager) {
-
     for (int i = 0; i < 10; i++) {
-      Entity asteroid = world.createEntity();
-      asteroid.addComponent(new Position(maxWidth * random.nextDouble(), maxHeight * random.nextDouble()));
+      Entity asteroid = world.createEntity()
+        ..addComponent(new Position(
+            maxWidth * random.nextDouble(), maxHeight * random.nextDouble()));
       num vx = generateRandomVelocity();
       num vy = generateRandomVelocity();
-      asteroid.addComponent(new Velocity(vx, vy));
-      asteroid.addComponent(new CircularBody.down(10 + 20 * random.nextDouble(), asteroidColor));
-      asteroid.addComponent(new PlayerDestroyer());
-      asteroid.addToWorld();
+      asteroid
+        ..addComponent(new Velocity(vx, vy))
+        ..addComponent(
+            new CircularBody.down(10 + 20 * random.nextDouble(), asteroidColor))
+        ..addComponent(new PlayerDestroyer())
+        ..addToWorld();
       groupManager.add(asteroid, groupAsteroids);
     }
   }
 
   void physicsLoop() {
-    world.delta = 5.0;
-    world.process();
+    world
+      ..delta = 5.0
+      ..process();
 
     new Future.delayed(const Duration(milliseconds: 5), physicsLoop);
   }
@@ -103,7 +105,6 @@ class Darteroids {
 
     window.animationFrame.then(renderLoop);
   }
-
 }
 
 num generateRandomVelocity() {
@@ -112,8 +113,8 @@ num generateRandomVelocity() {
   return velocity;
 }
 
-bool doCirclesCollide(num x1, num y1, num radius1, num x2, num y2, num
-    radius2) {
+bool doCirclesCollide(
+    num x1, num y1, num radius1, num x2, num y2, num radius2) {
   num dx = x2 - x1;
   num dy = y2 - y1;
   num d = radius1 + radius2;

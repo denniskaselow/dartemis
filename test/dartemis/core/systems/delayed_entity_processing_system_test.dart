@@ -10,14 +10,13 @@ void main() {
       World world = new World();
       var t1 = new Timer(100.0);
       var t2 = new Timer(150.0);
-      world.createAndAddEntity([t1]);
-      world.createAndAddEntity([t2]);
+      world..createAndAddEntity([t1])..createAndAddEntity([t2]);
       var sut = new TestDelayedEntityProcessingSystem();
-      world.addSystem(sut);
-      world.delta = 50.0;
-      world.initialize();
-
-      world.process();
+      world
+        ..addSystem(sut)
+        ..delta = 50.0
+        ..initialize()
+        ..process();
       expect(sut.getInitialTimeDelay(), equals(100.0));
       expect(sut.getRemainingTimeUntilProcessing(), equals(50.0));
       expect(world.entityManager.totalDeleted, equals(0));
@@ -50,13 +49,13 @@ void main() {
       var t2 = new Timer(150.0);
       world.createAndAddEntity([t1]);
       var sut = new TestDelayedEntityProcessingSystem();
-      world.addSystem(sut);
-      world.delta = 50.0;
-      world.initialize();
-
-      world.process();
-      world.createAndAddEntity([t2]);
-      world.process();
+      world
+        ..addSystem(sut)
+        ..delta = 50.0
+        ..initialize()
+        ..process()
+        ..createAndAddEntity([t2])
+        ..process();
       expect(sut.getInitialTimeDelay(), equals(100.0));
       expect(sut.getRemainingTimeUntilProcessing(), equals(100.0));
       expect(world.entityManager.totalDeleted, equals(0));
@@ -73,7 +72,8 @@ class Timer extends Component {
 
 class TestDelayedEntityProcessingSystem extends DelayedEntityProcessingSystem {
   Mapper<Timer> timerMapper;
-  TestDelayedEntityProcessingSystem() : super(Aspect.getAspectForAllOf([Timer]));
+  TestDelayedEntityProcessingSystem()
+      : super(Aspect.getAspectForAllOf([Timer]));
 
   @override
   void initialize() {

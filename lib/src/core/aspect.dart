@@ -50,19 +50,13 @@ class Aspect {
 
   /// Creates an aspect where an entity must possess all of the specified
   /// components.
-  static Aspect getAspectForAllOf(List<Type> componentTypes) {
-    Aspect aspect = new Aspect();
-    aspect.allOf(componentTypes);
-    return aspect;
-  }
+  static Aspect getAspectForAllOf(List<Type> componentTypes) =>
+      new Aspect()..allOf(componentTypes);
 
   /// Creates an aspect where an entity must possess one of the specified
   /// componens.
-  static Aspect getAspectForOneOf(List<Type> componentTypes) {
-    Aspect aspect = new Aspect();
-    aspect.oneOf(componentTypes);
-    return aspect;
-  }
+  static Aspect getAspectForOneOf(List<Type> componentTypes) =>
+      new Aspect()..oneOf(componentTypes);
 
   /// Creates and returns an empty aspect. This can be used if you want a system
   /// that processes no entities, but still gets invoked. Typical usages is when

@@ -19,8 +19,7 @@ void main() {
       Entity entity = world.createEntity();
       Component componentA = new ComponentA();
       Component componentC = new PooledComponentC();
-      entity.addComponent(componentA);
-      entity.addComponent(componentC);
+      entity..addComponent(componentA)..addComponent(componentC);
 
       Bag<Component> fillBag = entity.getComponents();
 
@@ -28,20 +27,20 @@ void main() {
       expect(fillBag[1], equals(componentC));
       expect(fillBag.size, equals(2));
     });
-    test('ComponentManager correctly associates multiple entity and components', () {
+    test('ComponentManager correctly associates multiple entity and components',
+        () {
       Entity entity1 = world.createEntity();
       Component component1A = new ComponentA();
       Component component1C = new PooledComponentC();
-      entity1.addComponent(component1A);
-      entity1.addComponent(component1C);
+      entity1..addComponent(component1A)..addComponent(component1C);
 
       Entity entity2 = world.createEntity();
       Component component2A = new ComponentA();
       Component component2B = new ComponentB();
       Component component2C = new PooledComponentC();
-      entity2.addComponent(component2A);
-      entity2.addComponent(component2B);
-      entity2.addComponent(component2C);
+      entity2..addComponent(component2A)
+        ..addComponent(component2B)
+        ..addComponent(component2C);
 
       Bag<Component> fillBag1 = entity1.getComponents();
       Bag<Component> fillBag2 = entity2.getComponents();
@@ -59,13 +58,13 @@ void main() {
       Entity entity = world.createEntity();
       Component componentA = new ComponentA();
       Component componentC = new PooledComponentC();
-      entity.addComponent(componentA);
-      entity.addComponent(componentC);
-      world.addEntity(entity);
-      world.initialize();
-      world.process();
-      world.deleteEntity(entity);
-      world.process();
+      entity..addComponent(componentA)..addComponent(componentC);
+      world
+        ..addEntity(entity)
+        ..initialize()
+        ..process()
+        ..deleteEntity(entity)
+        ..process();
 
       Bag<Component> fillBag = entity.getComponents();
       expect(fillBag.size, equals(0));
@@ -75,7 +74,8 @@ void main() {
       for (int i = 0; i < DEFAULT_BAG_SIZE; i++) {
         type = new ComponentType();
       }
-      Bag<Component> componentsByType = world.componentManager.getComponentsByType(type);
+      Bag<Component> componentsByType =
+          world.componentManager.getComponentsByType(type);
       expect(componentsByType.size, equals(0));
     });
   });

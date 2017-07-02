@@ -11,9 +11,7 @@ void main() {
     Entity e1 = world.createEntity();
     Entity e2 = world.createEntity();
     setUp(() {
-      bag = new EntityBag(capacity: 1);
-      bag.add(e1);
-      bag.add(e2);
+      bag = new EntityBag(capacity: 1)..add(e1)..add(e2);
     });
     test('removing an element', () {
       bag.remove(e1);
