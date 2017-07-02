@@ -266,7 +266,7 @@ class MockManager extends Mock implements Manager {}
 
 class TestEntitySystem extends EntitySystem {
   var expectedEntities;
-  TestEntitySystem(Aspect aspect, this.expectedEntities) : super(aspect) {}
+  TestEntitySystem(Aspect aspect, this.expectedEntities) : super(aspect);
 
   void processEntities(Iterable<Entity> entities) {
     int length = expectedEntities.length;
