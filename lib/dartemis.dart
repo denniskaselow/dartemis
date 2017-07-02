@@ -1,7 +1,7 @@
 library dartemis;
 
-import 'dart:core';
 import 'dart:collection';
+import 'dart:core';
 
 import 'package:bit_set/bit_set.dart';
 
