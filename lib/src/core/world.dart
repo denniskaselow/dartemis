@@ -128,7 +128,7 @@ class World {
   EntitySystem getSystem(Type type) => _systems[type];
 
   /// Performs an action on each entity.
-  void _check(Bag<Entity> entities, void perform(EntityObserver, Entity)) {
+  void _check(Bag<Entity> entities, void perform(entityObserver, entity)) {
     entities
       ..forEach((entity) {
         _managersBag.forEach((manager) => perform(manager, entity));

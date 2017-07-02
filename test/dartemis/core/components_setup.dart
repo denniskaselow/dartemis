@@ -2,18 +2,18 @@ library components_setup;
 
 import "package:dartemis/dartemis.dart";
 
-final Type COMPONENT_A = new ComponentA().runtimeType;
-final Type COMPONENT_B = new ComponentB().runtimeType;
-final Type COMPONENT_C = new PooledComponentC().runtimeType;
+final Type componentA = new ComponentA().runtimeType;
+final Type componentB = new ComponentB().runtimeType;
+final Type componentC = new PooledComponentC().runtimeType;
 
-const int COMPONENT_A_BIT = 0x0001;
-const int COMPONENT_B_BIT = 0x0002;
-const int COMPONENT_C_BIT = 0x0004;
+const int componentABit = 0x0001;
+const int componentBBit = 0x0002;
+const int componentCBit = 0x0004;
 
 void setUpComponents() {
-  ComponentTypeManager.getBit(COMPONENT_A);
-  ComponentTypeManager.getBit(COMPONENT_B);
-  ComponentTypeManager.getBit(COMPONENT_C);
+  ComponentTypeManager.getBit(componentA);
+  ComponentTypeManager.getBit(componentB);
+  ComponentTypeManager.getBit(componentC);
 }
 
 class ComponentA extends Component {}

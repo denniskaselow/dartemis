@@ -9,9 +9,9 @@ void main() {
   group('ComponentType', () {
     setUp(setUpComponents);
     test('returns correct bit', () {
-      expect(ComponentTypeManager.getBit(COMPONENT_A), COMPONENT_A_BIT);
-      expect(ComponentTypeManager.getBit(COMPONENT_B), COMPONENT_B_BIT);
-      expect(ComponentTypeManager.getBit(COMPONENT_C), COMPONENT_C_BIT);
+      expect(ComponentTypeManager.getBit(componentA), componentABit);
+      expect(ComponentTypeManager.getBit(componentB), componentBBit);
+      expect(ComponentTypeManager.getBit(componentC), componentCBit);
     });
   });
 }

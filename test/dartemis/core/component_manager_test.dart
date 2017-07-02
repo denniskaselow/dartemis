@@ -5,7 +5,7 @@ import "package:test/test.dart";
 import "package:dartemis/dartemis.dart";
 import "components_setup.dart";
 
-const int DEFAULT_BAG_SIZE = 16;
+const int defaultBagSize = 16;
 
 void main() {
   group('integration tests for ComponentManager', () {
@@ -71,7 +71,7 @@ void main() {
     });
     test('ComponentManager can be created for unused Component', () {
       ComponentType type = new ComponentType();
-      for (int i = 0; i < DEFAULT_BAG_SIZE; i++) {
+      for (int i = 0; i < defaultBagSize; i++) {
         type = new ComponentType();
       }
       Bag<Component> componentsByType =
