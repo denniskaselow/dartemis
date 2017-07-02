@@ -232,7 +232,7 @@ void main() {
       world
         ..initialize()
         ..process();
-      es.expectedEntities = [entityAB, entityAC];
+      es._expectedEntities = [entityAB, entityAC];
       entityAB
         ..addComponent(new PooledComponentC())
         ..changedInWorld();
@@ -247,7 +247,7 @@ void main() {
       world
         ..initialize()
         ..process();
-      es.expectedEntities = [entityAB, entityAC];
+      es._expectedEntities = [entityAB, entityAC];
       entityAB.enable();
       world.process();
     });
@@ -263,13 +263,13 @@ class MockEntitySystem2 extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
 
 class TestEntitySystem extends EntitySystem {
-  var expectedEntities;
-  TestEntitySystem(Aspect aspect, this.expectedEntities) : super(aspect);
+  var _expectedEntities;
+  TestEntitySystem(Aspect aspect, this._expectedEntities) : super(aspect);
 
   void processEntities(Iterable<Entity> entities) {
-    int length = expectedEntities.length;
+    int length = _expectedEntities.length;
     expect(entities.length, length);
-    entities.forEach((entity) => expect(entity, isIn(expectedEntities)));
+    entities.forEach((entity) => expect(entity, isIn(_expectedEntities)));
   }
 
   bool checkProcessing() => true;

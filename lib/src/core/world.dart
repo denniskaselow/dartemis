@@ -27,7 +27,7 @@ class World {
   Map<int, double> _time = {0: 0.0};
 
   /// World-related properties that can be written and read by the user.
-  final Map<String, dynamic> properties = <String, dynamic>{};
+  final Map<String, Object> properties = <String, Object>{};
 
   World() {
     addManager(_entityManager);
@@ -198,10 +198,10 @@ class World {
   void disable(Entity e) => _disable.add(e);
 
   /// Returns the value for [key] from [properties].
-  dynamic operator [](String key) => properties[key];
+  Object operator [](String key) => properties[key];
 
   /// Set the [value] of [key] in [properties].
-  void operator []=(String key, value) {
+  void operator []=(String key, Object value) {
     properties[key] = value;
   }
 
