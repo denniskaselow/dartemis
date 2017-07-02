@@ -107,11 +107,8 @@ class Darteroids {
   }
 }
 
-num generateRandomVelocity() {
-  num velocity = 0.5 + 1.5 * random.nextDouble();
-  velocity = velocity * (random.nextBool() ? 1 : -1);
-  return velocity;
-}
+num generateRandomVelocity() =>
+    0.5 + 1.5 * random.nextDouble() * (random.nextBool() ? 1 : -1);
 
 bool doCirclesCollide(
     num x1, num y1, num radius1, num x2, num y2, num radius2) {
