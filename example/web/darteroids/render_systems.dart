@@ -8,7 +8,7 @@ class CircleRenderingSystem extends EntityProcessingSystem {
   Mapper<Status> statusMapper;
 
   CircleRenderingSystem(this.context)
-      : super(Aspect.getAspectForAllOf([Position, CircularBody]));
+      : super(new Aspect.forAllOf([Position, CircularBody]));
 
   void processEntity(Entity entity) {
     Position pos = positionMapper[entity];

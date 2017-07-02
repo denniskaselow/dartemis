@@ -21,7 +21,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   CanvasElement canvas;
 
-  PlayerControlSystem(this.canvas) : super(20, Aspect.getAspectForAllOf([Velocity, Cannon]));
+  PlayerControlSystem(this.canvas) : super(20, new Aspect.forAllOf([Velocity, Cannon]));
 
   void initialize() {
     window.onKeyDown.listen(handleKeyDown);

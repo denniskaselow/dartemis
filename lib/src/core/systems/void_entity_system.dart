@@ -6,7 +6,7 @@ part of dartemis;
 /// to concern yourself about aspects or entities.
 abstract class VoidEntitySystem extends EntitySystem {
 
-  VoidEntitySystem(): super(Aspect.getEmpty());
+  VoidEntitySystem(): super(new Aspect.empty());
 
   void processEntities(Iterable<Entity> entities) => processSystem();
 

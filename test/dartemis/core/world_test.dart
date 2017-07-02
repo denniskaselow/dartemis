@@ -167,7 +167,7 @@ void main() {
         () {
       List<Entity> expectedEntities = [entityAB, entityAC];
       EntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentA]), expectedEntities);
+          new Aspect.forAllOf([componentA]), expectedEntities);
       systemStarter(es);
     });
     test(
@@ -175,8 +175,7 @@ void main() {
         () {
       List<Entity> expectedEntities = [entityAB];
       EntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentA, componentB]),
-          expectedEntities);
+          new Aspect.forAllOf([componentA, componentB]), expectedEntities);
       systemStarter(es);
     });
     test(
@@ -184,8 +183,7 @@ void main() {
         () {
       List<Entity> expectedEntities = [entityAB, entityAC];
       EntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForOneOf([componentA, componentB]),
-          expectedEntities);
+          new Aspect.forOneOf([componentA, componentB]), expectedEntities);
       systemStarter(es);
     });
     test(
@@ -193,7 +191,7 @@ void main() {
         () {
       List<Entity> expectedEntities = [entityAB];
       EntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentA]).exclude([componentC]),
+          new Aspect.forAllOf([componentA])..exclude([componentC]),
           expectedEntities);
       systemStarter(es);
     });
@@ -201,14 +199,14 @@ void main() {
       entityAB.deleteFromWorld();
       List<Entity> expectedEntities = [entityAC];
       EntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentA]), expectedEntities);
+          new Aspect.forAllOf([componentA]), expectedEntities);
       systemStarter(es);
     });
     test('A disabled entity will not get processed', () {
       entityAB.disable();
       List<Entity> expectedEntities = [entityAC];
       EntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentA]), expectedEntities);
+          new Aspect.forAllOf([componentA]), expectedEntities);
       systemStarter(es);
     });
     test(
@@ -216,7 +214,7 @@ void main() {
         () {
       List<Entity> expectedEntities = [entityAC];
       EntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentC]), expectedEntities);
+          new Aspect.forAllOf([componentC]), expectedEntities);
       es = world.addSystem(es);
       world
         ..initialize()
@@ -229,7 +227,7 @@ void main() {
         () {
       List<Entity> expectedEntities = [entityAC];
       TestEntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentC]), expectedEntities);
+          new Aspect.forAllOf([componentC]), expectedEntities);
       es = world.addSystem(es);
       world
         ..initialize()
@@ -244,7 +242,7 @@ void main() {
       entityAB.disable();
       List<Entity> expectedEntities = [entityAC];
       TestEntitySystem es = new TestEntitySystem(
-          Aspect.getAspectForAllOf([componentA]), expectedEntities);
+          new Aspect.forAllOf([componentA]), expectedEntities);
       es = world.addSystem(es);
       world
         ..initialize()

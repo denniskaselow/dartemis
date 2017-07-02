@@ -4,7 +4,7 @@ class MovementSystem extends EntityProcessingSystem {
   Mapper<Position> positionMapper;
   Mapper<Velocity> velocityMapper;
 
-  MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
+  MovementSystem() : super(new Aspect.forAllOf([Position, Velocity]));
 
   void processEntity(Entity entity) {
     Position pos = positionMapper[entity];
@@ -24,7 +24,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   Mapper<Velocity> velocityMapper;
 
   BulletSpawningSystem()
-      : super(Aspect.getAspectForAllOf([Cannon, Position, Velocity]));
+      : super(new Aspect.forAllOf([Cannon, Position, Velocity]));
 
   void processEntity(Entity entity) {
     Cannon cannon = cannonMapper[entity];
@@ -59,7 +59,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 class DecaySystem extends EntityProcessingSystem {
   Mapper<Decay> decayMapper;
 
-  DecaySystem() : super(Aspect.getAspectForAllOf([Decay]));
+  DecaySystem() : super(new Aspect.forAllOf([Decay]));
 
   void processEntity(Entity entity) {
     Decay decay = decayMapper[entity];
@@ -79,7 +79,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   Mapper<CircularBody> bodyMapper;
 
   AsteroidDestructionSystem()
-      : super(Aspect.getAspectForAllOf([AsteroidDestroyer, Position]));
+      : super(new Aspect.forAllOf([AsteroidDestroyer, Position]));
 
   void processEntity(Entity entity) {
     Position destroyerPos = positionMapper[entity];
@@ -122,8 +122,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   Mapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem()
-      : super(Aspect
-            .getAspectForAllOf([PlayerDestroyer, Position, CircularBody]));
+      : super(new Aspect.forAllOf([PlayerDestroyer, Position, CircularBody]));
 
   void processEntities(Iterable<Entity> entities) {
     Entity player = tagManager.getEntity(tagPlayer);

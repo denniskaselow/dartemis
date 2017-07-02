@@ -73,7 +73,7 @@ class Timer extends Component {
 class TestDelayedEntityProcessingSystem extends DelayedEntityProcessingSystem {
   Mapper<Timer> timerMapper;
   TestDelayedEntityProcessingSystem()
-      : super(Aspect.getAspectForAllOf([Timer]));
+      : super(new Aspect.forAllOf([Timer]));
 
   @override
   void initialize() {

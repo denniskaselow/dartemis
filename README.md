@@ -90,7 +90,7 @@ By using a factory constructor and calling the factory constructor in `Pooled`, 
         Mapper<Position> positionMapper;
         Mapper<Velocity> velocityMapper;
 
-        MovementSystem() : super(Aspect.getAspectForAllOf([Position, Velocity]));
+        MovementSystem() : super(new Aspect.forAllOf([Position, Velocity]));
 
         void initialize() {
           // initialize your system
