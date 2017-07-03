@@ -74,7 +74,10 @@ class EntityBag extends Bag<Entity> {
     final tmp = new List<Entity>(_size);
     if (_size > 0) {
       int index = 0;
-      _data.takeWhile((_) => index < _size).where((entity) => _entities[entity.id]).forEach((entity) => tmp[index++] = entity);
+      _data
+          .takeWhile((_) => index < _size)
+          .where((entity) => _entities[entity.id])
+          .forEach((entity) => tmp[index++] = entity);
     }
     _data = tmp;
     _dirty = false;

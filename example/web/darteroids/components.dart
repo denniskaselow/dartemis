@@ -48,7 +48,7 @@ class Status extends Component {
   int lifes;
   num invisiblityTimer;
 
-  Status({this.lifes : 1, this.invisiblityTimer : 0});
+  Status({this.lifes: 1, this.invisiblityTimer: 0});
 
   bool get invisible => invisiblityTimer > 0;
 }

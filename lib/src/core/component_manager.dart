@@ -65,7 +65,8 @@ class ComponentManager extends Manager {
   }
 
   Bag<Component> getComponentsFor(Entity entity, Bag<Component> fillBag) {
-    _forComponentsOfEntity(entity, (components, _) => fillBag.add(components[entity.id]));
+    _forComponentsOfEntity(
+        entity, (components, _) => fillBag.add(components[entity.id]));
 
     return fillBag;
   }

@@ -7,8 +7,6 @@ part of dartemis;
 /// There is no need to ever call any other method than process on objects of
 /// this class.
 abstract class EntitySystem implements EntityObserver {
-
-
   int _systemBit = 0;
   World _world;
   Bag<Entity> _actives;
@@ -33,8 +31,10 @@ abstract class EntitySystem implements EntityObserver {
   bool get passive => _passive;
   int get group => _group;
   World get world => _world;
+
   /// Returns how often the system in this [group] have been processed.
   int get frame => world._frame[_group];
+
   /// Returns the time that has elapsed for the systems in this [group] since the game has
   /// started (sum of all deltas).
   double get time => world._time[_group];
@@ -95,7 +95,8 @@ abstract class EntitySystem implements EntityObserver {
     }
   }
 
-  bool _contains(Entity entity) => (_systemBit & entity._systemBits) == _systemBit;
+  bool _contains(Entity entity) =>
+      (_systemBit & entity._systemBits) == _systemBit;
 
   void _insertToSystem(Entity entity) {
     _actives.add(entity);
@@ -131,5 +132,4 @@ abstract class EntitySystem implements EntityObserver {
   }
 
   void destroy() {}
-
 }

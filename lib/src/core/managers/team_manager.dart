@@ -41,5 +41,4 @@ class TeamManager extends Manager {
       }
     }
   }
-
 }

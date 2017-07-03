@@ -17,8 +17,11 @@ void setUpComponents() {
 }
 
 class ComponentA extends Component {}
+
 class ComponentB extends Component {}
+
 class PooledComponentC extends PooledComponent {
-  factory PooledComponentC() => new Pooled.of(PooledComponentC, () => new PooledComponentC._());
+  factory PooledComponentC() =>
+      new Pooled.of(PooledComponentC, () => new PooledComponentC._());
   PooledComponentC._();
 }

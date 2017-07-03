@@ -38,7 +38,8 @@ void main() {
       Component component2A = new ComponentA();
       Component component2B = new ComponentB();
       Component component2C = new PooledComponentC();
-      entity2..addComponent(component2A)
+      entity2
+        ..addComponent(component2A)
         ..addComponent(component2B)
         ..addComponent(component2C);
 

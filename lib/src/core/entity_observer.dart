@@ -1,7 +1,6 @@
 part of dartemis;
 
 abstract class EntityObserver {
-
   void added(Entity entity);
 
   void changed(Entity entity);
@@ -11,5 +10,4 @@ abstract class EntityObserver {
   void enabled(Entity entity);
 
   void disabled(Entity entity);
-
 }

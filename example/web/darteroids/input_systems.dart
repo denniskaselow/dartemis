@@ -21,7 +21,8 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   CanvasElement canvas;
 
-  PlayerControlSystem(this.canvas) : super(20, new Aspect.forAllOf([Velocity, Cannon]));
+  PlayerControlSystem(this.canvas)
+      : super(20, new Aspect.forAllOf([Velocity, Cannon]));
 
   @override
   void initialize() {
@@ -44,7 +45,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
     }
     if (moveLeft) {
       velocity.x -= 0.1;
-    } else if(moveRight) {
+    } else if (moveRight) {
       velocity.x += 0.1;
     }
     cannon.shoot = shoot;

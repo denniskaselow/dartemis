@@ -1,7 +1,6 @@
 part of dartemis;
 
 class EntityManager extends Manager {
-
   static int _nextUniqueId = 0;
 
   Bag<Entity> _entities;
@@ -61,7 +60,6 @@ class EntityManager extends Manager {
     _deleted++;
   }
 
-
   /// Check if this entity is active.
   /// Active means the entity is being actively processed.
   bool isActive(int entityId) => _entities[entityId] != null;
@@ -94,11 +92,10 @@ class EntityManager extends Manager {
 
 /// Used only internally to generate distinct ids for entities and reuse them.
 class _IdentifierPool {
-
   Bag<int> _ids;
   int _nextAvailableId = 0;
 
-  _IdentifierPool(): _ids = new Bag<int>();
+  _IdentifierPool() : _ids = new Bag<int>();
 
   int checkOut() {
     if (_ids.size > 0) {
