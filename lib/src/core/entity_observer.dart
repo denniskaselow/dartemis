@@ -2,14 +2,14 @@ part of dartemis;
 
 abstract class EntityObserver {
 
-  void added(Entity e);
+  void added(Entity entity);
 
-  void changed(Entity e);
+  void changed(Entity entity);
 
-  void deleted(Entity e);
+  void deleted(Entity entity);
 
-  void enabled(Entity e);
+  void enabled(Entity entity);
 
-  void disabled(Entity e);
+  void disabled(Entity entity);
 
 }

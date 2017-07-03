@@ -25,37 +25,37 @@ class EntityManager extends Manager {
   void initialize() {}
 
   Entity _createEntityInstance() {
-    Entity e = _deletedEntities.removeLast();
-    e ??= new Entity._(_world, _identifierPool.checkOut());
+    Entity entity = _deletedEntities.removeLast();
+    entity ??= new Entity._(_world, _identifierPool.checkOut());
     _created++;
-    e._uniqueId = _nextUniqueId++;
-    return e;
+    entity._uniqueId = _nextUniqueId++;
+    return entity;
   }
 
   @override
-  void added(Entity e) {
+  void added(Entity entity) {
     _active++;
     _added++;
-    _entities[e.id] = e;
+    _entities[entity.id] = entity;
   }
 
   @override
-  void enabled(Entity e) {
-    _disabled[e.id] = false;
+  void enabled(Entity entity) {
+    _disabled[entity.id] = false;
   }
 
   @override
-  void disabled(Entity e) {
-    _disabled[e.id] = true;
+  void disabled(Entity entity) {
+    _disabled[entity.id] = true;
   }
 
   @override
-  void deleted(Entity e) {
-    _entities[e.id] = null;
+  void deleted(Entity entity) {
+    _entities[entity.id] = null;
 
-    _disabled[e.id] = false;
+    _disabled[entity.id] = false;
 
-    _deletedEntities.add(e);
+    _deletedEntities.add(entity);
 
     _active--;
     _deleted++;

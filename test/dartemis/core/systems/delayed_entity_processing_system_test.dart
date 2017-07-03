@@ -89,7 +89,7 @@ class TestDelayedEntityProcessingSystem extends DelayedEntityProcessingSystem {
   }
 
   @override
-  void processExpired(Entity e) {
-    e.deleteFromWorld();
+  void processExpired(Entity entity) {
+    entity.deleteFromWorld();
   }
 }

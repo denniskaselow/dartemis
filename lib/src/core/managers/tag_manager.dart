@@ -11,9 +11,9 @@ class TagManager extends Manager {
       : _entitiesByTag = <String, Entity>{},
         _tagsByEntity = <Entity, String>{};
 
-  void register(Entity e, String tag) {
-    _entitiesByTag[tag] = e;
-    _tagsByEntity[e] = tag;
+  void register(Entity entity, String tag) {
+    _entitiesByTag[tag] = entity;
+    _tagsByEntity[entity] = tag;
   }
 
   void unregister(String tag) {
@@ -25,8 +25,8 @@ class TagManager extends Manager {
   Iterable<String> getRegisteredTags() => _tagsByEntity.values;
 
   @override
-  void deleted(Entity e) {
-    final String removedTag = _tagsByEntity.remove(e);
+  void deleted(Entity entity) {
+    final String removedTag = _tagsByEntity.remove(entity);
     if (removedTag != null) {
       _entitiesByTag.remove(removedTag);
     }

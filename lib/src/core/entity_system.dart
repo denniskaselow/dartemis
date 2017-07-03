@@ -73,60 +73,60 @@ abstract class EntitySystem implements EntityObserver {
   /// of it's components removed.
   void removed(Entity entity) {}
 
-  void _check(Entity e) {
+  void _check(Entity entity) {
     if (_dummy) {
       return;
     }
-    final bool contains = _contains(e);
-    bool interest = (_all & e._typeBits) == _all;
+    final bool contains = _contains(entity);
+    bool interest = (_all & entity._typeBits) == _all;
     if (_one > 0 && interest) {
-      interest = (_one & e._typeBits) > 0;
+      interest = (_one & entity._typeBits) > 0;
     }
     if (_excluded > 0 && interest) {
-      interest = (_excluded & e._typeBits) == 0;
+      interest = (_excluded & entity._typeBits) == 0;
     }
 
     if (interest && !contains) {
-      _insertToSystem(e);
+      _insertToSystem(entity);
     } else {
       if (!interest && contains) {
-        _removeFromSystem(e);
+        _removeFromSystem(entity);
       }
     }
   }
 
-  bool _contains(Entity e) => (_systemBit & e._systemBits) == _systemBit;
+  bool _contains(Entity entity) => (_systemBit & entity._systemBits) == _systemBit;
 
-  void _insertToSystem(Entity e) {
-    _actives.add(e);
-    e._addSystemBit(_systemBit);
-    inserted(e);
+  void _insertToSystem(Entity entity) {
+    _actives.add(entity);
+    entity._addSystemBit(_systemBit);
+    inserted(entity);
   }
 
-  void _removeFromSystem(Entity e) {
-    _actives.remove(e);
-    e._removeSystemBit(_systemBit);
-    removed(e);
+  void _removeFromSystem(Entity entity) {
+    _actives.remove(entity);
+    entity._removeSystemBit(_systemBit);
+    removed(entity);
   }
 
   @override
-  void added(Entity e) => _check(e);
+  void added(Entity entity) => _check(entity);
   @override
-  void changed(Entity e) => _check(e);
+  void changed(Entity entity) => _check(entity);
   @override
-  void enabled(Entity e) => _check(e);
+  void enabled(Entity entity) => _check(entity);
 
   @override
-  void deleted(Entity e) {
-    if (_contains(e)) {
-      _removeFromSystem(e);
+  void deleted(Entity entity) {
+    if (_contains(entity)) {
+      _removeFromSystem(entity);
     }
   }
 
   @override
-  void disabled(Entity e) {
-    if (_contains(e)) {
-      _removeFromSystem(e);
+  void disabled(Entity entity) {
+    if (_contains(entity)) {
+      _removeFromSystem(entity);
     }
   }
 

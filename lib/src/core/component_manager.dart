@@ -11,15 +11,15 @@ class ComponentManager extends Manager {
   @override
   void initialize() {}
 
-  void _removeComponentsOfEntity(Entity e) {
-    _forComponentsOfEntity(e, (components, typeId) {
-      components[e.id]._removed();
-      components[e.id] = null;
+  void _removeComponentsOfEntity(Entity entity) {
+    _forComponentsOfEntity(entity, (components, typeId) {
+      components[entity.id]._removed();
+      components[entity.id] = null;
     });
-    e._typeBits = 0;
+    entity._typeBits = 0;
   }
 
-  void _addComponent(Entity e, ComponentType type, Component component) {
+  void _addComponent(Entity entity, ComponentType type, Component component) {
     final int index = type.id;
     _componentsByType._ensureCapacity(index);
 
@@ -29,17 +29,17 @@ class ComponentManager extends Manager {
       _componentsByType[index] = components;
     }
 
-    components[e.id] = component;
+    components[entity.id] = component;
 
-    e._addTypeBit(type.bit);
+    entity._addTypeBit(type.bit);
   }
 
-  void _removeComponent(Entity e, ComponentType type) {
-    if ((e._typeBits & type.bit) != 0) {
+  void _removeComponent(Entity entity, ComponentType type) {
+    if ((entity._typeBits & type.bit) != 0) {
       final int typeId = type.id;
-      _componentsByType[typeId][e.id]._removed();
-      _componentsByType[typeId][e.id] = null;
-      e._removeTypeBit(type.bit);
+      _componentsByType[typeId][entity.id]._removed();
+      _componentsByType[typeId][entity.id] = null;
+      entity._removeTypeBit(type.bit);
     }
   }
 
@@ -55,24 +55,24 @@ class ComponentManager extends Manager {
     return components;
   }
 
-  Component _getComponent(Entity e, ComponentType type) {
+  Component _getComponent(Entity entity, ComponentType type) {
     final int index = type.id;
     final Bag<Component> components = _componentsByType[index];
-    if (components != null && components.isIndexWithinBounds(e.id)) {
-      return components[e.id];
+    if (components != null && components.isIndexWithinBounds(entity.id)) {
+      return components[entity.id];
     }
     return null;
   }
 
-  Bag<Component> getComponentsFor(Entity e, Bag<Component> fillBag) {
-    _forComponentsOfEntity(e, (components, _) => fillBag.add(components[e.id]));
+  Bag<Component> getComponentsFor(Entity entity, Bag<Component> fillBag) {
+    _forComponentsOfEntity(entity, (components, _) => fillBag.add(components[entity.id]));
 
     return fillBag;
   }
 
   void _forComponentsOfEntity(
-      Entity e, void f(Bag<Component> components, int index)) {
-    int componentBits = e._typeBits;
+      Entity entity, void f(Bag<Component> components, int index)) {
+    int componentBits = entity._typeBits;
     int index = 0;
     while (componentBits > 0) {
       if ((componentBits & 1) == 1) {
@@ -84,7 +84,7 @@ class ComponentManager extends Manager {
   }
 
   @override
-  void deleted(Entity e) => _deleted.add(e);
+  void deleted(Entity entity) => _deleted.add(entity);
 
   void clean() {
     _deleted

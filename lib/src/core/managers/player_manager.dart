@@ -12,14 +12,14 @@ class PlayerManager extends Manager {
     _entitiesByPlayer = <String, Bag<Entity>>{};
   }
 
-  void setPlayer(Entity e, String player) {
-    _playerByEntity[e] = player;
+  void setPlayer(Entity entity, String player) {
+    _playerByEntity[entity] = player;
     Bag<Entity> entities = _entitiesByPlayer[player];
     if (entities == null) {
       entities = new Bag<Entity>();
       _entitiesByPlayer[player] = entities;
     }
-    entities.add(e);
+    entities.add(entity);
   }
 
   Iterable<Entity> getEntitiesOfPlayer(String player) {
@@ -27,18 +27,18 @@ class PlayerManager extends Manager {
     return entities ??= new Bag<Entity>();
   }
 
-  void removeFromPlayer(Entity e) {
-    final String player = _playerByEntity[e];
+  void removeFromPlayer(Entity entity) {
+    final String player = _playerByEntity[entity];
     if (player != null) {
       final Bag<Entity> entities = _entitiesByPlayer[player];
       if (entities != null) {
-        entities.remove(e);
+        entities.remove(entity);
       }
     }
   }
 
-  String getPlayer(Entity e) => _playerByEntity[e];
+  String getPlayer(Entity entity) => _playerByEntity[entity];
 
   @override
-  void deleted(Entity e) => removeFromPlayer(e);
+  void deleted(Entity entity) => removeFromPlayer(entity);
 }

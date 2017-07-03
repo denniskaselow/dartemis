@@ -14,43 +14,43 @@ class GroupManager extends Manager {
         _groupsByEntity = <Entity, Bag<String>>{};
 
   /// Set the group of the entity.
-  void add(Entity e, String group) {
+  void add(Entity entity, String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities == null) {
       entities = new Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
-    entities.add(e);
+    entities.add(entity);
 
-    Bag<String> groups = _groupsByEntity[e];
+    Bag<String> groups = _groupsByEntity[entity];
     if (groups == null) {
       groups = new Bag<String>();
-      _groupsByEntity[e] = groups;
+      _groupsByEntity[entity] = groups;
     }
     groups.add(group);
   }
 
   /// Remove the entity from the specified group.
-  void remove(Entity e, String group) {
+  void remove(Entity entity, String group) {
     final Bag<Entity> entities = _entitiesByGroup[group];
     if (entities != null) {
-      entities.remove(e);
+      entities.remove(entity);
     }
 
-    final Bag<String> groups = _groupsByEntity[e];
+    final Bag<String> groups = _groupsByEntity[entity];
     if (groups != null) {
       groups.remove(group);
     }
   }
 
-  void removeFromAllGroups(Entity e) {
-    final Bag<String> groups = _groupsByEntity[e];
+  void removeFromAllGroups(Entity entity) {
+    final Bag<String> groups = _groupsByEntity[entity];
     if (groups != null) {
       groups
         ..forEach((group) {
           final Bag<Entity> entities = _entitiesByGroup[group];
           if (entities != null) {
-            entities.remove(e);
+            entities.remove(entity);
           }
         })
         ..clear();
@@ -68,17 +68,17 @@ class GroupManager extends Manager {
   }
 
   /// Returns the groups the entity belongs to, null if none.
-  Iterable<String> getGroups(Entity e) => _groupsByEntity[e];
+  Iterable<String> getGroups(Entity entity) => _groupsByEntity[entity];
 
   /// Checks if the entity belongs to any group.
-  bool isInAnyGroup(Entity e) => getGroups(e) != null;
+  bool isInAnyGroup(Entity entity) => getGroups(entity) != null;
 
   /// Check if the entity is in the supplied group.
-  bool isInGroup(Entity e, String group) {
-    final Bag<String> groups = _groupsByEntity[e];
+  bool isInGroup(Entity entity, String group) {
+    final Bag<String> groups = _groupsByEntity[entity];
     return (groups != null) && groups.contains(group);
   }
 
   @override
-  void deleted(Entity e) => removeFromAllGroups(e);
+  void deleted(Entity entity) => removeFromAllGroups(entity);
 }

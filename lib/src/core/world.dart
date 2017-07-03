@@ -176,26 +176,24 @@ class World {
     processEntityChanges();
   }
 
-  /// Adds a [Entity e] to this world.
-  void addEntity(Entity e) => _added.add(e);
+  /// Adds a [Entity entity] to this world.
+  void addEntity(Entity entity) => _added.add(entity);
 
-  /// Ensure all systems are notified of changes to this [Entity e]. If you're
+  /// Ensure all systems are notified of changes to this [Entity entity]. If you're
   /// adding a [Component] to an [Entity] after it's been added to the world,
   /// then you need to invoke this method.
-  void changedEntity(Entity e) => _changed.add(e);
+  void changedEntity(Entity entity) => _changed.add(entity);
 
-  /// Delete the [Entity e] from the world.
-  void deleteEntity(Entity e) {
-    _deleted.add(e);
-  }
+  /// Delete the [Entity entity] from the world.
+  void deleteEntity(Entity entity) => _deleted.add(entity);
 
-  /// (Re)enable the [Entity e] in the world, after it having being disabled.
+  /// (Re)enable the [Entity entity] in the world, after it having being disabled.
   /// Won't do anything unless it was already disabled.
-  void enable(Entity e) => _enable.add(e);
+  void enable(Entity entity) => _enable.add(entity);
 
-  /// Disable the [Entity e] from being processed. Won't delete it, it will
+  /// Disable the [Entity entity] from being processed. Won't delete it, it will
   /// continue to exist but won't get processed.
-  void disable(Entity e) => _disable.add(e);
+  void disable(Entity entity) => _disable.add(entity);
 
   /// Returns the value for [key] from [properties].
   Object operator [](String key) => properties[key];

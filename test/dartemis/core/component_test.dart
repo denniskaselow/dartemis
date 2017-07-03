@@ -12,21 +12,21 @@ void main() {
       world = new World();
     });
     test('creating a new Component creates a new instance', () {
-      Entity e = world.createEntity();
+      Entity entity = world.createEntity();
       Component c = new ComponentA();
-      e
+      entity
         ..addComponent(c)
         ..removeComponent(ComponentA);
 
       expect(new ComponentA(), isNot(same(c)));
     });
     test('creating a new FreeListComponent reuses a removed instance', () {
-      Entity e = world.createEntity();
+      Entity entity = world.createEntity();
       Component c = new PooledComponentC();
-      e.addComponent(c);
+      entity.addComponent(c);
 
       expect(new PooledComponentC(), isNot(same(c)));
-      e.removeComponent(PooledComponentC);
+      entity.removeComponent(PooledComponentC);
       expect(new PooledComponentC(), same(c));
     });
   });
