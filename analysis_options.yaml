@@ -1,17 +1,17 @@
 analyzer:
- strong-mode: true
- errors:
-   unused_element: error
-   unused_import: error
-   unused_local_variable: error
-   dead_code: error
+  strong-mode: true
+  errors:
+    unused_element: error
+    unused_import: error
+    unused_local_variable: error
+    dead_code: error
 linter:
   rules:
     - always_declare_return_types
     - always_put_control_body_on_new_line
     - always_require_non_null_named_parameters
 #    - always_specify_types
-#    - annotate_overrides
+    - annotate_overrides
     - avoid_annotating_with_dynamic
     - avoid_as
     - avoid_catches_without_on_clauses

@@ -27,5 +27,6 @@ void main() {
 
 class TestIntervalEntitySystem extends IntervalEntitySystem {
   TestIntervalEntitySystem(num interval) : super(interval, new Aspect.empty());
+  @override
   void processEntities(Iterable<Entity> entities) {}
 }

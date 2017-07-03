@@ -12,6 +12,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   /// Returns the accumulated delta since the system was last invoked.
   num get delta => _delta;
 
+  @override
   bool checkProcessing() {
     _acc += world.delta;
     _delta += world.delta;
@@ -25,6 +26,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   /// Resets the accumulated delta to 0.
   ///
   /// Call `super.end()` if you overwrite this function.
+  @override
   void end() {
     _delta = 0;
   }

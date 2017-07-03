@@ -10,14 +10,19 @@ abstract class Manager implements EntityObserver {
   /// initialized.
   void initialize() {}
 
+  @override
   void added(Entity e) {}
 
+  @override
   void changed(Entity e) {}
 
+  @override
   void deleted(Entity e) {}
 
+  @override
   void disabled(Entity e) {}
 
+  @override
   void enabled(Entity e) {}
 
   void destroy() {}

@@ -20,6 +20,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   int get size => _size;
 
   /// Returns [:true:] if this list contains no elements.
+  @override
   bool get isEmpty => size == 0;
 
   /// Removes the element at the specified [index] in this bag. Does this by
@@ -125,6 +126,7 @@ class Bag<E> extends Object with IterableMixin<E> {
 
   bool isIndexWithinBounds(int index) => index < capacity;
 
+  @override
   Iterator<E> get iterator => _data.sublist(0, size).iterator;
 
   @override

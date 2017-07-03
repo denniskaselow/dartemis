@@ -9,8 +9,10 @@ abstract class EntityProcessingSystem extends EntitySystem {
   /// Process a [entity] this system is interested in.
   void processEntity(Entity entity);
 
+  @override
   void processEntities(Iterable<Entity> entities) =>
       entities.forEach(processEntity);
 
+  @override
   bool checkProcessing() => true;
 }

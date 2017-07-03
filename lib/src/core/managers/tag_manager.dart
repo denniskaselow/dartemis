@@ -24,6 +24,7 @@ class TagManager extends Manager {
   Entity getEntity(String tag) => _entitiesByTag[tag];
   Iterable<String> getRegisteredTags() => _tagsByEntity.values;
 
+  @override
   void deleted(Entity e) {
     String removedTag = _tagsByEntity.remove(e);
     if (removedTag != null) {

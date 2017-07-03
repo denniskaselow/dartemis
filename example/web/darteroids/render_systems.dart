@@ -10,6 +10,7 @@ class CircleRenderingSystem extends EntityProcessingSystem {
   CircleRenderingSystem(this.context)
       : super(new Aspect.forAllOf([Position, CircularBody]));
 
+  @override
   void processEntity(Entity entity) {
     Position pos = positionMapper[entity];
     CircularBody body = bodyMapper[entity];
@@ -62,6 +63,7 @@ class BackgroundRenderSystem extends VoidEntitySystem {
 
   BackgroundRenderSystem(this.context);
 
+  @override
   void processSystem() {
     context.save();
     try {
@@ -84,6 +86,7 @@ class HudRenderSystem extends VoidEntitySystem {
 
   HudRenderSystem(this.context);
 
+  @override
   void processSystem() {
     context.save();
     try {

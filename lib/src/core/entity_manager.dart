@@ -21,6 +21,7 @@ class EntityManager extends Manager {
         _disabled = new Bag<bool>(),
         _identifierPool = new _IdentifierPool();
 
+  @override
   void initialize() {}
 
   Entity _createEntityInstance() {
@@ -31,20 +32,24 @@ class EntityManager extends Manager {
     return e;
   }
 
+  @override
   void added(Entity e) {
     _active++;
     _added++;
     _entities[e.id] = e;
   }
 
+  @override
   void enabled(Entity e) {
     _disabled[e.id] = false;
   }
 
+  @override
   void disabled(Entity e) {
     _disabled[e.id] = true;
   }
 
+  @override
   void deleted(Entity e) {
     _entities[e.id] = null;
 

@@ -109,16 +109,21 @@ abstract class EntitySystem implements EntityObserver {
     removed(e);
   }
 
+  @override
   void added(Entity e) => _check(e);
+  @override
   void changed(Entity e) => _check(e);
+  @override
   void enabled(Entity e) => _check(e);
 
+  @override
   void deleted(Entity e) {
     if (_contains(e)) {
       _removeFromSystem(e);
     }
   }
 
+  @override
   void disabled(Entity e) {
     if (_contains(e)) {
       _removeFromSystem(e);

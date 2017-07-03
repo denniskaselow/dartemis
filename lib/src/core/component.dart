@@ -15,11 +15,13 @@ abstract class Component {
 /// [PooledComponent]s and reuse them when they are no longer needed.
 class PooledComponent extends Component with Pooled {
 
+  @override
   void _removed() {
     moveToPool();
   }
 
   /// If you need to do some cleanup when removing this component override this
   /// method.
+  @override
   void cleanUp() {}
 }

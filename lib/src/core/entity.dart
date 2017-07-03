@@ -41,6 +41,7 @@ class Entity {
     _systemBits &= ~bit;
   }
 
+  @override
   String toString() => "Entity[$id]";
 
   /// Add a [component] to this entity.

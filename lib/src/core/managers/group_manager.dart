@@ -82,5 +82,6 @@ class GroupManager extends Manager {
     return (groups != null) && groups.contains(group);
   }
 
+  @override
   void deleted(Entity e) => removeFromAllGroups(e);
 }

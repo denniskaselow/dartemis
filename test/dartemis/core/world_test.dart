@@ -266,11 +266,13 @@ class TestEntitySystem extends EntitySystem {
   var _expectedEntities;
   TestEntitySystem(Aspect aspect, this._expectedEntities) : super(aspect);
 
+  @override
   void processEntities(Iterable<Entity> entities) {
     int length = _expectedEntities.length;
     expect(entities.length, length);
     entities.forEach((entity) => expect(entity, isIn(_expectedEntities)));
   }
 
+  @override
   bool checkProcessing() => true;
 }

@@ -39,5 +39,6 @@ class PlayerManager extends Manager {
 
   String getPlayer(Entity e) => _playerByEntity[e];
 
+  @override
   void deleted(Entity e) => removeFromPlayer(e);
 }

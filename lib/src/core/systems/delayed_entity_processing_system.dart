@@ -33,6 +33,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
   void processExpired(Entity enitity);
 
+  @override
   void processEntities(Iterable<Entity> entities) {
     entities.forEach((entity) {
       processDelta(entity, _acc);
@@ -49,6 +50,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
     _acc = 0.0;
   }
 
+  @override
   void inserted(Entity enitity) {
     double delay = getRemainingDelay(enitity);
     processDelta(enitity, 0.0 - _acc);
@@ -57,6 +59,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
     }
   }
 
+  @override
   bool checkProcessing() {
     if (_running) {
       _acc += world.delta;

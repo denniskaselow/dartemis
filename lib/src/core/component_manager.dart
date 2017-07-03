@@ -8,6 +8,7 @@ class ComponentManager extends Manager {
       : _componentsByType = new Bag<Bag<Component>>(),
         _deleted = new EntityBag();
 
+  @override
   void initialize() {}
 
   void _removeComponentsOfEntity(Entity e) {
@@ -82,6 +83,7 @@ class ComponentManager extends Manager {
     }
   }
 
+  @override
   void deleted(Entity e) => _deleted.add(e);
 
   void clean() {

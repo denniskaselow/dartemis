@@ -6,6 +6,7 @@ class MovementSystem extends EntityProcessingSystem {
 
   MovementSystem() : super(new Aspect.forAllOf([Position, Velocity]));
 
+  @override
   void processEntity(Entity entity) {
     Position pos = positionMapper[entity];
     Velocity vel = velocityMapper[entity];
@@ -26,6 +27,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   BulletSpawningSystem()
       : super(new Aspect.forAllOf([Cannon, Position, Velocity]));
 
+  @override
   void processEntity(Entity entity) {
     Cannon cannon = cannonMapper[entity];
 
@@ -61,6 +63,7 @@ class DecaySystem extends EntityProcessingSystem {
 
   DecaySystem() : super(new Aspect.forAllOf([Decay]));
 
+  @override
   void processEntity(Entity entity) {
     Decay decay = decayMapper[entity];
 
@@ -81,6 +84,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   AsteroidDestructionSystem()
       : super(new Aspect.forAllOf([AsteroidDestroyer, Position]));
 
+  @override
   void processEntity(Entity entity) {
     Position destroyerPos = positionMapper[entity];
 
@@ -124,6 +128,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   PlayerCollisionDetectionSystem()
       : super(new Aspect.forAllOf([PlayerDestroyer, Position, CircularBody]));
 
+  @override
   void processEntities(Iterable<Entity> entities) {
     Entity player = tagManager.getEntity(tagPlayer);
     Position playerPos = positionMapper[player];
@@ -150,5 +155,6 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
     }
   }
 
+  @override
   bool checkProcessing() => true;
 }

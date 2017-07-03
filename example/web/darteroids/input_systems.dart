@@ -23,6 +23,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   PlayerControlSystem(this.canvas) : super(20, new Aspect.forAllOf([Velocity, Cannon]));
 
+  @override
   void initialize() {
     window.onKeyDown.listen(handleKeyDown);
     window.onKeyUp.listen(handleKeyUp);
@@ -30,6 +31,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
     canvas.onMouseUp.listen(handleMouseUp);
   }
 
+  @override
   void processEntities(Iterable<Entity> entities) {
     Entity player = tagManager.getEntity(tagPlayer);
     Velocity velocity = velocityMapper[player];
