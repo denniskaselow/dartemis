@@ -44,7 +44,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
         offerDelay(remaining);
       }
     });
-    if (_actives.length == 0) {
+    if (_actives.isEmpty) {
       stop();
     }
     _acc = 0.0;

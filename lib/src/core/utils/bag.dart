@@ -19,7 +19,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// Returns the number of elements in this bag.
   int get size => _size;
 
-  /// Returns [:true:] if this list contains no elements.
+  /// Returns [:true:] if this bag contains no elements.
   @override
   bool get isEmpty => size == 0;
 
