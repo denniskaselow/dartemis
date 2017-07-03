@@ -1,4 +1,4 @@
-library utils._all_tests;
+library utils.all_tests;
 
 import 'bag_test.dart' as bag;
 import 'entity_bag_test.dart' as entity_bag;

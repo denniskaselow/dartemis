@@ -1,4 +1,4 @@
-library delayedEntityProcessingSystem;
+library delayed_entity_processing_system;
 
 import "package:test/test.dart";
 

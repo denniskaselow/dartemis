@@ -45,8 +45,8 @@ linter:
     - invariant_booleans
     - iterable_contains_unrelated_type
     - join_return_with_assignment
-#    - library_names
-#    - library_prefixes
+    - library_names
+    - library_prefixes
     - list_remove_unrelated_type
     - literal_only_boolean_expressions
     - no_adjacent_strings_in_list
