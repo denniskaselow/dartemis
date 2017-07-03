@@ -4,7 +4,7 @@ part of dartemis;
 /// this class stores objects that are no longer used in the game for later
 /// reuse.
 class ObjectPool {
-  static Map<Type, Bag<Pooled>> _objectPools = <Type, Bag<Pooled>>{};
+  static final Map<Type, Bag<Pooled>> _objectPools = <Type, Bag<Pooled>>{};
 
   /// Returns a pooled object of [Type] [type]. If there is no object in the pool
   /// it will create a new one using [createPooled].

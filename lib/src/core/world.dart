@@ -22,9 +22,9 @@ class World {
   final Map<Type, Manager> _managers = <Type, Manager>{};
   final Bag<Manager> _managersBag = new Bag<Manager>();
 
+  final Map<int, int> _frame = {0: 0};
+  final Map<int, double> _time = {0: 0.0};
   num delta = 0;
-  Map<int, int> _frame = {0: 0};
-  Map<int, double> _time = {0: 0.0};
 
   /// World-related properties that can be written and read by the user.
   final Map<String, Object> properties = <String, Object>{};

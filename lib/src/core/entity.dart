@@ -8,7 +8,7 @@ class Entity {
   /// this ID if the previous entity was deleted.
   final int id;
 
-  int _uniqueId = 0;
+  int _uniqueId;
   int _typeBits = 0;
   int _systemBits = 0;
 

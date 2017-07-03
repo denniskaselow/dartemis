@@ -1,7 +1,7 @@
 part of dartemis;
 
 class ComponentTypeManager {
-  static var _componentTypes = <Type, ComponentType>{};
+  static final _componentTypes = <Type, ComponentType>{};
 
   static ComponentType getTypeFor(Type typeOfComponent) {
     ComponentType componentType = _componentTypes[typeOfComponent];
