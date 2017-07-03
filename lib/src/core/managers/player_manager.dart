@@ -28,9 +28,9 @@ class PlayerManager extends Manager {
   }
 
   void removeFromPlayer(Entity e) {
-    String player = _playerByEntity[e];
+    final String player = _playerByEntity[e];
     if (player != null) {
-      Bag<Entity> entities = _entitiesByPlayer[player];
+      final Bag<Entity> entities = _entitiesByPlayer[player];
       if (entities != null) {
         entities.remove(e);
       }

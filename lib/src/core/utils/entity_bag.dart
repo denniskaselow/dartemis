@@ -20,21 +20,21 @@ class EntityBag extends Bag<Entity> {
 
   @override
   bool remove(Entity element) {
-    var result = _entities[element.id];
+    final result = _entities[element.id];
     _removeFromBitSet(element);
     return result;
   }
 
   @override
   Entity removeAt(int index) {
-    Entity element = super.removeAt(index);
+    final Entity element = super.removeAt(index);
     _removeFromBitSet(element);
     return element;
   }
 
   @override
   Entity removeLast() {
-    Entity element = super.removeLast();
+    final Entity element = super.removeLast();
     _removeFromBitSet(element);
     return element;
   }
@@ -71,7 +71,7 @@ class EntityBag extends Bag<Entity> {
 
   void _refresh() {
     _size = _entities.countBits(true);
-    var tmp = new List<Entity>(_size);
+    final tmp = new List<Entity>(_size);
     if (_size > 0) {
       int index = 0;
       _data.takeWhile((_) => index < _size).where((entity) => _entities[entity.id]).forEach((entity) => tmp[index++] = entity);

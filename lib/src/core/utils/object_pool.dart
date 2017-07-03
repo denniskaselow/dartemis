@@ -9,7 +9,7 @@ class ObjectPool {
   /// Returns a pooled object of [Type] [type]. If there is no object in the pool
   /// it will create a new one using [createPooled].
   static Pooled get(Type type, CreatePooled createPooled) {
-    Bag<Pooled> pool = _getPool(type);
+    final Bag<Pooled> pool = _getPool(type);
     var obj = pool.removeLast();
     return obj ??= createPooled();
   }
@@ -30,7 +30,7 @@ class ObjectPool {
 
   /// Add a specific [amount] of [Pooled]s for later reuse.
   static void addMany(Type type, CreatePooled createPooled, int amount) {
-    Bag<Pooled> pool = _getPool(type);
+    final Bag<Pooled> pool = _getPool(type);
     for (int i = 0; i < amount; i++) {
       pool.add(createPooled());
     }

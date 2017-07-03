@@ -5,6 +5,9 @@ analyzer:
     unused_import: error
     unused_local_variable: error
     dead_code: error
+  exclude:
+    - example/**
+    - test/**
 linter:
   rules:
     - always_declare_return_types
@@ -68,7 +71,7 @@ linter:
     - prefer_contains
     - prefer_expression_function_bodies
     - prefer_final_fields
-#    - prefer_final_locals
+    - prefer_final_locals
     - prefer_foreach
     - prefer_function_declarations_over_variables
     - prefer_initializing_formals

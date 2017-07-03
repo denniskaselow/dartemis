@@ -32,23 +32,23 @@ class GroupManager extends Manager {
 
   /// Remove the entity from the specified group.
   void remove(Entity e, String group) {
-    Bag<Entity> entities = _entitiesByGroup[group];
+    final Bag<Entity> entities = _entitiesByGroup[group];
     if (entities != null) {
       entities.remove(e);
     }
 
-    Bag<String> groups = _groupsByEntity[e];
+    final Bag<String> groups = _groupsByEntity[e];
     if (groups != null) {
       groups.remove(group);
     }
   }
 
   void removeFromAllGroups(Entity e) {
-    Bag<String> groups = _groupsByEntity[e];
+    final Bag<String> groups = _groupsByEntity[e];
     if (groups != null) {
       groups
         ..forEach((group) {
-          Bag<Entity> entities = _entitiesByGroup[group];
+          final Bag<Entity> entities = _entitiesByGroup[group];
           if (entities != null) {
             entities.remove(e);
           }
@@ -68,17 +68,14 @@ class GroupManager extends Manager {
   }
 
   /// Returns the groups the entity belongs to, null if none.
-  Iterable<String> getGroups(Entity e) {
-    var result = _groupsByEntity[e];
-    return result == null ? null : result;
-  }
+  Iterable<String> getGroups(Entity e) => _groupsByEntity[e];
 
   /// Checks if the entity belongs to any group.
   bool isInAnyGroup(Entity e) => getGroups(e) != null;
 
   /// Check if the entity is in the supplied group.
   bool isInGroup(Entity e, String group) {
-    Bag<String> groups = _groupsByEntity[e];
+    final Bag<String> groups = _groupsByEntity[e];
     return (groups != null) && groups.contains(group);
   }
 

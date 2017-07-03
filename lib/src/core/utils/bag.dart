@@ -27,7 +27,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// overwriting with the last element and then removing the last element.
   E removeAt(int index) {
     // make copy of element to remove so it can be returned
-    var o = _data[index];
+    final o = _data[index];
     // overwrite item to remove with last element
     _data[index] = _data[--_size];
     // null last element, so gc can do its work
@@ -39,7 +39,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// Remove and return the last object in the bag.
   E removeLast() {
     if (_size > 0) {
-      E current = _data[--_size];
+      final E current = _data[--_size];
       _data[size] = null;
       return current;
     }
@@ -53,7 +53,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// Returns [:true:] if this list contained the specified [element].
   bool remove(E element) {
     for (int i = 0; i < size; i++) {
-      E current = _data[i];
+      final E current = _data[i];
 
       if (element == current) {
         // overwrite item to remove with last element
@@ -97,7 +97,7 @@ class Bag<E> extends Object with IterableMixin<E> {
       (requiredLength * 3) ~/ 2 + 1;
 
   void _growTo(int newCapacity) {
-    List<E> oldData = _data;
+    final List<E> oldData = _data;
     _data = new List<E>(newCapacity)..setRange(0, oldData.length, oldData);
   }
 

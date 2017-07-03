@@ -30,15 +30,12 @@ class TeamManager extends Manager {
     players.add(player);
   }
 
-  Iterable<String> getPlayers(String team) {
-    var result = _playersByTeam[team];
-    return result == null ? null : result;
-  }
+  Iterable<String> getPlayers(String team) => _playersByTeam[team];
 
   void removeFromTeam(String player) {
-    String team = _teamByPlayer.remove(player);
+    final String team = _teamByPlayer.remove(player);
     if (team != null) {
-      Bag<String> players = _playersByTeam[team];
+      final Bag<String> players = _playersByTeam[team];
       if (players != null) {
         players.remove(player);
       }

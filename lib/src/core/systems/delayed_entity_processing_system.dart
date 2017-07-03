@@ -37,7 +37,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   void processEntities(Iterable<Entity> entities) {
     entities.forEach((entity) {
       processDelta(entity, _acc);
-      double remaining = getRemainingDelay(entity);
+      final double remaining = getRemainingDelay(entity);
       if (remaining <= 0.0) {
         processExpired(entity);
       } else {
@@ -52,7 +52,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
   @override
   void inserted(Entity enitity) {
-    double delay = getRemainingDelay(enitity);
+    final double delay = getRemainingDelay(enitity);
     processDelta(enitity, 0.0 - _acc);
     if (delay > 0.0) {
       offerDelay(delay);
@@ -91,7 +91,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /// offered delay is shorter than the time remaining, the system will
   /// restart itself to run at the offered delay.
   void offerDelay(num delay) {
-    var remaining = getRemainingTimeUntilProcessing();
+    final remaining = getRemainingTimeUntilProcessing();
     if (!_running || delay < remaining || remaining == 0) {
       restart(delay);
     }

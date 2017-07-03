@@ -26,7 +26,7 @@ class TagManager extends Manager {
 
   @override
   void deleted(Entity e) {
-    String removedTag = _tagsByEntity.remove(e);
+    final String removedTag = _tagsByEntity.remove(e);
     if (removedTag != null) {
       _entitiesByTag.remove(removedTag);
     }

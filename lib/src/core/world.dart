@@ -79,8 +79,8 @@ class World {
   /// Create and return a new or reused [Entity] instance, optionally with
   /// [components].
   Entity createEntity([List<Component> components = const []]) {
-    var e = _entityManager._createEntityInstance();
-    components.forEach((component) => e.addComponent(component));
+    final e = _entityManager._createEntityInstance();
+    components.forEach(e.addComponent);
     return e;
   }
 
@@ -89,7 +89,7 @@ class World {
   ///
   /// You don't have to call [Entity.addToWorld()] if you use this.
   Entity createAndAddEntity([List<Component> components = const []]) {
-    var e = createEntity(components);
+    final e = createEntity(components);
     addEntity(e);
     return e;
   }

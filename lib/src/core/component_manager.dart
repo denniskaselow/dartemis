@@ -20,7 +20,7 @@ class ComponentManager extends Manager {
   }
 
   void _addComponent(Entity e, ComponentType type, Component component) {
-    int index = type.id;
+    final int index = type.id;
     _componentsByType._ensureCapacity(index);
 
     Bag<Component> components = _componentsByType[index];
@@ -36,7 +36,7 @@ class ComponentManager extends Manager {
 
   void _removeComponent(Entity e, ComponentType type) {
     if ((e._typeBits & type.bit) != 0) {
-      int typeId = type.id;
+      final int typeId = type.id;
       _componentsByType[typeId][e.id]._removed();
       _componentsByType[typeId][e.id] = null;
       e._removeTypeBit(type.bit);
@@ -44,7 +44,7 @@ class ComponentManager extends Manager {
   }
 
   Bag<Component> getComponentsByType(ComponentType type) {
-    int index = type.id;
+    final int index = type.id;
     _componentsByType._ensureCapacity(index);
 
     Bag<Component> components = _componentsByType[index];
@@ -56,8 +56,8 @@ class ComponentManager extends Manager {
   }
 
   Component _getComponent(Entity e, ComponentType type) {
-    int index = type.id;
-    Bag<Component> components = _componentsByType[index];
+    final int index = type.id;
+    final Bag<Component> components = _componentsByType[index];
     if (components != null && components.isIndexWithinBounds(e.id)) {
       return components[e.id];
     }

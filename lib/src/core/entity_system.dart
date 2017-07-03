@@ -77,7 +77,7 @@ abstract class EntitySystem implements EntityObserver {
     if (_dummy) {
       return;
     }
-    bool contains = _contains(e);
+    final bool contains = _contains(e);
     bool interest = (_all & e._typeBits) == _all;
     if (_one > 0 && interest) {
       interest = (_one & e._typeBits) > 0;
