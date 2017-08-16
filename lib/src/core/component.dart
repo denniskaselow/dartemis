@@ -13,7 +13,7 @@ abstract class Component {
 /// and have a factory constructor that calls `new Pooled.of(...)` to create
 /// a component. By doing so, dartemis can handle the construction of
 /// [PooledComponent]s and reuse them when they are no longer needed.
-class PooledComponent extends Component with Pooled {
+class PooledComponent extends Component implements Pooled {
   @override
   void _removed() {
     moveToPool();
@@ -23,4 +23,12 @@ class PooledComponent extends Component with Pooled {
   /// method.
   @override
   void cleanUp() {}
+
+  /// Calls the cleanup function and moves this object to the [ObjectPool].
+  @override
+  void moveToPool() {
+    cleanUp();
+    ObjectPool.add(this);
+  }
 }
+
