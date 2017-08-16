@@ -6,7 +6,8 @@ homepage: https://github.com/denniskaselow/dartemis
 environment:
   sdk: '>=1.12.0 <2.0.0'
 dependencies:
-  bit_set: ^0.1.0
+  bit_set:
+    path: ../bit_set
 dev_dependencies:
   browser: ^0.10.0
   test: ^0.12.16
