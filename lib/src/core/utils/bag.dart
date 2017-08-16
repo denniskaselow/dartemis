@@ -3,10 +3,10 @@ part of dartemis;
 /// Collection type a bit like List but does not preserve the order of its
 /// entities, speedwise it is very good, especially suited for games.
 class Bag<E> extends Object with IterableMixin<E> {
-  List _data;
+  List<E> _data;
   int _size = 0;
 
-  Bag({int capacity: 16}) : _data = new List(capacity);
+  Bag({int capacity: 16}) : _data = new List<E>(capacity);
 
   /// Creates a new [Bag] with the elements of [iterable].
   Bag.from(Iterable<E> iterable)
