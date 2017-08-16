@@ -7,7 +7,7 @@ environment:
   sdk: '>=1.12.0 <2.0.0'
 dependencies:
   bit_set:
-    path: ../bit_set
+    git: git://github.com/denniskaselow/bit_set.git
 dev_dependencies:
   browser: ^0.10.0
   test: ^0.12.16
