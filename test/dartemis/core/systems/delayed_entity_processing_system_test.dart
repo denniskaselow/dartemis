@@ -76,7 +76,7 @@ class TestDelayedEntityProcessingSystem extends DelayedEntityProcessingSystem {
 
   @override
   void initialize() {
-    timerMapper = new Mapper(Timer, world);
+    timerMapper = new Mapper<Timer>(Timer, world);
   }
 
   @override

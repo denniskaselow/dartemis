@@ -38,3 +38,5 @@ part 'src/core/managers/tag_manager.dart';
 part 'src/core/managers/team_manager.dart';
 
 part 'src/core/world.dart';
+
+part 'src/metadata/generate.dart';
