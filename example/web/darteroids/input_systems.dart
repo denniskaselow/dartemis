@@ -22,10 +22,14 @@ class PlayerControlSystem extends IntervalEntitySystem {
   CanvasElement canvas;
 
   PlayerControlSystem(this.canvas)
-      : super(20, new Aspect.forAllOf([Velocity, Cannon]));
+      : super(20, Aspect.forAllOf([Velocity, Cannon]));
 
   @override
   void initialize() {
+    tagManager = world.getManager<TagManager>();
+    velocityMapper = Mapper<Velocity>(world);
+    cannonMapper = Mapper<Cannon>(world);
+
     window.onKeyDown.listen(handleKeyDown);
     window.onKeyUp.listen(handleKeyUp);
     canvas.onMouseDown.listen(handleMouseDown);
@@ -34,9 +38,9 @@ class PlayerControlSystem extends IntervalEntitySystem {
 
   @override
   void processEntities(Iterable<Entity> entities) {
-    Entity player = tagManager.getEntity(tagPlayer);
-    Velocity velocity = velocityMapper[player];
-    Cannon cannon = cannonMapper[player];
+    final player = tagManager.getEntity(tagPlayer);
+    final velocity = velocityMapper[player];
+    final cannon = cannonMapper[player];
 
     if (moveUp) {
       velocity.y -= 0.1;
@@ -55,7 +59,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   }
 
   void handleKeyDown(KeyboardEvent e) {
-    int keyCode = e.keyCode;
+    final keyCode = e.keyCode;
     if (keyCode == up) {
       moveUp = true;
       moveDown = false;
@@ -72,7 +76,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   }
 
   void handleKeyUp(KeyboardEvent e) {
-    int keyCode = e.keyCode;
+    final keyCode = e.keyCode;
     if (keyCode == up) {
       moveUp = false;
     } else if (keyCode == down) {

@@ -7,20 +7,20 @@ part of dartemis;
 /// It is also important to set the delta each game loop iteration, and
 /// initialize before game loop.
 class World {
-  final EntityManager _entityManager = new EntityManager();
-  final ComponentManager _componentManager = new ComponentManager();
+  final EntityManager _entityManager = EntityManager();
+  final ComponentManager _componentManager = ComponentManager();
 
-  final Bag<Entity> _added = new EntityBag();
-  final Bag<Entity> _changed = new EntityBag();
-  final Bag<Entity> _deleted = new EntityBag();
-  final Bag<Entity> _enable = new EntityBag();
-  final Bag<Entity> _disable = new EntityBag();
+  final Bag<Entity> _added = EntityBag();
+  final Bag<Entity> _changed = EntityBag();
+  final Bag<Entity> _deleted = EntityBag();
+  final Bag<Entity> _enable = EntityBag();
+  final Bag<Entity> _disable = EntityBag();
 
   final Map<Type, EntitySystem> _systems = <Type, EntitySystem>{};
   final List<EntitySystem> _systemsList = <EntitySystem>[];
 
   final Map<Type, Manager> _managers = <Type, Manager>{};
-  final Bag<Manager> _managersBag = new Bag<Manager>();
+  final Bag<Manager> _managersBag = Bag<Manager>();
 
   final Map<int, int> _frame = {0: 0};
   final Map<int, double> _time = {0: 0.0};
@@ -67,8 +67,8 @@ class World {
     manager._world = this;
   }
 
-  /// Returns a [Manager] of the specified [managerType].
-  Manager getManager(Type managerType) => _managers[managerType];
+  /// Returns a [Manager] of the specified type [T].
+  T getManager<T extends Manager>() => _managers[T];
 
   /// Deletes the manager from this world.
   void deleteManager(Manager manager) {
@@ -103,8 +103,7 @@ class World {
   /// Adds a [system] to this world that will be processed by [process()].
   /// If [passive] is set to true the [system] will not be processed by the world.
   /// If a [group] is set, this [system] will only be processed when calling [process()] with the same [group].
-  EntitySystem addSystem(EntitySystem system,
-      {bool passive: false, int group: 0}) {
+  void addSystem(EntitySystem system, {bool passive = false, int group = 0}) {
     system
       .._world = this
       .._passive = passive
@@ -114,8 +113,6 @@ class World {
     _systemsList.add(system);
     _time.putIfAbsent(group, () => 0.0);
     _frame.putIfAbsent(group, () => 0);
-
-    return system;
   }
 
   /// Removed the specified system from the world.
@@ -125,7 +122,7 @@ class World {
   }
 
   /// Retrieve a system for specified system type.
-  EntitySystem getSystem(Type type) => _systems[type];
+  T getSystem<T extends EntitySystem>() => _systems[T];
 
   /// Performs an action on each entity.
   void _check(Bag<Entity> entities, void perform(entityObserver, entity)) {

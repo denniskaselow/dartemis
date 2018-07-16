@@ -35,10 +35,10 @@ class Generate {
   final List<Type> exclude;
 
   const Generate(this.base,
-      {this.allOf: const [],
-      this.oneOf: const [],
-      this.exclude: const [],
-      this.mapper: const [],
-      this.systems: const [],
-      this.manager: const []});
+      {this.allOf = const [],
+      this.oneOf = const [],
+      this.exclude = const [],
+      this.mapper = const [],
+      this.systems = const [],
+      this.manager = const []});
 }

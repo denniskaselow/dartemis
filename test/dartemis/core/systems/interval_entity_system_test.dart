@@ -7,8 +7,8 @@ import "package:dartemis/dartemis.dart";
 void main() {
   group('IntervalEntitySystem tests', () {
     test('delta returns accumulated time since last processing', () {
-      World world = new World();
-      var sut = new TestIntervalEntitySystem(40);
+      final world = World();
+      final sut = TestIntervalEntitySystem(40);
       world
         ..addSystem(sut)
         ..delta = 16;
@@ -26,7 +26,7 @@ void main() {
 }
 
 class TestIntervalEntitySystem extends IntervalEntitySystem {
-  TestIntervalEntitySystem(num interval) : super(interval, new Aspect.empty());
+  TestIntervalEntitySystem(num interval) : super(interval, Aspect.empty());
   @override
   void processEntities(Iterable<Entity> entities) {}
 }

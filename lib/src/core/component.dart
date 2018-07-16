@@ -24,4 +24,3 @@ class PooledComponent extends Component with Pooled {
   @override
   void cleanUp() {}
 }
-

@@ -4,11 +4,12 @@ author: Dennis Kaselow <Dennis.Kaselow+dartemis@gmail.com>
 description: An Entity System Framework for game development. Based on Artemis.
 homepage: https://github.com/denniskaselow/dartemis
 environment:
-  sdk: '>=1.12.0 <2.0.0'
+  sdk: '>=2.0.0-dev <2.0.0'
 dependencies:
   bit_set:
     git: git://github.com/denniskaselow/bit_set.git
 dev_dependencies:
-  browser: ^0.10.0
-  test: ^0.12.16
-  mockito: ^2.0.2
+  test: ^1.2.0
+  mockito: ^3.0.0-beta
+  build_runner: ^0.9.1
+  build_web_compilers: ^0.4.0

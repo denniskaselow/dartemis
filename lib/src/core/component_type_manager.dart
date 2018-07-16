@@ -7,7 +7,7 @@ class ComponentTypeManager {
     ComponentType componentType = _componentTypes[typeOfComponent];
 
     if (componentType == null) {
-      componentType = new ComponentType();
+      componentType = ComponentType();
       _componentTypes[typeOfComponent] = componentType;
     }
     return componentType;

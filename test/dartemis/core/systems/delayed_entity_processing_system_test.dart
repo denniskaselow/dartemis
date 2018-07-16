@@ -7,11 +7,11 @@ import "package:dartemis/dartemis.dart";
 void main() {
   group('DelayedEntityProcessingSystem tests', () {
     test('executes after delay has passed', () {
-      World world = new World();
-      var t1 = new Timer(100.0);
-      var t2 = new Timer(150.0);
+      final world = World();
+      final t1 = Timer(100.0);
+      final t2 = Timer(150.0);
       world..createAndAddEntity([t1])..createAndAddEntity([t2]);
-      var sut = new TestDelayedEntityProcessingSystem();
+      final sut = TestDelayedEntityProcessingSystem();
       world
         ..addSystem(sut)
         ..delta = 50.0
@@ -44,11 +44,11 @@ void main() {
     });
 
     test('takes passed time into account when adding new entity', () {
-      World world = new World();
-      var t1 = new Timer(100.0);
-      var t2 = new Timer(150.0);
+      final world = World();
+      final t1 = Timer(100.0);
+      final t2 = Timer(150.0);
       world.createAndAddEntity([t1]);
-      var sut = new TestDelayedEntityProcessingSystem();
+      final sut = TestDelayedEntityProcessingSystem();
       world
         ..addSystem(sut)
         ..delta = 50.0
@@ -72,11 +72,11 @@ class Timer extends Component {
 
 class TestDelayedEntityProcessingSystem extends DelayedEntityProcessingSystem {
   Mapper<Timer> timerMapper;
-  TestDelayedEntityProcessingSystem() : super(new Aspect.forAllOf([Timer]));
+  TestDelayedEntityProcessingSystem() : super(Aspect.forAllOf([Timer]));
 
   @override
   void initialize() {
-    timerMapper = new Mapper<Timer>(Timer, world);
+    timerMapper = Mapper<Timer>(world);
   }
 
   @override

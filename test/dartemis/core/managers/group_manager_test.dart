@@ -12,8 +12,8 @@ void main() {
     Entity entityAB;
     Entity entity0;
     setUp(() {
-      world = new World();
-      sut = new GroupManager();
+      world = World();
+      sut = GroupManager();
       world.addManager(sut);
 
       entityA = world.createEntity();
@@ -36,7 +36,7 @@ void main() {
       expect(sut.isInGroup(entity0, 'B'), equals(false));
     });
     test('isInGroup after add and remove', () {
-      var entity00 = world.createEntity();
+      final entity00 = world.createEntity();
       expect(sut.isInGroup(entity00, 'A'), equals(false));
       sut.add(entity00, 'A');
       expect(sut.isInGroup(entity00, 'A'), equals(true));

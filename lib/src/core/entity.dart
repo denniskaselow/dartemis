@@ -50,10 +50,10 @@ class Entity {
         ComponentTypeManager.getTypeFor(component.runtimeType), component);
   }
 
-  /// Removes the [Component] of [Type] [componentType] from this entity.
-  void removeComponent(Type componentType) {
+  /// Removes the [Component] of type [T] from this entity.
+  void removeComponent<T extends Component>() {
     _componentManager._removeComponent(
-        this, ComponentTypeManager.getTypeFor(componentType));
+        this, ComponentTypeManager.getTypeFor(T));
   }
 
   /// Faster removal of components by [type] from a entity.
@@ -81,12 +81,12 @@ class Entity {
   /// components.
   ///
   /// Returns [:null:] if none is found.
-  Component getComponentByClass(Type componentType) =>
-      getComponent(ComponentTypeManager.getTypeFor(componentType));
+  T getComponentByClass<T extends Component>() =>
+      getComponent(ComponentTypeManager.getTypeFor(T));
 
   /// Get all components belonging to this entity.
   Bag<Component> getComponents([Bag<Component> fillBag]) {
-    fillBag ??= new Bag<Component>();
+    fillBag ??= Bag<Component>();
     return _componentManager.getComponentsFor(this, fillBag);
   }
 

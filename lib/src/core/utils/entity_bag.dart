@@ -5,8 +5,8 @@ class EntityBag extends Bag<Entity> {
   BitSet _entities;
   bool _dirty = false;
 
-  EntityBag({int capacity: 16})
-      : _entities = new BitSet(capacity, false),
+  EntityBag({int capacity = 16})
+      : _entities = BitSet(capacity, false),
         super(capacity: capacity);
 
   @override
@@ -71,7 +71,7 @@ class EntityBag extends Bag<Entity> {
 
   void _refresh() {
     _size = _entities.countBits(true);
-    final tmp = new List<Entity>(_size);
+    final tmp = List<Entity>(_size);
     if (_size > 0) {
       int index = 0;
       _data

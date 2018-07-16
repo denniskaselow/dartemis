@@ -1,13 +1,9 @@
 analyzer:
-  strong-mode: true
   errors:
     unused_element: error
     unused_import: error
     unused_local_variable: error
     dead_code: error
-  exclude:
-    - example/**
-    - test/**
 linter:
   rules:
     - always_declare_return_types

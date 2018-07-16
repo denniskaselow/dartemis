@@ -15,17 +15,17 @@ class EntityManager extends Manager {
   _IdentifierPool _identifierPool;
 
   EntityManager()
-      : _entities = new Bag<Entity>(),
-        _deletedEntities = new Bag<Entity>(),
-        _disabled = new Bag<bool>(),
-        _identifierPool = new _IdentifierPool();
+      : _entities = Bag<Entity>(),
+        _deletedEntities = Bag<Entity>(),
+        _disabled = Bag<bool>(),
+        _identifierPool = _IdentifierPool();
 
   @override
   void initialize() {}
 
   Entity _createEntityInstance() {
     Entity entity = _deletedEntities.removeLast();
-    entity ??= new Entity._(_world, _identifierPool.checkOut());
+    entity ??= Entity._(_world, _identifierPool.checkOut());
     _created++;
     entity._uniqueId = _nextUniqueId++;
     return entity;
@@ -95,7 +95,7 @@ class _IdentifierPool {
   Bag<int> _ids;
   int _nextAvailableId = 0;
 
-  _IdentifierPool() : _ids = new Bag<int>();
+  _IdentifierPool() : _ids = Bag<int>();
 
   int checkOut() {
     if (_ids.size > 0) {

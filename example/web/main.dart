@@ -18,7 +18,7 @@ const int maxWidth = 600;
 const int maxHeight = 600;
 const int hudHeight = 100;
 
-final Random random = new Random();
+final Random random = Random();
 final CanvasElement canvas = querySelector('#gamecontainer');
 
 void main() {
@@ -26,7 +26,7 @@ void main() {
     ..width = maxWidth
     ..height = maxHeight + hudHeight;
 
-  new Darteroids(canvas).start();
+  Darteroids(canvas).start();
 }
 
 class Darteroids {
@@ -40,33 +40,33 @@ class Darteroids {
   }
 
   void start() {
-    world = new World();
+    world = World();
 
-    Entity player = world.createEntity()
-      ..addComponent(new Position(maxWidth ~/ 2, maxHeight ~/ 2))
-      ..addComponent(new Velocity())
-      ..addComponent(new CircularBody.down(20, playerColor))
-      ..addComponent(new Cannon())
-      ..addComponent(new Status(lifes: 3, invisiblityTimer: 5000))
+    final player = world.createEntity()
+      ..addComponent(Position(maxWidth ~/ 2, maxHeight ~/ 2))
+      ..addComponent(Velocity())
+      ..addComponent(CircularBody.down(20, playerColor))
+      ..addComponent(Cannon())
+      ..addComponent(Status(lifes: 3, invisiblityTimer: 5000))
       ..addToWorld();
 
-    TagManager tagManager = new TagManager()..register(player, tagPlayer);
+    final tagManager = TagManager()..register(player, tagPlayer);
     world.addManager(tagManager);
-    GroupManager groupManager = new GroupManager();
+    final groupManager = GroupManager();
     world.addManager(groupManager);
 
     addAsteroids(groupManager);
 
     world
-      ..addSystem(new PlayerControlSystem(canvas))
-      ..addSystem(new BulletSpawningSystem())
-      ..addSystem(new DecaySystem())
-      ..addSystem(new MovementSystem())
-      ..addSystem(new AsteroidDestructionSystem())
-      ..addSystem(new PlayerCollisionDetectionSystem())
-      ..addSystem(new BackgroundRenderSystem(context2d), group: 1)
-      ..addSystem(new CircleRenderingSystem(context2d), group: 1)
-      ..addSystem(new HudRenderSystem(context2d), group: 1)
+      ..addSystem(PlayerControlSystem(canvas))
+      ..addSystem(BulletSpawningSystem())
+      ..addSystem(DecaySystem())
+      ..addSystem(MovementSystem())
+      ..addSystem(AsteroidDestructionSystem())
+      ..addSystem(PlayerCollisionDetectionSystem())
+      ..addSystem(BackgroundRenderSystem(context2d), group: 1)
+      ..addSystem(CircleRenderingSystem(context2d), group: 1)
+      ..addSystem(HudRenderSystem(context2d), group: 1)
       ..initialize();
 
     physicsLoop();
@@ -75,16 +75,16 @@ class Darteroids {
 
   void addAsteroids(GroupManager groupManager) {
     for (int i = 0; i < 10; i++) {
-      Entity asteroid = world.createEntity()
-        ..addComponent(new Position(
+      final asteroid = world.createEntity()
+        ..addComponent(Position(
             maxWidth * random.nextDouble(), maxHeight * random.nextDouble()));
-      num vx = generateRandomVelocity();
-      num vy = generateRandomVelocity();
+      final vx = generateRandomVelocity();
+      final vy = generateRandomVelocity();
       asteroid
-        ..addComponent(new Velocity(vx, vy))
+        ..addComponent(Velocity(vx, vy))
         ..addComponent(
-            new CircularBody.down(10 + 20 * random.nextDouble(), asteroidColor))
-        ..addComponent(new PlayerDestroyer())
+            CircularBody.down(10 + 20 * random.nextDouble(), asteroidColor))
+        ..addComponent(PlayerDestroyer())
         ..addToWorld();
       groupManager.add(asteroid, groupAsteroids);
     }
@@ -95,7 +95,7 @@ class Darteroids {
       ..delta = 5.0
       ..process();
 
-    new Future.delayed(const Duration(milliseconds: 5), physicsLoop);
+    Future.delayed(const Duration(milliseconds: 5), physicsLoop);
   }
 
   void renderLoop(num time) {
@@ -112,8 +112,8 @@ num generateRandomVelocity() =>
 
 bool doCirclesCollide(
     num x1, num y1, num radius1, num x2, num y2, num radius2) {
-  num dx = x2 - x1;
-  num dy = y2 - y1;
-  num d = radius1 + radius2;
+  final dx = x2 - x1;
+  final dy = y2 - y1;
+  final d = radius1 + radius2;
   return (dx * dx + dy * dy) < (d * d);
 }

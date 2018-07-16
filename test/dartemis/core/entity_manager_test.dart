@@ -8,23 +8,23 @@ void main() {
   group('integration tests for EntityManager', () {
     World world;
     setUp(() {
-      world = new World();
+      world = World();
     });
     test('entities have uniqure IDs', () {
-      Entity a = world.createEntity();
-      Entity b = world.createEntity();
+      final a = world.createEntity();
+      final b = world.createEntity();
 
       expect(a.id, isNot(equals(b.id)));
     });
     test('entities have unique uniqueIds', () {
-      Entity a = world.createEntity();
-      Entity b = world.createEntity();
+      final a = world.createEntity();
+      final b = world.createEntity();
 
       expect(a.uniqueId, isNot(equals(b.uniqueId)));
     });
     test('isEnabled returns correct values for enabled/disabled', () {
-      Entity a = world.createEntity();
-      Entity b = world.createEntity();
+      final a = world.createEntity();
+      final b = world.createEntity();
       world
         ..disable(b)
         ..processEntityChanges();
@@ -38,7 +38,7 @@ void main() {
       for (int i = 0; i < 16; i++) {
         world.createEntity();
       }
-      Entity a = world.createEntity();
+      final a = world.createEntity();
 
       expect(world.entityManager.isEnabled(a.id), equals(true));
     });

@@ -11,8 +11,8 @@ void main() {
     World world;
     MockEntitySystem system;
     setUp(() {
-      world = new World();
-      system = new MockEntitySystem();
+      world = World();
+      system = MockEntitySystem();
       when(system.passive).thenReturn(false);
       when(system.group).thenReturn(0);
     });
@@ -40,7 +40,7 @@ void main() {
       verifyNever(system.process());
     });
     test('world processes systems by group', () {
-      MockEntitySystem2 system2 = new MockEntitySystem2();
+      final system2 = MockEntitySystem2();
       when(system2.passive).thenReturn(false);
       when(system2.group).thenReturn(1);
 
@@ -56,7 +56,7 @@ void main() {
       verify(system2.process()).called(1);
     });
     test('world manages time and frames by group', () {
-      MockEntitySystem2 system2 = new MockEntitySystem2();
+      final system2 = MockEntitySystem2();
       when(system2.passive).thenReturn(false);
       when(system2.group).thenReturn(1);
 
@@ -76,7 +76,7 @@ void main() {
       expect(world.frame(1), equals(1));
     });
     test('world initializes added managers', () {
-      MockManager manager = new MockManager();
+      final manager = MockManager();
       world
         ..addManager(manager)
         ..initialize();
@@ -134,7 +134,7 @@ void main() {
       verify(system.destroy()).called(1);
     });
     test('destroy calls destroy method on managers', () {
-      MockManager manager = new MockManager();
+      final manager = MockManager();
       world
         ..addManager(manager)
         ..initialize()
@@ -149,15 +149,15 @@ void main() {
     Entity entityAC;
     EntitySystemStarter systemStarter;
     setUp(() {
-      world = new World();
-      entityAB = world.createAndAddEntity([new ComponentA(), new ComponentB()]);
+      world = World();
+      entityAB = world.createAndAddEntity([ComponentA(), ComponentB()]);
       entityAC = world.createEntity()
-        ..addComponent(new ComponentA())
-        ..addComponent(new PooledComponentC())
+        ..addComponent(ComponentA())
+        ..addComponent(PooledComponentC())
         ..addToWorld();
       systemStarter = (EntitySystem es) {
-        es = world.addSystem(es);
         world
+          ..addSystem(es)
           ..initialize()
           ..process();
       };
@@ -165,86 +165,86 @@ void main() {
     test(
         'EntitySystem which requires one Component processes Entity with this component',
         () {
-      List<Entity> expectedEntities = [entityAB, entityAC];
-      EntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentA]), expectedEntities);
+      final expectedEntities = [entityAB, entityAC];
+      final es =
+          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
       systemStarter(es);
     });
     test(
         'EntitySystem which required multiple Components does not process Entity with a subset of those components',
         () {
-      List<Entity> expectedEntities = [entityAB];
-      EntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentA, componentB]), expectedEntities);
+      final expectedEntities = [entityAB];
+      final es = TestEntitySystem(
+          Aspect.forAllOf([componentA, componentB]), expectedEntities);
       systemStarter(es);
     });
     test(
         'EntitySystem which requires one of multiple components processes Entity with a subset of those components',
         () {
-      List<Entity> expectedEntities = [entityAB, entityAC];
-      EntitySystem es = new TestEntitySystem(
-          new Aspect.forOneOf([componentA, componentB]), expectedEntities);
+      final expectedEntities = [entityAB, entityAC];
+      final es = TestEntitySystem(
+          Aspect.forOneOf([componentA, componentB]), expectedEntities);
       systemStarter(es);
     });
     test(
         'EntitySystem which excludes a component does not process Entity with one of those components',
         () {
-      List<Entity> expectedEntities = [entityAB];
-      EntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentA])..exclude([componentC]),
+      final expectedEntities = [entityAB];
+      final es = TestEntitySystem(
+          Aspect.forAllOf([componentA])..exclude([componentC]),
           expectedEntities);
       systemStarter(es);
     });
     test('A removed entity will not get processed', () {
       entityAB.deleteFromWorld();
-      List<Entity> expectedEntities = [entityAC];
-      EntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentA]), expectedEntities);
+      final expectedEntities = [entityAC];
+      final es =
+          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
       systemStarter(es);
     });
     test('A disabled entity will not get processed', () {
       entityAB.disable();
-      List<Entity> expectedEntities = [entityAC];
-      EntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentA]), expectedEntities);
+      final expectedEntities = [entityAC];
+      final es =
+          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
       systemStarter(es);
     });
     test(
         'Adding a component will not get the entity processed if the world is not notified of the change',
         () {
-      List<Entity> expectedEntities = [entityAC];
-      EntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentC]), expectedEntities);
-      es = world.addSystem(es);
+      final expectedEntities = [entityAC];
+      final es =
+          TestEntitySystem(Aspect.forAllOf([componentC]), expectedEntities);
       world
+        ..addSystem(es)
         ..initialize()
         ..process();
-      entityAB.addComponent(new PooledComponentC());
+      entityAB.addComponent(PooledComponentC());
       world.process();
     });
     test(
         'Adding a component will get the entity processed if the world is notified of the change',
         () {
-      List<Entity> expectedEntities = [entityAC];
-      TestEntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentC]), expectedEntities);
-      es = world.addSystem(es);
+      final expectedEntities = [entityAC];
+      final es =
+          TestEntitySystem(Aspect.forAllOf([componentC]), expectedEntities);
       world
+        ..addSystem(es)
         ..initialize()
         ..process();
       es._expectedEntities = [entityAB, entityAC];
       entityAB
-        ..addComponent(new PooledComponentC())
+        ..addComponent(PooledComponentC())
         ..changedInWorld();
       world.process();
     });
     test('Enabling a disabled component will get the entity processed', () {
       entityAB.disable();
-      List<Entity> expectedEntities = [entityAC];
-      TestEntitySystem es = new TestEntitySystem(
-          new Aspect.forAllOf([componentA]), expectedEntities);
-      es = world.addSystem(es);
+      final expectedEntities = [entityAC];
+      final es =
+          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
       world
+        ..addSystem(es)
         ..initialize()
         ..process();
       es._expectedEntities = [entityAB, entityAC];
@@ -268,7 +268,7 @@ class TestEntitySystem extends EntitySystem {
 
   @override
   void processEntities(Iterable<Entity> entities) {
-    int length = _expectedEntities.length;
+    final length = _expectedEntities.length;
     expect(entities.length, length);
     entities.forEach((entity) => expect(entity, isIn(_expectedEntities)));
   }

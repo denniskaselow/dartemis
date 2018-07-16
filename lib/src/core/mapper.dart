@@ -6,8 +6,8 @@ class Mapper<A extends Component> {
   ComponentType _type;
   Bag<Component> _components;
 
-  Mapper(Type componentType, World world) {
-    _type = ComponentTypeManager.getTypeFor(componentType);
+  Mapper(World world) {
+    _type = ComponentTypeManager.getTypeFor(A);
     _components = world.componentManager.getComponentsByType(_type);
   }
 

@@ -2,9 +2,9 @@ library components_setup;
 
 import "package:dartemis/dartemis.dart";
 
-final Type componentA = new ComponentA().runtimeType;
-final Type componentB = new ComponentB().runtimeType;
-final Type componentC = new PooledComponentC().runtimeType;
+final Type componentA = ComponentA().runtimeType;
+final Type componentB = ComponentB().runtimeType;
+final Type componentC = PooledComponentC().runtimeType;
 
 const int componentABit = 0x0001;
 const int componentBBit = 0x0002;
@@ -22,6 +22,6 @@ class ComponentB extends Component {}
 
 class PooledComponentC extends PooledComponent {
   factory PooledComponentC() =>
-      new Pooled.of(PooledComponentC, () => new PooledComponentC._());
+      Pooled.of<PooledComponentC>(() => PooledComponentC._());
   PooledComponentC._();
 }

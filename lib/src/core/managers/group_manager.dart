@@ -17,14 +17,14 @@ class GroupManager extends Manager {
   void add(Entity entity, String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities == null) {
-      entities = new Bag<Entity>();
+      entities = Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
     entities.add(entity);
 
     Bag<String> groups = _groupsByEntity[entity];
     if (groups == null) {
-      groups = new Bag<String>();
+      groups = Bag<String>();
       _groupsByEntity[entity] = groups;
     }
     groups.add(group);
@@ -61,7 +61,7 @@ class GroupManager extends Manager {
   Iterable<Entity> getEntities(String group) {
     Bag<Entity> entities = _entitiesByGroup[group];
     if (entities == null) {
-      entities = new Bag<Entity>();
+      entities = Bag<Entity>();
       _entitiesByGroup[group] = entities;
     }
     return entities;

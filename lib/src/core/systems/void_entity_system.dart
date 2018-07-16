@@ -5,7 +5,7 @@ part of dartemis;
 /// You can use this system if you need to execute some game logic and not have
 /// to concern yourself about aspects or entities.
 abstract class VoidEntitySystem extends EntitySystem {
-  VoidEntitySystem() : super(new Aspect.empty());
+  VoidEntitySystem() : super(Aspect.empty());
 
   @override
   void processEntities(Iterable<Entity> entities) => processSystem();

@@ -4,12 +4,18 @@ class MovementSystem extends EntityProcessingSystem {
   Mapper<Position> positionMapper;
   Mapper<Velocity> velocityMapper;
 
-  MovementSystem() : super(new Aspect.forAllOf([Position, Velocity]));
+  MovementSystem() : super(Aspect.forAllOf([Position, Velocity]));
+
+  @override
+  void initialize() {
+    positionMapper = Mapper<Position>(world);
+    velocityMapper = Mapper<Velocity>(world);
+  }
 
   @override
   void processEntity(Entity entity) {
-    Position pos = positionMapper[entity];
-    Velocity vel = velocityMapper[entity];
+    final pos = positionMapper[entity];
+    final vel = velocityMapper[entity];
 
     pos
       ..x += vel.x * world.delta / 10.0
@@ -24,16 +30,22 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   Mapper<Cannon> cannonMapper;
   Mapper<Velocity> velocityMapper;
 
-  BulletSpawningSystem()
-      : super(new Aspect.forAllOf([Cannon, Position, Velocity]));
+  BulletSpawningSystem() : super(Aspect.forAllOf([Cannon, Position, Velocity]));
+
+  @override
+  void initialize() {
+    positionMapper = Mapper<Position>(world);
+    cannonMapper = Mapper<Cannon>(world);
+    velocityMapper = Mapper<Velocity>(world);
+  }
 
   @override
   void processEntity(Entity entity) {
-    Cannon cannon = cannonMapper[entity];
+    final cannon = cannonMapper[entity];
 
     if (cannon.canShoot) {
-      Position pos = positionMapper[entity];
-      Velocity vel = velocityMapper[entity];
+      final pos = positionMapper[entity];
+      final vel = velocityMapper[entity];
       fireBullet(pos, vel, cannon);
     } else if (cannon.cooldown > 0) {
       cannon.cooldown -= world.delta;
@@ -42,18 +54,18 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   void fireBullet(Position shooterPos, Velocity shooterVel, Cannon cannon) {
     cannon.cooldown = 1000;
-    Entity bullet = world.createEntity()
-      ..addComponent(new Position(shooterPos.x, shooterPos.y));
-    num dirX = cannon.targetX - shooterPos.x;
-    num dirY = cannon.targetY - shooterPos.y;
-    num distance = sqrt(pow(dirX, 2) + pow(dirY, 2));
-    num velX = shooterVel.x + bulletSpeed * (dirX / distance);
-    num velY = shooterVel.y + bulletSpeed * (dirY / distance);
+    final bullet = world.createEntity()
+      ..addComponent(Position(shooterPos.x, shooterPos.y));
+    final dirX = cannon.targetX - shooterPos.x;
+    final dirY = cannon.targetY - shooterPos.y;
+    final distance = sqrt(pow(dirX, 2) + pow(dirY, 2));
+    final velX = shooterVel.x + bulletSpeed * (dirX / distance);
+    final velY = shooterVel.y + bulletSpeed * (dirY / distance);
     bullet
-      ..addComponent(new Velocity(velX, velY))
-      ..addComponent(new CircularBody.down(2, "red"))
-      ..addComponent(new Decay(5000))
-      ..addComponent(new AsteroidDestroyer())
+      ..addComponent(Velocity(velX, velY))
+      ..addComponent(CircularBody.down(2, "red"))
+      ..addComponent(Decay(5000))
+      ..addComponent(AsteroidDestroyer())
       ..addToWorld();
   }
 }
@@ -61,11 +73,16 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 class DecaySystem extends EntityProcessingSystem {
   Mapper<Decay> decayMapper;
 
-  DecaySystem() : super(new Aspect.forAllOf([Decay]));
+  DecaySystem() : super(Aspect.forAllOf([Decay]));
+
+  @override
+  void initialize() {
+    decayMapper = Mapper<Decay>(world);
+  }
 
   @override
   void processEntity(Entity entity) {
-    Decay decay = decayMapper[entity];
+    final decay = decayMapper[entity];
 
     if (decay.timer < 0) {
       entity.deleteFromWorld();
@@ -82,15 +99,22 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   Mapper<CircularBody> bodyMapper;
 
   AsteroidDestructionSystem()
-      : super(new Aspect.forAllOf([AsteroidDestroyer, Position]));
+      : super(Aspect.forAllOf([AsteroidDestroyer, Position]));
+
+  @override
+  void initialize() {
+    positionMapper = Mapper<Position>(world);
+    bodyMapper = Mapper<CircularBody>(world);
+    groupManager = world.getManager<GroupManager>();
+  }
 
   @override
   void processEntity(Entity entity) {
-    Position destroyerPos = positionMapper[entity];
+    final destroyerPos = positionMapper[entity];
 
     groupManager.getEntities(groupAsteroids).forEach((Entity asteroid) {
-      Position asteroidPos = positionMapper[asteroid];
-      CircularBody asteroidBody = bodyMapper[asteroid];
+      final asteroidPos = positionMapper[asteroid];
+      final asteroidBody = bodyMapper[asteroid];
 
       if (doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x,
           asteroidPos.y, asteroidBody.radius)) {
@@ -105,15 +129,15 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   }
 
   void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
-    Entity asteroid = world.createEntity()
-      ..addComponent(new Position(asteroidPos.x, asteroidPos.y));
-    num vx = generateRandomVelocity();
-    num vy = generateRandomVelocity();
-    asteroid.addComponent(new Velocity(vx, vy));
-    num radius = asteroidBody.radius / sqrtOf2;
+    final asteroid = world.createEntity()
+      ..addComponent(Position(asteroidPos.x, asteroidPos.y));
+    final vx = generateRandomVelocity();
+    final vy = generateRandomVelocity();
+    asteroid.addComponent(Velocity(vx, vy));
+    final radius = asteroidBody.radius / sqrtOf2;
     asteroid
-      ..addComponent(new CircularBody.down(radius, asteroidColor))
-      ..addComponent(new PlayerDestroyer())
+      ..addComponent(CircularBody.down(radius, asteroidColor))
+      ..addComponent(PlayerDestroyer())
       ..addToWorld();
     groupManager.add(asteroid, groupAsteroids);
   }
@@ -126,19 +150,27 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   Mapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem()
-      : super(new Aspect.forAllOf([PlayerDestroyer, Position, CircularBody]));
+      : super(Aspect.forAllOf([PlayerDestroyer, Position, CircularBody]));
+
+  @override
+  void initialize() {
+    positionMapper = Mapper<Position>(world);
+    statusMapper = Mapper<Status>(world);
+    bodyMapper = Mapper<CircularBody>(world);
+    tagManager = world.getManager<TagManager>();
+  }
 
   @override
   void processEntities(Iterable<Entity> entities) {
-    Entity player = tagManager.getEntity(tagPlayer);
-    Position playerPos = positionMapper[player];
-    Status playerStatus = statusMapper[player];
-    CircularBody playerBody = bodyMapper[player];
+    final player = tagManager.getEntity(tagPlayer);
+    final playerPos = positionMapper[player];
+    final playerStatus = statusMapper[player];
+    final playerBody = bodyMapper[player];
 
     if (!playerStatus.invisible) {
       entities.forEach((entity) {
-        Position pos = positionMapper[entity];
-        CircularBody body = bodyMapper[entity];
+        final pos = positionMapper[entity];
+        final body = bodyMapper[entity];
 
         if (doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x,
             playerPos.y, playerBody.radius)) {

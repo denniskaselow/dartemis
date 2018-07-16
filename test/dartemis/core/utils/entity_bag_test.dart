@@ -7,11 +7,11 @@ import "package:dartemis/dartemis.dart";
 void main() {
   group('EntityBag tests', () {
     EntityBag bag;
-    World world = new World();
+    World world = World();
     Entity e1 = world.createEntity();
     Entity e2 = world.createEntity();
     setUp(() {
-      bag = new EntityBag(capacity: 1)..add(e1)..add(e2);
+      bag = EntityBag(capacity: 1)..add(e1)..add(e2);
     });
     test('removing an element', () {
       bag.remove(e1);

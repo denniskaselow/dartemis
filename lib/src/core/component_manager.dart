@@ -5,8 +5,8 @@ class ComponentManager extends Manager {
   Bag<Entity> _deleted;
 
   ComponentManager()
-      : _componentsByType = new Bag<Bag<Component>>(),
-        _deleted = new EntityBag();
+      : _componentsByType = Bag<Bag<Component>>(),
+        _deleted = EntityBag();
 
   @override
   void initialize() {}
@@ -25,7 +25,7 @@ class ComponentManager extends Manager {
 
     Bag<Component> components = _componentsByType[index];
     if (components == null) {
-      components = new Bag<Component>();
+      components = Bag<Component>();
       _componentsByType[index] = components;
     }
 
@@ -49,7 +49,7 @@ class ComponentManager extends Manager {
 
     Bag<Component> components = _componentsByType[index];
     if (components == null) {
-      components = new Bag<Component>();
+      components = Bag<Component>();
       _componentsByType[index] = components;
     }
     return components;

@@ -6,7 +6,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   List<E> _data;
   int _size = 0;
 
-  Bag({int capacity: 16}) : _data = new List<E>(capacity);
+  Bag({int capacity = 16}) : _data = List<E>(capacity);
 
   /// Creates a new [Bag] with the elements of [iterable].
   Bag.from(Iterable<E> iterable)
@@ -98,7 +98,7 @@ class Bag<E> extends Object with IterableMixin<E> {
 
   void _growTo(int newCapacity) {
     final List<E> oldData = _data;
-    _data = new List<E>(newCapacity)..setRange(0, oldData.length, oldData);
+    _data = List<E>(newCapacity)..setRange(0, oldData.length, oldData);
   }
 
   void _ensureCapacity(int index) {

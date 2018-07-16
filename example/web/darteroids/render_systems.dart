@@ -8,13 +8,20 @@ class CircleRenderingSystem extends EntityProcessingSystem {
   Mapper<Status> statusMapper;
 
   CircleRenderingSystem(this.context)
-      : super(new Aspect.forAllOf([Position, CircularBody]));
+      : super(Aspect.forAllOf([Position, CircularBody]));
+
+  @override
+  void initialize() {
+    positionMapper = Mapper<Position>(world);
+    statusMapper = Mapper<Status>(world);
+    bodyMapper = Mapper<CircularBody>(world);
+  }
 
   @override
   void processEntity(Entity entity) {
-    Position pos = positionMapper[entity];
-    CircularBody body = bodyMapper[entity];
-    Status status = statusMapper.getSafe(entity);
+    final pos = positionMapper[entity];
+    final body = bodyMapper[entity];
+    final status = statusMapper.getSafe(entity);
 
     context.save();
 
@@ -49,10 +56,10 @@ class CircleRenderingSystem extends EntityProcessingSystem {
   }
 
   void drawCirle(Position pos, CircularBody body,
-      {int offsetX: 0, int offsetY: 0}) {
+      {int offsetX = 0, int offsetY = 0}) {
     context
       ..beginPath()
-      ..arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, PI * 2, false)
+      ..arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, pi * 2, false)
       ..closePath()
       ..fill();
   }
@@ -87,6 +94,12 @@ class HudRenderSystem extends VoidEntitySystem {
   HudRenderSystem(this.context);
 
   @override
+  void initialize() {
+    tagManager = world.getManager<TagManager>();
+    statusMapper = Mapper<Status>(world);
+  }
+
+  @override
   void processSystem() {
     context.save();
     try {
@@ -97,14 +110,14 @@ class HudRenderSystem extends VoidEntitySystem {
         ..closePath()
         ..fill();
 
-      Entity player = tagManager.getEntity(tagPlayer);
-      Status status = statusMapper[player];
+      final player = tagManager.getEntity(tagPlayer);
+      final status = statusMapper[player];
 
       context.fillStyle = playerColor;
       for (int i = 0; i < status.lifes; i++) {
         context
           ..beginPath()
-          ..arc(50 + i * 50, maxHeight + hudHeight ~/ 2, 15, 0, PI * 2, false)
+          ..arc(50 + i * 50, maxHeight + hudHeight ~/ 2, 15, 0, pi * 2, false)
           ..closePath()
           ..fill();
       }

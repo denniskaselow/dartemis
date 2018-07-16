@@ -24,7 +24,7 @@ class TeamManager extends Manager {
 
     Bag<String> players = _playersByTeam[team];
     if (players == null) {
-      players = new Bag<String>();
+      players = Bag<String>();
       _playersByTeam[team] = players;
     }
     players.add(player);

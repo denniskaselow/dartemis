@@ -13,15 +13,15 @@ void main() {
     setUp(() {
       // for predictable component indices
       setUpComponents();
-      world = new World();
+      world = World();
     });
     test('ComponentManager correctly associates entity and components', () {
-      Entity entity = world.createEntity();
-      Component componentA = new ComponentA();
-      Component componentC = new PooledComponentC();
+      final entity = world.createEntity();
+      final componentA = ComponentA();
+      final componentC = PooledComponentC();
       entity..addComponent(componentA)..addComponent(componentC);
 
-      Bag<Component> fillBag = entity.getComponents();
+      final fillBag = entity.getComponents();
 
       expect(fillBag[0], equals(componentA));
       expect(fillBag[1], equals(componentC));
@@ -29,22 +29,22 @@ void main() {
     });
     test('ComponentManager correctly associates multiple entity and components',
         () {
-      Entity entity1 = world.createEntity();
-      Component component1A = new ComponentA();
-      Component component1C = new PooledComponentC();
+      final entity1 = world.createEntity();
+      final component1A = ComponentA();
+      final component1C = PooledComponentC();
       entity1..addComponent(component1A)..addComponent(component1C);
 
-      Entity entity2 = world.createEntity();
-      Component component2A = new ComponentA();
-      Component component2B = new ComponentB();
-      Component component2C = new PooledComponentC();
+      final entity2 = world.createEntity();
+      final component2A = ComponentA();
+      final component2B = ComponentB();
+      final component2C = PooledComponentC();
       entity2
         ..addComponent(component2A)
         ..addComponent(component2B)
         ..addComponent(component2C);
 
-      Bag<Component> fillBag1 = entity1.getComponents();
-      Bag<Component> fillBag2 = entity2.getComponents();
+      final fillBag1 = entity1.getComponents();
+      final fillBag2 = entity2.getComponents();
 
       expect(fillBag1[0], equals(component1A));
       expect(fillBag1[1], equals(component1C));
@@ -56,9 +56,9 @@ void main() {
       expect(fillBag2.size, equals(3));
     });
     test('ComponentManager removes Components of deleted Entity', () {
-      Entity entity = world.createEntity();
-      Component componentA = new ComponentA();
-      Component componentC = new PooledComponentC();
+      final entity = world.createEntity();
+      final componentA = ComponentA();
+      final componentC = PooledComponentC();
       entity..addComponent(componentA)..addComponent(componentC);
       world
         ..addEntity(entity)
@@ -67,16 +67,15 @@ void main() {
         ..deleteEntity(entity)
         ..process();
 
-      Bag<Component> fillBag = entity.getComponents();
+      final fillBag = entity.getComponents();
       expect(fillBag.size, equals(0));
     });
     test('ComponentManager can be created for unused Component', () {
-      ComponentType type = new ComponentType();
+      ComponentType type = ComponentType();
       for (int i = 0; i < defaultBagSize; i++) {
-        type = new ComponentType();
+        type = ComponentType();
       }
-      Bag<Component> componentsByType =
-          world.componentManager.getComponentsByType(type);
+      final componentsByType = world.componentManager.getComponentsByType(type);
       expect(componentsByType.size, equals(0));
     });
   });

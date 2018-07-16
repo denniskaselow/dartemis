@@ -6,19 +6,19 @@ part of dartemis;
 class ObjectPool {
   static final Map<Type, Bag<Pooled>> _objectPools = <Type, Bag<Pooled>>{};
 
-  /// Returns a pooled object of [Type] [type]. If there is no object in the pool
+  /// Returns a pooled object of type [T]. If there is no object in the pool
   /// it will create a new one using [createPooled].
-  static Pooled get(Type type, CreatePooled createPooled) {
-    final Bag<Pooled> pool = _getPool(type);
+  static T get<T extends Pooled>(CreatePooled<T> createPooled) {
+    final Bag<Pooled> pool = _getPool<T>();
     var obj = pool.removeLast();
     return obj ??= createPooled();
   }
 
-  static Bag<Pooled> _getPool(Type type) {
-    var pooledObjects = _objectPools[type];
+  static Bag<T> _getPool<T extends Pooled>() {
+    var pooledObjects = _objectPools[T];
     if (null == pooledObjects) {
-      pooledObjects = new Bag();
-      _objectPools[type] = pooledObjects;
+      pooledObjects = Bag<T>();
+      _objectPools[T] = pooledObjects;
     }
     return pooledObjects;
   }
@@ -29,28 +29,29 @@ class ObjectPool {
   }
 
   /// Add a specific [amount] of [Pooled]s for later reuse.
-  static void addMany(Type type, CreatePooled createPooled, int amount) {
-    final Bag<Pooled> pool = _getPool(type);
+  static void addMany<T extends Pooled>(
+      CreatePooled<T> createPooled, int amount) {
+    final Bag<T> pool = _getPool<T>();
     for (int i = 0; i < amount; i++) {
       pool.add(createPooled());
     }
   }
 }
 
-/// Create a [Pooled] object with a zero argument constructor.
-typedef Pooled CreatePooled();
+/// Create a [Pooled] object.
+typedef T CreatePooled<T extends Pooled>();
 
 /// Objects of this class can be pooled in the [ObjectPool] for later reuse.
 ///
 /// Should be added as a mixin.
 abstract class Pooled {
-  /// Creates a new [Pooled] of [Type] [type].
+  /// Creates a new [Pooled] of type [T].
   ///
   /// The instance created with [createPooled] should be created with
   /// a zero-argument contructor because it will only be called once. All fields
   /// of the created object should be set in the calling factory constructor.
-  factory Pooled.of(Type type, CreatePooled createPooled) =>
-      ObjectPool.get(type, createPooled);
+  static T of<T extends Pooled>(CreatePooled<T> createPooled) =>
+      ObjectPool.get<T>(createPooled);
 
   /// If you need to do some cleanup before this object moves into the Pool of
   /// reusable objects.
