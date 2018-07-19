@@ -11,6 +11,19 @@ generic methods instead (e.g. `world.getManager<TagManager>()` instead of `world
 `Mapper<Position>(world)`
 ### Enhancements
 * `world.destroy()` for cleaning up `EntitySystem`s and `Manager`s
+
+##0.7.3
+### Bugfixes
+* adding an entity to a dirty EntityBag could lead to an inconsistency between the bitset and the list of entities 
+
+##0.7.2
+### Bugfixes
+* removing an entity multiple times caused it to be added to the entity pool multiple times
+
+##0.7.1
+### Internal
+* upgraded dependencies
+
 ##0.7.0
 ### Breaking API Changes
 * renamed `Poolable` to `Pooled`

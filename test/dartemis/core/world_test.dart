@@ -167,7 +167,7 @@ void main() {
         () {
       final expectedEntities = [entityAB, entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
+          TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
       systemStarter(es);
     });
     test(
@@ -175,7 +175,7 @@ void main() {
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
-          Aspect.forAllOf([componentA, componentB]), expectedEntities);
+          Aspect.forAllOf([ComponentA, ComponentB]), expectedEntities);
       systemStarter(es);
     });
     test(
@@ -183,7 +183,7 @@ void main() {
         () {
       final expectedEntities = [entityAB, entityAC];
       final es = TestEntitySystem(
-          Aspect.forOneOf([componentA, componentB]), expectedEntities);
+          Aspect.forOneOf([ComponentA, ComponentB]), expectedEntities);
       systemStarter(es);
     });
     test(
@@ -191,7 +191,7 @@ void main() {
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
-          Aspect.forAllOf([componentA])..exclude([componentC]),
+          Aspect.forAllOf([ComponentA])..exclude([PooledComponentC]),
           expectedEntities);
       systemStarter(es);
     });
@@ -199,22 +199,50 @@ void main() {
       entityAB.deleteFromWorld();
       final expectedEntities = [entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
+          TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
       systemStarter(es);
     });
     test('A disabled entity will not get processed', () {
       entityAB.disable();
       final expectedEntities = [entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
+          TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
       systemStarter(es);
     });
     test(
         'Adding a component will not get the entity processed if the world is not notified of the change',
         () {
       final expectedEntities = [entityAC];
-      final es =
-          TestEntitySystem(Aspect.forAllOf([componentC]), expectedEntities);
+      final es = TestEntitySystem(
+          Aspect.forAllOf([PooledComponentC]), expectedEntities);
+      world
+        ..addSystem(es)
+        ..initialize()
+        ..process();
+      entityAB.addComponent(PooledComponentC());
+      world.process();
+    });
+    test('An entity that\'s been deleted twice, can only be reused once', () {
+      entityAB..deleteFromWorld()..deleteFromWorld();
+      final componentA = ComponentA();
+      final componentB = ComponentB();
+
+      world.process();
+      final entityA = world.createAndAddEntity([componentA]);
+      final entityB = world.createAndAddEntity([componentB]);
+      world.process();
+
+      expect(entityA.getComponents()[0], equals(componentA));
+      expect(entityB.getComponents()[0], equals(componentB));
+      expect(entityA.getComponents().length, equals(1));
+      expect(entityB.getComponents().length, equals(1));
+    });
+    test(
+        'Adding a component will not get the entity processed if the world is not notified of the change',
+        () {
+      final expectedEntities = [entityAC];
+      final es = TestEntitySystem(
+          Aspect.forAllOf([PooledComponentC]), expectedEntities);
       world
         ..addSystem(es)
         ..initialize()
@@ -226,8 +254,8 @@ void main() {
         'Adding a component will get the entity processed if the world is notified of the change',
         () {
       final expectedEntities = [entityAC];
-      final es =
-          TestEntitySystem(Aspect.forAllOf([componentC]), expectedEntities);
+      final es = TestEntitySystem(
+          Aspect.forAllOf([PooledComponentC]), expectedEntities);
       world
         ..addSystem(es)
         ..initialize()
@@ -242,7 +270,7 @@ void main() {
       entityAB.disable();
       final expectedEntities = [entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([componentA]), expectedEntities);
+          TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
       world
         ..addSystem(es)
         ..initialize()

@@ -9,47 +9,49 @@ void main() {
   group('Aspect Tests', () {
     setUp(setUpComponents);
     test('getAspectForAll with one component', () {
-      final aspect = Aspect.forAllOf([componentC]);
+      final aspect = Aspect.forAllOf([PooledComponentC]);
       expect(aspect.all, componentCBit);
       expect(aspect.excluded, 0);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with all components', () {
-      final aspect = Aspect.forAllOf([componentA, componentB, componentC]);
+      final aspect =
+          Aspect.forAllOf([ComponentA, ComponentB, PooledComponentC]);
       expect(aspect.all, componentABit | componentBBit | componentCBit);
       expect(aspect.excluded, 0);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with one component, excluding another one', () {
-      final aspect = Aspect.forAllOf([componentC])..exclude([componentA]);
+      final aspect = Aspect.forAllOf([PooledComponentC])..exclude([ComponentA]);
       expect(aspect.all, componentCBit);
       expect(aspect.excluded, componentABit);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with one component, excluding another two', () {
-      final aspect = Aspect.forAllOf([componentC])
-        ..exclude([componentA, componentB]);
+      final aspect = Aspect.forAllOf([PooledComponentC])
+        ..exclude([ComponentA, ComponentB]);
       expect(aspect.all, componentCBit);
       expect(aspect.excluded, componentABit | componentBBit);
       expect(aspect.one, 0);
     });
     test('getAspectForAll with one component, and one of two', () {
-      final aspect = Aspect.forAllOf([componentC])
-        ..oneOf([componentA, componentB]);
+      final aspect = Aspect.forAllOf([PooledComponentC])
+        ..oneOf([ComponentA, ComponentB]);
       expect(aspect.all, componentCBit);
       expect(aspect.excluded, 0);
       expect(aspect.one, componentABit | componentBBit);
     });
     test('getAspectForOne with all components', () {
-      final aspect = Aspect.forOneOf([componentA, componentB, componentC]);
+      final aspect =
+          Aspect.forOneOf([ComponentA, ComponentB, PooledComponentC]);
       expect(aspect.all, 0);
       expect(aspect.excluded, 0);
       expect(aspect.one, componentABit | componentBBit | componentCBit);
     });
     test('getAspectForOne with chaining each component', () {
-      final aspect = Aspect.forOneOf([componentA])
-        ..oneOf([componentB])
-        ..oneOf([componentC]);
+      final aspect = Aspect.forOneOf([ComponentA])
+        ..oneOf([ComponentB])
+        ..oneOf([PooledComponentC]);
       expect(aspect.all, 0);
       expect(aspect.excluded, 0);
       expect(aspect.one, componentABit | componentBBit | componentCBit);
