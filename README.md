@@ -10,7 +10,6 @@ Content
 * [Getting Started](#getting-started)
 * [Documentation](#documentation)
 * [Example Games](#example-games-using-dartemis)
-* [Add Ons](#add-ons)
 
 About
 =====
@@ -46,15 +45,15 @@ Getting started
 3. Create a world:
 
     ```dart
-    World world = new World();
+    World world = World();
     ```
 4. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
 
     ```dart
-    Entity entity  = world.createEntity();
-    entity.addComponent(new Position(world, 0, 0));
-    entity.addComponent(new Velocity(world, 1, 1));
-    entity.addToWorld();
+    Entity entity  = world.createEntity()
+      ..addComponent(Position(0, 0))
+      ..addComponent(Velocity(1, 1))
+      ..addToWorld();
     ```
     A `Component` is a pretty simple structure and should not contain any logic:
 
@@ -64,8 +63,7 @@ Getting started
         Position(this.x, this.y);
     }
     ```
-    Or if you want to use a `PooledComponent` (see [dartemis_transformer](https://pub.dartlang.org/packages/dartemis_transformer)
-    if you want to use them without having to write this code):
+    Or if you want to use a `PooledComponent`:
 
     ```dart
     class Position extends PooledComponent {
@@ -73,15 +71,14 @@ Getting started
     
         Position._();
         factory Position(num x, num y) {
-            Position position = new Pooled.of(Position, _constructor);
-            position.x = x;
-            position.y = y;
+            Position position = Pooled.of<Position>(() => Position._())
+              ..x = x
+              ..y = y;
             return position;
         }
-        static Position _constructor() => new Position._();
     }
     ```
-    By using a factory constructor and calling the factory constructor in `Pooled`, dartemis is able to reuse destroyed components and they will not be garbage collected. For more information about why this is done you might want to read this article: [Free Lists For Predictable Game Performance](http://dartgamedevs.org/blog/2012/11/02/Free-Lists-For-Predictable-Game-Performance/)
+    By using a factory constructor and calling the static function `Pooled.of`, dartemis is able to reuse destroyed components and they will not be garbage collected.
 
 5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
@@ -90,14 +87,14 @@ Getting started
         Mapper<Position> positionMapper;
         Mapper<Velocity> velocityMapper;
 
-        MovementSystem() : super(new Aspect.forAllOf([Position, Velocity]));
+        MovementSystem() : super(Aspect.forAllOf([Position, Velocity]));
 
         void initialize() {
           // initialize your system
           // Mappers, Systems and Managers have to be assigned here
-          // see dartemis_transformer if you don't want to write this code
-          positionMapper = new Mapper<Position>(Position, world);
-          velocityMapper = new Mapper<Velocity>(Velocity, world);
+          // see dartemis_builder if you don't want to write this code
+          positionMapper = Mapper<Position>(world);
+          velocityMapper = Mapper<Velocity>(world);
         }
 
         void processEntity(Entity entity) {
@@ -111,7 +108,7 @@ Getting started
 6. Add your system to the world:
 
     ```dart
-    world.addSystem(new MovementSystem());
+    world.addSystem(MovementSystem());
     ```
 7. Initialize the world:
 
@@ -132,14 +129,9 @@ Documentation
 =============
 API
 ---
-[Reference Manual](http://www.dartdocs.org/documentation/dartemis/latest/index.html#dartemis)
+[Reference Manual](https://pub.dartlang.org/documentation/dartemis/latest/index.html)
 
 Example Games using dartemis
 ============================
-* [VDrones](http://vdrones.appspot.com/) - An arcade game (with weekly updates), ([Source](https://github.com/davidB/vdrones))
-* [GitHub Space Off](http://denniskaselow.github.com/game-off-2012/) - Originally created for the GitHub Game Off 2012, ([Source](https://github.com/denniskaselow/game-off-2012))
-* [darteroids](http://denniskaselow.github.com/dartemis/example/darteroids/web/darteroids.html) - Very simple example included in the example folder of dartemis, ([Source](https://github.com/denniskaselow/dartemis/tree/master/example/web))
-
-Add-ons
-=======
-* [dartemis_toolbox](https://github.com/davidB/dartemis_toolbox/) - A set of addons to use with dartemis (like EntityStateMachine, ...) and other libraries for gamedev.
+* [darteroids](https://denniskaselow.github.io/dartemis/example/darteroids/web/darteroids.html) - Very simple example included in the example folder of dartemis, ([Source](https://github.com/denniskaselow/dartemis/tree/master/example/web))
+* [Shapeocalypse](https://isowosi.github.io/shapeocalypse/) - A fast paced reaction game using Angular, WebAudio and WebGL
