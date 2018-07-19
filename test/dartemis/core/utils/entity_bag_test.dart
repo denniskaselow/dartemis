@@ -7,9 +7,9 @@ import "package:dartemis/dartemis.dart";
 void main() {
   group('EntityBag tests', () {
     EntityBag bag;
-    World world = World();
-    Entity e1 = world.createEntity();
-    Entity e2 = world.createEntity();
+    final world = World();
+    final e1 = world.createEntity();
+    final e2 = world.createEntity();
     setUp(() {
       bag = EntityBag(capacity: 1)..add(e1)..add(e2);
     });
