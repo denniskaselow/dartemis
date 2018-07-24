@@ -7,7 +7,12 @@ set -e
 if [ "$COVERALLS_TOKEN" ]; then
   echo "Running coverage..."
   pub global activate dart_coveralls
-  pub global run dart_coveralls report --token $COVERALLS_TOKEN --retry 2 --exclude-test-files --throw-on-connectivity-error --throw-on-error test/all_tests.dart
+  # pub global run dart_coveralls report --token $COVERALLS_TOKEN --retry 2 --exclude-test-files --throw-on-connectivity-error --throw-on-error test/all_tests.dart
+  pub global run dart_coveralls report \
+      --token $COVERALLS_TOKEN \
+      --retry 2 \
+      --exclude-test-files \
+  test/all_tests.dart
   echo "Coverage complete."
 else
   if [ -z ${COVERALLS_TOKEN+x} ]; then echo "COVERALLS_TOKEN is unset"; fi
