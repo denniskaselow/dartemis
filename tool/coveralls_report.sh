@@ -6,8 +6,7 @@ set -e
 # Install dart_coveralls; gather and send coverage data.
 if [ "$COVERALLS_TOKEN" ]; then
   echo "Running coverage..."
-  # pub global activate dart_coveralls
-  pub global activate -sgit https://github.com/denniskaselow/dart-coveralls.git
+  pub global activate dart_coveralls
   pub global run dart_coveralls report --token $COVERALLS_TOKEN --retry 2 --exclude-test-files --throw-on-connectivity-error --throw-on-error test/all_tests.dart
   echo "Coverage complete."
 else
