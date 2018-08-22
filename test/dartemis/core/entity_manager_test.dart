@@ -27,7 +27,7 @@ void main() {
       final b = world.createEntity();
       world
         ..disable(b)
-        ..processEntityChanges();
+        ..process();
 
       expect(world.entityManager.isEnabled(a.id), equals(true));
       expect(world.entityManager.isEnabled(b.id), equals(false));

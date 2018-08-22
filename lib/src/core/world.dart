@@ -138,17 +138,18 @@ class World {
   void process([int group = 0]) {
     _frame[group]++;
     _time[group] += delta;
-    processEntityChanges();
+    _processEntityChanges();
 
     _systemsList
         .where((system) => !system.passive && system.group == group)
         .forEach((system) {
       system.process();
+      _processEntityChanges();
     });
   }
 
   /// Processes all changes to entities.
-  void processEntityChanges() {
+  void _processEntityChanges() {
     _check(_added, (observer, entity) => observer.added(entity));
     _check(_changed, (observer, entity) => observer.changed(entity));
     _check(_disable, (observer, entity) => observer.disabled(entity));
@@ -170,7 +171,7 @@ class World {
         deleteEntity(entity);
       }
     });
-    processEntityChanges();
+    _processEntityChanges();
   }
 
   /// Adds a [Entity entity] to this world.

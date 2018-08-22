@@ -2,6 +2,7 @@
 ##0.8.0 (Dart 2.0+ required)
 ### Breaking API Changes
 * removed deprecated code
+* removed `world.processEntityChanges`, it's now done by default after every system
 * `Aspect` no longer uses static methods, uses named constructors instead
 (migration: replace `Aspect.getAspectF` with `Aspect.f`)
 * methods in `Aspect` no longer return the aspect, use cascading operator to chain calls

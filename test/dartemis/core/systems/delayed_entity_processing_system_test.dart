@@ -26,14 +26,14 @@ void main() {
       world.process();
       expect(sut.getInitialTimeDelay(), equals(50.0));
       expect(sut.getRemainingTimeUntilProcessing(), equals(50.0));
-      expect(world.entityManager.totalDeleted, equals(0));
+      expect(world.entityManager.totalDeleted, equals(1));
       expect(t1.time, equals(0.0));
       expect(t2.time, equals(50.0));
 
       world.process();
       expect(sut.getInitialTimeDelay(), equals(50.0));
       expect(sut.getRemainingTimeUntilProcessing(), equals(50.0));
-      expect(world.entityManager.totalDeleted, equals(1));
+      expect(world.entityManager.totalDeleted, equals(2));
       expect(t2.time, equals(0.0));
 
       world.process();
@@ -58,7 +58,7 @@ void main() {
         ..process();
       expect(sut.getInitialTimeDelay(), equals(100.0));
       expect(sut.getRemainingTimeUntilProcessing(), equals(100.0));
-      expect(world.entityManager.totalDeleted, equals(0));
+      expect(world.entityManager.totalDeleted, equals(1));
       expect(t1.time, equals(0.0));
       expect(t2.time, equals(100.0));
     });
