@@ -11,10 +11,6 @@ class Mapper<A extends Component> {
     _components = world.componentManager.getComponentsByType(_type);
   }
 
-  /// Use bracket operator instead.
-  @deprecated
-  A get(Entity entity) => _components[entity.id];
-
   /// Fast but unsafe retrieval of a component for this entity.
   /// No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
   /// however in most scenarios you already know the entity possesses this
