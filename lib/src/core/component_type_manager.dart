@@ -13,6 +13,6 @@ class ComponentTypeManager {
     return componentType;
   }
 
-  static int getBit(Type componentType) => getTypeFor(componentType).bit;
+  static BigInt getBit(Type componentType) => getTypeFor(componentType).bit;
   static int getId(Type componentType) => getTypeFor(componentType).id;
 }

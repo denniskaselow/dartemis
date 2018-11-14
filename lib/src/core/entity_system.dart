@@ -7,13 +7,13 @@ part of dartemis;
 /// There is no need to ever call any other method than process on objects of
 /// this class.
 abstract class EntitySystem implements EntityObserver {
-  int _systemBit = 0;
+  BigInt _systemBit = BigInt.zero;
   World _world;
   Bag<Entity> _actives;
 
-  int _all;
-  int _excluded;
-  int _one;
+  BigInt _all;
+  BigInt _excluded;
+  BigInt _one;
   bool _dummy;
 
   bool _passive;
@@ -24,7 +24,7 @@ abstract class EntitySystem implements EntityObserver {
         _all = aspect.all,
         _excluded = aspect.excluded,
         _one = aspect.one {
-    _dummy = _all == 0 && _one == 0;
+    _dummy = _all == BigInt.zero && _one == BigInt.zero;
     _systemBit = _SystemBitManager._getBitFor(runtimeType);
   }
 
@@ -79,11 +79,11 @@ abstract class EntitySystem implements EntityObserver {
     }
     final bool contains = _contains(entity);
     bool interest = (_all & entity._typeBits) == _all;
-    if (_one > 0 && interest) {
-      interest = (_one & entity._typeBits) > 0;
+    if (_one > BigInt.zero && interest) {
+      interest = (_one & entity._typeBits) > BigInt.zero;
     }
-    if (_excluded > 0 && interest) {
-      interest = (_excluded & entity._typeBits) == 0;
+    if (_excluded > BigInt.zero && interest) {
+      interest = (_excluded & entity._typeBits) == BigInt.zero;
     }
 
     if (interest && !contains) {

@@ -9,8 +9,8 @@ class Entity {
   final int id;
 
   int _uniqueId;
-  int _typeBits = 0;
-  int _systemBits = 0;
+  BigInt _typeBits = BigInt.zero;
+  BigInt _systemBits = BigInt.zero;
 
   World _world;
   EntityManager _entityManager;
@@ -25,19 +25,19 @@ class Entity {
   /// internally use this to identify between different instances.
   int get uniqueId => _uniqueId;
 
-  void _addTypeBit(int bit) {
+  void _addTypeBit(BigInt bit) {
     _typeBits |= bit;
   }
 
-  void _removeTypeBit(int bit) {
+  void _removeTypeBit(BigInt bit) {
     _typeBits &= ~bit;
   }
 
-  void _addSystemBit(int bit) {
+  void _addSystemBit(BigInt bit) {
     _systemBits |= bit;
   }
 
-  void _removeSystemBit(int bit) {
+  void _removeSystemBit(BigInt bit) {
     _systemBits &= ~bit;
   }
 

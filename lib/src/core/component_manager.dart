@@ -16,7 +16,7 @@ class ComponentManager extends Manager {
       components[entity.id]._removed();
       components[entity.id] = null;
     });
-    entity._typeBits = 0;
+    entity._typeBits = BigInt.zero;
   }
 
   void _addComponent(Entity entity, ComponentType type, Component component) {
@@ -35,7 +35,7 @@ class ComponentManager extends Manager {
   }
 
   void _removeComponent(Entity entity, ComponentType type) {
-    if ((entity._typeBits & type.bit) != 0) {
+    if ((entity._typeBits & type.bit) != BigInt.zero) {
       final int typeId = type.id;
       _componentsByType[typeId][entity.id]._removed();
       _componentsByType[typeId][entity.id] = null;
@@ -73,10 +73,10 @@ class ComponentManager extends Manager {
 
   void _forComponentsOfEntity(
       Entity entity, void f(Bag<Component> components, int index)) {
-    int componentBits = entity._typeBits;
+    BigInt componentBits = entity._typeBits;
     int index = 0;
-    while (componentBits > 0) {
-      if ((componentBits & 1) == 1) {
+    while (componentBits > BigInt.zero) {
+      if ((componentBits & BigInt.one) == BigInt.one) {
         f(_componentsByType[index], index);
       }
       index++;

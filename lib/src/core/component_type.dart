@@ -1,10 +1,10 @@
 part of dartemis;
 
 class ComponentType {
-  static var _nextBit = 1;
-  static var _nextId = 0;
+  static BigInt _nextBit = BigInt.one;
+  static int _nextId = 0;
 
-  var _bit = 0;
+  var _bit = BigInt.zero;
   var _id = 0;
 
   ComponentType() {
@@ -13,6 +13,6 @@ class ComponentType {
     _id = _nextId++;
   }
 
-  int get bit => _bit;
+  BigInt get bit => _bit;
   int get id => _id;
 }

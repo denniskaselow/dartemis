@@ -207,3 +207,93 @@ class World {
     _managersBag.forEach((manager) => manager.destroy());
   }
 }
+
+class PerformanceMeasureWorld extends World {
+  int framesToMeasure;
+  final Map<Type, ListQueue<int>> systemTimes = <Type, ListQueue<int>>{};
+  final Map<Type, ListQueue<int>> processEntityChangesTimes =
+      <Type, ListQueue<int>>{};
+
+  PerformanceMeasureWorld(this.framesToMeasure) {
+    systemTimes[runtimeType] = ListQueue<int>(framesToMeasure);
+  }
+
+  @override
+  void process([int group = 0]) {
+    _frame[group]++;
+    _time[group] += delta;
+    _processEntityChanges();
+    final stopwatch = Stopwatch()..start();
+    var lastStop = stopwatch.elapsedMicroseconds;
+    _systemsList
+        .where((system) => !system.passive && system.group == group)
+        .forEach((system) {
+      system.process();
+      final afterSystem = stopwatch.elapsedMicroseconds;
+      _processEntityChanges();
+      final afterProcessEntityChanges = stopwatch.elapsedMicroseconds;
+      _storeTime(systemTimes, system, afterSystem, lastStop);
+      _storeTime(processEntityChangesTimes, system, afterProcessEntityChanges,
+          afterSystem);
+      lastStop = stopwatch.elapsedMicroseconds;
+    });
+    final now = stopwatch.elapsedMicroseconds;
+    final times = systemTimes[runtimeType];
+    if (times.length >= framesToMeasure) {
+      times.removeFirst();
+    }
+    times.add(now);
+  }
+
+  void _storeTime(Map<Type, ListQueue<int>> measuredTimes, EntitySystem system,
+      int afterSystem, int lastStop) {
+    final times = measuredTimes[system.runtimeType];
+    if (times.length >= framesToMeasure) {
+      times.removeFirst();
+    }
+    times.add(afterSystem - lastStop);
+  }
+
+  @override
+  void addSystem(EntitySystem system, {bool passive = false, int group = 0}) {
+    super.addSystem(system, passive: passive, group: group);
+    systemTimes[system.runtimeType] = ListQueue<int>(framesToMeasure);
+    processEntityChangesTimes[system.runtimeType] =
+        ListQueue<int>(framesToMeasure);
+  }
+
+  List<PerformanceStats> getPerformanceStats() {
+    final result = <PerformanceStats>[];
+    _createPerformanceStats(systemTimes, result);
+    _createPerformanceStats(processEntityChangesTimes, result);
+    return result;
+  }
+
+  void _createPerformanceStats(
+      Map<Type, ListQueue<int>> measuredTimes, List<PerformanceStats> result) {
+    for (final entry in measuredTimes.entries) {
+      final measurements = entry.value.length;
+      final sorted = List.from(entry.value)..sort();
+      final meanTime = sorted[measurements ~/ 2];
+      final averageTime =
+          sorted.fold(0, (sum, item) => sum + item) / measurements;
+      final minTime = sorted.first;
+      final maxTime = sorted.last;
+      result.add(PerformanceStats(
+          entry.key, measurements, minTime, maxTime, averageTime, meanTime));
+    }
+  }
+}
+
+class PerformanceStats {
+  Type system;
+  int measurements;
+  int minTime, maxTime;
+  double meanTime, averageTime;
+  PerformanceStats(this.system, this.measurements, this.minTime, this.maxTime,
+      this.averageTime, this.meanTime);
+
+  @override
+  String toString() =>
+      'PerformanceStats{system: $system, measurements: $measurements, minTime: $minTime, maxTime: $maxTime, meanTime: $meanTime, averageTime: $averageTime}';
+}

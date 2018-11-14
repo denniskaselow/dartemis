@@ -4,12 +4,12 @@ class _SystemBitManager {
   static int _pos = 0;
   static var _systemBits;
 
-  static int _getBitFor(Type esType) {
-    _systemBits ??= <Type, int>{};
+  static BigInt _getBitFor(Type esType) {
+    _systemBits ??= <Type, BigInt>{};
     var bit = _systemBits[esType];
 
     if (bit == null) {
-      bit = 1 << _pos;
+      bit = BigInt.one << _pos;
       _pos++;
       _systemBits[esType] = bit;
     }

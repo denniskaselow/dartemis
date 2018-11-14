@@ -20,9 +20,9 @@ part of dartemis;
 /// is the same as:
 ///     Aspect.forAllOf([A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
 class Aspect {
-  int _all = 0;
-  int _excluded = 0;
-  int _one = 0;
+  BigInt _all = BigInt.zero;
+  BigInt _excluded = BigInt.zero;
+  BigInt _one = BigInt.zero;
 
   /// Creates an aspect where an entity must possess all of the specified
   /// components.
@@ -68,11 +68,11 @@ class Aspect {
     _one = _updateBitMask(_one, componentTypes);
   }
 
-  int get all => _all;
-  int get excluded => _excluded;
-  int get one => _one;
+  BigInt get all => _all;
+  BigInt get excluded => _excluded;
+  BigInt get one => _one;
 
-  int _updateBitMask(int mask, List<Type> componentTypes) {
+  BigInt _updateBitMask(BigInt mask, List<Type> componentTypes) {
     var result = mask;
     if (null != componentTypes) {
       componentTypes.forEach((componentType) {
