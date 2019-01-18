@@ -2,9 +2,9 @@ library components_setup;
 
 import "package:dartemis/dartemis.dart";
 
-const int componentABit = 0x0001;
-const int componentBBit = 0x0002;
-const int componentCBit = 0x0004;
+final BigInt componentABit = BigInt.from(0x0001);
+final BigInt componentBBit = BigInt.from(0x0002);
+final BigInt componentCBit = BigInt.from(0x0004);
 
 void setUpComponents() {
   ComponentTypeManager.getBit(ComponentA);
