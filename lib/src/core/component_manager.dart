@@ -1,10 +1,11 @@
 part of dartemis;
 
+/// Manages als components of all entities.
 class ComponentManager extends Manager {
   Bag<Bag<Component>> _componentsByType;
   Bag<Entity> _deleted;
 
-  ComponentManager()
+  ComponentManager._internal()
       : _componentsByType = Bag<Bag<Component>>(),
         _deleted = EntityBag();
 
@@ -19,51 +20,55 @@ class ComponentManager extends Manager {
     entity._typeBits = BigInt.zero;
   }
 
-  void _addComponent(Entity entity, ComponentType type, Component component) {
-    final int index = type.id;
+  void _addComponent<T extends Component>(
+      Entity entity, ComponentType type, T component) {
+    final index = type._id;
     _componentsByType._ensureCapacity(index);
 
-    Bag<Component> components = _componentsByType[index];
+    var components = _componentsByType[index];
     if (components == null) {
-      components = Bag<Component>();
+      components = Bag<T>();
       _componentsByType[index] = components;
     }
 
     components[entity.id] = component;
 
-    entity._addTypeBit(type.bit);
+    entity._addTypeBit(type._bit);
   }
 
   void _removeComponent(Entity entity, ComponentType type) {
-    if ((entity._typeBits & type.bit) != BigInt.zero) {
-      final int typeId = type.id;
+    if ((entity._typeBits & type._bit) != BigInt.zero) {
+      final typeId = type._id;
       _componentsByType[typeId][entity.id]._removed();
       _componentsByType[typeId][entity.id] = null;
-      entity._removeTypeBit(type.bit);
+      entity._removeTypeBit(type._bit);
     }
   }
 
-  Bag<Component> getComponentsByType(ComponentType type) {
-    final int index = type.id;
+  /// Returns all components of [ComponentType type].
+  Bag<T> getComponentsByType<T extends Component>(ComponentType type) {
+    final index = type._id;
     _componentsByType._ensureCapacity(index);
 
-    Bag<Component> components = _componentsByType[index];
-    if (components == null) {
-      components = Bag<Component>();
-      _componentsByType[index] = components;
+    final components = _componentsByType[index];
+    if (components is Bag<T>) {
+      return components;
     }
-    return components;
+    final emptyComponents = Bag<T>();
+    _componentsByType[index] = emptyComponents;
+    return emptyComponents;
   }
 
-  Component _getComponent(Entity entity, ComponentType type) {
-    final int index = type.id;
-    final Bag<Component> components = _componentsByType[index];
+  T _getComponent<T extends Component>(Entity entity, ComponentType type) {
+    final index = type._id;
+    final components = _componentsByType[index];
     if (components != null && components.isIndexWithinBounds(entity.id)) {
-      return components[entity.id];
+      return components[entity.id] as T;
     }
     return null;
   }
 
+  /// Returns the provided [fillBag] with all components of [entity].
   Bag<Component> getComponentsFor(Entity entity, Bag<Component> fillBag) {
     _forComponentsOfEntity(
         entity, (components, _) => fillBag.add(components[entity.id]));
@@ -72,9 +77,9 @@ class ComponentManager extends Manager {
   }
 
   void _forComponentsOfEntity(
-      Entity entity, void f(Bag<Component> components, int index)) {
-    BigInt componentBits = entity._typeBits;
-    int index = 0;
+      Entity entity, void Function(Bag<Component> components, int index) f) {
+    var componentBits = entity._typeBits;
+    var index = 0;
     while (componentBits > BigInt.zero) {
       if ((componentBits & BigInt.one) == BigInt.one) {
         f(_componentsByType[index], index);
@@ -87,7 +92,7 @@ class ComponentManager extends Manager {
   @override
   void deleted(Entity entity) => _deleted.add(entity);
 
-  void clean() {
+  void _clean() {
     _deleted
       ..forEach(_removeComponentsOfEntity)
       ..clear();

@@ -4,39 +4,33 @@ part of dartemis;
 ///
 /// An entity can only belong to a single player at a time.
 class PlayerManager extends Manager {
-  Map<Entity, String> _playerByEntity;
-  Map<String, Bag<Entity>> _entitiesByPlayer;
+  final Map<Entity, String> _playerByEntity;
+  final Map<String, Bag<Entity>> _entitiesByPlayer;
 
-  PlayerManager() {
-    _playerByEntity = <Entity, String>{};
-    _entitiesByPlayer = <String, Bag<Entity>>{};
-  }
+  /// Creates the [PlayerManager].
+  PlayerManager()
+      : _playerByEntity = <Entity, String>{},
+        _entitiesByPlayer = <String, Bag<Entity>>{};
 
+  /// Make [entity] belong to [player].
   void setPlayer(Entity entity, String player) {
     _playerByEntity[entity] = player;
-    Bag<Entity> entities = _entitiesByPlayer[player];
-    if (entities == null) {
-      entities = Bag<Entity>();
-      _entitiesByPlayer[player] = entities;
-    }
-    entities.add(entity);
+    _entitiesByPlayer.putIfAbsent(player, () => Bag<Entity>()).add(entity);
   }
 
-  Iterable<Entity> getEntitiesOfPlayer(String player) {
-    Bag<Entity> entities = _entitiesByPlayer[player];
-    return entities ??= Bag<Entity>();
-  }
+  /// Returns all entities that belong to [player].
+  Iterable<Entity> getEntitiesOfPlayer(String player) =>
+      _entitiesByPlayer[player] ??= Bag<Entity>();
 
+  /// Removes [entity] from the player it is associated with.
   void removeFromPlayer(Entity entity) {
-    final String player = _playerByEntity[entity];
+    final player = _playerByEntity[entity];
     if (player != null) {
-      final Bag<Entity> entities = _entitiesByPlayer[player];
-      if (entities != null) {
-        entities.remove(entity);
-      }
+      _entitiesByPlayer[player]?.remove(entity);
     }
   }
 
+  /// Returns the player associated with [entity].
   String getPlayer(Entity entity) => _playerByEntity[entity];
 
   @override

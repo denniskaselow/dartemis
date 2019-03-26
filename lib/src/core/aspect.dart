@@ -68,16 +68,21 @@ class Aspect {
     _one = _updateBitMask(_one, componentTypes);
   }
 
+  /// The bitmask of all aspects combined via [allOf].
   BigInt get all => _all;
+
+  /// The bitmask of all aspects combined via [exclude].
   BigInt get excluded => _excluded;
+
+  /// The bitmask of all aspects combined via [oneOf].
   BigInt get one => _one;
 
   BigInt _updateBitMask(BigInt mask, List<Type> componentTypes) {
     var result = mask;
     if (null != componentTypes) {
-      componentTypes.forEach((componentType) {
+      for (final componentType in componentTypes) {
         result |= ComponentTypeManager.getBit(componentType);
-      });
+      }
     }
     return result;
   }

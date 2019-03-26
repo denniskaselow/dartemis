@@ -75,7 +75,7 @@ class BackgroundRenderSystem extends VoidEntitySystem {
     context.save();
     try {
       context
-        ..fillStyle = "black"
+        ..fillStyle = 'black'
         ..beginPath()
         ..rect(0, 0, maxWidth, maxHeight + hudHeight)
         ..closePath()
@@ -104,7 +104,7 @@ class HudRenderSystem extends VoidEntitySystem {
     context.save();
     try {
       context
-        ..fillStyle = "#555"
+        ..fillStyle = '#555'
         ..beginPath()
         ..rect(0, maxHeight, maxWidth, maxHeight + hudHeight)
         ..closePath()
@@ -114,7 +114,7 @@ class HudRenderSystem extends VoidEntitySystem {
       final status = statusMapper[player];
 
       context.fillStyle = playerColor;
-      for (int i = 0; i < status.lifes; i++) {
+      for (var i = 0; i < status.lifes; i++) {
         context
           ..beginPath()
           ..arc(50 + i * 50, maxHeight + hudHeight ~/ 2, 15, 0, pi * 2, false)

@@ -2,10 +2,12 @@ part of dartemis;
 
 /// Collection type a bit like List but does not preserve the order of its
 /// entities, speedwise it is very good, especially suited for games.
-class Bag<E> extends Object with IterableMixin<E> {
+// ignore: prefer_mixin
+class Bag<E> with IterableMixin<E> {
   List<E> _data;
   int _size = 0;
 
+  /// Create a [Bag] with an initial capacity of [capacity].
   Bag({int capacity = 16}) : _data = List<E>(capacity);
 
   /// Creates a new [Bag] with the elements of [iterable].
@@ -39,7 +41,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// Remove and return the last object in the bag.
   E removeLast() {
     if (_size > 0) {
-      final E current = _data[--_size];
+      final current = _data[--_size];
       _data[size] = null;
       return current;
     }
@@ -52,8 +54,8 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// element.
   /// Returns [:true:] if this list contained the specified [element].
   bool remove(E element) {
-    for (int i = 0; i < size; i++) {
-      final E current = _data[i];
+    for (var i = 0; i < size; i++) {
+      final current = _data[i];
 
       if (element == current) {
         // overwrite item to remove with last element
@@ -97,7 +99,7 @@ class Bag<E> extends Object with IterableMixin<E> {
       (requiredLength * 3) ~/ 2 + 1;
 
   void _growTo(int newCapacity) {
-    final List<E> oldData = _data;
+    final oldData = _data;
     _data = List<E>(newCapacity)..setRange(0, oldData.length, oldData);
   }
 
@@ -111,7 +113,7 @@ class Bag<E> extends Object with IterableMixin<E> {
   /// this call returns.
   void clear() {
     // null all elements so gc can clean up
-    for (int i = 0; i < _size; i++) {
+    for (var i = 0; i < _size; i++) {
       _data[i] = null;
     }
     _size = 0;
@@ -119,11 +121,13 @@ class Bag<E> extends Object with IterableMixin<E> {
 
   /// Add all [items] into this bag.
   void addAll(Bag<E> items) {
-    for (int i = 0; items.size > i; i++) {
+    for (var i = 0; items.size > i; i++) {
       add(items[i]);
     }
   }
 
+  /// Returns [:true:] iff the [index] is within the capacity of the underlying
+  /// list.
   bool isIndexWithinBounds(int index) => index < capacity;
 
   @override

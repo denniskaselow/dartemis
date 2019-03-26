@@ -10,16 +10,16 @@ part 'darteroids/gamelogic_systems.dart';
 part 'darteroids/input_systems.dart';
 part 'darteroids/render_systems.dart';
 
-const String tagPlayer = "player";
-const String groupAsteroids = "ASTEROIDS";
-const String playerColor = "#ff0000";
-const String asteroidColor = "#BBB";
+const String tagPlayer = 'player';
+const String groupAsteroids = 'ASTEROIDS';
+const String playerColor = '#ff0000';
+const String asteroidColor = '#BBB';
 const int maxWidth = 600;
 const int maxHeight = 600;
 const int hudHeight = 100;
 
 final Random random = Random();
-final CanvasElement canvas = querySelector('#gamecontainer');
+final CanvasElement canvas = querySelector('#gamecontainer') as CanvasElement;
 
 void main() {
   canvas
@@ -74,7 +74,7 @@ class Darteroids {
   }
 
   void addAsteroids(GroupManager groupManager) {
-    for (int i = 0; i < 10; i++) {
+    for (var i = 0; i < 10; i++) {
       final asteroid = world.createEntity()
         ..addComponent(Position(
             maxWidth * random.nextDouble(), maxHeight * random.nextDouble()));
@@ -99,7 +99,7 @@ class Darteroids {
   }
 
   void renderLoop(num time) {
-    world.delta = time - lastTime;
+    world.delta = (time - lastTime).toDouble();
     lastTime = time;
     world.process(1);
 

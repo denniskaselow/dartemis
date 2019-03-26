@@ -1,10 +1,12 @@
 part of dartemis;
 
-/// A [Bag] that uses a [BitSet] to manage entities. Results in faster removement of entities.
+/// A [Bag] that uses a [BitSet] to manage entities. Results in faster
+/// removement of entities.
 class EntityBag extends Bag<Entity> {
   BitSet _entities;
   bool _dirty = false;
 
+  /// Creates an [EntityBag] with an initial capacity of [capacity].
   EntityBag({int capacity = 16})
       : _entities = BitSet(capacity, false),
         super(capacity: capacity);
@@ -32,14 +34,14 @@ class EntityBag extends Bag<Entity> {
 
   @override
   Entity removeAt(int index) {
-    final Entity element = super.removeAt(index);
+    final element = super.removeAt(index);
     _removeFromBitSet(element);
     return element;
   }
 
   @override
   Entity removeLast() {
-    final Entity element = super.removeLast();
+    final element = super.removeLast();
     _removeFromBitSet(element);
     return element;
   }
@@ -78,11 +80,12 @@ class EntityBag extends Bag<Entity> {
     _size = _entities.countBits(true);
     final tmp = List<Entity>(_size);
     if (_size > 0) {
-      int index = 0;
-      _data
+      var index = 0;
+      for (final entity in _data
           .takeWhile((_) => index < _size)
-          .where((entity) => _entities[entity.id])
-          .forEach((entity) => tmp[index++] = entity);
+          .where((entity) => _entities[entity.id])) {
+        tmp[index++] = entity;
+      }
     }
     _data = tmp;
     _dirty = false;

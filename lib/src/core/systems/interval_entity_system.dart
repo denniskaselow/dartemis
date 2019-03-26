@@ -7,6 +7,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   num _delta = 0;
   final num _interval;
 
+  /// Create an [IntervalEntitySystem] with the specified interval and [aspect].
   IntervalEntitySystem(this._interval, Aspect aspect) : super(aspect);
 
   /// Returns the accumulated delta since the system was last invoked.

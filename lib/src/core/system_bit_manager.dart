@@ -2,7 +2,7 @@ part of dartemis;
 
 class _SystemBitManager {
   static int _pos = 0;
-  static var _systemBits;
+  static Map<Type, BigInt> _systemBits;
 
   static BigInt _getBitFor(Type esType) {
     _systemBits ??= <Type, BigInt>{};

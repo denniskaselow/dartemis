@@ -1,8 +1,8 @@
 library interval_entity_system_test;
 
-import "package:test/test.dart";
+import 'package:test/test.dart';
 
-import "package:dartemis/dartemis.dart";
+import 'package:dartemis/dartemis.dart';
 
 void main() {
   group('IntervalEntitySystem tests', () {

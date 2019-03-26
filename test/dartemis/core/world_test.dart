@@ -1,10 +1,10 @@
 library world_test;
 
-import "package:mockito/mockito.dart";
-import "package:test/test.dart";
+import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 
-import "package:dartemis/dartemis.dart";
-import "components_setup.dart";
+import 'package:dartemis/dartemis.dart';
+import 'components_setup.dart';
 
 void main() {
   group('World tests', () {
@@ -155,39 +155,39 @@ void main() {
         ..addComponent(ComponentA())
         ..addComponent(PooledComponentC())
         ..addToWorld();
-      systemStarter = (EntitySystem es) {
+      systemStarter = (es) {
         world
           ..addSystem(es)
           ..initialize()
           ..process();
       };
     });
-    test(
-        'EntitySystem which requires one Component processes Entity with this component',
+    test('''
+EntitySystem which requires one Component processes Entity with this component''',
         () {
       final expectedEntities = [entityAB, entityAC];
       final es =
           TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
       systemStarter(es);
     });
-    test(
-        'EntitySystem which required multiple Components does not process Entity with a subset of those components',
+    test('''
+EntitySystem which required multiple Components does not process Entity with a subset of those components''',
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
           Aspect.forAllOf([ComponentA, ComponentB]), expectedEntities);
       systemStarter(es);
     });
-    test(
-        'EntitySystem which requires one of multiple components processes Entity with a subset of those components',
+    test('''
+EntitySystem which requires one of multiple components processes Entity with a subset of those components''',
         () {
       final expectedEntities = [entityAB, entityAC];
       final es = TestEntitySystem(
           Aspect.forOneOf([ComponentA, ComponentB]), expectedEntities);
       systemStarter(es);
     });
-    test(
-        'EntitySystem which excludes a component does not process Entity with one of those components',
+    test('''
+EntitySystem which excludes a component does not process Entity with one of those components''',
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
@@ -209,8 +209,8 @@ void main() {
           TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
       systemStarter(es);
     });
-    test(
-        'Adding a component will not get the entity processed if the world is not notified of the change',
+    test('''
+Adding a component will not get the entity processed if the world is not notified of the change''',
         () {
       final expectedEntities = [entityAC];
       final es = TestEntitySystem(
@@ -237,8 +237,8 @@ void main() {
       expect(entityA.getComponents().length, equals(1));
       expect(entityB.getComponents().length, equals(1));
     });
-    test(
-        'Adding a component will not get the entity processed if the world is not notified of the change',
+    test('''
+Adding a component will not get the entity processed if the world is not notified of the change''',
         () {
       final expectedEntities = [entityAC];
       final es = TestEntitySystem(
@@ -250,8 +250,8 @@ void main() {
       entityAB.addComponent(PooledComponentC());
       world.process();
     });
-    test(
-        'Adding a component will get the entity processed if the world is notified of the change',
+    test('''
+Adding a component will get the entity processed if the world is notified of the change''',
         () {
       final expectedEntities = [entityAC];
       final es = TestEntitySystem(
@@ -282,7 +282,7 @@ void main() {
   });
 }
 
-typedef void EntitySystemStarter(EntitySystem es);
+typedef EntitySystemStarter = void Function(EntitySystem es);
 
 class MockEntitySystem extends Mock implements EntitySystem {}
 
@@ -291,14 +291,16 @@ class MockEntitySystem2 extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
 
 class TestEntitySystem extends EntitySystem {
-  var _expectedEntities;
+  List<Entity> _expectedEntities;
   TestEntitySystem(Aspect aspect, this._expectedEntities) : super(aspect);
 
   @override
   void processEntities(Iterable<Entity> entities) {
     final length = _expectedEntities.length;
     expect(entities.length, length);
-    entities.forEach((entity) => expect(entity, isIn(_expectedEntities)));
+    for (final entity in entities) {
+      expect(entity, isIn(_expectedEntities));
+    }
   }
 
   @override

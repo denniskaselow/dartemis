@@ -4,8 +4,8 @@ part of dartemis;
 /// create new entities using World.
 class Entity {
   /// The internal id for this entity within the framework. No other entity will
-  /// have the same ID, but ID's are however reused so another entity may acquire
-  /// this ID if the previous entity was deleted.
+  /// have the same ID, but ID's are however reused so another entity may
+  /// acquire this ID if the previous entity was deleted.
   final int id;
 
   int _uniqueId;
@@ -42,11 +42,11 @@ class Entity {
   }
 
   @override
-  String toString() => "Entity[$id]";
+  String toString() => 'Entity[$id]';
 
   /// Add a [component] to this entity.
-  void addComponent(Component component) {
-    _componentManager._addComponent(this,
+  void addComponent<T extends Component>(T component) {
+    _componentManager._addComponent<T>(this,
         ComponentTypeManager.getTypeFor(component.runtimeType), component);
   }
 
@@ -76,13 +76,13 @@ class Entity {
   Component getComponent(ComponentType type) =>
       _componentManager._getComponent(this, type);
 
-  /// Slower retrieval of a [Component] from this entity. Minimize usage of this,
-  /// but is fine to use e.g. when creating new entities and setting data in
-  /// components.
+  /// Slower retrieval of a [Component] from this entity. Minimize usage of
+  /// this, but is fine to use e.g. when creating new entities and setting data
+  /// in components.
   ///
   /// Returns [:null:] if none is found.
   T getComponentByClass<T extends Component>() =>
-      getComponent(ComponentTypeManager.getTypeFor(T));
+      getComponent(ComponentTypeManager.getTypeFor(T)) as T;
 
   /// Get all components belonging to this entity.
   Bag<Component> getComponents([Bag<Component> fillBag]) {
@@ -95,8 +95,8 @@ class Entity {
 
   /// Deletes this entity from the world.
   ///
-  /// The entity will be removed once world.process or world.processEntityChanges
-  /// has been called.
+  /// The entity will be removed once [World#process] or
+  /// [@orld#processEntityChanges] has been called.
   void deleteFromWorld() => _world.deleteEntity(this);
 
   /// Disables this entity in the world.

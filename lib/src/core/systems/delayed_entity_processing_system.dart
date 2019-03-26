@@ -3,22 +3,24 @@ part of dartemis;
 /// The purpose of this class is to allow systems to execute at varying
 /// intervals.
 ///
-/// An example system would be an ExpirationSystem, that deletes entities after a
-/// certain lifetime. Instead of running a system that decrements a timeLeft
+/// An example system would be an ExpirationSystem, that deletes entities after
+/// a certain lifetime. Instead of running a system that decrements a timeLeft
 /// value for each entity, you can simply use this system to execute in a future
-/// at a time of the shortest lived entity, and then reset the system to run at a
-/// time in a future at a time of the shortest lived entity, etc.
+/// at a time of the shortest lived entity, and then reset the system to run at
+/// a time in a future at a time of the shortest lived entity, etc.
 ///
-/// Another example system would be an AnimationSystem. You know when you have to
-/// animate a certain entity, e.g. in 300 milliseconds. So you can set the system
-/// to run in 300 ms to perform the animation.
+/// Another example system would be an AnimationSystem. You know when you have
+/// to animate a certain entity, e.g. in 300 milliseconds. So you can set the
+/// system to run in 300 ms to perform the animation.
 ///
 /// This will save CPU cycles in some scenarios.
 abstract class DelayedEntityProcessingSystem extends EntitySystem {
   bool _running = false;
   double _delay;
-  double _acc = 0.0;
+  double _acc = 0;
 
+  /// A system for entities that are supposed to be processed after a specific
+  /// delay.
   DelayedEntityProcessingSystem(Aspect aspect) : super(aspect);
 
   /// Check if the system is counting down towards processing.
@@ -31,19 +33,20 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /// accumulatedDelta from the entities defined delay.
   void processDelta(Entity enitity, double accumulatedDelta);
 
+  /// The delay for this entity is over and it can be processed.
   void processExpired(Entity enitity);
 
   @override
   void processEntities(Iterable<Entity> entities) {
-    entities.forEach((entity) {
+    for (final entity in entities) {
       processDelta(entity, _acc);
-      final double remaining = getRemainingDelay(entity);
+      final remaining = getRemainingDelay(entity);
       if (remaining <= 0.0) {
         processExpired(entity);
       } else {
         offerDelay(remaining);
       }
-    });
+    }
     if (_actives.isEmpty) {
       stop();
     }
@@ -51,9 +54,9 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   }
 
   @override
-  void inserted(Entity enitity) {
-    final double delay = getRemainingDelay(enitity);
-    processDelta(enitity, 0.0 - _acc);
+  void inserted(Entity entity) {
+    final delay = getRemainingDelay(entity);
+    processDelta(entity, 0.0 - _acc);
     if (delay > 0.0) {
       offerDelay(delay);
     }
@@ -90,7 +93,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
   /// larger than the time remaining, the system will ignore it. If the
   /// offered delay is shorter than the time remaining, the system will
   /// restart itself to run at the offered delay.
-  void offerDelay(num delay) {
+  void offerDelay(double delay) {
     final remaining = getRemainingTimeUntilProcessing();
     if (!_running || delay < remaining || remaining == 0) {
       restart(delay);
@@ -108,7 +111,7 @@ abstract class DelayedEntityProcessingSystem extends EntitySystem {
     if (_running) {
       return _delay - _acc;
     }
-    return 0.0;
+    return 0;
   }
 
   /// Stops the system from running, aborts current countdown.

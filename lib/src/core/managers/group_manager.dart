@@ -9,63 +9,38 @@ class GroupManager extends Manager {
   final Map<String, Bag<Entity>> _entitiesByGroup;
   final Map<Entity, Bag<String>> _groupsByEntity;
 
+  /// Creates the [GroupManager].
   GroupManager()
       : _entitiesByGroup = <String, Bag<Entity>>{},
         _groupsByEntity = <Entity, Bag<String>>{};
 
   /// Set the group of the entity.
   void add(Entity entity, String group) {
-    Bag<Entity> entities = _entitiesByGroup[group];
-    if (entities == null) {
-      entities = Bag<Entity>();
-      _entitiesByGroup[group] = entities;
-    }
-    entities.add(entity);
-
-    Bag<String> groups = _groupsByEntity[entity];
-    if (groups == null) {
-      groups = Bag<String>();
-      _groupsByEntity[entity] = groups;
-    }
-    groups.add(group);
+    _entitiesByGroup.putIfAbsent(group, () => Bag<Entity>()).add(entity);
+    _groupsByEntity.putIfAbsent(entity, () => Bag<String>()).add(group);
   }
 
   /// Remove the entity from the specified group.
   void remove(Entity entity, String group) {
-    final Bag<Entity> entities = _entitiesByGroup[group];
-    if (entities != null) {
-      entities.remove(entity);
-    }
-
-    final Bag<String> groups = _groupsByEntity[entity];
-    if (groups != null) {
-      groups.remove(group);
-    }
+    _entitiesByGroup[group]?.remove(entity);
+    _groupsByEntity[entity]?.remove(group);
   }
 
+  /// Remove [entity] from all existing groups.
   void removeFromAllGroups(Entity entity) {
-    final Bag<String> groups = _groupsByEntity[entity];
+    final groups = _groupsByEntity[entity];
     if (groups != null) {
       groups
         ..forEach((group) {
-          final Bag<Entity> entities = _entitiesByGroup[group];
-          if (entities != null) {
-            entities.remove(entity);
-          }
+          _entitiesByGroup[group]?.remove(entity);
         })
         ..clear();
     }
   }
 
   /// Get all entities that belong to the provided group.
-  Iterable<Entity> getEntities(String group) {
-    Bag<Entity> entities = _entitiesByGroup[group];
-    if (entities == null) {
-      entities = Bag<Entity>();
-      _entitiesByGroup[group] = entities;
-    }
-    return entities;
-  }
+  Iterable<Entity> getEntities(String group) =>
+      _entitiesByGroup.putIfAbsent(group, () => Bag<Entity>());
 
   /// Returns the groups the entity belongs to, null if none.
   Iterable<String> getGroups(Entity entity) => _groupsByEntity[entity];
@@ -75,7 +50,7 @@ class GroupManager extends Manager {
 
   /// Check if the entity is in the supplied group.
   bool isInGroup(Entity entity, String group) {
-    final Bag<String> groups = _groupsByEntity[entity];
+    final groups = _groupsByEntity[entity];
     return (groups != null) && groups.contains(group);
   }
 

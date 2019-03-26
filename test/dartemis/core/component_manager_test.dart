@@ -1,9 +1,9 @@
 library component_manager_test;
 
-import "package:test/test.dart";
+import 'package:test/test.dart';
 
-import "package:dartemis/dartemis.dart";
-import "components_setup.dart";
+import 'package:dartemis/dartemis.dart';
+import 'components_setup.dart';
 
 const int defaultBagSize = 16;
 
@@ -71,8 +71,8 @@ void main() {
       expect(fillBag.size, equals(0));
     });
     test('ComponentManager can be created for unused Component', () {
-      ComponentType type = ComponentType();
-      for (int i = 0; i < defaultBagSize; i++) {
+      var type = ComponentType();
+      for (var i = 0; i < defaultBagSize; i++) {
         type = ComponentType();
       }
       final componentsByType = world.componentManager.getComponentsByType(type);

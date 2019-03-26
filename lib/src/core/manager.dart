@@ -4,6 +4,7 @@ part of dartemis;
 abstract class Manager implements EntityObserver {
   World _world;
 
+  /// The [World] where this manager resides.
   World get world => _world;
 
   /// Override to implement code that gets executed when managers are
@@ -25,5 +26,7 @@ abstract class Manager implements EntityObserver {
   @override
   void enabled(Entity entity) {}
 
+  /// Called when the world gets destroyed. Override if you need to clean up
+  /// your manager.
   void destroy() {}
 }

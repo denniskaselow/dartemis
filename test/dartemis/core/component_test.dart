@@ -1,9 +1,9 @@
 library component_test;
 
-import "package:test/test.dart";
+import 'package:test/test.dart';
 
-import "package:dartemis/dartemis.dart";
-import "components_setup.dart";
+import 'package:dartemis/dartemis.dart';
+import 'components_setup.dart';
 
 void main() {
   group('Component tests', () {

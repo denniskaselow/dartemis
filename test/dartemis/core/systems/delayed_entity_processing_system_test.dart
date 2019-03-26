@@ -1,15 +1,15 @@
 library delayed_entity_processing_system;
 
-import "package:test/test.dart";
+import 'package:test/test.dart';
 
-import "package:dartemis/dartemis.dart";
+import 'package:dartemis/dartemis.dart';
 
 void main() {
   group('DelayedEntityProcessingSystem tests', () {
     test('executes after delay has passed', () {
       final world = World();
-      final t1 = Timer(100.0);
-      final t2 = Timer(150.0);
+      final t1 = Timer(100);
+      final t2 = Timer(150);
       world..createAndAddEntity([t1])..createAndAddEntity([t2]);
       final sut = TestDelayedEntityProcessingSystem();
       world
@@ -45,8 +45,8 @@ void main() {
 
     test('takes passed time into account when adding new entity', () {
       final world = World();
-      final t1 = Timer(100.0);
-      final t2 = Timer(150.0);
+      final t1 = Timer(100);
+      final t2 = Timer(150);
       world.createAndAddEntity([t1]);
       final sut = TestDelayedEntityProcessingSystem();
       world

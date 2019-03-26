@@ -7,8 +7,8 @@ part of dartemis;
 /// It is also important to set the delta each game loop iteration, and
 /// initialize before game loop.
 class World {
-  final EntityManager _entityManager = EntityManager();
-  final ComponentManager _componentManager = ComponentManager();
+  final EntityManager _entityManager = EntityManager._internal();
+  final ComponentManager _componentManager = ComponentManager._internal();
 
   final Bag<Entity> _added = EntityBag();
   final Bag<Entity> _changed = EntityBag();
@@ -24,11 +24,15 @@ class World {
 
   final Map<int, int> _frame = {0: 0};
   final Map<int, double> _time = {0: 0.0};
-  num delta = 0;
+
+  /// The time that passed since the last time [process] was called.
+  double delta = 0;
 
   /// World-related properties that can be written and read by the user.
   final Map<String, Object> properties = <String, Object>{};
 
+  /// Create the [World] with the default [EntityManager] and
+  /// [ComponentManager].
   World() {
     addManager(_entityManager);
     addManager(_componentManager);
@@ -37,20 +41,20 @@ class World {
   /// Returns the current frame/how often the systems in [group] have been processed.
   int frame([int group = 0]) => _frame[group];
 
-  /// Returns the time that has elapsed for the systems in the [group] since the game has
-  /// started (sum of all deltas).
+  /// Returns the time that has elapsed for the systems in the [group] since
+  /// the game has started (sum of all deltas).
   double time([int group = 0]) => _time[group];
 
   /// Makes sure all managers systems are initialized in the order they were
   /// added.
   void initialize() {
-    _managersBag.forEach(initializeManager);
-    _systemsList.forEach(initializeSystem);
+    _managersBag.forEach(_initializeManager);
+    _systemsList.forEach(_initializeSystem);
   }
 
-  void initializeManager(Manager manager) => manager.initialize();
+  void _initializeManager(Manager manager) => manager.initialize();
 
-  void initializeSystem(EntitySystem system) => system.initialize();
+  void _initializeSystem(EntitySystem system) => system.initialize();
 
   /// Returns a manager that takes care of all the entities in the world.
   /// entities of this world.
@@ -68,7 +72,7 @@ class World {
   }
 
   /// Returns a [Manager] of the specified type [T].
-  T getManager<T extends Manager>() => _managers[T];
+  T getManager<T extends Manager>() => _managers[T] as T;
 
   /// Deletes the manager from this world.
   void deleteManager(Manager manager) {
@@ -78,7 +82,7 @@ class World {
 
   /// Create and return a new or reused [Entity] instance, optionally with
   /// [components].
-  Entity createEntity([List<Component> components = const []]) {
+  Entity createEntity<T extends Component>([List<T> components = const []]) {
     final e = _entityManager._createEntityInstance();
     components.forEach(e.addComponent);
     return e;
@@ -88,7 +92,8 @@ class World {
   /// it.
   ///
   /// You don't have to call [Entity.addToWorld()] if you use this.
-  Entity createAndAddEntity([List<Component> components = const []]) {
+  Entity createAndAddEntity<T extends Component>(
+      [List<T> components = const []]) {
     final e = createEntity(components);
     addEntity(e);
     return e;
@@ -101,8 +106,10 @@ class World {
   Iterable<EntitySystem> get systems => _systemsList;
 
   /// Adds a [system] to this world that will be processed by [process()].
-  /// If [passive] is set to true the [system] will not be processed by the world.
-  /// If a [group] is set, this [system] will only be processed when calling [process()] with the same [group].
+  /// If [passive] is set to true the [system] will not be processed by the
+  /// world.
+  /// If a [group] is set, this [system] will only be processed when calling
+  /// [process()] with the same [group].
   void addSystem(EntitySystem system, {bool passive = false, int group = 0}) {
     system
       .._world = this
@@ -122,16 +129,20 @@ class World {
   }
 
   /// Retrieve a system for specified system type.
-  T getSystem<T extends EntitySystem>() => _systems[T];
+  T getSystem<T extends EntitySystem>() => _systems[T] as T;
 
   /// Performs an action on each entity.
-  void _check(Bag<Entity> entities, void perform(entityObserver, entity)) {
-    entities
-      ..forEach((entity) {
-        _managersBag.forEach((manager) => perform(manager, entity));
-        _systemsList.forEach((system) => perform(system, entity));
-      })
-      ..clear();
+  void _check(Bag<Entity> entities,
+      void Function(EntityObserver entityObserver, Entity entity) perform) {
+    for (final entity in entities) {
+      for (final manager in _managersBag) {
+        perform(manager, entity);
+      }
+      for (final system in _systemsList) {
+        perform(system, entity);
+      }
+    }
+    entities.clear();
   }
 
   /// Processes all changes to entities and executes all non-passive systems.
@@ -140,12 +151,11 @@ class World {
     _time[group] += delta;
     _processEntityChanges();
 
-    _systemsList
-        .where((system) => !system.passive && system.group == group)
-        .forEach((system) {
+    for (final system in _systemsList
+        .where((system) => !system.passive && system.group == group)) {
       system.process();
       _processEntityChanges();
-    });
+    }
   }
 
   /// Processes all changes to entities.
@@ -156,7 +166,7 @@ class World {
     _check(_enable, (observer, entity) => observer.enabled(entity));
     _check(_deleted, (observer, entity) => observer.deleted(entity));
 
-    _componentManager.clean();
+    _componentManager._clean();
   }
 
   /// Removes all entities from the world.
@@ -166,26 +176,25 @@ class World {
   /// because they will be added to a free list and might be overwritten once a
   /// new [Component] of that type is created.
   void deleteAllEntities() {
-    entityManager._entities.forEach((entity) {
-      if (null != entity) {
-        deleteEntity(entity);
-      }
-    });
+    entityManager._entities
+        .where((entity) => entity != null)
+        .forEach(deleteEntity);
     _processEntityChanges();
   }
 
   /// Adds a [Entity entity] to this world.
   void addEntity(Entity entity) => _added.add(entity);
 
-  /// Ensure all systems are notified of changes to this [Entity entity]. If you're
-  /// adding a [Component] to an [Entity] after it's been added to the world,
-  /// then you need to invoke this method.
+  /// Ensure all systems are notified of changes to this [Entity entity]. If
+  /// you're adding a [Component] to an [Entity] after it's been added to the
+  /// world, then you need to invoke this method.
   void changedEntity(Entity entity) => _changed.add(entity);
 
   /// Delete the [Entity entity] from the world.
   void deleteEntity(Entity entity) => _deleted.add(entity);
 
-  /// (Re)enable the [Entity entity] in the world, after it having being disabled.
+  /// (Re)enable the [Entity entity] in the world, after it having being
+  /// disabled.
   /// Won't do anything unless it was already disabled.
   void enable(Entity entity) => _enable.add(entity);
 
@@ -203,19 +212,27 @@ class World {
 
   /// Destroy the [World] by destroying all [EntitySystem]s and [Manager]s.
   void destroy() {
-    _systemsList.forEach((system) => system.destroy());
-    _managersBag.forEach((manager) => manager.destroy());
+    for (final system in _systemsList) {
+      system.destroy();
+    }
+    for (final manager in _managersBag) {
+      manager.destroy();
+    }
   }
 }
 
+/// A [World] which measures performance by measureing elapsed time between
+/// calls.
 class PerformanceMeasureWorld extends World {
-  int framesToMeasure;
-  final Map<Type, ListQueue<int>> systemTimes = <Type, ListQueue<int>>{};
-  final Map<Type, ListQueue<int>> processEntityChangesTimes =
+  int _framesToMeasure;
+  final Map<Type, ListQueue<int>> _systemTimes = <Type, ListQueue<int>>{};
+  final Map<Type, ListQueue<int>> _processEntityChangesTimes =
       <Type, ListQueue<int>>{};
 
-  PerformanceMeasureWorld(this.framesToMeasure) {
-    systemTimes[runtimeType] = ListQueue<int>(framesToMeasure);
+  /// Create the world and define how many frames should be included when
+  /// calculating the [PerformanceStats].
+  PerformanceMeasureWorld(this._framesToMeasure) {
+    _systemTimes[runtimeType] = ListQueue<int>(_framesToMeasure);
   }
 
   @override
@@ -225,21 +242,20 @@ class PerformanceMeasureWorld extends World {
     _processEntityChanges();
     final stopwatch = Stopwatch()..start();
     var lastStop = stopwatch.elapsedMicroseconds;
-    _systemsList
-        .where((system) => !system.passive && system.group == group)
-        .forEach((system) {
+    for (final system in _systemsList
+        .where((system) => !system.passive && system.group == group)) {
       system.process();
       final afterSystem = stopwatch.elapsedMicroseconds;
       _processEntityChanges();
       final afterProcessEntityChanges = stopwatch.elapsedMicroseconds;
-      _storeTime(systemTimes, system, afterSystem, lastStop);
-      _storeTime(processEntityChangesTimes, system, afterProcessEntityChanges,
+      _storeTime(_systemTimes, system, afterSystem, lastStop);
+      _storeTime(_processEntityChangesTimes, system, afterProcessEntityChanges,
           afterSystem);
       lastStop = stopwatch.elapsedMicroseconds;
-    });
+    }
     final now = stopwatch.elapsedMicroseconds;
-    final times = systemTimes[runtimeType];
-    if (times.length >= framesToMeasure) {
+    final times = _systemTimes[runtimeType];
+    if (times.length >= _framesToMeasure) {
       times.removeFirst();
     }
     times.add(now);
@@ -248,7 +264,7 @@ class PerformanceMeasureWorld extends World {
   void _storeTime(Map<Type, ListQueue<int>> measuredTimes, EntitySystem system,
       int afterSystem, int lastStop) {
     final times = measuredTimes[system.runtimeType];
-    if (times.length >= framesToMeasure) {
+    if (times.length >= _framesToMeasure) {
       times.removeFirst();
     }
     times.add(afterSystem - lastStop);
@@ -257,15 +273,18 @@ class PerformanceMeasureWorld extends World {
   @override
   void addSystem(EntitySystem system, {bool passive = false, int group = 0}) {
     super.addSystem(system, passive: passive, group: group);
-    systemTimes[system.runtimeType] = ListQueue<int>(framesToMeasure);
-    processEntityChangesTimes[system.runtimeType] =
-        ListQueue<int>(framesToMeasure);
+    _systemTimes[system.runtimeType] = ListQueue<int>(_framesToMeasure);
+    _processEntityChangesTimes[system.runtimeType] =
+        ListQueue<int>(_framesToMeasure);
   }
 
+  /// Returns the [PerformanceStats] for every system and and the
+  /// [PerformanceStats] for changes to [Entity]s that require updates to other
+  /// [EntitySystem]s and [Manager]s.
   List<PerformanceStats> getPerformanceStats() {
     final result = <PerformanceStats>[];
-    _createPerformanceStats(systemTimes, result);
-    _createPerformanceStats(processEntityChangesTimes, result);
+    _createPerformanceStats(_systemTimes, result);
+    _createPerformanceStats(_processEntityChangesTimes, result);
     return result;
   }
 
@@ -273,27 +292,39 @@ class PerformanceMeasureWorld extends World {
       Map<Type, ListQueue<int>> measuredTimes, List<PerformanceStats> result) {
     for (final entry in measuredTimes.entries) {
       final measurements = entry.value.length;
-      final sorted = List.from(entry.value)..sort();
+      final sorted = List<int>.from(entry.value)..sort();
       final meanTime = sorted[measurements ~/ 2];
       final averageTime =
-          sorted.fold(0, (sum, item) => sum + item) / measurements;
+          sorted.fold<double>(0, (sum, item) => sum + item) / measurements;
       final minTime = sorted.first;
       final maxTime = sorted.last;
-      result.add(PerformanceStats(
+      result.add(PerformanceStats._internal(
           entry.key, measurements, minTime, maxTime, averageTime, meanTime));
     }
   }
 }
 
+/// Performance statistics for all systems.
 class PerformanceStats {
+  /// The [Type] of the system.
   Type system;
+
+  /// The number of measurements.
   int measurements;
+
+  /// The fastest ([minTime]) and the slowest ([maxTime]) time in microseconds.
   int minTime, maxTime;
-  double meanTime, averageTime;
-  PerformanceStats(this.system, this.measurements, this.minTime, this.maxTime,
-      this.averageTime, this.meanTime);
+
+  /// The mean time in microseconds.
+  int meanTime;
+
+  /// The avaerage time in microseconds.
+  double averageTime;
+
+  PerformanceStats._internal(this.system, this.measurements, this.minTime,
+      this.maxTime, this.averageTime, this.meanTime);
 
   @override
-  String toString() =>
-      'PerformanceStats{system: $system, measurements: $measurements, minTime: $minTime, maxTime: $maxTime, meanTime: $meanTime, averageTime: $averageTime}';
+  String toString() => '''
+PerformanceStats{system: $system, measurements: $measurements, minTime: $minTime, maxTime: $maxTime, meanTime: $meanTime, averageTime: $averageTime}''';
 }

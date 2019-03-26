@@ -1,6 +1,6 @@
 library components_setup;
 
-import "package:dartemis/dartemis.dart";
+import 'package:dartemis/dartemis.dart';
 
 final BigInt componentABit = BigInt.from(0x0001);
 final BigInt componentBBit = BigInt.from(0x0002);

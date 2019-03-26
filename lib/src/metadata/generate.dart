@@ -16,8 +16,9 @@ class Generate {
   /// Other [Manager]s to declare and initialize.
   final List<Type> manager;
 
-  /// All [Aspect]s that an [Entity] needs to be processed by the [EntitySystem].
-  /// Required [Mapper]s will also be created.
+  /// All [Aspect]s that an [Entity] needs to be processed by the
+  /// [EntitySystem].
+  /// The required [Mapper]s will also be created.
   ///
   /// Has no effect if used in a [Manager].
   final List<Type> allOf;
@@ -34,6 +35,10 @@ class Generate {
   /// Has no effect if used in a [Manager].
   final List<Type> exclude;
 
+  /// Generate a class that extends [base] with an [Aspect] based on [allOf],
+  /// [oneOf] and [exclude] as well as the additional [Mapper]s defined by
+  /// [mapper] and the [EntitySystem]s and [Manager]s defined by [systems] and
+  /// [manager].
   const Generate(this.base,
       {this.allOf = const [],
       this.oneOf = const [],

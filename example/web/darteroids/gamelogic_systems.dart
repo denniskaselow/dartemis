@@ -63,7 +63,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
     final velY = shooterVel.y + bulletSpeed * (dirY / distance);
     bullet
       ..addComponent(Velocity(velX, velY))
-      ..addComponent(CircularBody.down(2, "red"))
+      ..addComponent(CircularBody.down(2, 'red'))
       ..addComponent(Decay(5000))
       ..addComponent(AsteroidDestroyer())
       ..addToWorld();
@@ -112,7 +112,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     final destroyerPos = positionMapper[entity];
 
-    groupManager.getEntities(groupAsteroids).forEach((Entity asteroid) {
+    for (final asteroid in groupManager.getEntities(groupAsteroids)) {
       final asteroidPos = positionMapper[asteroid];
       final asteroidBody = bodyMapper[asteroid];
 
@@ -125,7 +125,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
           createNewAsteroids(asteroidPos, asteroidBody);
         }
       }
-    });
+    }
   }
 
   void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
@@ -168,7 +168,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
     final playerBody = bodyMapper[player];
 
     if (!playerStatus.invisible) {
-      entities.forEach((entity) {
+      for (final entity in entities) {
         final pos = positionMapper[entity];
         final body = bodyMapper[entity];
 
@@ -181,7 +181,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
             ..y = maxHeight ~/ 2;
           return;
         }
-      });
+      }
     } else {
       playerStatus.invisiblityTimer -= world.delta;
     }

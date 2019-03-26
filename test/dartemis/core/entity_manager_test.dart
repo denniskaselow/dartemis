@@ -1,8 +1,8 @@
 library entityt_manager_test;
 
-import "package:test/test.dart";
+import 'package:test/test.dart';
 
-import "package:dartemis/dartemis.dart";
+import 'package:dartemis/dartemis.dart';
 
 void main() {
   group('integration tests for EntityManager', () {
@@ -32,10 +32,10 @@ void main() {
       expect(world.entityManager.isEnabled(a.id), equals(true));
       expect(world.entityManager.isEnabled(b.id), equals(false));
     });
-    test(
-        'isEnabled does not fail if bag of disabled entities is smaller than amount of entities',
+    test('''
+isEnabled does not fail if bag of disabled entities is smaller than amount of entities''',
         () {
-      for (int i = 0; i < 16; i++) {
+      for (var i = 0; i < 16; i++) {
         world.createEntity();
       }
       final a = world.createEntity();
