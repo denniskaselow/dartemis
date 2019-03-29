@@ -135,4 +135,9 @@ class Bag<E> with IterableMixin<E> {
 
   @override
   int get length => size;
+
+  @override
+  Bag<R> cast<R>() => Bag<R>(capacity: _data.length)
+    .._size = _size
+    .._data = _data.cast<R>();
 }

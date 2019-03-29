@@ -8,7 +8,7 @@ class Mapper<T extends Component> {
   /// Create a Mapper for [T] in [world].
   Mapper(World world)
       : _components = world.componentManager
-            .getComponentsByType(ComponentTypeManager.getTypeFor(T));
+            .getComponentsByType<T>(ComponentTypeManager.getTypeFor(T));
 
   /// Fast but unsafe retrieval of a component for this entity.
   /// No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,

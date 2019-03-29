@@ -50,13 +50,21 @@ class ComponentManager extends Manager {
     final index = type._id;
     _componentsByType._ensureCapacity(index);
 
-    final components = _componentsByType[index];
-    if (components is Bag<T>) {
-      return components;
+    var components = _componentsByType[index];
+    if (components == null) {
+      components = Bag<T>();
+      _componentsByType[index] = components;
+    } else if (components is! Bag<T>) {
+      // when components get added to an entity as part of a list containing
+      // multiple different components, the type is infered as Component
+      // instead of the actual type of the component. So if _addComponent was
+      // called first a Bag<Component> would have been created and this fixes
+      // the type
+      _componentsByType[index] = components.cast<T>();
+      components = _componentsByType[index];
     }
-    final emptyComponents = Bag<T>();
-    _componentsByType[index] = emptyComponents;
-    return emptyComponents;
+
+    return components as Bag<T>;
   }
 
   T _getComponent<T extends Component>(Entity entity, ComponentType type) {
