@@ -155,11 +155,13 @@ void main() {
         ..addComponent(ComponentA())
         ..addComponent(PooledComponentC())
         ..addToWorld();
-      systemStarter = (es) {
+      systemStarter = (es, action) {
         world
           ..addSystem(es)
           ..initialize()
           ..process();
+        action();
+        world.process();
       };
     });
     test('''
@@ -168,7 +170,7 @@ EntitySystem which requires one Component processes Entity with this component''
       final expectedEntities = [entityAB, entityAC];
       final es =
           TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
-      systemStarter(es);
+      systemStarter(es, () {});
     });
     test('''
 EntitySystem which required multiple Components does not process Entity with a subset of those components''',
@@ -176,7 +178,7 @@ EntitySystem which required multiple Components does not process Entity with a s
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
           Aspect.forAllOf([ComponentA, ComponentB]), expectedEntities);
-      systemStarter(es);
+      systemStarter(es, () {});
     });
     test('''
 EntitySystem which requires one of multiple components processes Entity with a subset of those components''',
@@ -184,7 +186,7 @@ EntitySystem which requires one of multiple components processes Entity with a s
       final expectedEntities = [entityAB, entityAC];
       final es = TestEntitySystem(
           Aspect.forOneOf([ComponentA, ComponentB]), expectedEntities);
-      systemStarter(es);
+      systemStarter(es, () {});
     });
     test('''
 EntitySystem which excludes a component does not process Entity with one of those components''',
@@ -193,21 +195,19 @@ EntitySystem which excludes a component does not process Entity with one of thos
       final es = TestEntitySystem(
           Aspect.forAllOf([ComponentA])..exclude([PooledComponentC]),
           expectedEntities);
-      systemStarter(es);
+      systemStarter(es, () {});
     });
     test('A removed entity will not get processed', () {
-      entityAB.deleteFromWorld();
       final expectedEntities = [entityAC];
       final es =
           TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
-      systemStarter(es);
+      systemStarter(es, () => entityAB.deleteFromWorld());
     });
     test('A disabled entity will not get processed', () {
-      entityAB.disable();
       final expectedEntities = [entityAC];
       final es =
           TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
-      systemStarter(es);
+      systemStarter(es, () => entityAB.disable());
     });
     test('''
 Adding a component will not get the entity processed if the world is not notified of the change''',
@@ -282,7 +282,8 @@ Adding a component will get the entity processed if the world is notified of the
   });
 }
 
-typedef EntitySystemStarter = void Function(EntitySystem es);
+typedef EntitySystemStarter = void Function(
+    EntitySystem es, void Function() action);
 
 class MockEntitySystem extends Mock implements EntitySystem {}
 
@@ -291,6 +292,7 @@ class MockEntitySystem2 extends Mock implements EntitySystem {}
 class MockManager extends Mock implements Manager {}
 
 class TestEntitySystem extends EntitySystem {
+  bool isSetup = true;
   List<Entity> _expectedEntities;
   TestEntitySystem(Aspect aspect, this._expectedEntities) : super(aspect);
 
@@ -304,5 +306,11 @@ class TestEntitySystem extends EntitySystem {
   }
 
   @override
-  bool checkProcessing() => true;
+  bool checkProcessing() {
+    if (isSetup) {
+      isSetup = false;
+      return false;
+    }
+    return true;
+  }
 }

@@ -160,13 +160,13 @@ class World {
 
   /// Processes all changes to entities.
   void _processEntityChanges() {
-    _check(_added, (observer, entity) => observer.added(entity));
     _check(_changed, (observer, entity) => observer.changed(entity));
     _check(_disable, (observer, entity) => observer.disabled(entity));
     _check(_enable, (observer, entity) => observer.enabled(entity));
     _check(_deleted, (observer, entity) => observer.deleted(entity));
-
+    _deleted.forEach(_added.remove);
     _componentManager._clean();
+    _check(_added, (observer, entity) => observer.added(entity));
   }
 
   /// Removes all entities from the world.

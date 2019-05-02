@@ -13,6 +13,10 @@ generic methods instead (e.g. `world.getManager<TagManager>()` instead of `world
 ### Enhancements
 * `world.destroy()` for cleaning up `EntitySystem`s and `Manager`s
 
+### Internal
+* existing entities are processed first, addition of new entities is processed last, makes more sense now that the 
+processing is done after every system
+
 ##0.7.3
 ### Bugfixes
 * adding an entity to a dirty EntityBag could lead to an inconsistency between the bitset and the list of entities 
