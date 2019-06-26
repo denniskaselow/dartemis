@@ -2,18 +2,17 @@ part of dartemis;
 
 class _SystemBitManager {
   static int _pos = 0;
-  static Map<Type, BigInt> _systemBits;
+  static Map<Type, int> _systemBitIndices;
 
-  static BigInt _getBitFor(Type esType) {
-    _systemBits ??= <Type, BigInt>{};
-    var bit = _systemBits[esType];
+  static int _getBitIndexFor(Type esType) {
+    _systemBitIndices ??= <Type, int>{};
+    var bitIndex = _systemBitIndices[esType];
 
-    if (bit == null) {
-      bit = BigInt.one << _pos;
-      _pos++;
-      _systemBits[esType] = bit;
+    if (bitIndex == null) {
+      bitIndex = _pos++;
+      _systemBitIndices[esType] = bitIndex;
     }
 
-    return bit;
+    return bitIndex;
   }
 }

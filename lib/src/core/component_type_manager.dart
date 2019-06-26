@@ -6,12 +6,10 @@ class ComponentTypeManager {
   static final _componentTypes = <Type, ComponentType>{};
 
   /// Returns the [ComponentType] for the runtimeType of a [Component].
-  static ComponentType getTypeFor(Type typeOfComponent) => _componentTypes
-      .putIfAbsent(typeOfComponent, () => ComponentType());
+  static ComponentType getTypeFor(Type typeOfComponent) =>
+      _componentTypes.putIfAbsent(typeOfComponent, () => ComponentType());
 
-  /// Returns the bitmask of a [componentType].
-  static BigInt getBit(Type componentType) => getTypeFor(componentType)._bit;
-
-  /// Returns the id of a [componentType].
-  static int getId(Type componentType) => getTypeFor(componentType)._id;
+  /// Returns the index of the bit of the [componentType].
+  static int getBitIndex(Type componentType) =>
+      getTypeFor(componentType)._bitIndex;
 }

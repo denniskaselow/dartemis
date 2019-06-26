@@ -11,8 +11,6 @@ void main() {
   group('integration tests for ComponentManager', () {
     World world;
     setUp(() {
-      // for predictable component indices
-      setUpComponents();
       world = World();
     });
     test('ComponentManager correctly associates entity and components', () {
@@ -46,13 +44,10 @@ void main() {
       final fillBag1 = entity1.getComponents();
       final fillBag2 = entity2.getComponents();
 
-      expect(fillBag1[0], equals(component1A));
-      expect(fillBag1[1], equals(component1C));
+      expect(fillBag1, containsAll([component1A, component1C]));
       expect(fillBag1.size, equals(2));
 
-      expect(fillBag2[0], equals(component2A));
-      expect(fillBag2[1], equals(component2B));
-      expect(fillBag2[2], equals(component2C));
+      expect(fillBag2, containsAll([component2A, component2B, component2C]));
       expect(fillBag2.size, equals(3));
     });
     test('ComponentManager removes Components of deleted Entity', () {

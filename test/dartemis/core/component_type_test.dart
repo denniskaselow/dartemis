@@ -7,11 +7,10 @@ import 'components_setup.dart';
 
 void main() {
   group('ComponentType', () {
-    setUp(setUpComponents);
     test('returns correct bit', () {
-      expect(ComponentTypeManager.getBit(ComponentA), componentABit);
-      expect(ComponentTypeManager.getBit(ComponentB), componentBBit);
-      expect(ComponentTypeManager.getBit(PooledComponentC), componentCBit);
+      expect(ComponentTypeManager.getBitIndex(ComponentA), componentABit);
+      expect(ComponentTypeManager.getBitIndex(ComponentB), componentBBit);
+      expect(ComponentTypeManager.getBitIndex(PooledComponentC), componentCBit);
     });
   });
 }

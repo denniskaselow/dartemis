@@ -7,14 +7,16 @@ part of dartemis;
 /// There is no need to ever call any other method than process on objects of
 /// this class.
 abstract class EntitySystem implements EntityObserver {
-  BigInt _systemBit = BigInt.zero;
+  int _systemBitIndex;
   World _world;
   Bag<Entity> _actives;
 
-  BigInt _all;
-  BigInt _excluded;
-  BigInt _one;
+  BitSet _all;
+  BitSet _excluded;
+  BitSet _one;
   bool _dummy;
+  bool _oneIsSet;
+  bool _excludedIsSet;
 
   bool _passive;
   int _group;
@@ -25,8 +27,10 @@ abstract class EntitySystem implements EntityObserver {
         _all = aspect._all,
         _excluded = aspect._excluded,
         _one = aspect._one {
-    _dummy = _all == BigInt.zero && _one == BigInt.zero;
-    _systemBit = _SystemBitManager._getBitFor(runtimeType);
+    _oneIsSet = _one.isNotEmpty;
+    _excludedIsSet = _excluded.isNotEmpty;
+    _dummy = _all.isEmpty && _one.isEmpty;
+    _systemBitIndex = _SystemBitManager._getBitIndexFor(runtimeType);
   }
 
   /// Returns [:true:] if this [EntitySystem] is passive.
@@ -85,12 +89,12 @@ abstract class EntitySystem implements EntityObserver {
       return;
     }
     final contains = _contains(entity);
-    var interest = (_all & entity._typeBits) == _all;
-    if (_one > BigInt.zero && interest) {
-      interest = (_one & entity._typeBits) > BigInt.zero;
+    var interest = _all == (_all & entity._typeBits);
+    if (_oneIsSet && interest) {
+      interest = (_one & entity._typeBits).isNotEmpty;
     }
-    if (_excluded > BigInt.zero && interest) {
-      interest = (_excluded & entity._typeBits) == BigInt.zero;
+    if (_excludedIsSet && interest) {
+      interest = (_excluded & entity._typeBits).isEmpty;
     }
 
     if (interest && !contains) {
@@ -102,18 +106,17 @@ abstract class EntitySystem implements EntityObserver {
     }
   }
 
-  bool _contains(Entity entity) =>
-      (_systemBit & entity._systemBits) == _systemBit;
+  bool _contains(Entity entity) => entity._systemBits[_systemBitIndex];
 
   void _insertToSystem(Entity entity) {
     _actives.add(entity);
-    entity._addSystemBit(_systemBit);
+    entity._addSystemBit(_systemBitIndex);
     inserted(entity);
   }
 
   void _removeFromSystem(Entity entity) {
     _actives.remove(entity);
-    entity._removeSystemBit(_systemBit);
+    entity._removeSystemBit(_systemBitIndex);
     removed(entity);
   }
 

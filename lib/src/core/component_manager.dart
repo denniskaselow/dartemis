@@ -17,12 +17,12 @@ class ComponentManager extends Manager {
       components[entity.id]._removed();
       components[entity.id] = null;
     });
-    entity._typeBits = BigInt.zero;
+    entity._typeBits.clearAll();
   }
 
   void _addComponent<T extends Component>(
       Entity entity, ComponentType type, T component) {
-    final index = type._id;
+    final index = type._bitIndex;
     _componentsByType._ensureCapacity(index);
 
     var components = _componentsByType[index];
@@ -33,21 +33,21 @@ class ComponentManager extends Manager {
 
     components[entity.id] = component;
 
-    entity._addTypeBit(type._bit);
+    entity._addTypeBit(type._bitIndex);
   }
 
   void _removeComponent(Entity entity, ComponentType type) {
-    if ((entity._typeBits & type._bit) != BigInt.zero) {
-      final typeId = type._id;
+    if (entity._typeBits[type._bitIndex]) {
+      final typeId = type._bitIndex;
       _componentsByType[typeId][entity.id]._removed();
       _componentsByType[typeId][entity.id] = null;
-      entity._removeTypeBit(type._bit);
+      entity._removeTypeBit(type._bitIndex);
     }
   }
 
   /// Returns all components of [ComponentType type].
   Bag<T> getComponentsByType<T extends Component>(ComponentType type) {
-    final index = type._id;
+    final index = type._bitIndex;
     _componentsByType._ensureCapacity(index);
 
     var components = _componentsByType[index];
@@ -68,7 +68,7 @@ class ComponentManager extends Manager {
   }
 
   T _getComponent<T extends Component>(Entity entity, ComponentType type) {
-    final index = type._id;
+    final index = type._bitIndex;
     final components = _componentsByType[index];
     if (components != null && components.isIndexWithinBounds(entity.id)) {
       return components[entity.id] as T;
@@ -86,14 +86,11 @@ class ComponentManager extends Manager {
 
   void _forComponentsOfEntity(
       Entity entity, void Function(Bag<Component> components, int index) f) {
-    var componentBits = entity._typeBits;
-    var index = 0;
-    while (componentBits > BigInt.zero) {
-      if ((componentBits & BigInt.one) == BigInt.one) {
+    final componentBits = entity._typeBits;
+    for (var index = 0; index < ComponentType._nextBitIndex; index++) {
+      if (componentBits[index]) {
         f(_componentsByType[index], index);
       }
-      index++;
-      componentBits = componentBits >> 1;
     }
   }
 

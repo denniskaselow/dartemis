@@ -3,7 +3,7 @@ library dartemis;
 import 'dart:collection';
 import 'dart:core';
 
-import 'package:bit_set/bit_set.dart';
+import 'src/core/utils/bit_set.dart';
 
 part 'src/core/utils/bag.dart';
 part 'src/core/utils/entity_bag.dart';

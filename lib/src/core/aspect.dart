@@ -20,9 +20,9 @@ part of dartemis;
 /// is the same as:
 ///     Aspect.forAllOf([A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
 class Aspect {
-  BigInt _all = BigInt.zero;
-  BigInt _excluded = BigInt.zero;
-  BigInt _one = BigInt.zero;
+  final BitSet _all = BitSet(64);
+  final BitSet _excluded = BitSet(64);
+  final BitSet _one = BitSet(64);
 
   /// Creates an aspect where an entity must possess all of the specified
   /// components.
@@ -52,38 +52,36 @@ class Aspect {
   /// Modifies the aspect in a way that an entity must possess all of the
   /// specified components.
   void allOf(List<Type> componentTypes) {
-    _all = _updateBitMask(_all, componentTypes);
+    _updateBitMask(_all, componentTypes);
   }
 
   /// Excludes all of the specified components from the aspect. A system will
   /// not be interested in an entity that possesses one of the specified
   /// excluded components.
   void exclude(List<Type> componentTypes) {
-    _excluded = _updateBitMask(_excluded, componentTypes);
+    _updateBitMask(_excluded, componentTypes);
   }
 
   /// Modifies the aspect in a way that an entity must possess one of the
   /// specified components.
   void oneOf(List<Type> componentTypes) {
-    _one = _updateBitMask(_one, componentTypes);
+    _updateBitMask(_one, componentTypes);
   }
 
   /// The bitmask of all aspects combined via [allOf].
-  BigInt get all => _all;
+  BitSet get all => _all;
 
   /// The bitmask of all aspects combined via [exclude].
-  BigInt get excluded => _excluded;
+  BitSet get excluded => _excluded;
 
   /// The bitmask of all aspects combined via [oneOf].
-  BigInt get one => _one;
+  BitSet get one => _one;
 
-  BigInt _updateBitMask(BigInt mask, List<Type> componentTypes) {
-    var result = mask;
+  void _updateBitMask(BitSet mask, List<Type> componentTypes) {
     if (null != componentTypes) {
       for (final componentType in componentTypes) {
-        result |= ComponentTypeManager.getBit(componentType);
+        mask[ComponentTypeManager.getBitIndex(componentType)] = true;
       }
     }
-    return result;
   }
 }

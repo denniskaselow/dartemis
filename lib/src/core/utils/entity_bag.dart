@@ -7,8 +7,8 @@ class EntityBag extends Bag<Entity> {
   bool _dirty = false;
 
   /// Creates an [EntityBag] with an initial capacity of [capacity].
-  EntityBag({int capacity = 16})
-      : _entities = BitSet(capacity, false),
+  EntityBag({int capacity = 32})
+      : _entities = BitSet(capacity),
         super(capacity: capacity);
 
   @override
@@ -17,7 +17,8 @@ class EntityBag extends Bag<Entity> {
       _refresh();
     }
     if (element.id >= _entities.length) {
-      _entities.setLength(_calculateNewCapacity(element.id));
+      _entities = BitSet.fromBitSet(_entities,
+          length: _calculateNewCapacity(element.id));
     }
     if (!_entities[element.id]) {
       _entities[element.id] = true;
@@ -64,7 +65,7 @@ class EntityBag extends Bag<Entity> {
 
   @override
   void clear() {
-    _entities.clear();
+    _entities.clearAll();
     _dirty = true;
   }
 
@@ -77,7 +78,7 @@ class EntityBag extends Bag<Entity> {
   }
 
   void _refresh() {
-    _size = _entities.countBits(true);
+    _size = _entities.cardinality;
     final tmp = List<Entity>(_size);
     if (_size > 0) {
       var index = 0;

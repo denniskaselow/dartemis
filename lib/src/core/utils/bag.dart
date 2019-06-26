@@ -8,7 +8,7 @@ class Bag<E> with IterableMixin<E> {
   int _size = 0;
 
   /// Create a [Bag] with an initial capacity of [capacity].
-  Bag({int capacity = 16}) : _data = List<E>(capacity);
+  Bag({int capacity = 32}) : _data = List<E>(capacity);
 
   /// Creates a new [Bag] with the elements of [iterable].
   Bag.from(Iterable<E> iterable)
