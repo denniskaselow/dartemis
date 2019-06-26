@@ -8,7 +8,6 @@ class Entity {
   /// acquire this ID if the previous entity was deleted.
   final int id;
 
-  int _uniqueId;
   final BitSet _typeBits = BitSet(64);
   final BitSet _systemBits = BitSet(64);
 
@@ -20,10 +19,6 @@ class Entity {
     _entityManager = _world.entityManager;
     _componentManager = _world.componentManager;
   }
-
-  /// Get the unique ID of this entity. Because entity instances are reused
-  /// internally use this to identify between different instances.
-  int get uniqueId => _uniqueId;
 
   void _addTypeBit(int bit) {
     _typeBits[bit] = true;

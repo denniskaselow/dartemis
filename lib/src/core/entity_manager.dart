@@ -3,8 +3,6 @@ part of dartemis;
 /// Manages creation and deletion of every [Entity] and gives access to some
 /// basic statistcs.
 class EntityManager extends Manager {
-  static int _nextUniqueId = 0;
-
   Bag<Entity> _entities;
   Bag<Entity> _deletedEntities;
   Bag<bool> _disabled;
@@ -29,7 +27,6 @@ class EntityManager extends Manager {
     final entity = _deletedEntities.removeLast() ??
         Entity._(_world, _identifierPool.checkOut());
     _created++;
-    entity._uniqueId = _nextUniqueId++;
     return entity;
   }
 
