@@ -74,7 +74,7 @@ class EntityBag extends Bag<Entity> {
     if (_dirty) {
       _refresh();
     }
-    return _data.sublist(0, size).iterator;
+    return _data.take(size).iterator;
   }
 
   void _refresh() {

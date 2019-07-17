@@ -120,9 +120,15 @@ class BitSet {
     if (identical(this, other)) {
       return true;
     }
-    if (other is BitSet &&
-        runtimeType == other.runtimeType &&
-        length == other.length) {
+    if (other is BitSet && runtimeType == other.runtimeType) {
+      return equals(other);
+    }
+    return false;
+  }
+
+  /// Compares two bitsets.
+  bool equals(BitSet other) {
+    if (length == other.length) {
       for (var i = 0; i < _data.length; i++) {
         if (_data[i] != other._data[i]) {
           return false;

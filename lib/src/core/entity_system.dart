@@ -89,7 +89,7 @@ abstract class EntitySystem implements EntityObserver {
       return;
     }
     final contains = _contains(entity);
-    var interest = _all == (_all & entity._typeBits);
+    var interest = _all.equals(_all & entity._typeBits);
     if (_oneIsSet && interest) {
       interest = (_one & entity._typeBits).isNotEmpty;
     }
