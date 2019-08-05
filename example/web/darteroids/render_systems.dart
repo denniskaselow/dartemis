@@ -18,7 +18,7 @@ class CircleRenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final pos = positionMapper[entity];
     final body = bodyMapper[entity];
     final status = statusMapper.getSafe(entity);

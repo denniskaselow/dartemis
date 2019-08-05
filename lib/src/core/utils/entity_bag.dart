@@ -2,93 +2,38 @@ part of dartemis;
 
 /// A [Bag] that uses a [BitSet] to manage entities. Results in faster
 /// removement of entities.
-class EntityBag extends Bag<Entity> {
+// ignore: prefer_mixin
+class EntityBag with IterableMixin<int> {
   BitSet _entities;
-  bool _dirty = false;
 
-  /// Creates an [EntityBag] with an initial capacity of [capacity].
-  EntityBag({int capacity = 32})
-      : _entities = BitSet(capacity),
-        super(capacity: capacity);
+  /// Creates an [EntityBag].
+  EntityBag() : _entities = BitSet(32);
 
-  @override
-  void add(Entity element) {
-    if (_dirty) {
-      _refresh();
+  /// Add a new [element]. If the element already exists, nothing changes.
+  void add(int element) {
+    if (element >= _entities.length) {
+      _entities = BitSet.fromBitSet(_entities, length: element);
     }
-    if (element.id >= _entities.length) {
-      _entities = BitSet.fromBitSet(_entities,
-          length: _calculateNewCapacity(element.id));
-    }
-    if (!_entities[element.id]) {
-      _entities[element.id] = true;
-      super.add(element);
-    }
+    _entities[element] = true;
   }
 
-  @override
-  bool remove(Entity element) {
-    final result = _entities[element.id];
-    _removeFromBitSet(element);
+  /// Removes [element]. Returns `true` if there was an element and `false`
+  /// otherwise.
+  bool remove(int element) {
+    final result = _entities[element];
+    _entities[element] = false;
     return result;
   }
 
   @override
-  Entity removeAt(int index) {
-    final element = super.removeAt(index);
-    _removeFromBitSet(element);
-    return element;
-  }
+  bool contains(covariant int element) => _entities[element];
 
   @override
-  Entity removeLast() {
-    final element = super.removeLast();
-    _removeFromBitSet(element);
-    return element;
-  }
+  int get length => _entities.cardinality;
 
-  void _removeFromBitSet(Entity entity) {
-    _entities[entity.id] = false;
-    _dirty = true;
-  }
+  /// Removes all entites.
+  void clear() => _entities.clearAll();
 
   @override
-  bool contains(Object element) => element is Entity && _entities[element.id];
-
-  @override
-  int get size {
-    if (_dirty) {
-      _refresh();
-    }
-    return _size;
-  }
-
-  @override
-  void clear() {
-    _entities.clearAll();
-    _dirty = true;
-  }
-
-  @override
-  Iterator<Entity> get iterator {
-    if (_dirty) {
-      _refresh();
-    }
-    return _data.take(size).iterator;
-  }
-
-  void _refresh() {
-    _size = _entities.cardinality;
-    final tmp = List<Entity>(_size);
-    if (_size > 0) {
-      var index = 0;
-      for (final entity in _data
-          .takeWhile((_) => index < _size)
-          .where((entity) => _entities[entity.id])) {
-        tmp[index++] = entity;
-      }
-    }
-    _data = tmp;
-    _dirty = false;
-  }
+  Iterator<int> get iterator => _entities.toIntValues().iterator;
 }

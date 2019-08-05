@@ -7,14 +7,11 @@ part of dartemis;
 /// It is also important to set the delta each game loop iteration, and
 /// initialize before game loop.
 class World {
-  final EntityManager _entityManager = EntityManager._internal();
-  final ComponentManager _componentManager = ComponentManager._internal();
+  final EntityManager _entityManager;
+  final ComponentManager _componentManager;
 
-  final Bag<Entity> _added = EntityBag();
-  final Bag<Entity> _changed = EntityBag();
-  final Bag<Entity> _deleted = EntityBag();
-  final Bag<Entity> _enable = EntityBag();
-  final Bag<Entity> _disable = EntityBag();
+  final EntityBag _added = EntityBag();
+  final EntityBag _deleted = EntityBag();
 
   final Map<Type, EntitySystem> _systems = <Type, EntitySystem>{};
   final List<EntitySystem> _systemsList = <EntitySystem>[];
@@ -33,7 +30,9 @@ class World {
 
   /// Create the [World] with the default [EntityManager] and
   /// [ComponentManager].
-  World() {
+  World({EntityManager entityManager, ComponentManager componentManager})
+      : _entityManager = entityManager ?? EntityManager._internal(),
+        _componentManager = componentManager ?? ComponentManager._internal() {
     addManager(_entityManager);
     addManager(_componentManager);
   }
@@ -80,27 +79,32 @@ class World {
     _managersBag.remove(manager);
   }
 
-  /// Create and return a new or reused [Entity] instance, optionally with
+  /// Create and return a new or reused [int] instance, optionally with
   /// [components].
-  Entity createEntity<T extends Component>([List<T> components = const []]) {
+  int createEntity<T extends Component>([List<T> components = const []]) {
     final e = _entityManager._createEntityInstance();
-    components.forEach(e.addComponent);
-    return e;
-  }
-
-  /// Creates an [Entity] with [components], adds it to the world and returns
-  /// it.
-  ///
-  /// You don't have to call [Entity.addToWorld()] if you use this.
-  Entity createAndAddEntity<T extends Component>(
-      [List<T> components = const []]) {
-    final e = createEntity(components);
+    for (final component in components) {
+      addComponent(e, component);
+    }
     addEntity(e);
     return e;
   }
 
-  /// Get an [Entity] having the specified [entityId].
-  Entity getEntity(int entityId) => _entityManager._getEntity(entityId);
+  /// Adds a [component] to the [entity].
+  void addComponent<T extends Component>(int entity, T component) =>
+      componentManager._addComponent(entity,
+          ComponentTypeManager.getTypeFor(component.runtimeType), component);
+
+  /// Adds [components] to the [entity].
+  void addComponents<T extends Component>(int entity, List<T> components) {
+    for (final component in components) {
+      addComponent(entity, component);
+    }
+  }
+
+  /// removes a [Component] of type [T] from the [entity].
+  void removeComponent<T extends Component>(int entity) => componentManager
+      ._removeComponent(entity, ComponentTypeManager.getTypeFor(T));
 
   /// Gives you all the systems in this world for possible iteration.
   Iterable<EntitySystem> get systems => _systemsList;
@@ -120,87 +124,64 @@ class World {
     _systemsList.add(system);
     _time.putIfAbsent(group, () => 0.0);
     _frame.putIfAbsent(group, () => 0);
+    componentManager._registerSystem(system);
   }
 
   /// Removed the specified system from the world.
   void deleteSystem(EntitySystem system) {
     _systems.remove(system.runtimeType);
     _systemsList.remove(system);
+    componentManager._unregisterSystem(system);
   }
 
   /// Retrieve a system for specified system type.
   T getSystem<T extends EntitySystem>() => _systems[T] as T;
 
-  /// Performs an action on each entity.
-  void _check(Bag<Entity> entities,
-      void Function(EntityObserver entityObserver, Entity entity) perform) {
-    for (final entity in entities) {
-      for (final manager in _managersBag) {
-        perform(manager, entity);
-      }
-      for (final system in _systemsList) {
-        perform(system, entity);
-      }
-    }
-    entities.clear();
-  }
-
   /// Processes all changes to entities and executes all non-passive systems.
   void process([int group = 0]) {
     _frame[group]++;
     _time[group] += delta;
-    _processEntityChanges();
 
     for (final system in _systemsList
         .where((system) => !system.passive && system.group == group)) {
+      _updateSystem(system);
       system.process();
-      _processEntityChanges();
     }
   }
 
-  /// Processes all changes to entities.
-  void _processEntityChanges() {
-    _check(_changed, (observer, entity) => observer.changed(entity));
-    _check(_disable, (observer, entity) => observer.disabled(entity));
-    _check(_enable, (observer, entity) => observer.enabled(entity));
-    _check(_deleted, (observer, entity) => observer.deleted(entity));
-    _deleted.forEach(_added.remove);
-    _componentManager._clean();
-    _check(_added, (observer, entity) => observer.added(entity));
+  void _updateSystem(EntitySystem system) {
+    if (componentManager.isUpdateNeededForSystem(system)) {
+      system._actives = componentManager._getEntitiesForSystem(
+          system, entityManager._entities.length);
+    }
   }
 
   /// Removes all entities from the world.
   ///
   /// Every entity and component has to be created anew. Make sure not to reuse
-  /// [Component]s that were added to an [Entity] and referenced in you code
+  /// [Component]s that were added to an [int] and referenced in you code
   /// because they will be added to a free list and might be overwritten once a
   /// new [Component] of that type is created.
   void deleteAllEntities() {
-    entityManager._entities
-        .where((entity) => entity != null)
-        .forEach(deleteEntity);
-    _processEntityChanges();
+    entityManager._entities.toIntValues().forEach(deleteEntity);
   }
 
-  /// Adds a [Entity entity] to this world.
-  void addEntity(Entity entity) => _added.add(entity);
+  /// Adds a [int entity] to this world.
+  void addEntity(int entity) {
+    entityManager._add(entity);
+    for (final manager in _managers.values) {
+      manager.added(entity);
+    }
+  }
 
-  /// Ensure all systems are notified of changes to this [Entity entity]. If
-  /// you're adding a [Component] to an [Entity] after it's been added to the
-  /// world, then you need to invoke this method.
-  void changedEntity(Entity entity) => _changed.add(entity);
-
-  /// Delete the [Entity entity] from the world.
-  void deleteEntity(Entity entity) => _deleted.add(entity);
-
-  /// (Re)enable the [Entity entity] in the world, after it having being
-  /// disabled.
-  /// Won't do anything unless it was already disabled.
-  void enable(Entity entity) => _enable.add(entity);
-
-  /// Disable the [Entity entity] from being processed. Won't delete it, it will
-  /// continue to exist but won't get processed.
-  void disable(Entity entity) => _disable.add(entity);
+  /// Delete the [int entity] from the world.
+  void deleteEntity(int entity) {
+    for (final manager in _managers.values) {
+      manager.deleted(entity);
+    }
+    componentManager._removeComponentsOfEntity(entity);
+    entityManager._delete(entity);
+  }
 
   /// Returns the value for [key] from [properties].
   Object operator [](String key) => properties[key];
@@ -219,12 +200,16 @@ class World {
       manager.destroy();
     }
   }
+
+  /// Get all components belonging to this entity.
+  Bag<Component> getComponents(int entity) =>
+      _componentManager.getComponentsFor(entity);
 }
 
 /// A [World] which measures performance by measureing elapsed time between
 /// calls.
 class PerformanceMeasureWorld extends World {
-  int _framesToMeasure;
+  final int _framesToMeasure;
   final Map<Type, ListQueue<int>> _systemTimes = <Type, ListQueue<int>>{};
   final Map<Type, ListQueue<int>> _processEntityChangesTimes =
       <Type, ListQueue<int>>{};
@@ -239,18 +224,17 @@ class PerformanceMeasureWorld extends World {
   void process([int group = 0]) {
     _frame[group]++;
     _time[group] += delta;
-    _processEntityChanges();
     final stopwatch = Stopwatch()..start();
     var lastStop = stopwatch.elapsedMicroseconds;
     for (final system in _systemsList
         .where((system) => !system.passive && system.group == group)) {
+      _updateSystem(system);
+      final afterProcessEntityChanges = stopwatch.elapsedMicroseconds;
       system.process();
       final afterSystem = stopwatch.elapsedMicroseconds;
-      _processEntityChanges();
-      final afterProcessEntityChanges = stopwatch.elapsedMicroseconds;
-      _storeTime(_systemTimes, system, afterSystem, lastStop);
+      _storeTime(_systemTimes, system, afterSystem, afterProcessEntityChanges);
       _storeTime(_processEntityChangesTimes, system, afterProcessEntityChanges,
-          afterSystem);
+          lastStop);
       lastStop = stopwatch.elapsedMicroseconds;
     }
     final now = stopwatch.elapsedMicroseconds;
@@ -279,7 +263,7 @@ class PerformanceMeasureWorld extends World {
   }
 
   /// Returns the [PerformanceStats] for every system and and the
-  /// [PerformanceStats] for changes to [Entity]s that require updates to other
+  /// [PerformanceStats] for changes to [int]s that require updates to other
   /// [EntitySystem]s and [Manager]s.
   List<PerformanceStats> getPerformanceStats() {
     final result = <PerformanceStats>[];

@@ -6,31 +6,36 @@ part of dartemis;
 ///
 /// There is no need to ever call any other method than process on objects of
 /// this class.
-abstract class EntitySystem implements EntityObserver {
+abstract class EntitySystem {
   int _systemBitIndex;
   World _world;
-  Bag<Entity> _actives;
+  List<int> _actives;
+  List<int> _interestingComponentsIndices;
+  List<int> _componentIndicesAll;
+  List<int> _componentIndicesOne;
+  List<int> _componentIndicesExcluded;
 
-  BitSet _all;
-  BitSet _excluded;
-  BitSet _one;
-  bool _dummy;
-  bool _oneIsSet;
-  bool _excludedIsSet;
+  final BitSet _all;
+  final BitSet _excluded;
+  final BitSet _one;
 
   bool _passive;
   int _group;
 
   /// Creates an [EntitySystem] with [aspect].
   EntitySystem(Aspect aspect)
-      : _actives = EntityBag(),
+      : _actives = <int>[],
         _all = aspect._all,
         _excluded = aspect._excluded,
         _one = aspect._one {
-    _oneIsSet = _one.isNotEmpty;
-    _excludedIsSet = _excluded.isNotEmpty;
-    _dummy = _all.isEmpty && _one.isEmpty;
     _systemBitIndex = _SystemBitManager._getBitIndexFor(runtimeType);
+    _componentIndicesAll = _all.toIntValues();
+    _componentIndicesOne = _one.toIntValues();
+    _componentIndicesExcluded = _excluded.toIntValues();
+    _interestingComponentsIndices = _componentIndicesAll
+        .followedBy(_componentIndicesOne)
+        .followedBy(_componentIndicesExcluded)
+        .toList();
   }
 
   /// Returns [:true:] if this [EntitySystem] is passive.
@@ -67,7 +72,7 @@ abstract class EntitySystem implements EntityObserver {
 
   /// Any implementing entity system must implement this method and the logic
   /// to process the given [entities] of the system.
-  void processEntities(Iterable<Entity> entities);
+  void processEntities(Iterable<int> entities);
 
   /// Returns true if the system should be processed, false if not.
   bool checkProcessing();
@@ -76,72 +81,18 @@ abstract class EntitySystem implements EntityObserver {
   /// initialized.
   void initialize() {}
 
-  /// Called if the system has received an [entity] it is interested in, e.g.
-  /// created or a component was added to it.
-  void inserted(Entity entity) {}
-
-  /// Called if an [entity] was removed from this system, e.g. deleted or had
-  /// one of it's components removed.
-  void removed(Entity entity) {}
-
-  void _check(Entity entity) {
-    if (_dummy) {
-      return;
-    }
-    final contains = _contains(entity);
-    var interest = _all.equals(_all & entity._typeBits);
-    if (_oneIsSet && interest) {
-      interest = (_one & entity._typeBits).isNotEmpty;
-    }
-    if (_excludedIsSet && interest) {
-      interest = (_excluded & entity._typeBits).isEmpty;
-    }
-
-    if (interest && !contains) {
-      _insertToSystem(entity);
-    } else {
-      if (!interest && contains) {
-        _removeFromSystem(entity);
-      }
-    }
-  }
-
-  bool _contains(Entity entity) => entity._systemBits[_systemBitIndex];
-
-  void _insertToSystem(Entity entity) {
-    _actives.add(entity);
-    entity._addSystemBit(_systemBitIndex);
-    inserted(entity);
-  }
-
-  void _removeFromSystem(Entity entity) {
-    _actives.remove(entity);
-    entity._removeSystemBit(_systemBitIndex);
-    removed(entity);
-  }
-
-  @override
-  void added(Entity entity) => _check(entity);
-  @override
-  void changed(Entity entity) => _check(entity);
-  @override
-  void enabled(Entity entity) => _check(entity);
-
-  @override
-  void deleted(Entity entity) {
-    if (_contains(entity)) {
-      _removeFromSystem(entity);
-    }
-  }
-
-  @override
-  void disabled(Entity entity) {
-    if (_contains(entity)) {
-      _removeFromSystem(entity);
-    }
-  }
-
   /// Gets called if the world gets destroyed. Override if there is cleanup to
   /// do.
   void destroy() {}
+
+  /// Add a [component] to an [entity].
+  void addComponent<T extends Component>(int entity, T component) =>
+      world.addComponent(entity, component);
+
+  /// Remove the component with type [T] from an [entity].
+  void removeComponent<T extends Component>(int entity) =>
+      world.removeComponent<T>(entity);
+
+  /// Delete [entity] from the world.
+  void deleteFromWorld(int entity) => world.deleteEntity(entity);
 }

@@ -11,25 +11,13 @@ void main() {
     final e1 = world.createEntity();
     final e2 = world.createEntity();
     setUp(() {
-      bag = EntityBag(capacity: 1)..add(e1)..add(e2);
+      bag = EntityBag()..add(e1)..add(e2);
     });
     test('removing an element', () {
       bag.remove(e1);
       expect(bag.contains(e1), equals(false));
       expect(bag.contains(e2), equals(true));
-      expect(bag.size, equals(1));
-    });
-    test('removing at position', () {
-      bag.removeAt(0);
-      expect(bag.contains(e1), equals(false));
-      expect(bag.contains(e2), equals(true));
-      expect(bag.size, equals(1));
-    });
-    test('removing last element', () {
-      bag.removeLast();
-      expect(bag.contains(e1), equals(true));
-      expect(bag.contains(e2), equals(false));
-      expect(bag.size, equals(1));
+      expect(bag.length, equals(1));
     });
     test('iterating', () {
       var iter = bag.iterator;
@@ -46,7 +34,7 @@ void main() {
     });
     test('clear', () {
       bag.clear();
-      expect(bag.size, equals(0));
+      expect(bag.length, equals(0));
     });
   });
 }

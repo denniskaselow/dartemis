@@ -1,7 +1,8 @@
 # Changelog
-##0.8.0 (Dart 2.0+ required)
+## 0.8.0 (Dart 2.0+ required)
 ### Breaking API Changes
 * removed deprecated code
+* replaced `Entity` with `int`, methods previously on `Entity` need to be called on `World`, with the `int` value of the entity as the first parameter
 * removed `world.processEntityChanges`, it's now done by default after every system
 * `Aspect` no longer uses static methods, uses named constructors instead
 (migration: replace `Aspect.getAspectF` with `Aspect.f`)
@@ -9,7 +10,7 @@
 * improved type safety for `world.getManager` and `world.getSystem`, no longer takes a `Type` as parameter and uses
 generic methods instead (e.g. `world.getManager<TagManager>()` instead of `world.getManager(TagManager)`)
 * removed `Type` parameter in constructor of `Mapper`, change code from `Mapper<Position>(Position, world)` to `Mapper<Position>(world)`
-* removed `uniqueId` from `Entity`
+
 ### Enhancements
 * `world.destroy()` for cleaning up `EntitySystem`s and `Manager`s
 
@@ -17,19 +18,19 @@ generic methods instead (e.g. `world.getManager<TagManager>()` instead of `world
 * existing entities are processed first, addition of new entities is processed last, makes more sense now that the 
 processing is done after every system
 
-##0.7.3
+## 0.7.3
 ### Bugfixes
 * adding an entity to a dirty EntityBag could lead to an inconsistency between the bitset and the list of entities 
 
-##0.7.2
+## 0.7.2
 ### Bugfixes
 * removing an entity multiple times caused it to be added to the entity pool multiple times
 
-##0.7.1
+## 0.7.1
 ### Internal
 * upgraded dependencies
 
-##0.7.0
+## 0.7.0
 ### Breaking API Changes
 * renamed `Poolable` to `Pooled`
 * renamed `ComponentPoolable` to `PooledComponent`
@@ -48,12 +49,12 @@ processing is done after every system
 ### Internal
 * upgraded dependencies
 
-##0.6.0
+## 0.6.0
 ### API Changes
 * `Bag` is `Iterable` 
 * removed `ReadOnlyBag`, when upgrading to 0.6.0 replace every occurence of `ReadOnlyBag` with `Iterable`
  
-##0.5.2
+## 0.5.2
 ### Enhancements
 * injection works for `Manager`s
 * `initialize()` in the `Manager` is no longer abstract (same as in `EntitySystem`)
@@ -64,29 +65,29 @@ processing is done after every system
 * added getter for the `World` in `Manager` 
 * the uniqueId of an `Entity` was always 0, not very unique
 
-##0.5.1
+## 0.5.1
 ### Internal
 * added version constraint for release of Dart
 
-##0.5.0
+## 0.5.0
 ### Enhancements
 * more injection, less boilerplate (when using dartemis_mirrors)
   * Instances of `ComponentMapper` no longer need to be created in the `initialize`-method of a system, they will be injected
   * `Manager`s and `EntitySystem`s no longer need to be requested from the `World` in the `initialize`-method of a system, they will be injected
 
-##0.4.2
+## 0.4.2
 ### Bugfixes
 * `EntityManager.isEnabled()` no longer fails if the bag of disabled entities is smaller than the id of the checked entity
 
 ### Enhancements
 * added getters for current `time` and `frame` to `World`
 
-##0.4.1
+## 0.4.1
 ### Bugfixes
 * `World.deleteAllEntites()` did not work if there was already a deleted entity
 * writing to the `Bag` by index doesn't make it smaller anymore
 
-##0.4.0
+## 0.4.0
 ### API Changes
 * swapped parameters of `Tagmanager.register`
 * replaced `ImmutableBag` with `ReadOnlyBag`, added getter for `ReadOnlyBag` to `Bag`

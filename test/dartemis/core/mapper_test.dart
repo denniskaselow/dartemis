@@ -15,7 +15,7 @@ void main() {
     test('gets component for entity', () {
       final componentA = ComponentA();
       final componentB = ComponentB();
-      final entity = world.createAndAddEntity([componentA, componentB]);
+      final entity = world.createEntity([componentA, componentB]);
       world
         ..initialize()
         ..process();

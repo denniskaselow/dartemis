@@ -17,9 +17,9 @@ void main() {
       final entity = world.createEntity();
       final componentA = ComponentA();
       final componentC = PooledComponentC();
-      entity..addComponent(componentA)..addComponent(componentC);
+      world.addComponents(entity, [componentA, componentC]);
 
-      final fillBag = entity.getComponents();
+      final fillBag = world.getComponents(entity);
 
       expect(fillBag[0], equals(componentA));
       expect(fillBag[1], equals(componentC));
@@ -30,19 +30,18 @@ void main() {
       final entity1 = world.createEntity();
       final component1A = ComponentA();
       final component1C = PooledComponentC();
-      entity1..addComponent(component1A)..addComponent(component1C);
+      world
+        ..addComponent(entity1, component1A)
+        ..addComponent(entity1, component1C);
 
       final entity2 = world.createEntity();
       final component2A = ComponentA();
       final component2B = ComponentB();
       final component2C = PooledComponentC();
-      entity2
-        ..addComponent(component2A)
-        ..addComponent(component2B)
-        ..addComponent(component2C);
+      world.addComponents(entity2, [component2A, component2B, component2C]);
 
-      final fillBag1 = entity1.getComponents();
-      final fillBag2 = entity2.getComponents();
+      final fillBag1 = world.getComponents(entity1);
+      final fillBag2 = world.getComponents(entity2);
 
       expect(fillBag1, containsAll([component1A, component1C]));
       expect(fillBag1.size, equals(2));
@@ -50,19 +49,19 @@ void main() {
       expect(fillBag2, containsAll([component2A, component2B, component2C]));
       expect(fillBag2.size, equals(3));
     });
-    test('ComponentManager removes Components of deleted Entity', () {
+    test('ComponentManager removes Components of deleted entity', () {
       final entity = world.createEntity();
       final componentA = ComponentA();
       final componentC = PooledComponentC();
-      entity..addComponent(componentA)..addComponent(componentC);
       world
+        ..addComponents(entity, [componentA, componentC])
         ..addEntity(entity)
         ..initialize()
         ..process()
         ..deleteEntity(entity)
         ..process();
 
-      final fillBag = entity.getComponents();
+      final fillBag = world.getComponents(entity);
       expect(fillBag.size, equals(0));
     });
     test('ComponentManager can be created for unused Component', () {

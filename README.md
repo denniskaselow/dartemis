@@ -50,10 +50,10 @@ Getting started
 4. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
 
     ```dart
-    Entity entity  = world.createEntity()
-      ..addComponent(Position(0, 0))
-      ..addComponent(Velocity(1, 1))
-      ..addToWorld();
+    final player = world.createEntity();
+    world
+      ..addComponent(player, Position(0, 0))
+      ..addComponent(player, Velocity(1, 1));
     ```
     A `Component` is a pretty simple structure and should not contain any logic:
 
@@ -97,7 +97,7 @@ Getting started
           velocityMapper = Mapper<Velocity>(world);
         }
 
-        void processEntity(Entity entity) {
+        void processEntity(int entity) {
           Position position = positionMapper[entity];
           Velocity vel = velocityMapper[entity];
           position.x += vel.x;

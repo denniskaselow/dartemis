@@ -8,9 +8,9 @@ void main() {
   group('GroupManager tests', () {
     World world;
     GroupManager sut;
-    Entity entityA;
-    Entity entityAB;
-    Entity entity0;
+    int entityA;
+    int entityAB;
+    int entity0;
     setUp(() {
       world = World();
       sut = GroupManager();

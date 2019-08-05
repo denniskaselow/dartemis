@@ -11,9 +11,9 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
       : super(interval, aspect);
 
   /// Process an [entity] this system is interested in.
-  void processEntity(Entity entity);
+  void processEntity(int entity);
 
   @override
-  void processEntities(Iterable<Entity> entities) =>
+  void processEntities(Iterable<int> entities) =>
       entities.forEach(processEntity);
 }

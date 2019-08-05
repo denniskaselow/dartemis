@@ -1,78 +1,55 @@
 part of dartemis;
 
-/// Manages creation and deletion of every [Entity] and gives access to some
+/// Manages creation and deletion of every [int] and gives access to some
 /// basic statistcs.
 class EntityManager extends Manager {
-  Bag<Entity> _entities;
-  Bag<Entity> _deletedEntities;
-  Bag<bool> _disabled;
+  BitSet _entities;
+  final Bag<int> _deletedEntities;
 
   int _active = 0;
   int _added = 0;
   int _created = 0;
   int _deleted = 0;
 
-  _IdentifierPool _identifierPool;
+  final _IdentifierPool _identifierPool;
 
   EntityManager._internal()
-      : _entities = Bag<Entity>(),
-        _deletedEntities = Bag<Entity>(),
-        _disabled = Bag<bool>(),
+      : _entities = BitSet(32),
+        _deletedEntities = Bag<int>(),
         _identifierPool = _IdentifierPool();
 
   @override
   void initialize() {}
 
-  Entity _createEntityInstance() {
-    final entity = _deletedEntities.removeLast() ??
-        Entity._(_world, _identifierPool.checkOut());
+  int _createEntityInstance() {
+    final entity = _deletedEntities.removeLast() ?? _identifierPool.checkOut();
     _created++;
     return entity;
   }
 
-  @override
-  void added(Entity entity) {
+  void _add(int entity) {
     _active++;
     _added++;
-    _entities[entity.id] = entity;
+    if (entity >= _entities.length) {
+      _entities = BitSet.fromBitSet(_entities, length: entity + 1);
+    }
+    _entities[entity] = true;
   }
 
-  @override
-  void enabled(Entity entity) {
-    _disabled[entity.id] = false;
-  }
+  void _delete(int entity) {
+    if (_entities[entity]) {
+      _entities[entity] = false;
 
-  @override
-  void disabled(Entity entity) {
-    _disabled[entity.id] = true;
-  }
+      _deletedEntities.add(entity);
 
-  @override
-  void deleted(Entity entity) {
-    _entities[entity.id] = null;
-
-    _disabled[entity.id] = false;
-
-    _deletedEntities.add(entity);
-
-    _active--;
-    _deleted++;
+      _active--;
+      _deleted++;
+    }
   }
 
   /// Check if this entity is active.
   /// Active means the entity is being actively processed.
   bool isActive(int entityId) => _entities[entityId] != null;
-
-  /// Check if the specified entityId is enabled.
-  bool isEnabled(int entityId) {
-    if (_disabled.size > entityId) {
-      return _disabled[entityId] != true;
-    }
-    return true;
-  }
-
-  /// Get a entity with this id.
-  Entity _getEntity(int entityId) => _entities[entityId];
 
   /// Get how many entities are active in this world.
   int get activeEntityCount => _active;
@@ -91,7 +68,7 @@ class EntityManager extends Manager {
 
 /// Used only internally to generate distinct ids for entities and reuse them.
 class _IdentifierPool {
-  Bag<int> _ids;
+  final Bag<int> _ids;
   int _nextAvailableId = 0;
 
   _IdentifierPool() : _ids = Bag<int>();

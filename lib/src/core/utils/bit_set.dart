@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 /// [BitSet] to store bits.
 class BitSet {
-  final Uint32List _data;
-  final int _length;
+  Uint32List _data;
+  int _length;
 
   /// Creates a [BitSet] with maximum [length] items.
   ///
@@ -51,6 +51,13 @@ class BitSet {
   /// Whether the [BitSet] is not empty == has set values.
   bool get isNotEmpty => _data.any((i) => i != 0);
 
+  /// Sets all of the bits in the current [BitSet] to true.
+  void setAll() {
+    for (var i = 0; i < _data.length; i++) {
+      _data[i] = 0xffffffff;
+    }
+  }
+
   /// Sets all of the bits in the current [BitSet] to false.
   void clearAll() {
     for (var i = 0; i < _data.length; i++) {
@@ -60,27 +67,39 @@ class BitSet {
 
   /// Update the current [BitSet] using a logical AND operation with the
   /// corresponding elements in the specified [other].
-  /// Length of [other] has to be the same.
   void and(BitSet other) {
-    if (other.length != length) {
-      throw ArgumentError(
-          '''length of given BitSet (${other.length} not equal to length of this BitSet ($length)''');
-    }
-    for (var i = 0; i < _data.length; i++) {
+    var i = 0;
+    for (; i < _data.length && i < other._data.length; i++) {
       _data[i] &= other._data[i];
+    }
+    for (; i < _data.length; i++) {
+      _data[i] = 0;
     }
   }
 
   /// Update the current [BitSet] using a logical OR operation with the
   /// corresponding elements in the specified [other].
-  /// Length of [other] has to be the same.
   void or(BitSet other) {
-    if (other.length != length) {
-      throw ArgumentError(
-          '''length of given BitSet (${other.length} not equal to length of this BitSet ($length)''');
+    if (other._data.length > _data.length) {
+      _data = Uint32List(other.length)..setRange(0, _data.length, _data);
+      _length = other.length;
     }
-    for (var i = 0; i < _data.length; i++) {
+    var i = 0;
+    for (; i < _data.length && i < other._data.length; i++) {
       _data[i] |= other._data[i];
+    }
+    for (; i < other._data.length; i++) {
+      _data[i] = other._data[i];
+    }
+  }
+
+  /// Update the current [BitSet] using a logical AND NOT operation with the
+  /// corresponding elements in the specified [other].
+  void andNot(BitSet other) {
+    var i = 0;
+    for (; i < _data.length && i < other._data.length; i++) {
+      // ignore: unnecessary_parenthesis
+      _data[i] &= ~(other._data[i]);
     }
   }
 
@@ -143,6 +162,21 @@ class BitSet {
   int get hashCode => _data.hashCode ^ _length.hashCode;
 
   static int _bufferLength32(int length) => 1 + (length - 1) ~/ 32;
+
+  /// Returns the set indices.
+  List<int> toIntValues() {
+    final result = <int>[];
+    var index = 0;
+    for (var value in _data) {
+      for (var i = 0; i < 4; i++) {
+        result.addAll(_indices[value & 0xff]
+            .map((internalValue) => internalValue + index));
+        index += 8;
+        value = value >> 8;
+      }
+    }
+    return result;
+  }
 }
 
 final _bitMask = List<int>.generate(32, (i) => 1 << i);
@@ -155,6 +189,21 @@ int _cardinalityOfByte(int index) {
     if (value & 0x01 != 0) {
       result++;
     }
+    value = value >> 1;
+  }
+  return result;
+}
+
+final _indices = List<List<int>>.generate(256, _indicesOfByte);
+List<int> _indicesOfByte(int index) {
+  final result = <int>[];
+  var value = index;
+  var count = 0;
+  while (value > 0) {
+    if (value & 0x01 != 0) {
+      result.add(count);
+    }
+    count++;
     value = value >> 1;
   }
   return result;

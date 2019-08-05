@@ -13,7 +13,7 @@ class MovementSystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final pos = positionMapper[entity];
     final vel = velocityMapper[entity];
 
@@ -40,7 +40,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final cannon = cannonMapper[entity];
 
     if (cannon.canShoot) {
@@ -54,19 +54,17 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   void fireBullet(Position shooterPos, Velocity shooterVel, Cannon cannon) {
     cannon.cooldown = 1000;
-    final bullet = world.createEntity()
-      ..addComponent(Position(shooterPos.x, shooterPos.y));
+    final bullet = world.createEntity();
+    addComponent(bullet, Position(shooterPos.x, shooterPos.y));
     final dirX = cannon.targetX - shooterPos.x;
     final dirY = cannon.targetY - shooterPos.y;
     final distance = sqrt(pow(dirX, 2) + pow(dirY, 2));
     final velX = shooterVel.x + bulletSpeed * (dirX / distance);
     final velY = shooterVel.y + bulletSpeed * (dirY / distance);
-    bullet
-      ..addComponent(Velocity(velX, velY))
-      ..addComponent(CircularBody.down(2, 'red'))
-      ..addComponent(Decay(5000))
-      ..addComponent(AsteroidDestroyer())
-      ..addToWorld();
+    addComponent(bullet, Velocity(velX, velY));
+    addComponent(bullet, CircularBody.down(2, 'red'));
+    addComponent(bullet, Decay(5000));
+    addComponent(bullet, AsteroidDestroyer());
   }
 }
 
@@ -81,11 +79,11 @@ class DecaySystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final decay = decayMapper[entity];
 
     if (decay.timer < 0) {
-      entity.deleteFromWorld();
+      world.deleteEntity(entity);
     } else {
       decay.timer -= world.delta;
     }
@@ -109,7 +107,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final destroyerPos = positionMapper[entity];
 
     for (final asteroid in groupManager.getEntities(groupAsteroids)) {
@@ -118,8 +116,8 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
 
       if (doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x,
           asteroidPos.y, asteroidBody.radius)) {
-        asteroid.deleteFromWorld();
-        entity.deleteFromWorld();
+        deleteFromWorld(asteroid);
+        deleteFromWorld(entity);
         if (asteroidBody.radius > 10) {
           createNewAsteroids(asteroidPos, asteroidBody);
           createNewAsteroids(asteroidPos, asteroidBody);
@@ -129,16 +127,15 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   }
 
   void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
-    final asteroid = world.createEntity()
-      ..addComponent(Position(asteroidPos.x, asteroidPos.y));
+    final asteroid = world.createEntity();
+    addComponent(asteroid, Position(asteroidPos.x, asteroidPos.y));
     final vx = generateRandomVelocity();
     final vy = generateRandomVelocity();
-    asteroid.addComponent(Velocity(vx, vy));
+    addComponent(asteroid, Velocity(vx, vy));
     final radius = asteroidBody.radius / sqrtOf2;
-    asteroid
-      ..addComponent(CircularBody.down(radius, asteroidColor))
-      ..addComponent(PlayerDestroyer())
-      ..addToWorld();
+
+    addComponent(asteroid, CircularBody.down(radius, asteroidColor));
+    addComponent(asteroid, PlayerDestroyer());
     groupManager.add(asteroid, groupAsteroids);
   }
 }
@@ -161,7 +158,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   }
 
   @override
-  void processEntities(Iterable<Entity> entities) {
+  void processEntities(Iterable<int> entities) {
     final player = tagManager.getEntity(tagPlayer);
     final playerPos = positionMapper[player];
     final playerStatus = statusMapper[player];

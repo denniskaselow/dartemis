@@ -12,19 +12,10 @@ abstract class Manager implements EntityObserver {
   void initialize() {}
 
   @override
-  void added(Entity entity) {}
+  void added(int entity) {}
 
   @override
-  void changed(Entity entity) {}
-
-  @override
-  void deleted(Entity entity) {}
-
-  @override
-  void disabled(Entity entity) {}
-
-  @override
-  void enabled(Entity entity) {}
+  void deleted(int entity) {}
 
   /// Called when the world gets destroyed. Override if you need to clean up
   /// your manager.

@@ -9,7 +9,7 @@ abstract class VoidEntitySystem extends EntitySystem {
   VoidEntitySystem() : super(Aspect.empty());
 
   @override
-  void processEntities(Iterable<Entity> entities) => processSystem();
+  void processEntities(Iterable<int> entities) => processSystem();
 
   /// Execute the logic for this system.
   void processSystem();

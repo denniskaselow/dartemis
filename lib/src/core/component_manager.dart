@@ -2,104 +2,196 @@ part of dartemis;
 
 /// Manages als components of all entities.
 class ComponentManager extends Manager {
-  Bag<Bag<Component>> _componentsByType;
-  Bag<Entity> _deleted;
+  final Bag<_ComponentInfo> _componentInfoByType;
+  final EntityBag _deleted;
 
   ComponentManager._internal()
-      : _componentsByType = Bag<Bag<Component>>(),
+      : _componentInfoByType = Bag<_ComponentInfo>(),
         _deleted = EntityBag();
 
   @override
   void initialize() {}
 
-  void _removeComponentsOfEntity(Entity entity) {
+  /// Reigster a system to know if it needs to be updated when an entity
+  /// changed.
+  void _registerSystem(EntitySystem system) {
+    final systemBitIndex = system._systemBitIndex;
+    for (final index in system._interestingComponentsIndices) {
+      var componentInfo = _componentInfoByType[index];
+      if (componentInfo == null) {
+        componentInfo = _ComponentInfo();
+        _componentInfoByType[index] = componentInfo;
+      }
+
+      componentInfo.addInterestedSystem(systemBitIndex);
+    }
+  }
+
+  void _unregisterSystem(EntitySystem system) {
+    final systemBitIndex = system._systemBitIndex;
+    for (final index in system._interestingComponentsIndices) {
+      _componentInfoByType[index].removeInterestedSystem(systemBitIndex);
+    }
+  }
+
+  void _removeComponentsOfEntity(int entity) {
     _forComponentsOfEntity(entity, (components, typeId) {
-      components[entity.id]._removed();
-      components[entity.id] = null;
+      components.remove(entity);
     });
-    entity._typeBits.clearAll();
   }
 
   void _addComponent<T extends Component>(
-      Entity entity, ComponentType type, T component) {
+      int entity, ComponentType type, T component) {
     final index = type._bitIndex;
-    _componentsByType._ensureCapacity(index);
-
-    var components = _componentsByType[index];
-    if (components == null) {
-      components = Bag<T>();
-      _componentsByType[index] = components;
+    _componentInfoByType._ensureCapacity(index);
+    var componentInfo = _componentInfoByType[index];
+    if (componentInfo == null) {
+      componentInfo = _ComponentInfo<T>();
+      _componentInfoByType[index] = componentInfo;
     }
-
-    components[entity.id] = component;
-
-    entity._addTypeBit(type._bitIndex);
+    componentInfo[entity] = component;
   }
 
-  void _removeComponent(Entity entity, ComponentType type) {
-    if (entity._typeBits[type._bitIndex]) {
-      final typeId = type._bitIndex;
-      _componentsByType[typeId][entity.id]._removed();
-      _componentsByType[typeId][entity.id] = null;
-      entity._removeTypeBit(type._bitIndex);
-    }
+  void _removeComponent(int entity, ComponentType type) {
+    final typeId = type._bitIndex;
+    _componentInfoByType[typeId].remove(entity);
   }
 
   /// Returns all components of [ComponentType type].
   Bag<T> getComponentsByType<T extends Component>(ComponentType type) {
     final index = type._bitIndex;
-    _componentsByType._ensureCapacity(index);
+    _componentInfoByType._ensureCapacity(index);
 
-    var components = _componentsByType[index];
+    var components = _componentInfoByType[index];
     if (components == null) {
-      components = Bag<T>();
-      _componentsByType[index] = components;
-    } else if (components is! Bag<T>) {
+      components = _ComponentInfo<T>();
+      _componentInfoByType[index] = components;
+    } else if (components.components is! Bag<T>) {
       // when components get added to an entity as part of a list containing
       // multiple different components, the type is infered as Component
       // instead of the actual type of the component. So if _addComponent was
       // called first a Bag<Component> would have been created and this fixes
       // the type
-      _componentsByType[index] = components.cast<T>();
-      components = _componentsByType[index];
+      _componentInfoByType[index].components = components.components.cast<T>();
+      components = _componentInfoByType[index];
     }
 
-    return components as Bag<T>;
+    return components.components as Bag<T>;
   }
 
-  T _getComponent<T extends Component>(Entity entity, ComponentType type) {
-    final index = type._bitIndex;
-    final components = _componentsByType[index];
-    if (components != null && components.isIndexWithinBounds(entity.id)) {
-      return components[entity.id] as T;
-    }
-    return null;
-  }
-
-  /// Returns the provided [fillBag] with all components of [entity].
-  Bag<Component> getComponentsFor(Entity entity, Bag<Component> fillBag) {
+  /// Returns all components of [entity].
+  Bag<Component> getComponentsFor(int entity) {
+    final result = Bag<Component>();
     _forComponentsOfEntity(
-        entity, (components, _) => fillBag.add(components[entity.id]));
+        entity, (components, _) => result.add(components[entity]));
 
-    return fillBag;
+    return result;
   }
 
   void _forComponentsOfEntity(
-      Entity entity, void Function(Bag<Component> components, int index) f) {
-    final componentBits = entity._typeBits;
+      int entity, void Function(_ComponentInfo components, int index) f) {
     for (var index = 0; index < ComponentType._nextBitIndex; index++) {
-      if (componentBits[index]) {
-        f(_componentsByType[index], index);
+      if (_componentInfoByType[index] != null &&
+          _componentInfoByType[index].entities.length > entity &&
+          _componentInfoByType[index].entities[entity]) {
+        f(_componentInfoByType[index], entity);
       }
     }
   }
 
-  @override
-  void deleted(Entity entity) => _deleted.add(entity);
-
-  void _clean() {
-    _deleted
-      ..forEach(_removeComponentsOfEntity)
-      ..clear();
+  /// Returns true if the list of entities of [system] need to be updated.
+  bool isUpdateNeededForSystem(EntitySystem system) {
+    final systemBitIndex = system._systemBitIndex;
+    for (final interestingComponent in system._interestingComponentsIndices) {
+      if (_componentInfoByType[interestingComponent]
+          .systemRequiresUpdate(systemBitIndex)) {
+        return true;
+      }
+    }
+    return false;
   }
+
+  /// Returns every entity that is of interest for [system].
+  List<int> _getEntitiesForSystem(
+      EntitySystem system, int entitiesBitSetLength) {
+    final baseAll = BitSet(entitiesBitSetLength)..setAll();
+    for (final interestingComponent in system._componentIndicesAll) {
+      baseAll.and(_componentInfoByType[interestingComponent].entities);
+    }
+    final baseOne = BitSet(entitiesBitSetLength);
+    if (system._componentIndicesOne.isEmpty) {
+      baseOne.setAll();
+    } else {
+      for (final interestingComponent in system._componentIndicesOne) {
+        baseOne.or(_componentInfoByType[interestingComponent].entities);
+      }
+    }
+    final baseExclude = BitSet(entitiesBitSetLength);
+    for (final interestingComponent in system._componentIndicesExcluded) {
+      baseExclude.or(_componentInfoByType[interestingComponent].entities);
+    }
+    baseAll
+      ..and(baseOne)
+      ..andNot(baseExclude);
+    return baseAll.toIntValues();
+  }
+}
+
+class _ComponentInfo<T extends Component> {
+  BitSet entities = BitSet(32);
+  Bag<T> components = Bag<T>();
+  BitSet interestedSystems = BitSet(32);
+  BitSet requiresUpdate = BitSet(32);
+  bool dirty = false;
+  _ComponentInfo();
+
+  void operator []=(int entity, T component) {
+    if (entity >= entities.length) {
+      entities = BitSet.fromBitSet(entities, length: entity + 1);
+      components._growTo(entities.length);
+    }
+    entities[entity] = true;
+    components[entity] = component;
+    if (!dirty) {
+      requiresUpdate.or(interestedSystems);
+      dirty = true;
+    }
+  }
+
+  T operator [](int entity) => components[entity];
+
+  void remove(int entity) {
+    if (entities.length > entity && entities[entity]) {
+      entities[entity] = false;
+      components[entity]._removed();
+      components[entity] = null;
+      if (!dirty) {
+        requiresUpdate.or(interestedSystems);
+        dirty = true;
+      }
+    }
+  }
+
+  void addInterestedSystem(int systemBitIndex) {
+    if (systemBitIndex >= interestedSystems.length) {
+      interestedSystems =
+          BitSet.fromBitSet(interestedSystems, length: systemBitIndex + 1);
+      requiresUpdate =
+          BitSet.fromBitSet(requiresUpdate, length: systemBitIndex + 1);
+    }
+    interestedSystems[systemBitIndex] = true;
+    requiresUpdate[systemBitIndex] = true;
+  }
+
+  void removeInterestedSystem(int systemBitIndex) {
+    interestedSystems[systemBitIndex] = false;
+    requiresUpdate[systemBitIndex] = false;
+  }
+
+  bool systemRequiresUpdate(int systemBitIndex) =>
+      requiresUpdate[systemBitIndex];
+  void systemUpdated(int systemBitIndex) =>
+      requiresUpdate[systemBitIndex] = false;
+
+  _ComponentInfo<S> cast<S extends Component>() => this as _ComponentInfo<S>;
 }

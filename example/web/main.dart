@@ -42,13 +42,13 @@ class Darteroids {
   void start() {
     world = World();
 
-    final player = world.createEntity()
-      ..addComponent(Position(maxWidth ~/ 2, maxHeight ~/ 2))
-      ..addComponent(Velocity())
-      ..addComponent(CircularBody.down(20, playerColor))
-      ..addComponent(Cannon())
-      ..addComponent(Status(lifes: 3, invisiblityTimer: 5000))
-      ..addToWorld();
+    final player = world.createEntity();
+    world
+      ..addComponent(player, Position(maxWidth ~/ 2, maxHeight ~/ 2))
+      ..addComponent(player, Velocity())
+      ..addComponent(player, CircularBody.down(20, playerColor))
+      ..addComponent(player, Cannon())
+      ..addComponent(player, Status(lifes: 3, invisiblityTimer: 5000));
 
     final tagManager = TagManager()..register(player, tagPlayer);
     world.addManager(tagManager);
@@ -75,17 +75,18 @@ class Darteroids {
 
   void addAsteroids(GroupManager groupManager) {
     for (var i = 0; i < 10; i++) {
-      final asteroid = world.createEntity()
-        ..addComponent(Position(
-            maxWidth * random.nextDouble(), maxHeight * random.nextDouble()));
+      final asteroid = world.createEntity();
+      world.addComponent(
+          asteroid,
+          Position(
+              maxWidth * random.nextDouble(), maxHeight * random.nextDouble()));
       final vx = generateRandomVelocity();
       final vy = generateRandomVelocity();
-      asteroid
-        ..addComponent(Velocity(vx, vy))
-        ..addComponent(
+      world
+        ..addComponent(asteroid, Velocity(vx, vy))
+        ..addComponent(asteroid,
             CircularBody.down(10 + 20 * random.nextDouble(), asteroidColor))
-        ..addComponent(PlayerDestroyer())
-        ..addToWorld();
+        ..addComponent(asteroid, PlayerDestroyer());
       groupManager.add(asteroid, groupAsteroids);
     }
   }

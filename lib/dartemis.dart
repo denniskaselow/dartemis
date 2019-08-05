@@ -17,13 +17,11 @@ part 'src/core/component_type_manager.dart';
 
 part 'src/core/aspect.dart';
 
-part 'src/core/entity.dart';
 part 'src/core/entity_manager.dart';
 part 'src/core/entity_observer.dart';
 
 part 'src/core/entity_system.dart';
 part 'src/core/systems/entity_processing_system.dart';
-part 'src/core/systems/delayed_entity_processing_system.dart';
 part 'src/core/systems/interval_entity_system.dart';
 part 'src/core/systems/interval_entity_processing_system.dart';
 part 'src/core/systems/void_entity_system.dart';

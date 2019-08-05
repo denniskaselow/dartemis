@@ -4,30 +4,30 @@ part of dartemis;
 /// group or explosions into "effects", then use this manager. You must retrieve
 /// it using world instance.
 ///
-/// An [Entity] can only belong to several groups (0,n) at a time.
+/// An [int] can only belong to several groups (0,n) at a time.
 class GroupManager extends Manager {
-  final Map<String, Bag<Entity>> _entitiesByGroup;
-  final Map<Entity, Bag<String>> _groupsByEntity;
+  final Map<String, Bag<int>> _entitiesByGroup;
+  final Map<int, Bag<String>> _groupsByEntity;
 
   /// Creates the [GroupManager].
   GroupManager()
-      : _entitiesByGroup = <String, Bag<Entity>>{},
-        _groupsByEntity = <Entity, Bag<String>>{};
+      : _entitiesByGroup = <String, Bag<int>>{},
+        _groupsByEntity = <int, Bag<String>>{};
 
   /// Set the group of the entity.
-  void add(Entity entity, String group) {
-    _entitiesByGroup.putIfAbsent(group, () => Bag<Entity>()).add(entity);
+  void add(int entity, String group) {
+    _entitiesByGroup.putIfAbsent(group, () => Bag<int>()).add(entity);
     _groupsByEntity.putIfAbsent(entity, () => Bag<String>()).add(group);
   }
 
   /// Remove the entity from the specified group.
-  void remove(Entity entity, String group) {
+  void remove(int entity, String group) {
     _entitiesByGroup[group]?.remove(entity);
     _groupsByEntity[entity]?.remove(group);
   }
 
   /// Remove [entity] from all existing groups.
-  void removeFromAllGroups(Entity entity) {
+  void removeFromAllGroups(int entity) {
     final groups = _groupsByEntity[entity];
     if (groups != null) {
       groups
@@ -39,21 +39,21 @@ class GroupManager extends Manager {
   }
 
   /// Get all entities that belong to the provided group.
-  Iterable<Entity> getEntities(String group) =>
-      _entitiesByGroup.putIfAbsent(group, () => Bag<Entity>());
+  Iterable<int> getEntities(String group) =>
+      _entitiesByGroup.putIfAbsent(group, () => Bag<int>());
 
   /// Returns the groups the entity belongs to, null if none.
-  Iterable<String> getGroups(Entity entity) => _groupsByEntity[entity];
+  Iterable<String> getGroups(int entity) => _groupsByEntity[entity];
 
   /// Checks if the entity belongs to any group.
-  bool isInAnyGroup(Entity entity) => getGroups(entity) != null;
+  bool isInAnyGroup(int entity) => getGroups(entity) != null;
 
   /// Check if the entity is in the supplied group.
-  bool isInGroup(Entity entity, String group) {
+  bool isInGroup(int entity, String group) {
     final groups = _groupsByEntity[entity];
     return (groups != null) && groups.contains(group);
   }
 
   @override
-  void deleted(Entity entity) => removeFromAllGroups(entity);
+  void deleted(int entity) => removeFromAllGroups(entity);
 }
