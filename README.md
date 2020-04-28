@@ -47,13 +47,13 @@ Getting started
     ```dart
     World world = World();
     ```
-4. Create entities, add components to them and finally add those entities to the world. Entities with different components will be processed by different systems:
+4. Create an entity from a list of components. Entities with different components will be processed by different systems:
 
     ```dart
-    final player = world.createEntity();
-    world
-      ..addComponent(player, Position(0, 0))
-      ..addComponent(player, Velocity(1, 1));
+    world.createEntity([
+      Position(0, 0), 
+      Velocity(1, 1),
+    ]);
     ```
     A `Component` is a pretty simple structure and should not contain any logic:
 
@@ -135,3 +135,4 @@ Example Games using dartemis
 ============================
 * [darteroids](https://denniskaselow.github.io/dartemis/example/darteroids/web/darteroids.html) - Very simple example included in the example folder of dartemis, ([Source](https://github.com/denniskaselow/dartemis/tree/master/example/web))
 * [Shapeocalypse](https://isowosi.github.io/shapeocalypse/) - A fast paced reaction game using Angular, WebAudio and WebGL
+* [damacreat.io](https://damacreat.io) - An iogame similar to agar.io about creatures made of dark matter (circles) consuming dark energy (circles) and other dark matter creatures (circles), which can shoot black holes (circles)
