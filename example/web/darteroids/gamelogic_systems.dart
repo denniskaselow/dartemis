@@ -54,17 +54,19 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 
   void fireBullet(Position shooterPos, Velocity shooterVel, Cannon cannon) {
     cannon.cooldown = 1000;
-    final bullet = world.createEntity();
-    addComponent(bullet, Position(shooterPos.x, shooterPos.y));
     final dirX = cannon.targetX - shooterPos.x;
     final dirY = cannon.targetY - shooterPos.y;
     final distance = sqrt(pow(dirX, 2) + pow(dirY, 2));
     final velX = shooterVel.x + bulletSpeed * (dirX / distance);
     final velY = shooterVel.y + bulletSpeed * (dirY / distance);
-    addComponent(bullet, Velocity(velX, velY));
-    addComponent(bullet, CircularBody.down(2, 'red'));
-    addComponent(bullet, Decay(5000));
-    addComponent(bullet, AsteroidDestroyer());
+
+    world.createEntity([
+      Position(shooterPos.x, shooterPos.y),
+      Velocity(velX, velY),
+      CircularBody.down(2, 'red'),
+      Decay(5000),
+      AsteroidDestroyer(),
+    ]);
   }
 }
 
@@ -127,15 +129,17 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   }
 
   void createNewAsteroids(Position asteroidPos, CircularBody asteroidBody) {
-    final asteroid = world.createEntity();
-    addComponent(asteroid, Position(asteroidPos.x, asteroidPos.y));
     final vx = generateRandomVelocity();
     final vy = generateRandomVelocity();
-    addComponent(asteroid, Velocity(vx, vy));
     final radius = asteroidBody.radius / sqrtOf2;
 
-    addComponent(asteroid, CircularBody.down(radius, asteroidColor));
-    addComponent(asteroid, PlayerDestroyer());
+    final asteroid = world.createEntity([
+      Position(asteroidPos.x, asteroidPos.y),
+      Velocity(vx, vy),
+      CircularBody.down(radius, asteroidColor),
+      PlayerDestroyer(),
+    ]);
+
     groupManager.add(asteroid, groupAsteroids);
   }
 }
