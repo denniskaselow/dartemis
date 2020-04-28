@@ -14,6 +14,7 @@ class TagManager extends Manager {
 
   /// Register a [tag] to an [entity].
   void register(int entity, String tag) {
+    unregister(tag);
     _entitiesByTag[tag] = entity;
     _tagsByEntity[entity] = tag;
   }
