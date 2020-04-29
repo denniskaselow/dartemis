@@ -15,7 +15,7 @@ About
 =====
 **dartemis** is a Dart port of the Entity System Framework **Artemis**.
 
-The original has been written in Java by Arni Arent and Tiago Costa and can be found here: http://gamadu.com/artemis with the source available here: https://code.google.com/p/artemis-framework/
+The original has been written in Java by Arni Arent and Tiago Costa and can be found here: http://archive.is/1xRWW with the source available here: https://code.google.com/p/artemis-framework/
 
 Ports for other languages are also available:
 
