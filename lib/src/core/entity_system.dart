@@ -9,6 +9,9 @@ part of dartemis;
 abstract class EntitySystem {
   int _systemBitIndex;
   World _world;
+
+  // false positive: https://github.com/dart-lang/sdk/issues/39935
+  // ignore: prefer_final_fields
   List<int> _actives;
   List<int> _interestingComponentsIndices;
   List<int> _componentIndicesAll;

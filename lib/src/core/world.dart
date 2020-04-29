@@ -10,9 +10,6 @@ class World {
   final EntityManager _entityManager;
   final ComponentManager _componentManager;
 
-  final EntityBag _added = EntityBag();
-  final EntityBag _deleted = EntityBag();
-
   final Map<Type, EntitySystem> _systems = <Type, EntitySystem>{};
   final List<EntitySystem> _systemsList = <EntitySystem>[];
 

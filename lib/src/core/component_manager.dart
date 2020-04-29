@@ -3,11 +3,9 @@ part of dartemis;
 /// Manages als components of all entities.
 class ComponentManager extends Manager {
   final Bag<_ComponentInfo> _componentInfoByType;
-  final EntityBag _deleted;
 
   ComponentManager._internal()
-      : _componentInfoByType = Bag<_ComponentInfo>(),
-        _deleted = EntityBag();
+      : _componentInfoByType = Bag<_ComponentInfo>();
 
   @override
   void initialize() {}
