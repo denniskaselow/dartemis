@@ -3,6 +3,8 @@ library dartemis;
 import 'dart:collection';
 import 'dart:core';
 
+import 'package:meta/meta.dart';
+
 import 'src/core/utils/bit_set.dart';
 
 part 'src/core/utils/bag.dart';

@@ -208,6 +208,7 @@ class World {
 
 /// A [World] which measures performance by measureing elapsed time between
 /// calls.
+@experimental
 class PerformanceMeasureWorld extends World {
   final int _framesToMeasure;
   final Map<Type, ListQueue<int>> _systemTimes = <Type, ListQueue<int>>{};
@@ -289,6 +290,7 @@ class PerformanceMeasureWorld extends World {
 }
 
 /// Performance statistics for all systems.
+@experimental
 class PerformanceStats {
   /// The [Type] of the system.
   Type system;
