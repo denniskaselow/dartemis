@@ -4,8 +4,7 @@ part of dartemis;
 class ComponentManager extends Manager {
   final Bag<_ComponentInfo> _componentInfoByType;
 
-  ComponentManager._internal()
-      : _componentInfoByType = Bag<_ComponentInfo>();
+  ComponentManager._internal() : _componentInfoByType = Bag<_ComponentInfo>();
 
   @override
   void initialize() {}
@@ -141,6 +140,7 @@ class _ComponentInfo<T extends Component> {
   BitSet interestedSystems = BitSet(32);
   BitSet requiresUpdate = BitSet(32);
   bool dirty = false;
+
   _ComponentInfo();
 
   void operator []=(int entity, T component) {
@@ -188,6 +188,7 @@ class _ComponentInfo<T extends Component> {
 
   bool systemRequiresUpdate(int systemBitIndex) =>
       requiresUpdate[systemBitIndex];
+
   void systemUpdated(int systemBitIndex) =>
       requiresUpdate[systemBitIndex] = false;
 
