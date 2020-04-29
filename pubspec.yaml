@@ -1,6 +1,5 @@
 name: dartemis
 version: 0.8.0
-author: Dennis Kaselow <Dennis.Kaselow+dartemis@gmail.com>
 description: An Entity System Framework for game development. Based on Artemis.
 homepage: https://github.com/denniskaselow/dartemis
 environment:
