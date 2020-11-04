@@ -6,9 +6,9 @@ import 'package:dartemis/dartemis.dart';
 
 void main() {
   group('TagManager tests', () {
-    World world;
-    TagManager sut;
-    int entity;
+    late World world;
+    late TagManager sut;
+    late int entity;
     setUp(() {
       world = World();
       sut = TagManager();
