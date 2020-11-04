@@ -10,7 +10,7 @@ class ComponentA extends Component {}
 
 class ComponentB extends Component {}
 
-class PooledComponentC extends PooledComponent {
+class PooledComponentC extends PooledComponent<PooledComponentC> {
   factory PooledComponentC() =>
       Pooled.of<PooledComponentC>(() => PooledComponentC._());
   PooledComponentC._();

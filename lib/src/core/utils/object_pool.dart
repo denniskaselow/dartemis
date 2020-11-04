@@ -8,13 +8,13 @@ class ObjectPool {
 
   /// Returns a pooled object of type [T]. If there is no object in the pool
   /// it will create a new one using [createPooled].
-  static T get<T extends Pooled>(CreatePooled<T> createPooled) {
+  static T get<T extends Pooled<T>>(CreatePooled<T> createPooled) {
     final pool = _getPool<T>();
     var obj = pool.removeLast();
     return obj ??= createPooled();
   }
 
-  static Bag<T> _getPool<T extends Pooled>() {
+  static Bag<T> _getPool<T extends Pooled<T>>() {
     var pooledObjects = _objectPools[T] as Bag<T>?;
     if (null == pooledObjects) {
       pooledObjects = Bag<T>();
@@ -24,12 +24,12 @@ class ObjectPool {
   }
 
   /// Adds a [Pooled] object to the [ObjectPool].
-  static void add<T extends Pooled>(T pooled) {
+  static void add<T extends Pooled<T>>(T pooled) {
     _getPool<T>().add(pooled);
   }
 
   /// Add a specific [amount] of [Pooled]s for later reuse.
-  static void addMany<T extends Pooled>(
+  static void addMany<T extends Pooled<T>>(
       CreatePooled<T> createPooled, int amount) {
     final pool = _getPool<T>();
     for (var i = 0; i < amount; i++) {
@@ -39,18 +39,18 @@ class ObjectPool {
 }
 
 /// Create a [Pooled] object.
-typedef CreatePooled<T extends Pooled> = T Function();
+typedef CreatePooled<T extends Pooled<T>> = T Function();
 
 /// Objects of this class can be pooled in the [ObjectPool] for later reuse.
 ///
 /// Should be added as a mixin.
-mixin Pooled {
+mixin Pooled<T extends Pooled<T>> {
   /// Creates a new [Pooled] of type [T].
   ///
   /// The instance created with [createPooled] should be created with
   /// a zero-argument contructor because it will only be called once. All fields
   /// of the created object should be set in the calling factory constructor.
-  static T of<T extends Pooled>(CreatePooled<T> createPooled) =>
+  static T of<T extends Pooled<T>>(CreatePooled<T> createPooled) =>
       ObjectPool.get<T>(createPooled);
 
   /// If you need to do some cleanup before this object moves into the Pool of
@@ -60,6 +60,6 @@ mixin Pooled {
   /// Calls the cleanup function and moves this object to the [ObjectPool].
   void moveToPool() {
     cleanUp();
-    ObjectPool.add(this);
+    ObjectPool.add<T>(this as T);
   }
 }
