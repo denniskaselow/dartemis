@@ -11,7 +11,7 @@ class Mapper<T extends Component> {
             .getComponentsByType<T>(ComponentTypeManager.getTypeFor(T));
 
   /// Fast but unsafe retrieval of a component for this entity.
-  /// No bounding checks, so this could throw an ArrayIndexOutOfBoundsExeption,
+  /// No bounding checks, so this could throw a [RangeError],
   /// however in most scenarios you already know the entity possesses this
   /// component.
   T operator [](int entity) => (_components[entity])!;
@@ -27,4 +27,28 @@ class Mapper<T extends Component> {
 
   /// Checks if the entity has this type of component.
   bool has(int entity) => getSafe(entity) != null;
+}
+
+/// Same as [Mapper], except the [[]] operator returns [T?] instead of [T] and
+/// no getSafe method.
+/// For use in combination with [Aspect.forOneOf].
+class OptionalMapper<T extends Component> {
+  final Bag<T?> _components;
+
+  /// Create a Mapper for [T] in [world].
+  OptionalMapper(World world)
+      : _components = world.componentManager
+            .getComponentsByType<T>(ComponentTypeManager.getTypeFor(T));
+
+  /// Fast and safe retrieval of a component for this entity.
+  /// If the entity does not have this component then null is returned.
+  T? operator [](int entity) {
+    if (_components.isIndexWithinBounds(entity)) {
+      return _components[entity];
+    }
+    return null;
+  }
+
+  /// Checks if the entity has this type of component.
+  bool has(int entity) => this[entity] != null;
 }
