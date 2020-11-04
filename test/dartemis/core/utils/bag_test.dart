@@ -6,7 +6,7 @@ import 'package:dartemis/dartemis.dart';
 
 void main() {
   group('Bag tests', () {
-    Bag<String> sut;
+    late Bag<String> sut;
     setUp(() {
       sut = Bag<String>(capacity: 1)..add('A')..add('B');
     });

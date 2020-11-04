@@ -2,7 +2,7 @@ part of dartemis;
 
 /// Manager.
 abstract class Manager implements EntityObserver {
-  World _world;
+  late World _world;
 
   /// The [World] where this manager resides.
   World get world => _world;

@@ -2,10 +2,9 @@ part of dartemis;
 
 class _SystemBitManager {
   static int _pos = 0;
-  static Map<Type, int> _systemBitIndices;
+  static final Map<Type, int?> _systemBitIndices = <Type, int>{};
 
   static int _getBitIndexFor(Type esType) {
-    _systemBitIndices ??= <Type, int>{};
     var bitIndex = _systemBitIndices[esType];
 
     if (bitIndex == null) {

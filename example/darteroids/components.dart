@@ -3,22 +3,27 @@ part of darteroids;
 class CircularBody extends Component {
   num radius;
   String color;
+
   CircularBody.down(this.radius, this.color);
 }
 
 class Position extends Component {
   num _x, _y;
+
   Position(this._x, this._y);
 
   set x(num x) => _x = x % maxWidth;
+
   num get x => _x;
 
   set y(num y) => _y = y % maxHeight;
+
   num get y => _y;
 }
 
 class Velocity extends Component {
   num x, y;
+
   Velocity([this.x = 0, this.y = 0]);
 }
 
@@ -28,7 +33,7 @@ class AsteroidDestroyer extends Component {}
 
 class Cannon extends Component {
   bool shoot = false;
-  num targetX, targetY;
+  num targetX = 0, targetY = 0;
   num cooldown = 0;
 
   void target(num targetX, num targetY) {
@@ -41,6 +46,7 @@ class Cannon extends Component {
 
 class Decay extends Component {
   num timer;
+
   Decay(this.timer);
 }
 

@@ -27,7 +27,7 @@ class ComponentManager extends Manager {
   void _unregisterSystem(EntitySystem system) {
     final systemBitIndex = system._systemBitIndex;
     for (final index in system._interestingComponentsIndices) {
-      _componentInfoByType[index].removeInterestedSystem(systemBitIndex);
+      _componentInfoByType[index]!.removeInterestedSystem(systemBitIndex);
     }
   }
 
@@ -51,7 +51,7 @@ class ComponentManager extends Manager {
 
   void _removeComponent(int entity, ComponentType type) {
     final typeId = type._bitIndex;
-    _componentInfoByType[typeId].remove(entity);
+    _componentInfoByType[typeId]!.remove(entity);
   }
 
   /// Returns all components of [ComponentType type].
@@ -69,11 +69,11 @@ class ComponentManager extends Manager {
       // instead of the actual type of the component. So if _addComponent was
       // called first a Bag<Component> would have been created and this fixes
       // the type
-      _componentInfoByType[index].components = components.components.cast<T>();
+      _componentInfoByType[index]!.components = components.components.cast<T>();
       components = _componentInfoByType[index];
     }
 
-    return components.components as Bag<T>;
+    return components!.components as Bag<T>;
   }
 
   /// Returns all components of [entity].
@@ -88,10 +88,11 @@ class ComponentManager extends Manager {
   void _forComponentsOfEntity(
       int entity, void Function(_ComponentInfo components, int index) f) {
     for (var index = 0; index < ComponentType._nextBitIndex; index++) {
-      if (_componentInfoByType[index] != null &&
-          _componentInfoByType[index].entities.length > entity &&
-          _componentInfoByType[index].entities[entity]) {
-        f(_componentInfoByType[index], entity);
+      final componentInfo = _componentInfoByType[index];
+      if (componentInfo != null &&
+          componentInfo.entities.length > entity &&
+          componentInfo.entities[entity]) {
+        f(componentInfo, entity);
       }
     }
   }
@@ -100,7 +101,7 @@ class ComponentManager extends Manager {
   bool isUpdateNeededForSystem(EntitySystem system) {
     final systemBitIndex = system._systemBitIndex;
     for (final interestingComponent in system._interestingComponentsIndices) {
-      if (_componentInfoByType[interestingComponent]
+      if ((_componentInfoByType[interestingComponent])!
           .systemRequiresUpdate(systemBitIndex)) {
         return true;
       }
@@ -113,19 +114,19 @@ class ComponentManager extends Manager {
       EntitySystem system, int entitiesBitSetLength) {
     final baseAll = BitSet(entitiesBitSetLength)..setAll();
     for (final interestingComponent in system._componentIndicesAll) {
-      baseAll.and(_componentInfoByType[interestingComponent].entities);
+      baseAll.and((_componentInfoByType[interestingComponent])!.entities);
     }
     final baseOne = BitSet(entitiesBitSetLength);
     if (system._componentIndicesOne.isEmpty) {
       baseOne.setAll();
     } else {
       for (final interestingComponent in system._componentIndicesOne) {
-        baseOne.or(_componentInfoByType[interestingComponent].entities);
+        baseOne.or((_componentInfoByType[interestingComponent])!.entities);
       }
     }
     final baseExclude = BitSet(entitiesBitSetLength);
     for (final interestingComponent in system._componentIndicesExcluded) {
-      baseExclude.or(_componentInfoByType[interestingComponent].entities);
+      baseExclude.or((_componentInfoByType[interestingComponent])!.entities);
     }
     baseAll
       ..and(baseOne)
@@ -136,7 +137,7 @@ class ComponentManager extends Manager {
 
 class _ComponentInfo<T extends Component> {
   BitSet entities = BitSet(32);
-  Bag<T> components = Bag<T>();
+  Bag<T?> components = Bag<T?>();
   BitSet interestedSystems = BitSet(32);
   BitSet requiresUpdate = BitSet(32);
   bool dirty = false;
@@ -156,12 +157,12 @@ class _ComponentInfo<T extends Component> {
     }
   }
 
-  T operator [](int entity) => components[entity];
+  T operator [](int entity) => (components[entity])!;
 
   void remove(int entity) {
     if (entities.length > entity && entities[entity]) {
       entities[entity] = false;
-      components[entity]._removed();
+      (components[entity])!._removed();
       components[entity] = null;
       if (!dirty) {
         requiresUpdate.or(interestedSystems);

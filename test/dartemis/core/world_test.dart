@@ -8,9 +8,9 @@ import 'components_setup.dart';
 
 void main() {
   group('World tests', () {
-    World world;
-    MockEntitySystem system;
-    MockComponentManager componentManager;
+    late World world;
+    late MockEntitySystem system;
+    late MockComponentManager componentManager;
     setUp(() {
       componentManager = MockComponentManager();
       system = MockEntitySystem();
@@ -152,10 +152,10 @@ void main() {
     });
   });
   group('integration tests for World.process()', () {
-    World world;
-    int entityAB;
-    int entityAC;
-    EntitySystemStarter systemStarter;
+    late World world;
+    late int entityAB;
+    late int entityAC;
+    late EntitySystemStarter systemStarter;
     setUp(() {
       world = World();
       entityAB = world.createEntity([ComponentA(), ComponentB()]);

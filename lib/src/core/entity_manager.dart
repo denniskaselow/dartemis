@@ -49,7 +49,7 @@ class EntityManager extends Manager {
 
   /// Check if this entity is active.
   /// Active means the entity is being actively processed.
-  bool isActive(int entityId) => _entities[entityId] != null;
+  bool isActive(int entityId) => _entities[entityId];
 
   /// Get how many entities are active in this world.
   int get activeEntityCount => _active;
@@ -68,13 +68,13 @@ class EntityManager extends Manager {
 
 /// Used only internally to generate distinct ids for entities and reuse them.
 class _IdentifierPool {
-  final Bag<int> _ids;
+  final List<int> _ids = [];
   int _nextAvailableId = 0;
 
-  _IdentifierPool() : _ids = Bag<int>();
+  _IdentifierPool();
 
   int checkOut() {
-    if (_ids.size > 0) {
+    if (_ids.isNotEmpty) {
       return _ids.removeLast();
     }
     return _nextAvailableId++;

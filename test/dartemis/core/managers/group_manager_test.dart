@@ -6,11 +6,11 @@ import 'package:dartemis/dartemis.dart';
 
 void main() {
   group('GroupManager tests', () {
-    World world;
-    GroupManager sut;
-    int entityA;
-    int entityAB;
-    int entity0;
+    late World world;
+    late GroupManager sut;
+    late int entityA;
+    late int entityAB;
+    late int entity0;
     setUp(() {
       world = World();
       sut = GroupManager();

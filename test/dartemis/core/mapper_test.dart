@@ -8,7 +8,7 @@ import 'components_setup.dart';
 
 void main() {
   group('mapper', () {
-    World world;
+    late World world;
     setUp(() {
       world = World();
     });

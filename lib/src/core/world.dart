@@ -27,7 +27,7 @@ class World {
 
   /// Create the [World] with the default [EntityManager] and
   /// [ComponentManager].
-  World({EntityManager entityManager, ComponentManager componentManager})
+  World({EntityManager? entityManager, ComponentManager? componentManager})
       : _entityManager = entityManager ?? EntityManager._internal(),
         _componentManager = componentManager ?? ComponentManager._internal() {
     addManager(_entityManager);
@@ -35,11 +35,11 @@ class World {
   }
 
   /// Returns the current frame/how often the systems in [group] have been processed.
-  int frame([int group = 0]) => _frame[group];
+  int frame([int group = 0]) => _frame[group]!;
 
   /// Returns the time that has elapsed for the systems in the [group] since
   /// the game has started (sum of all deltas).
-  double time([int group = 0]) => _time[group];
+  double time([int group = 0]) => _time[group]!;
 
   /// Makes sure all managers systems are initialized in the order they were
   /// added.
@@ -136,8 +136,8 @@ class World {
 
   /// Processes all changes to entities and executes all non-passive systems.
   void process([int group = 0]) {
-    _frame[group]++;
-    _time[group] += delta;
+    _frame[group] = _frame[group]! + 1;
+    _time[group] = _time[group]! + delta;
 
     for (final system in _systemsList
         .where((system) => !system.passive && system.group == group)) {
@@ -181,7 +181,7 @@ class World {
   }
 
   /// Returns the value for [key] from [properties].
-  Object operator [](String key) => properties[key];
+  Object? operator [](String key) => properties[key];
 
   /// Set the [value] of [key] in [properties].
   void operator []=(String key, Object value) {
@@ -220,8 +220,8 @@ class PerformanceMeasureWorld extends World {
 
   @override
   void process([int group = 0]) {
-    _frame[group]++;
-    _time[group] += delta;
+    _frame[group] = _frame[group]! + 1;
+    _time[group] = _time[group]! + delta;
     final stopwatch = Stopwatch()..start();
     var lastStop = stopwatch.elapsedMicroseconds;
     for (final system in _systemsList
@@ -236,7 +236,7 @@ class PerformanceMeasureWorld extends World {
       lastStop = stopwatch.elapsedMicroseconds;
     }
     final now = stopwatch.elapsedMicroseconds;
-    final times = _systemTimes[runtimeType];
+    final times = _systemTimes[runtimeType]!;
     if (times.length >= _framesToMeasure) {
       times.removeFirst();
     }
@@ -245,7 +245,7 @@ class PerformanceMeasureWorld extends World {
 
   void _storeTime(Map<Type, ListQueue<int>> measuredTimes, EntitySystem system,
       int afterSystem, int lastStop) {
-    final times = measuredTimes[system.runtimeType];
+    final times = measuredTimes[system.runtimeType]!;
     if (times.length >= _framesToMeasure) {
       times.removeFirst();
     }

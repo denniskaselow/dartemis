@@ -4,11 +4,12 @@ part of dartemis;
 /// entities, speedwise it is very good, especially suited for games.
 // ignore: prefer_mixin
 class Bag<E> with IterableMixin<E> {
-  List<E> _data;
+  List<E?> _data;
   int _size = 0;
 
   /// Create a [Bag] with an initial capacity of [capacity].
-  Bag({int capacity = 32}) : _data = List<E>(capacity);
+  Bag({int capacity = 32})
+      : _data = List<E?>.filled(capacity, null, growable: false);
 
   /// Creates a new [Bag] with the elements of [iterable].
   Bag.from(Iterable<E> iterable)
@@ -16,7 +17,7 @@ class Bag<E> with IterableMixin<E> {
         _size = iterable.length;
 
   /// Returns the element at the specified [index] in the bag.
-  E operator [](int index) => _data[index];
+  E? operator [](int index) => _data[index];
 
   /// Returns the number of elements in this bag.
   int get size => _size;
@@ -27,7 +28,7 @@ class Bag<E> with IterableMixin<E> {
 
   /// Removes the element at the specified [index] in this bag. Does this by
   /// overwriting with the last element and then removing the last element.
-  E removeAt(int index) {
+  E? removeAt(int index) {
     // make copy of element to remove so it can be returned
     final o = _data[index];
     // overwrite item to remove with last element
@@ -39,7 +40,7 @@ class Bag<E> with IterableMixin<E> {
   }
 
   /// Remove and return the last object in the bag.
-  E removeLast() {
+  E? removeLast() {
     if (_size > 0) {
       final current = _data[--_size];
       _data[size] = null;
@@ -100,7 +101,8 @@ class Bag<E> with IterableMixin<E> {
 
   void _growTo(int newCapacity) {
     final oldData = _data;
-    _data = List<E>(newCapacity)..setRange(0, oldData.length, oldData);
+    _data = List<E?>.filled(newCapacity, null, growable: false)
+      ..setRange(0, oldData.length, oldData);
   }
 
   void _ensureCapacity(int index) {
@@ -120,18 +122,14 @@ class Bag<E> with IterableMixin<E> {
   }
 
   /// Add all [items] into this bag.
-  void addAll(Bag<E> items) {
-    for (var i = 0; items.size > i; i++) {
-      add(items[i]);
-    }
-  }
+  void addAll(Bag<E> items) => items.forEach(add);
 
   /// Returns [:true:] iff the [index] is within the capacity of the underlying
   /// list.
   bool isIndexWithinBounds(int index) => index < capacity;
 
   @override
-  Iterator<E> get iterator => _data.sublist(0, size).iterator;
+  Iterator<E> get iterator => _data.sublist(0, size).iterator as Iterator<E>;
 
   @override
   int get length => size;

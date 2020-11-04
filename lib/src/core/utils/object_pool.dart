@@ -15,7 +15,7 @@ class ObjectPool {
   }
 
   static Bag<T> _getPool<T extends Pooled>() {
-    var pooledObjects = _objectPools[T] as Bag<T>;
+    var pooledObjects = _objectPools[T] as Bag<T>?;
     if (null == pooledObjects) {
       pooledObjects = Bag<T>();
       _objectPools[T] = pooledObjects;
@@ -24,8 +24,8 @@ class ObjectPool {
   }
 
   /// Adds a [Pooled] object to the [ObjectPool].
-  static void add(Pooled pooled) {
-    _objectPools[pooled.runtimeType].add(pooled);
+  static void add<T extends Pooled>(T pooled) {
+    _getPool<T>().add(pooled);
   }
 
   /// Add a specific [amount] of [Pooled]s for later reuse.

@@ -1,11 +1,11 @@
 part of darteroids;
 
 class CircleRenderingSystem extends EntityProcessingSystem {
-  CanvasRenderingContext2D context;
+  final CanvasRenderingContext2D context;
 
-  Mapper<Position> positionMapper;
-  Mapper<CircularBody> bodyMapper;
-  Mapper<Status> statusMapper;
+  late final Mapper<Position> positionMapper;
+  late final Mapper<CircularBody> bodyMapper;
+  late final Mapper<Status> statusMapper;
 
   CircleRenderingSystem(this.context)
       : super(Aspect.forAllOf([Position, CircularBody]));
@@ -66,7 +66,7 @@ class CircleRenderingSystem extends EntityProcessingSystem {
 }
 
 class BackgroundRenderSystem extends VoidEntitySystem {
-  CanvasRenderingContext2D context;
+  final CanvasRenderingContext2D context;
 
   BackgroundRenderSystem(this.context);
 
@@ -87,9 +87,9 @@ class BackgroundRenderSystem extends VoidEntitySystem {
 }
 
 class HudRenderSystem extends VoidEntitySystem {
-  CanvasRenderingContext2D context;
-  TagManager tagManager;
-  Mapper<Status> statusMapper;
+  final CanvasRenderingContext2D context;
+  late final TagManager tagManager;
+  late final Mapper<Status> statusMapper;
 
   HudRenderSystem(this.context);
 
@@ -110,7 +110,7 @@ class HudRenderSystem extends VoidEntitySystem {
         ..closePath()
         ..fill();
 
-      final player = tagManager.getEntity(tagPlayer);
+      final player = tagManager.getEntity(tagPlayer)!;
       final status = statusMapper[player];
 
       context.fillStyle = playerColor;

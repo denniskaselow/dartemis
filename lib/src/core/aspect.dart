@@ -78,10 +78,8 @@ class Aspect {
   BitSet get one => _one;
 
   void _updateBitMask(BitSet mask, List<Type> componentTypes) {
-    if (null != componentTypes) {
-      for (final componentType in componentTypes) {
-        mask[ComponentTypeManager.getBitIndex(componentType)] = true;
-      }
+    for (final componentType in componentTypes) {
+      mask[ComponentTypeManager.getBitIndex(componentType)] = true;
     }
   }
 }

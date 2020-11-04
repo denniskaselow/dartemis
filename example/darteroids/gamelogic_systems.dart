@@ -1,8 +1,8 @@
 part of darteroids;
 
 class MovementSystem extends EntityProcessingSystem {
-  Mapper<Position> positionMapper;
-  Mapper<Velocity> velocityMapper;
+  late final Mapper<Position> positionMapper;
+  late final Mapper<Velocity> velocityMapper;
 
   MovementSystem() : super(Aspect.forAllOf([Position, Velocity]));
 
@@ -26,9 +26,9 @@ class MovementSystem extends EntityProcessingSystem {
 class BulletSpawningSystem extends EntityProcessingSystem {
   static const num bulletSpeed = 2.5;
 
-  Mapper<Position> positionMapper;
-  Mapper<Cannon> cannonMapper;
-  Mapper<Velocity> velocityMapper;
+  late final Mapper<Position> positionMapper;
+  late final Mapper<Cannon> cannonMapper;
+  late final Mapper<Velocity> velocityMapper;
 
   BulletSpawningSystem() : super(Aspect.forAllOf([Cannon, Position, Velocity]));
 
@@ -71,7 +71,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
 }
 
 class DecaySystem extends EntityProcessingSystem {
-  Mapper<Decay> decayMapper;
+  late final Mapper<Decay> decayMapper;
 
   DecaySystem() : super(Aspect.forAllOf([Decay]));
 
@@ -94,9 +94,9 @@ class DecaySystem extends EntityProcessingSystem {
 
 class AsteroidDestructionSystem extends EntityProcessingSystem {
   static final num sqrtOf2 = sqrt(2);
-  GroupManager groupManager;
-  Mapper<Position> positionMapper;
-  Mapper<CircularBody> bodyMapper;
+  late final GroupManager groupManager;
+  late final Mapper<Position> positionMapper;
+  late final Mapper<CircularBody> bodyMapper;
 
   AsteroidDestructionSystem()
       : super(Aspect.forAllOf([AsteroidDestroyer, Position]));
@@ -145,10 +145,10 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
 }
 
 class PlayerCollisionDetectionSystem extends EntitySystem {
-  TagManager tagManager;
-  Mapper<Status> statusMapper;
-  Mapper<Position> positionMapper;
-  Mapper<CircularBody> bodyMapper;
+  late final TagManager tagManager;
+  late final Mapper<Status> statusMapper;
+  late final Mapper<Position> positionMapper;
+  late final Mapper<CircularBody> bodyMapper;
 
   PlayerCollisionDetectionSystem()
       : super(Aspect.forAllOf([PlayerDestroyer, Position, CircularBody]));
@@ -163,7 +163,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
 
   @override
   void processEntities(Iterable<int> entities) {
-    final player = tagManager.getEntity(tagPlayer);
+    final player = tagManager.getEntity(tagPlayer)!;
     final playerPos = positionMapper[player];
     final playerStatus = statusMapper[player];
     final playerBody = bodyMapper[player];

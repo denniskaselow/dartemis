@@ -7,7 +7,7 @@ part of dartemis;
 /// An [int] can only belong to several groups (0,n) at a time.
 class GroupManager extends Manager {
   final Map<String, Bag<int>> _entitiesByGroup;
-  final Map<int, Bag<String>> _groupsByEntity;
+  final Map<int, Bag<String>?> _groupsByEntity;
 
   /// Creates the [GroupManager].
   GroupManager()
@@ -17,7 +17,7 @@ class GroupManager extends Manager {
   /// Set the group of the entity.
   void add(int entity, String group) {
     _entitiesByGroup.putIfAbsent(group, () => Bag<int>()).add(entity);
-    _groupsByEntity.putIfAbsent(entity, () => Bag<String>()).add(group);
+    _groupsByEntity.putIfAbsent(entity, () => Bag<String>())!.add(group);
   }
 
   /// Remove the entity from the specified group.
@@ -43,7 +43,7 @@ class GroupManager extends Manager {
       _entitiesByGroup.putIfAbsent(group, () => Bag<int>());
 
   /// Returns the groups the entity belongs to, null if none.
-  Iterable<String> getGroups(int entity) => _groupsByEntity[entity];
+  Iterable<String>? getGroups(int entity) => _groupsByEntity[entity];
 
   /// Checks if the entity belongs to any group.
   bool isInAnyGroup(int entity) => getGroups(entity) != null;

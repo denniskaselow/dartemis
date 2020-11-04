@@ -4,7 +4,7 @@ part of dartemis;
 ///
 /// An entity can only belong to a single player at a time.
 class PlayerManager extends Manager {
-  final Map<int, String> _playerByEntity;
+  final Map<int, String?> _playerByEntity;
   final Map<String, Bag<int>> _entitiesByPlayer;
 
   /// Creates the [PlayerManager].
@@ -31,7 +31,7 @@ class PlayerManager extends Manager {
   }
 
   /// Returns the player associated with [entity].
-  String getPlayer(int entity) => _playerByEntity[entity];
+  String? getPlayer(int entity) => _playerByEntity[entity];
 
   @override
   void deleted(int entity) => removeFromPlayer(entity);

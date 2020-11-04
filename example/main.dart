@@ -22,10 +22,9 @@ const int maxHeight = 600;
 const int hudHeight = 100;
 
 final Random random = Random();
-final CanvasElement canvas = querySelector('#gamecontainer') as CanvasElement;
 
 void main() {
-  canvas
+  final canvas = querySelector('#gamecontainer') as CanvasElement
     ..width = maxWidth
     ..height = maxHeight + hudHeight;
 
@@ -33,18 +32,16 @@ void main() {
 }
 
 class Darteroids {
-  CanvasElement canvas;
-  CanvasRenderingContext2D context2d;
+  final CanvasElement canvas;
+  final CanvasRenderingContext2D context2d;
+  final World world;
   num lastTime = 0;
-  World world;
 
-  Darteroids(this.canvas) {
-    context2d = canvas.context2D;
-  }
+  Darteroids(this.canvas)
+      : context2d = canvas.context2D,
+        world = World();
 
   void start() {
-    world = World();
-
     final player = world.createEntity([
       Position(maxWidth ~/ 2, maxHeight ~/ 2),
       Velocity(),

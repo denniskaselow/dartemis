@@ -9,7 +9,7 @@ const int defaultBagSize = 16;
 
 void main() {
   group('integration tests for ComponentManager', () {
-    World world;
+    late World world;
     setUp(() {
       world = World();
     });

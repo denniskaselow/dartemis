@@ -6,7 +6,7 @@ import 'package:dartemis/dartemis.dart';
 
 void main() {
   group('integration tests for EntityManager', () {
-    World world;
+    late World world;
     setUp(() {
       world = World();
     });

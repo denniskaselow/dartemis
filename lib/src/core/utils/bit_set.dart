@@ -11,7 +11,7 @@ class BitSet {
   factory BitSet(int length) => BitSet._(Uint32List(_bufferLength32(length)));
 
   /// Creates a [BitSet] using an existing [BitSet].
-  factory BitSet.fromBitSet(BitSet set, {int length}) {
+  factory BitSet.fromBitSet(BitSet set, {int? length}) {
     length ??= set.length;
     final data = Uint32List(_bufferLength32(length))
       ..setRange(0, set._data.length, set._data);
@@ -135,7 +135,8 @@ class BitSet {
   }
 
   @override
-  bool operator ==(Object other) {
+  // ignore: type_annotate_public_apis
+  bool operator ==(other) {
     if (identical(this, other)) {
       return true;
     }

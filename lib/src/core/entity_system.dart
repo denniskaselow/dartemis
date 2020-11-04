@@ -7,28 +7,27 @@ part of dartemis;
 /// There is no need to ever call any other method than process on objects of
 /// this class.
 abstract class EntitySystem {
-  int _systemBitIndex;
-  World _world;
+  late final int _systemBitIndex;
+  late final World _world;
 
   // false positive: https://github.com/dart-lang/sdk/issues/39935
   // ignore: prefer_final_fields
-  List<int> _actives;
-  List<int> _interestingComponentsIndices;
-  List<int> _componentIndicesAll;
-  List<int> _componentIndicesOne;
-  List<int> _componentIndicesExcluded;
+  late List<int> _actives;
+  late final List<int> _interestingComponentsIndices;
+  late final List<int> _componentIndicesAll;
+  late final List<int> _componentIndicesOne;
+  late final List<int> _componentIndicesExcluded;
 
   final BitSet _all;
   final BitSet _excluded;
   final BitSet _one;
 
-  bool _passive;
-  int _group;
+  late bool _passive;
+  late final int _group;
 
   /// Creates an [EntitySystem] with [aspect].
   EntitySystem(Aspect aspect)
-      : _actives = <int>[],
-        _all = aspect._all,
+      : _all = aspect._all,
         _excluded = aspect._excluded,
         _one = aspect._one {
     _systemBitIndex = _SystemBitManager._getBitIndexFor(runtimeType);
@@ -51,11 +50,11 @@ abstract class EntitySystem {
   World get world => _world;
 
   /// Returns how often the system in this [group] have been processed.
-  int get frame => world._frame[_group];
+  int get frame => world._frame[_group]!;
 
   /// Returns the time that has elapsed for the systems in this [group] since
   /// the game has started (sum of all deltas).
-  double get time => world._time[_group];
+  double get time => world._time[_group]!;
 
   /// Called before processing of entities begins.
   void begin() {}
