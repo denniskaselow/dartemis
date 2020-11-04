@@ -1,4 +1,10 @@
 # Changelog
+## 0.9.0 (NNBD/nullsafety)
+
+### Enhancements
+* switched to NNBD mode
+* added `OptionalMapper` with a nullable return type for the `[]` operatpr
+
 ## 0.8.0 (Dart 2.0+ required)
 ### Breaking API Changes
 * removed deprecated code
@@ -9,7 +15,7 @@
 * methods in `Aspect` no longer return the aspect, use cascading operator to chain calls
 * improved type safety for `world.getManager` and `world.getSystem`, no longer takes a `Type` as parameter and uses
 generic methods instead (e.g. `world.getManager<TagManager>()` instead of `world.getManager(TagManager)`)
-* removed `Type` parameter in constructor of `Mapper`, change code from `Mapper<Position>(Position, world)` to `Mapper<Position>(world)`
+* removed `Type` parameter in the constructor of `Mapper`, change code from `Mapper<Position>(Position, world)` to `Mapper<Position>(world)`
 
 ### Enhancements
 * `world.destroy()` for cleaning up `EntitySystem`s and `Manager`s
