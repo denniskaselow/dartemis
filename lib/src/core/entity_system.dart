@@ -12,7 +12,7 @@ abstract class EntitySystem {
 
   // false positive: https://github.com/dart-lang/sdk/issues/39935
   // ignore: prefer_final_fields
-  late List<int> _actives;
+  List<int> _actives = [];
   late final List<int> _interestingComponentsIndices;
   late final List<int> _componentIndicesAll;
   late final List<int> _componentIndicesOne;
