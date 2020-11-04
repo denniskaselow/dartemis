@@ -3,13 +3,13 @@ version: 0.9.0-dev
 description: An Entity System Framework for game development. Based on Artemis.
 homepage: https://github.com/denniskaselow/dartemis
 environment:
-  sdk: '>=2.10.0-0.0.dev <3.0.0'
+  sdk: '>=2.12.0-0.0.dev <3.0.0'
 
 dependencies:
   meta: ^1.0.5
 
 dev_dependencies:
-  test: ^1.15.0
-  mockito: ^4.1.1
   build_runner: ^1.10.0
   build_web_compilers: ^2.11.0
+  mockito: ^4.1.1
+  test: ^1.16.0-nullsafety.1

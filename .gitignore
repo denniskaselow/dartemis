@@ -3,3 +3,4 @@ pubspec.lock
 build/
 .idea/
 .packages
+/.dart_tool/
