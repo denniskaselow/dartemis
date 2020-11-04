@@ -89,8 +89,8 @@ class World {
 
   /// Adds a [component] to the [entity].
   void addComponent<T extends Component>(int entity, T component) =>
-      componentManager._addComponent(entity,
-          ComponentTypeManager.getTypeFor(component.runtimeType), component);
+      componentManager._addComponent(
+          entity, ComponentType.getTypeFor(component.runtimeType), component);
 
   /// Adds [components] to the [entity].
   void addComponents<T extends Component>(int entity, List<T> components) {
@@ -100,8 +100,8 @@ class World {
   }
 
   /// removes a [Component] of type [T] from the [entity].
-  void removeComponent<T extends Component>(int entity) => componentManager
-      ._removeComponent(entity, ComponentTypeManager.getTypeFor(T));
+  void removeComponent<T extends Component>(int entity) =>
+      componentManager._removeComponent(entity, ComponentType.getTypeFor(T));
 
   /// Gives you all the systems in this world for possible iteration.
   Iterable<EntitySystem> get systems => _systemsList;

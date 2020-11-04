@@ -2,9 +2,9 @@ library components_setup;
 
 import 'package:dartemis/dartemis.dart';
 
-final int componentABit = ComponentTypeManager.getBitIndex(ComponentA);
-final int componentBBit = ComponentTypeManager.getBitIndex(ComponentB);
-final int componentCBit = ComponentTypeManager.getBitIndex(PooledComponentC);
+final int componentABit = ComponentType.getBitIndex(ComponentA);
+final int componentBBit = ComponentType.getBitIndex(ComponentB);
+final int componentCBit = ComponentType.getBitIndex(PooledComponentC);
 
 class ComponentA extends Component {}
 

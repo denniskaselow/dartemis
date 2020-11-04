@@ -1,9 +1,11 @@
 # Changelog
 ## 0.9.0 (NNBD/nullsafety)
+### Breaking API Changes
+* removed `ComponentTypeManager` and moved methods to `ComponentType`
 
 ### Enhancements
 * switched to NNBD mode
-* added `OptionalMapper` with a nullable return type for the `[]` operatpr
+* added `OptionalMapper` with a nullable return type for the `[]` operator
 
 ## 0.8.0 (Dart 2.0+ required)
 ### Breaking API Changes

@@ -15,7 +15,6 @@ part 'src/core/component.dart';
 part 'src/core/mapper.dart';
 part 'src/core/component_manager.dart';
 part 'src/core/component_type.dart';
-part 'src/core/component_type_manager.dart';
 
 part 'src/core/aspect.dart';
 

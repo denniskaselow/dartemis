@@ -79,7 +79,7 @@ class Aspect {
 
   void _updateBitMask(BitSet mask, List<Type> componentTypes) {
     for (final componentType in componentTypes) {
-      mask[ComponentTypeManager.getBitIndex(componentType)] = true;
+      mask[ComponentType.getBitIndex(componentType)] = true;
     }
   }
 }
