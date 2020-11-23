@@ -129,7 +129,7 @@ class Bag<E> with IterableMixin<E> {
   bool isIndexWithinBounds(int index) => index < capacity;
 
   @override
-  Iterator<E> get iterator => _data.sublist(0, size).iterator as Iterator<E>;
+  Iterator<E> get iterator => _data.sublist(0, size).cast<E>().iterator;
 
   @override
   int get length => size;

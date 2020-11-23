@@ -54,8 +54,9 @@ class ComponentManager extends Manager {
     _componentInfoByType[typeId]!.remove(entity);
   }
 
-  /// Returns all components of [ComponentType type].
-  Bag<T> getComponentsByType<T extends Component>(ComponentType type) {
+  /// Returns all components of [ComponentType type] accessible by their entity
+  /// id.
+  List<T?> _getComponentsByType<T extends Component>(ComponentType type) {
     final index = type._bitIndex;
     _componentInfoByType._ensureCapacity(index);
 
@@ -63,18 +64,23 @@ class ComponentManager extends Manager {
     if (components == null) {
       components = _ComponentInfo<T>();
       _componentInfoByType[index] = components;
-    } else if (components.components is! Bag<T>) {
+    } else if (components.components is! List<T?>) {
       // when components get added to an entity as part of a list containing
       // multiple different components, the type is infered as Component
       // instead of the actual type of the component. So if _addComponent was
       // called first a Bag<Component> would have been created and this fixes
       // the type
-      _componentInfoByType[index]!.components = components.components.cast<T>();
+      _componentInfoByType[index]!.components =
+          components.components.cast<T?>();
       components = _componentInfoByType[index];
     }
 
-    return components!.components as Bag<T>;
+    return components!.components.cast<T?>();
   }
+
+  /// Returns all components of [ComponentType type].
+  List<T> getComponentsByType<T extends Component>(ComponentType type) =>
+      _getComponentsByType(type).whereType<T>().toList();
 
   /// Returns all components of [entity].
   Bag<Component> getComponentsFor(int entity) {
@@ -137,7 +143,7 @@ class ComponentManager extends Manager {
 
 class _ComponentInfo<T extends Component> {
   BitSet entities = BitSet(32);
-  Bag<T?> components = Bag<T?>();
+  List<T?> components = List.filled(32, null);
   BitSet interestedSystems = BitSet(32);
   BitSet requiresUpdate = BitSet(32);
   bool dirty = false;
@@ -147,7 +153,9 @@ class _ComponentInfo<T extends Component> {
   void operator []=(int entity, T component) {
     if (entity >= entities.length) {
       entities = BitSet.fromBitSet(entities, length: entity + 1);
-      components._growTo(entities.length);
+      final newCapacity = (entities.length * 3) ~/ 2 + 1;
+      components = List<T?>.filled(newCapacity, null)
+        ..setRange(0, components.length, components);
     }
     entities[entity] = true;
     components[entity] = component;

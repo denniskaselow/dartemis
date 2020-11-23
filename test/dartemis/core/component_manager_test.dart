@@ -69,8 +69,9 @@ void main() {
       for (var i = 0; i < defaultBagSize; i++) {
         type = ComponentType();
       }
-      final componentsByType = world.componentManager.getComponentsByType(type);
-      expect(componentsByType.size, equals(0));
+      final componentsByType =
+          world.componentManager.getComponentsByType(type);
+      expect(componentsByType.length, equals(0));
     });
   });
 }
