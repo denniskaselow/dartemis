@@ -1,25 +1,34 @@
 library world_test;
 
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'package:dartemis/dartemis.dart';
 import 'components_setup.dart';
+import 'world_test.mocks.dart';
 
+@GenerateMocks([], customMocks: [
+  MockSpec<EntitySystem>(
+      as: #MockEntitySystem2, returnNullOnMissingStub: true),
+  MockSpec<EntitySystem>(returnNullOnMissingStub: true),
+  MockSpec<ComponentManager>(returnNullOnMissingStub: true),
+  MockSpec<Manager>(returnNullOnMissingStub: true),
+])
 void main() {
   group('World tests', () {
     late World world;
-    late MockEntitySystem system;
-    late MockComponentManager componentManager;
+    late EntitySystem system;
+    late ComponentManager componentManager;
     setUp(() {
       componentManager = MockComponentManager();
       system = MockEntitySystem();
 
-      world = World(componentManager: componentManager);
-
       when(system.passive).thenReturn(false);
       when(system.group).thenReturn(0);
       when(componentManager.isUpdateNeededForSystem(system)).thenReturn(false);
+
+      world = World(componentManager: componentManager);
     });
     test('world initializes added system', () {
       world
@@ -84,6 +93,7 @@ void main() {
     });
     test('world initializes added managers', () {
       final manager = MockManager();
+
       world
         ..addManager(manager)
         ..initialize();
@@ -143,6 +153,7 @@ void main() {
     });
     test('destroy calls destroy method on managers', () {
       final manager = MockManager();
+
       world
         ..addManager(manager)
         ..initialize()
@@ -245,14 +256,6 @@ Adding a component will get the entity processed''', () {
 
 typedef EntitySystemStarter = void Function(
     EntitySystem es, void Function() action);
-
-class MockEntitySystem extends Mock implements EntitySystem {}
-
-class MockEntitySystem2 extends Mock implements EntitySystem {}
-
-class MockComponentManager extends Mock implements ComponentManager {}
-
-class MockManager extends Mock implements Manager {}
 
 class TestEntitySystem extends EntitySystem {
   bool isSetup = true;

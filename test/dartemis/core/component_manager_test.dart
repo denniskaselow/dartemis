@@ -19,11 +19,11 @@ void main() {
       final componentC = PooledComponentC();
       world.addComponents(entity, [componentA, componentC]);
 
-      final fillBag = world.getComponents(entity);
+      final components = world.getComponents(entity);
 
-      expect(fillBag[0], equals(componentA));
-      expect(fillBag[1], equals(componentC));
-      expect(fillBag.size, equals(2));
+      expect(components[0], equals(componentA));
+      expect(components[1], equals(componentC));
+      expect(components.length, equals(2));
     });
     test('ComponentManager correctly associates multiple entity and components',
         () {
@@ -40,14 +40,14 @@ void main() {
       final component2C = PooledComponentC();
       world.addComponents(entity2, [component2A, component2B, component2C]);
 
-      final fillBag1 = world.getComponents(entity1);
-      final fillBag2 = world.getComponents(entity2);
+      final components1 = world.getComponents(entity1);
+      final components2 = world.getComponents(entity2);
 
-      expect(fillBag1, containsAll([component1A, component1C]));
-      expect(fillBag1.size, equals(2));
+      expect(components1, containsAll([component1A, component1C]));
+      expect(components1.length, equals(2));
 
-      expect(fillBag2, containsAll([component2A, component2B, component2C]));
-      expect(fillBag2.size, equals(3));
+      expect(components2, containsAll([component2A, component2B, component2C]));
+      expect(components2.length, equals(3));
     });
     test('ComponentManager removes Components of deleted entity', () {
       final entity = world.createEntity();
@@ -62,7 +62,7 @@ void main() {
         ..process();
 
       final fillBag = world.getComponents(entity);
-      expect(fillBag.size, equals(0));
+      expect(fillBag.length, equals(0));
     });
     test('ComponentManager can be created for unused Component', () {
       var type = ComponentType();

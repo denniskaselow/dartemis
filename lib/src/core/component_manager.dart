@@ -83,8 +83,8 @@ class ComponentManager extends Manager {
       _getComponentsByType(type).whereType<T>().toList();
 
   /// Returns all components of [entity].
-  Bag<Component> getComponentsFor(int entity) {
-    final result = Bag<Component>();
+  List<Component> getComponentsFor(int entity) {
+    final result = <Component>[];
     _forComponentsOfEntity(
         entity, (components, _) => result.add(components[entity]));
 

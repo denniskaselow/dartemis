@@ -13,6 +13,8 @@ abstract class EntitySystem {
   // false positive: https://github.com/dart-lang/sdk/issues/39935
   // ignore: prefer_final_fields
   List<int> _actives = [];
+  // ignore: prefer_final_fields
+  bool _passive = true;
   late final List<int> _interestingComponentsIndices;
   late final List<int> _componentIndicesAll;
   late final List<int> _componentIndicesOne;
@@ -22,7 +24,6 @@ abstract class EntitySystem {
   final BitSet _excluded;
   final BitSet _one;
 
-  late bool _passive;
   late final int _group;
 
   /// Creates an [EntitySystem] with [aspect].

@@ -199,7 +199,7 @@ class World {
   }
 
   /// Get all components belonging to this entity.
-  Bag<Component> getComponents(int entity) =>
+  List<Component> getComponents(int entity) =>
       _componentManager.getComponentsFor(entity);
 }
 

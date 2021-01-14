@@ -1,7 +1,8 @@
 # Changelog
-## 0.9.0 (NNBD/nullsafety)
+## 0.9.0-nullsafety.0
 ### Breaking API Changes
 * removed `ComponentTypeManager` and moved methods to `ComponentType`
+* `getComponents*` methods in `ComponentManager` now return a `List` instead of a `Bag`
 
 ### Enhancements
 * switched to NNBD mode
