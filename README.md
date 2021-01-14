@@ -67,7 +67,7 @@ Getting started
 
     ```dart
     class Position extends PooledComponent {
-        num x, y;
+        late num x, y;
     
         Position._();
         factory Position(num x, num y) {
@@ -84,8 +84,8 @@ Getting started
 
     ```dart
     class MovementSystem extends EntityProcessingSystem {
-        Mapper<Position> positionMapper;
-        Mapper<Velocity> velocityMapper;
+        late Mapper<Position> positionMapper;
+        late Mapper<Velocity> velocityMapper;
 
         MovementSystem() : super(Aspect.forAllOf([Position, Velocity]));
 
