@@ -6,8 +6,6 @@ analyzer:
     dead_code: error
   strong-mode:
     implicit-casts: false
-  exclude:
-    - test/**/*.mocks.dart
 language:
   strict-inference: true
   strict-raw-types: true

@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.0
+### Internal
+* updated dependenciesto stable versions
+
 ## 0.9.0-nullsafety.0
 ### Breaking API Changes
 * removed `ComponentTypeManager` and moved methods to `ComponentType`

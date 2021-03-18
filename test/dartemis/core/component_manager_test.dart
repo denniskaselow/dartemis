@@ -21,8 +21,7 @@ void main() {
 
       final components = world.getComponents(entity);
 
-      expect(components[0], equals(componentA));
-      expect(components[1], equals(componentC));
+      expect(components, containsAll([componentA, componentC]));
       expect(components.length, equals(2));
     });
     test('ComponentManager correctly associates multiple entity and components',
