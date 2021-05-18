@@ -1,4 +1,3 @@
 language: dart
 dart:
   - dev
-after_success: ./tool/coveralls_report.sh
