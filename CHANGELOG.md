@@ -1,5 +1,5 @@
 # Changelog
-## 0.9.0
+## 0.9.1
 ### Bugfix
 * handle more than 32 components when adding systems for components that haven't been used yet
 
