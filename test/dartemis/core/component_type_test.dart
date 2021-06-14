@@ -8,9 +8,9 @@ import 'components_setup.dart';
 void main() {
   group('ComponentType', () {
     test('returns correct bit', () {
-      expect(ComponentType.getBitIndex(ComponentA), componentABit);
-      expect(ComponentType.getBitIndex(ComponentB), componentBBit);
-      expect(ComponentType.getBitIndex(PooledComponentC), componentCBit);
+      expect(ComponentType.getBitIndex(Component0), componentBit0);
+      expect(ComponentType.getBitIndex(Component1), componentBit1);
+      expect(ComponentType.getBitIndex(PooledComponent2), componentBit2);
     });
   });
 }

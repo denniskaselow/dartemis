@@ -9,11 +9,12 @@ class ComponentManager extends Manager {
   @override
   void initialize() {}
 
-  /// Reigster a system to know if it needs to be updated when an entity
+  /// Register a system to know if it needs to be updated when an entity
   /// changed.
   void _registerSystem(EntitySystem system) {
     final systemBitIndex = system._systemBitIndex;
     for (final index in system._interestingComponentsIndices) {
+      _componentInfoByType._ensureCapacity(index);
       var componentInfo = _componentInfoByType[index];
       if (componentInfo == null) {
         componentInfo = _ComponentInfo();

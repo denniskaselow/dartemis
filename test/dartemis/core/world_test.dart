@@ -9,8 +9,7 @@ import 'components_setup.dart';
 import 'world_test.mocks.dart';
 
 @GenerateMocks([], customMocks: [
-  MockSpec<EntitySystem>(
-      as: #MockEntitySystem2, returnNullOnMissingStub: true),
+  MockSpec<EntitySystem>(as: #MockEntitySystem2, returnNullOnMissingStub: true),
   MockSpec<EntitySystem>(returnNullOnMissingStub: true),
   MockSpec<ComponentManager>(returnNullOnMissingStub: true),
   MockSpec<Manager>(returnNullOnMissingStub: true),
@@ -36,6 +35,13 @@ void main() {
         ..initialize();
 
       verify(system.initialize()).called(1);
+    });
+    test('world processes added system', () {
+      world
+        ..addSystem(system)
+        ..process();
+
+      verify(system.process()).called(1);
     });
     test('world processes added system', () {
       world
@@ -169,11 +175,11 @@ void main() {
     late EntitySystemStarter systemStarter;
     setUp(() {
       world = World();
-      entityAB = world.createEntity([ComponentA(), ComponentB()]);
+      entityAB = world.createEntity([Component0(), Component1()]);
       entityAC = world.createEntity();
       world
-        ..addComponent(entityAC, ComponentA())
-        ..addComponent(entityAC, PooledComponentC());
+        ..addComponent(entityAC, Component0())
+        ..addComponent(entityAC, PooledComponent2());
       systemStarter = (es, action) {
         world
           ..addSystem(es)
@@ -188,7 +194,7 @@ EntitySystem which requires one Component processes int with this component''',
         () {
       final expectedEntities = [entityAB, entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
+          TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
       systemStarter(es, () {});
     });
     test('''
@@ -196,7 +202,7 @@ EntitySystem which required multiple Components does not process int with a subs
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
-          Aspect.forAllOf([ComponentA, ComponentB]), expectedEntities);
+          Aspect.forAllOf([Component0, Component1]), expectedEntities);
       systemStarter(es, () {});
     });
     test('''
@@ -204,7 +210,7 @@ EntitySystem which requires one of multiple components processes int with a subs
         () {
       final expectedEntities = [entityAB, entityAC];
       final es = TestEntitySystem(
-          Aspect.forOneOf([ComponentA, ComponentB]), expectedEntities);
+          Aspect.forOneOf([Component0, Component1]), expectedEntities);
       systemStarter(es, () {});
     });
     test('''
@@ -212,28 +218,28 @@ EntitySystem which excludes a component does not process int with one of those c
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
-          Aspect.forAllOf([ComponentA])..exclude([PooledComponentC]),
+          Aspect.forAllOf([Component0])..exclude([PooledComponent2]),
           expectedEntities);
       systemStarter(es, () {});
     });
     test('A removed entity will not get processed', () {
       final expectedEntities = [entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([ComponentA]), expectedEntities);
+          TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
       systemStarter(es, () => es.deleteFromWorld(entityAB));
     });
     test('An entity that\'s been deleted twice, can only be reused once', () {
       world..deleteEntity(entityAB)..deleteEntity(entityAB);
-      final componentA = ComponentA();
-      final componentB = ComponentB();
+      final component0 = Component0();
+      final component1 = Component1();
 
       world.process();
-      final entityA = world.createEntity([componentA]);
-      final entityB = world.createEntity([componentB]);
+      final entityA = world.createEntity([component0]);
+      final entityB = world.createEntity([component1]);
       world.process();
 
-      expect(world.getComponents(entityA)[0], equals(componentA));
-      expect(world.getComponents(entityB)[0], equals(componentB));
+      expect(world.getComponents(entityA)[0], equals(component0));
+      expect(world.getComponents(entityB)[0], equals(component1));
       expect(world.getComponents(entityA).length, equals(1));
       expect(world.getComponents(entityB).length, equals(1));
     });
@@ -241,15 +247,18 @@ EntitySystem which excludes a component does not process int with one of those c
 Adding a component will get the entity processed''', () {
       final expectedEntities = [entityAC];
       final es = TestEntitySystem(
-          Aspect.forAllOf([PooledComponentC]), expectedEntities);
+          Aspect.forAllOf([PooledComponent2]), expectedEntities);
       world
         ..addSystem(es)
         ..initialize()
         ..process();
       es._expectedEntities = [entityAB, entityAC];
       world
-        ..addComponent(entityAB, PooledComponentC())
+        ..addComponent(entityAB, PooledComponent2())
         ..process();
+    });
+    test('world can handle more than 32 components referenced by systems', () {
+      world.addSystem(TestEntitySystemWithMoreThan32Components());
     });
   });
 }
@@ -279,4 +288,49 @@ class TestEntitySystem extends EntitySystem {
     }
     return true;
   }
+}
+
+class TestEntitySystemWithMoreThan32Components extends EntitySystem {
+  TestEntitySystemWithMoreThan32Components()
+      : super(Aspect.forAllOf([
+          Component0,
+          Component1,
+          PooledComponent2,
+          Component3,
+          Component4,
+          Component5,
+          Component6,
+          Component7,
+          Component8,
+          Component9,
+          Component10,
+          Component11,
+          Component12,
+          Component13,
+          Component14,
+          Component15,
+          Component16,
+          Component17,
+          Component18,
+          Component19,
+          Component20,
+          Component21,
+          Component22,
+          Component23,
+          Component24,
+          Component25,
+          Component26,
+          Component27,
+          Component28,
+          Component29,
+          Component30,
+          Component31,
+          Component32,
+        ]));
+
+  @override
+  void processEntities(Iterable<int> entities) {}
+
+  @override
+  bool checkProcessing() => true;
 }
