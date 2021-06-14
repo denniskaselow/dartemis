@@ -1,15 +1,10 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Test Coverage
+name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ develop, master ]
   pull_request:
-    branches: [ master ]
+    branches: [ develop, master ]
 
 jobs:
   build:
@@ -21,7 +16,18 @@ jobs:
 
       - name: Install dependencies
         run: dart pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Run Tests
+        run: dart test
+
       - name: Activate test coverage
-        run: pub global activate dart_coveralls
+        run: dart pub global activate dart_coveralls
+
       - name: Run test coverage
-        run: pub global run dart_coveralls report --token ${{ secrets.COVERALLS_TOKEN }} --exclude-test-files test/all_tests.dart
+        run: dart pub global run dart_coveralls report --token ${{ secrets.COVERALLS_TOKEN }} --exclude-test-files test/all_tests.dart

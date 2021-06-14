@@ -1,5 +1,9 @@
 # Changelog
 ## 0.9.0
+### Bugfix
+* handle more than 32 components when adding systems for components that haven't been used yet
+
+## 0.9.0
 ### Internal
 * updated dependenciesto stable versions
 

@@ -15,8 +15,8 @@ void main() {
     });
     test('ComponentManager correctly associates entity and components', () {
       final entity = world.createEntity();
-      final componentA = ComponentA();
-      final componentC = PooledComponentC();
+      final componentA = Component0();
+      final componentC = PooledComponent2();
       world.addComponents(entity, [componentA, componentC]);
 
       final components = world.getComponents(entity);
@@ -27,16 +27,16 @@ void main() {
     test('ComponentManager correctly associates multiple entity and components',
         () {
       final entity1 = world.createEntity();
-      final component1A = ComponentA();
-      final component1C = PooledComponentC();
+      final component1A = Component0();
+      final component1C = PooledComponent2();
       world
         ..addComponent(entity1, component1A)
         ..addComponent(entity1, component1C);
 
       final entity2 = world.createEntity();
-      final component2A = ComponentA();
-      final component2B = ComponentB();
-      final component2C = PooledComponentC();
+      final component2A = Component0();
+      final component2B = Component1();
+      final component2C = PooledComponent2();
       world.addComponents(entity2, [component2A, component2B, component2C]);
 
       final components1 = world.getComponents(entity1);
@@ -50,8 +50,8 @@ void main() {
     });
     test('ComponentManager removes Components of deleted entity', () {
       final entity = world.createEntity();
-      final componentA = ComponentA();
-      final componentC = PooledComponentC();
+      final componentA = Component0();
+      final componentC = PooledComponent2();
       world
         ..addComponents(entity, [componentA, componentC])
         ..addEntity(entity)
@@ -68,8 +68,7 @@ void main() {
       for (var i = 0; i < defaultBagSize; i++) {
         type = ComponentType();
       }
-      final componentsByType =
-          world.componentManager.getComponentsByType(type);
+      final componentsByType = world.componentManager.getComponentsByType(type);
       expect(componentsByType.length, equals(0));
     });
   });
