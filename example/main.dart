@@ -45,7 +45,7 @@ class Darteroids {
     final player = world.createEntity([
       Position(maxWidth ~/ 2, maxHeight ~/ 2),
       Velocity(),
-      CircularBody.down(20, playerColor),
+      CircularBody(20, playerColor),
       Cannon(),
       Status(lifes: 3, invisiblityTimer: 5000),
     ]);
@@ -74,14 +74,14 @@ class Darteroids {
   }
 
   void addAsteroids(GroupManager groupManager) {
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 33; i++) {
       final vx = generateRandomVelocity();
       final vy = generateRandomVelocity();
       final asteroid = world.createEntity([
         Position(
             maxWidth * random.nextDouble(), maxHeight * random.nextDouble()),
         Velocity(vx, vy),
-        CircularBody.down(10 + 20 * random.nextDouble(), asteroidColor),
+        CircularBody(5 + 10 * random.nextDouble(), asteroidColor),
         PlayerDestroyer(),
       ]);
       groupManager.add(asteroid, groupAsteroids);

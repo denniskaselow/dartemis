@@ -63,7 +63,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
     world.createEntity([
       Position(shooterPos.x, shooterPos.y),
       Velocity(velX, velY),
-      CircularBody.down(2, 'red'),
+      CircularBody(2, 'red'),
       Decay(5000),
       AsteroidDestroyer(),
     ]);
@@ -136,7 +136,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
     final asteroid = world.createEntity([
       Position(asteroidPos.x, asteroidPos.y),
       Velocity(vx, vy),
-      CircularBody.down(radius, asteroidColor),
+      CircularBody(radius, asteroidColor),
       PlayerDestroyer(),
     ]);
 
