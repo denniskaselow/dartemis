@@ -144,7 +144,7 @@ class ComponentManager extends Manager {
 
 class _ComponentInfo<T extends Component> {
   BitSet entities = BitSet(32);
-  List<T?> components = List.filled(32, null);
+  List<T?> components = List.filled(32, null, growable: true);
   BitSet interestedSystems = BitSet(32);
   BitSet requiresUpdate = BitSet(32);
   bool dirty = false;
@@ -155,8 +155,8 @@ class _ComponentInfo<T extends Component> {
     if (entity >= entities.length) {
       entities = BitSet.fromBitSet(entities, length: entity + 1);
       final newCapacity = (entities.length * 3) ~/ 2 + 1;
-      components = List<T?>.filled(newCapacity, null)
-        ..setRange(0, components.length, components);
+      final filler = List.filled(newCapacity - components.length, null);
+      components.addAll(filler);
     }
     entities[entity] = true;
     components[entity] = component;

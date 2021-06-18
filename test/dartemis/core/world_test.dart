@@ -260,6 +260,21 @@ Adding a component will get the entity processed''', () {
     test('world can handle more than 32 components referenced by systems', () {
       world.addSystem(TestEntitySystemWithMoreThan32Components());
     });
+    test(
+        'world can handle entites with an id higher than 32 when spawned later',
+        () {
+      final es = TestEntitySystemForComponent3();
+      world
+        ..addSystem(es)
+        ..initialize()
+        ..process();
+
+      for (var i = 0; i <= 32; i++) {
+        world.createEntity([Component3()]);
+      }
+
+      world.process();
+    });
   });
 }
 
@@ -333,4 +348,23 @@ class TestEntitySystemWithMoreThan32Components extends EntitySystem {
 
   @override
   bool checkProcessing() => true;
+}
+
+class TestEntitySystemForComponent3 extends EntityProcessingSystem {
+  late Mapper<Component3> mapper;
+
+  TestEntitySystemForComponent3() : super(Aspect.forAllOf([Component3]));
+
+  @override
+  void initialize() {
+    mapper = Mapper<Component3>(world);
+  }
+
+  @override
+  void processEntity(int entity) {
+    final component = mapper.getSafe(entity);
+
+    expect(component, isNotNull,
+        reason: 'component for entity $entity is null');
+  }
 }

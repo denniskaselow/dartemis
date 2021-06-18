@@ -4,7 +4,7 @@ class CircularBody extends Component {
   num radius;
   String color;
 
-  CircularBody.down(this.radius, this.color);
+  CircularBody(this.radius, this.color);
 }
 
 class Position extends Component {
