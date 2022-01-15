@@ -19,7 +19,9 @@ void main() {
       entityA = world.createEntity();
       sut.add(entityA, 'A');
       entityAB = world.createEntity();
-      sut..add(entityAB, 'A')..add(entityAB, 'B');
+      sut
+        ..add(entityAB, 'A')
+        ..add(entityAB, 'B');
       entity0 = world.createEntity();
     });
     test('isInAnyGroup', () {

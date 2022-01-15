@@ -229,7 +229,9 @@ EntitySystem which excludes a component does not process int with one of those c
       systemStarter(es, () => es.deleteFromWorld(entityAB));
     });
     test('An entity that\'s been deleted twice, can only be reused once', () {
-      world..deleteEntity(entityAB)..deleteEntity(entityAB);
+      world
+        ..deleteEntity(entityAB)
+        ..deleteEntity(entityAB);
       final component0 = Component0();
       final component1 = Component1();
 
