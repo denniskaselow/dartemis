@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.3
+### Bugfix
+* process deleted entities after a system finishes in case the system interacts multiple times with the deleted entity 
+
 ## 0.9.2
 ### Bugfix
 * handle more than 32 entities with the same components

@@ -114,7 +114,9 @@ void main() {
         ..process();
 
       expect(world.entityManager.activeEntityCount, equals(2));
-      world.deleteAllEntities();
+      world
+        ..deleteAllEntities()
+        ..process();
       expect(world.entityManager.activeEntityCount, equals(0));
     });
     test('world delete all entites should not fail if called twice', () {
@@ -227,6 +229,15 @@ EntitySystem which excludes a component does not process int with one of those c
       final es =
           TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
       systemStarter(es, () => es.deleteFromWorld(entityAB));
+    });
+    test(
+        'A removed entity can still be interacted with as long as the system is'
+        ' not finished', () {
+      final es = TestEntitySystemWithInteractingDeletedEntities();
+      world
+        ..createEntity([Component0()])
+        ..createEntity([Component0()]);
+      systemStarter(es, () => {});
     });
     test('An entity that\'s been deleted twice, can only be reused once', () {
       world
@@ -368,5 +379,29 @@ class TestEntitySystemForComponent3 extends EntityProcessingSystem {
 
     expect(component, isNotNull,
         reason: 'component for entity $entity is null');
+  }
+}
+
+class TestEntitySystemWithInteractingDeletedEntities extends EntitySystem {
+  late final Mapper<Component0> mapper0;
+  TestEntitySystemWithInteractingDeletedEntities()
+      : super(Aspect.forAllOf([Component0]));
+
+  @override
+  void initialize() {
+    mapper0 = Mapper<Component0>(world);
+  }
+
+  @override
+  bool checkProcessing() => true;
+
+  @override
+  void processEntities(Iterable<int> entities) {
+    // some interaction that causes one entity to be deleted
+    world.deleteEntity(entities.last);
+
+    for (final entity in entities) {
+      expect(mapper0[entity], isA<Component0>());
+    }
   }
 }

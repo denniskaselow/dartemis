@@ -19,6 +19,8 @@ class World {
   final Map<int, int> _frame = {0: 0};
   final Map<int, double> _time = {0: 0.0};
 
+  final Set<int> _entitiesMarkedForDeletion = <int>{};
+
   /// The time that passed since the last time [process] was called.
   double delta = 0;
 
@@ -136,6 +138,8 @@ class World {
 
   /// Processes all changes to entities and executes all non-passive systems.
   void process([int group = 0]) {
+    // delete entites that have been deleted outside of a system
+    _deleteEntities();
     _frame[group] = _frame[group]! + 1;
     _time[group] = _time[group]! + delta;
 
@@ -143,7 +147,26 @@ class World {
         .where((system) => !system.passive && system.group == group)) {
       _updateSystem(system);
       system.process();
+
+      _deleteEntities();
     }
+  }
+
+  /// Actually delete the entities in the world that have been marked for
+  /// deletion.
+  void _deleteEntities() {
+    _entitiesMarkedForDeletion
+      ..forEach(_deleteEntity)
+      ..clear();
+  }
+
+  /// Delete an entity.
+  void _deleteEntity(int entity) {
+    for (final manager in _managers.values) {
+      manager.deleted(entity);
+    }
+    componentManager._removeComponentsOfEntity(entity);
+    entityManager._delete(entity);
   }
 
   void _updateSystem(EntitySystem system) {
@@ -160,7 +183,10 @@ class World {
   /// because they will be added to a free list and might be overwritten once a
   /// new [Component] of that type is created.
   void deleteAllEntities() {
-    entityManager._entities.toIntValues().forEach(deleteEntity);
+    entityManager._entities
+        .toIntValues()
+        .forEach(_entitiesMarkedForDeletion.add);
+    _deleteEntities();
   }
 
   /// Adds a [int entity] to this world.
@@ -171,13 +197,10 @@ class World {
     }
   }
 
-  /// Delete the [int entity] from the world.
+  /// Mark an [entity] for deletion from the world. Will be deleted after the
+  /// current system finished running.
   void deleteEntity(int entity) {
-    for (final manager in _managers.values) {
-      manager.deleted(entity);
-    }
-    componentManager._removeComponentsOfEntity(entity);
-    entityManager._delete(entity);
+    _entitiesMarkedForDeletion.add(entity);
   }
 
   /// Returns the value for [key] from [properties].
