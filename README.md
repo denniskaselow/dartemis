@@ -1,6 +1,6 @@
 dartemis
 ========
-[![Build Status](https://travis-ci.org/denniskaselow/dartemis.svg?branch=master)](https://travis-ci.org/denniskaselow/dartemis)
+[![Build Status](https://github.com/denniskaselow/dartemis/actions/workflows/dart.yml/badge.svg)](https://github.com/denniskaselow/dartemis/actions/workflows/dart.yml)
 [![Coverage Status](https://coveralls.io/repos/github/denniskaselow/dartemis/badge.svg?branch=master)](https://coveralls.io/github/denniskaselow/dartemis?branch=master)
 [![Pub](https://img.shields.io/pub/v/dartemis.svg)](https://pub.dartlang.org/packages/dartemis)
 
