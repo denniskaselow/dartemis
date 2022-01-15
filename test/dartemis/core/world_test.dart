@@ -1,10 +1,10 @@
 library world_test;
 
+import 'package:dartemis/dartemis.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:dartemis/dartemis.dart';
 import 'components_setup.dart';
 import 'world_test.mocks.dart';
 

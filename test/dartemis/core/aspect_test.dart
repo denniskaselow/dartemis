@@ -1,9 +1,9 @@
 library aspect_test;
 
+import 'package:dartemis/dartemis.dart';
 import 'package:dartemis/src/core/utils/bit_set.dart';
 import 'package:test/test.dart';
 
-import 'package:dartemis/dartemis.dart';
 import 'components_setup.dart';
 
 void main() {

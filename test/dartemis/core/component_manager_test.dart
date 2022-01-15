@@ -1,8 +1,8 @@
 library component_manager_test;
 
+import 'package:dartemis/dartemis.dart';
 import 'package:test/test.dart';
 
-import 'package:dartemis/dartemis.dart';
 import 'components_setup.dart';
 
 const int defaultBagSize = 16;

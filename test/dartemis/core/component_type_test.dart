@@ -1,8 +1,8 @@
 library component_type_test;
 
+import 'package:dartemis/dartemis.dart';
 import 'package:test/test.dart';
 
-import 'package:dartemis/dartemis.dart';
 import 'components_setup.dart';
 
 void main() {

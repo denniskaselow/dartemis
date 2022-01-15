@@ -1,8 +1,7 @@
 library entity_bag_test;
 
-import 'package:test/test.dart';
-
 import 'package:dartemis/dartemis.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('EntityBag tests', () {

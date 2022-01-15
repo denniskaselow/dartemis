@@ -1,8 +1,7 @@
 library mapper_test;
 
-import 'package:test/test.dart';
-
 import 'package:dartemis/dartemis.dart';
+import 'package:test/test.dart';
 
 import 'components_setup.dart';
 
