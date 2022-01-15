@@ -18,9 +18,10 @@ void main() {
   component_type.main();
   entity_manager.main();
   mapper.main();
-  world.main();
 
   managers.main();
   systems.main();
   utils.main();
+
+  world.main();
 }
