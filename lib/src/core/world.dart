@@ -66,6 +66,13 @@ class World {
   /// Add a manager into this world. It can be retrieved later. World will
   /// notify this manager of changes to entity.
   void addManager(Manager manager) {
+    if (_managers.containsKey(manager.runtimeType)) {
+      throw ArgumentError.value(
+          manager,
+          'manager',
+          'A manager of type "${manager.runtimeType}" has already been added to '
+              'the world.');
+    }
     _managers[manager.runtimeType] = manager;
     _managersBag.add(manager);
     manager._world = this;
@@ -116,6 +123,13 @@ class World {
   /// If a [group] is set, this [system] will only be processed when calling
   /// [process()] with the same [group].
   void addSystem(EntitySystem system, {bool passive = false, int group = 0}) {
+    if (_systems.containsKey(system.runtimeType)) {
+      throw ArgumentError.value(
+          system,
+          'system',
+          'A system of type "${system.runtimeType}" has already been added to '
+              'the world.');
+    }
     system
       .._world = this
       .._passive = passive

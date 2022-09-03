@@ -37,6 +37,11 @@ void main() {
 
       verify(system.initialize()).called(1);
     });
+    test("the same system can't be added twice", () {
+      world.addSystem(system);
+
+      expect(() => world.addSystem(system), throwsArgumentError);
+    });
     test('world processes added system', () {
       world
         ..addSystem(system)
@@ -106,6 +111,11 @@ void main() {
         ..initialize();
 
       verify(manager.initialize()).called(1);
+    });
+    test('world initializes added managers', () {
+      world.addManager(MockManager());
+
+      expect(() => world.addManager(MockManager()), throwsArgumentError);
     });
     test('world deletes all entites', () {
       world

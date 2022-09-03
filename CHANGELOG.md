@@ -2,6 +2,7 @@
 ## 0.9.4
 ### Bugfix
 * don't update the active entities in a systems if nothing changed 
+* don't allow multiple instances of the same system or manager
 
 ## 0.9.3
 ### Bugfix
