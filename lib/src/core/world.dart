@@ -70,8 +70,8 @@ class World {
       throw ArgumentError.value(
           manager,
           'manager',
-          'A manager of type "${manager.runtimeType}" has already been added to '
-              'the world.');
+          'A manager of type "${manager.runtimeType}" has already been added '
+              'to the world.');
     }
     _managers[manager.runtimeType] = manager;
     _managersBag.add(manager);
