@@ -9,10 +9,11 @@ import 'components_setup.dart';
 import 'world_test.mocks.dart';
 
 @GenerateMocks([], customMocks: [
-  MockSpec<EntitySystem>(as: #MockEntitySystem2, returnNullOnMissingStub: true),
-  MockSpec<EntitySystem>(returnNullOnMissingStub: true),
-  MockSpec<ComponentManager>(returnNullOnMissingStub: true),
-  MockSpec<Manager>(returnNullOnMissingStub: true),
+  MockSpec<EntitySystem>(
+      as: #MockEntitySystem2, onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<EntitySystem>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<ComponentManager>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<Manager>(onMissingStub: OnMissingStub.returnDefault),
 ])
 void main() {
   group('World tests', () {
@@ -287,6 +288,31 @@ Adding a component will get the entity processed''', () {
       }
 
       world.process();
+    });
+    test(
+        'systems should require update when component required by system is '
+        'added', () {
+      world.addComponent(entityB, Component0());
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
+    });
+    test(
+        'systems should not require update when unrelated component is '
+        'added', () {
+      world
+        ..addComponent(entityA, Component32())
+        ..addComponent(entityB, Component32());
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isFalse);
+    });
+    test(
+        'systems should not require update when unrelated component is '
+        'removed', () {
+      world
+        ..removeComponent<Component32>(entityA)
+        ..removeComponent<Component32>(entityB);
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isFalse);
     });
   });
 }
