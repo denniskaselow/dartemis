@@ -16,8 +16,10 @@ class World {
   final Map<Type, Manager> _managers = <Type, Manager>{};
   final Bag<Manager> _managersBag = Bag<Manager>();
 
-  final Map<int, int> _frame = {0: 0};
-  final Map<int, double> _time = {0: 0.0};
+  // -1 for triggering deleteEntities when calling process() without processing
+  // any systems, for testing purposes
+  final Map<int, int> _frame = {0: 0, -1: 0};
+  final Map<int, double> _time = {0: 0.0, -1: 0.0};
 
   final Set<int> _entitiesMarkedForDeletion = <int>{};
 
@@ -173,6 +175,7 @@ class World {
     if (componentManager.isUpdateNeededForSystem(system)) {
       system._actives = componentManager._getEntitiesForSystem(
           system, entityManager._entities.length);
+      componentManager._systemUpdated(system);
     }
   }
 

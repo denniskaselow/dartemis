@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.4
+### Bugfix
+* don't update the active entities in a systems if nothing changed 
+
 ## 0.9.3
 ### Bugfix
 * process deleted entities after a system finishes in case the system interacts multiple times with the deleted entity 
@@ -13,7 +17,7 @@
 
 ## 0.9.0
 ### Internal
-* updated dependenciesto stable versions
+* updated dependencies to stable versions
 
 ## 0.9.0-nullsafety.0
 ### Breaking API Changes

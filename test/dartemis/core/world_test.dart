@@ -289,6 +289,48 @@ Adding a component will get the entity processed''', () {
 
       world.process();
     });
+  });
+  group('isUpdateNeededForSystem', () {
+    late World world;
+    late int entityA;
+    late int entityB;
+    late TestEntitySystem es;
+    setUp(() {
+      world = World();
+      entityA = world.createEntity([Component0(), Component32()]);
+      entityB = world.createEntity([Component32()]);
+      final expectedEntities = [entityA];
+      es = TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
+
+      world
+        ..addSystem(es)
+        ..initialize()
+        ..process();
+    });
+    test('systems should not require update when no change happened', () {
+      expect(world.componentManager.isUpdateNeededForSystem(es), isFalse);
+    });
+    test('systems should require update when new entity is added', () {
+      world.createEntity([Component0()]);
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
+    });
+    test('systems should require update when entity is removed', () {
+      world
+        ..deleteEntity(entityA)
+        // workaround to trigger actual deletion of entities by processing a non
+        // existent system group
+        ..process(-1);
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
+    });
+    test(
+        'systems should require update when component required by system is '
+        'removed', () {
+      world.removeComponent<Component0>(entityA);
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
+    });
     test(
         'systems should require update when component required by system is '
         'added', () {

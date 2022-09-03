@@ -116,6 +116,14 @@ class ComponentManager extends Manager {
     return false;
   }
 
+  /// Marks the [system] as updated for the necessary component types.
+  void _systemUpdated(EntitySystem system) {
+    final systemBitIndex = system._systemBitIndex;
+    for (final interestingComponent in system._interestingComponentsIndices) {
+      _componentInfoByType[interestingComponent]!.systemUpdated(systemBitIndex);
+    }
+  }
+
   /// Returns every entity that is of interest for [system].
   List<int> _getEntitiesForSystem(
       EntitySystem system, int entitiesBitSetLength) {
@@ -147,7 +155,6 @@ class _ComponentInfo<T extends Component> {
   List<T?> components = List.filled(32, null, growable: true);
   BitSet interestedSystems = BitSet(32);
   BitSet requiresUpdate = BitSet(32);
-  bool dirty = false;
 
   _ComponentInfo();
 
@@ -160,10 +167,7 @@ class _ComponentInfo<T extends Component> {
     }
     entities[entity] = true;
     components[entity] = component;
-    if (!dirty) {
-      requiresUpdate.or(interestedSystems);
-      dirty = true;
-    }
+    requiresUpdate.or(interestedSystems);
   }
 
   T operator [](int entity) => (components[entity])!;
@@ -173,10 +177,7 @@ class _ComponentInfo<T extends Component> {
       entities[entity] = false;
       (components[entity])!._removed();
       components[entity] = null;
-      if (!dirty) {
-        requiresUpdate.or(interestedSystems);
-        dirty = true;
-      }
+      requiresUpdate.or(interestedSystems);
     }
   }
 
