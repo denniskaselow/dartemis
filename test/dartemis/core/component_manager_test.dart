@@ -71,5 +71,31 @@ void main() {
       final componentsByType = world.componentManager.getComponentsByType(type);
       expect(componentsByType.length, equals(0));
     });
+    test('ComponentManager returns specific component for specific entity', () {
+      final componentA = Component0();
+      final entity = world.createEntity([componentA]);
+      // world
+      //   ..initialize()
+      //   ..process();
+
+      expect(
+          world.componentManager.getComponent<Component0>(
+              entity, ComponentType.getTypeFor(Component0)),
+          equals(componentA));
+    });
+    test(
+        'ComponentManager returns null if component for specific entity does '
+        'not exist', () {
+      final componentA = Component0();
+      final entity = world.createEntity([componentA]);
+      world
+        ..initialize()
+        ..process();
+
+      expect(
+          world.componentManager.getComponent<Component1>(
+              entity, ComponentType.getTypeFor(Component1)),
+          isNull);
+    });
   });
 }
