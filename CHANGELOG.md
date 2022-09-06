@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.5
+### Enhancements
+* allow direct access to a specific component without use of mappers via `world.componentManager. getComponent(int entity, ComponentType componentType)`
+
 ## 0.9.4
 ### Bugfix
 * don't update the active entities in a systems if nothing changed 

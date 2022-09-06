@@ -148,6 +148,17 @@ class ComponentManager extends Manager {
       ..andNot(baseExclude);
     return baseAll.toIntValues();
   }
+
+  /// Returns the component of type [T] for the given [entity].
+  T? getComponent<T extends Component>(
+      int entity, ComponentType componentType) {
+    final index = componentType._bitIndex;
+    final components = _componentInfoByType[index];
+    if (components != null) {
+      return components[entity] as T;
+    }
+    return null;
+  }
 }
 
 class _ComponentInfo<T extends Component> {
