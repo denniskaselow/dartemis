@@ -81,10 +81,23 @@ void main() {
           equals(componentA));
     });
     test(
+        'ComponentManager returns null if component for specific entity '
+        'has not been registered', () {
+      final entity = world.createEntity([Component0()]);
+
+      expect(
+          world.componentManager.getComponent<Component1>(
+              entity, ComponentType.getTypeFor(Component1)),
+          isNull);
+    });
+    test(
         'ComponentManager returns null if component for specific entity does '
         'not exist', () {
-      final componentA = Component0();
-      final entity = world.createEntity([componentA]);
+      final entity = world.createEntity([Component0()]);
+      // create an entity with the component we want to access so it gets
+      // registered with the ComponentManager and a _ComponentInfo to access
+      // is created
+      world.createEntity([Component1()]);
 
       expect(
           world.componentManager.getComponent<Component1>(

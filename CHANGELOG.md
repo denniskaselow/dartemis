@@ -1,4 +1,9 @@
 # Changelog
+## 0.9.5+3
+### Bugfix
+* `componentManager.getComponent` couldn't handle accessing components that don't exist for the 
+  specific entity
+
 ## 0.9.5+2
 ### Documentation
 * updated links and minor changes to the example code in README.md
