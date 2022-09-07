@@ -154,7 +154,7 @@ class ComponentManager extends Manager {
       int entity, ComponentType componentType) {
     final index = componentType._bitIndex;
     final components = _componentInfoByType[index];
-    if (components != null) {
+    if (components != null && entity < components.components.length) {
       return components[entity] as T;
     }
     return null;

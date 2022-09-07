@@ -91,5 +91,16 @@ void main() {
               entity, ComponentType.getTypeFor(Component1)),
           isNull);
     });
+    test(
+        'ComponentManager returns null if no component for high index entity '
+        'exist', () {
+      final componentA = Component0();
+      world.createEntity([componentA]);
+
+      expect(
+          world.componentManager.getComponent<Component0>(
+              1000, ComponentType.getTypeFor(Component0)),
+          isNull);
+    });
   });
 }

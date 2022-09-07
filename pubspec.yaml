@@ -1,5 +1,5 @@
 name: dartemis
-version: 0.9.5
+version: 0.9.5+1
 description: An Entity System Framework for game development. Based on Artemis.
 homepage: https://github.com/denniskaselow/dartemis
 environment:
