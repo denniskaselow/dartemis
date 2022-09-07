@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.5+2
+### Documentation
+* updated links and minor changes to the example code in README.md
+  
 ## 0.9.5+1
 ### Bugfix
 * `componentManager.getComponent` couldn't handle accessing components if no high index entities 

@@ -15,7 +15,9 @@ About
 =====
 **dartemis** is a Dart port of the Entity System Framework **Artemis**.
 
-The original has been written in Java by Arni Arent and Tiago Costa and can be found here: http://archive.is/1xRWW with the source available here: https://code.google.com/p/artemis-framework/
+The original has been written in Java by Arni Arent and Tiago Costa and can be found here: 
+[https://gamadu.com/artemis/ (archived)](https://archive.is/1xRWW) with the source available here: 
+https://code.google.com/p/artemis-framework/
 
 Ports for other languages are also available:
 
@@ -24,9 +26,9 @@ Ports for other languages are also available:
 
 Some useful links about what an Entity System/Entity Component System is:
 
-* http://piemaster.net/2011/07/entity-component-artemis/
+* [https://piemaster.net/2011/07/entity-component-artemis/ (archived)](https://archive.ph/yGyxW)
 * http://t-machine.org/index.php/2007/09/03/entity-systems-are-the-future-of-mmog-development-part-1/
-* http://www.richardlord.net/blog/what-is-an-entity-framework
+* https://www.richardlord.net/blog/what-is-an-entity-framework
 
 Getting started
 ===============
@@ -45,7 +47,7 @@ Getting started
 3. Create a world:
 
     ```dart
-    World world = World();
+    final world = World();
     ```
 4. Create an entity from a list of components. Entities with different components will be processed by different systems:
 
@@ -71,7 +73,7 @@ Getting started
     
         Position._();
         factory Position(num x, num y) {
-            Position position = Pooled.of<Position>(() => Position._())
+            final position = Pooled.of<Position>(() => Position._())
               ..x = x
               ..y = y;
             return position;
@@ -100,8 +102,8 @@ Getting started
         void processEntity(int entity) {
           Position position = positionMapper[entity];
           Velocity vel = velocityMapper[entity];
-          position.x += vel.x;
-          position.y += vel.y;
+          position.x += vel.x * world.delta;
+          position.y += vel.y * world.delta;
         }
     }
     ```
@@ -113,16 +115,17 @@ Getting started
 7. Initialize the world:
 
     ```dart
-    world.initialize();
+    world.initialize();   
     ```
-8. In your game loop you then process your systems:
+8. Usually your logic requires a delta, so you need to set it in your game loop:
+
+   ```dart
+   world.delta = delta;
+   ```
+9. In your game loop you then process your systems:
 
     ```dart
     world.process();
-    ```
-If your game logic requires a delta you can set it by calling:
-    ```dart
-    world.delta = delta;
     ```
 
 Documentation
@@ -134,5 +137,7 @@ API
 Example Games using dartemis
 ============================
 * [darteroids](https://denniskaselow.github.io/dartemis/example/darteroids/web/darteroids.html) - Very simple example included in the example folder of dartemis, ([Source](https://github.com/denniskaselow/dartemis/tree/master/example/web))
-* [Shapeocalypse](https://isowosi.github.io/shapeocalypse/) - A fast paced reaction game using Angular, WebAudio and WebGL
-* [damacreat.io](https://damacreat.io) - An iogame similar to agar.io about creatures made of dark matter (circles) consuming dark energy (circles) and other dark matter creatures (circles), which can shoot black holes (circles)
+* [Shapeocalypse](https://isowosi.itch.io/shapeocalypse/) - A fast paced reaction game using 
+  Angular, WebAudio and WebGL
+* [damacreat](https://isowosi.itch.io/damacreat) - An iogame similar to agar.io about creatures 
+  made of dark matter (circles) consuming dark energy (circles) and other dark matter creatures (circles), which can shoot black holes (circles)
