@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../../dartemis.dart';
 
 /// Use this class together with PlayerManager.
 ///

@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// Manager.
 abstract class Manager implements EntityObserver {

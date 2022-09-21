@@ -29,5 +29,4 @@ part 'src/core/utils/bag.dart';
 part 'src/core/utils/entity_bag.dart';
 part 'src/core/utils/object_pool.dart';
 part 'src/core/world.dart';
-
 part 'src/metadata/generate.dart';

@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// The [ComponentType] handles the internal id and bitmask of a [Component].
 class ComponentType {

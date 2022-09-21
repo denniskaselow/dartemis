@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// Interface for [EntitySystem]s and [Manager]s to get informed about changes
 /// to the state of an [int].

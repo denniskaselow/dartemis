@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../../dartemis.dart';
 
 /// Inspired by <https://web.archive.org/web/20121106084117/http://www.dartgamedevs.org/2012/11/free-lists-for-predictable-game.html>
 /// this class stores objects that are no longer used in the game for later
@@ -30,7 +30,9 @@ class ObjectPool {
 
   /// Add a specific [amount] of [Pooled]s for later reuse.
   static void addMany<T extends Pooled<T>>(
-      CreatePooled<T> createPooled, int amount) {
+    CreatePooled<T> createPooled,
+    int amount,
+  ) {
     final pool = _getPool<T>();
     for (var i = 0; i < amount; i++) {
       pool.add(createPooled());

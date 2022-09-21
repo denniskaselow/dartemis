@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 class _SystemBitManager {
   static int _pos = 0;

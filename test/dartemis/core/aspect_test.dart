@@ -17,8 +17,10 @@ void main() {
     test('getAspectForAll with all components', () {
       final aspect =
           Aspect.forAllOf([Component0, Component1, PooledComponent2]);
-      expect(aspect.all,
-          createBitSet([componentBit0, componentBit1, componentBit2]));
+      expect(
+        aspect.all,
+        createBitSet([componentBit0, componentBit1, componentBit2]),
+      );
       expect(aspect.excluded, BitSet(64));
       expect(aspect.one, BitSet(64));
     });
@@ -47,8 +49,10 @@ void main() {
           Aspect.forOneOf([Component0, Component1, PooledComponent2]);
       expect(aspect.all, BitSet(64));
       expect(aspect.excluded, BitSet(64));
-      expect(aspect.one,
-          createBitSet([componentBit0, componentBit1, componentBit2]));
+      expect(
+        aspect.one,
+        createBitSet([componentBit0, componentBit1, componentBit2]),
+      );
     });
     test('getAspectForOne with chaining each component', () {
       final aspect = Aspect.forOneOf([Component0])
@@ -56,8 +60,10 @@ void main() {
         ..oneOf([PooledComponent2]);
       expect(aspect.all, BitSet(64));
       expect(aspect.excluded, BitSet(64));
-      expect(aspect.one,
-          createBitSet([componentBit0, componentBit1, componentBit2]));
+      expect(
+        aspect.one,
+        createBitSet([componentBit0, componentBit1, componentBit2]),
+      );
     });
     test('getEmpty()', () {
       final aspect = Aspect.empty();

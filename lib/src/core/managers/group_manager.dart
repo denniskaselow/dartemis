@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../../dartemis.dart';
 
 /// If you need to group your entities together, e.g. tanks going into "units"
 /// group or explosions into "effects", then use this manager. You must retrieve

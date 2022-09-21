@@ -170,8 +170,9 @@ class BitSet {
     var index = 0;
     for (var value in _data) {
       for (var i = 0; i < 4; i++) {
-        result.addAll(_indices[value & 0xff]
-            .map((internalValue) => internalValue + index));
+        result.addAll(
+          _indices[value & 0xff].map((internalValue) => internalValue + index),
+        );
         index += 8;
         value = value >> 8;
       }

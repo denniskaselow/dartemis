@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../../dartemis.dart';
 
 /// You may sometimes want to specify to which player an entity belongs to.
 ///

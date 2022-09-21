@@ -23,12 +23,12 @@ const int hudHeight = 100;
 
 final Random random = Random();
 
-void main() {
-  final canvas = querySelector('#gamecontainer') as CanvasElement
+void main() async {
+  final canvas = querySelector('#gamecontainer')! as CanvasElement
     ..width = maxWidth
     ..height = maxHeight + hudHeight;
 
-  Darteroids(canvas).start();
+  await Darteroids(canvas).start();
 }
 
 class Darteroids {
@@ -41,7 +41,7 @@ class Darteroids {
       : context2d = canvas.context2D,
         world = World();
 
-  void start() {
+  Future<void> start() async {
     final player = world.createEntity([
       Position(maxWidth ~/ 2, maxHeight ~/ 2),
       Velocity(),
@@ -70,7 +70,7 @@ class Darteroids {
       ..initialize();
 
     physicsLoop();
-    renderLoop(16.66);
+    await renderLoop(16.66);
   }
 
   void addAsteroids(GroupManager groupManager) {
@@ -79,7 +79,9 @@ class Darteroids {
       final vy = generateRandomVelocity();
       final asteroid = world.createEntity([
         Position(
-            maxWidth * random.nextDouble(), maxHeight * random.nextDouble()),
+          maxWidth * random.nextDouble(),
+          maxHeight * random.nextDouble(),
+        ),
         Velocity(vx, vy),
         CircularBody(5 + 10 * random.nextDouble(), asteroidColor),
         PlayerDestroyer(),
@@ -96,12 +98,12 @@ class Darteroids {
     Future.delayed(const Duration(milliseconds: 5), physicsLoop);
   }
 
-  void renderLoop(num time) {
+  Future<void> renderLoop(num time) async {
     world.delta = (time - lastTime).toDouble();
     lastTime = time;
     world.process(1);
 
-    window.animationFrame.then(renderLoop);
+    await renderLoop(await window.animationFrame);
   }
 }
 
@@ -109,7 +111,13 @@ num generateRandomVelocity() =>
     0.5 + 1.5 * random.nextDouble() * (random.nextBool() ? 1 : -1);
 
 bool doCirclesCollide(
-    num x1, num y1, num radius1, num x2, num y2, num radius2) {
+  num x1,
+  num y1,
+  num radius1,
+  num x2,
+  num y2,
+  num radius2,
+) {
   final dx = x2 - x1;
   final dy = y2 - y1;
   final d = radius1 + radius2;

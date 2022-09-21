@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// Metadata to annotate [Manager]s and [EntitySystem]s to generate code
 /// required for [Mapper]s, other [Manager]s and other [EntitySystem]s using
@@ -39,11 +39,13 @@ class Generate {
   /// [oneOf] and [exclude] as well as the additional [Mapper]s defined by
   /// [mapper] and the [EntitySystem]s and [Manager]s defined by [systems] and
   /// [manager].
-  const Generate(this.base,
-      {this.allOf = const [],
-      this.oneOf = const [],
-      this.exclude = const [],
-      this.mapper = const [],
-      this.systems = const [],
-      this.manager = const []});
+  const Generate(
+    this.base, {
+    this.allOf = const [],
+    this.oneOf = const [],
+    this.exclude = const [],
+    this.mapper = const [],
+    this.systems = const [],
+    this.manager = const [],
+  });
 }
