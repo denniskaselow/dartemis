@@ -35,4 +35,4 @@ jobs:
         run: dart pub global activate -sgit https://github.com/denniskaselow/dart-coveralls.git
 
       - name: Run test coverage
-        run: dart pub global run dart_coveralls report --token ${{ secrets.COVERALLS_TOKEN }} --exclude-test-files test/all_tests.dart
+        run: dart pub global run dart_coveralls report --token ${{ secrets.COVERALLS_TOKEN }} --exclude-test-files test/all_tests.dart --throw-on-error
