@@ -1,4 +1,4 @@
-part of darteroids;
+part of '../main.dart';
 
 class CircularBody extends Component {
   num radius;
@@ -8,7 +8,8 @@ class CircularBody extends Component {
 }
 
 class Position extends Component {
-  num _x, _y;
+  num _x;
+  num _y;
 
   Position(this._x, this._y);
 
@@ -22,7 +23,8 @@ class Position extends Component {
 }
 
 class Velocity extends Component {
-  num x, y;
+  num x;
+  num y;
 
   Velocity([this.x = 0, this.y = 0]);
 }
@@ -33,7 +35,8 @@ class AsteroidDestroyer extends Component {}
 
 class Cannon extends Component {
   bool shoot = false;
-  num targetX = 0, targetY = 0;
+  num targetX = 0;
+  num targetY = 0;
   num cooldown = 0;
 
   void target(num targetX, num targetY) {

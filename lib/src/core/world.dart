@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// The primary instance for the framework. It contains all the managers.
 ///
@@ -79,7 +79,14 @@ class World {
   }
 
   /// Returns a [Manager] of the specified type [T].
-  T getManager<T extends Manager>() => _managers[T] as T;
+  T getManager<T extends Manager>() {
+    final result = _managers[T];
+    assert(
+      result != null,
+      'No manager of type "$T" has been added to the world.',
+    );
+    return result! as T;
+  }
 
   /// Deletes the manager from this world.
   void deleteManager(Manager manager) {
@@ -101,7 +108,10 @@ class World {
   /// Adds a [component] to the [entity].
   void addComponent<T extends Component>(int entity, T component) =>
       componentManager._addComponent(
-          entity, ComponentType.getTypeFor(component.runtimeType), component);
+        entity,
+        ComponentType.getTypeFor(component.runtimeType),
+        component,
+      );
 
   /// Adds [components] to the [entity].
   void addComponents<T extends Component>(int entity, List<T> components) {
@@ -150,10 +160,18 @@ class World {
   }
 
   /// Retrieve a system for specified system type.
-  T getSystem<T extends EntitySystem>() => _systems[T] as T;
+  T getSystem<T extends EntitySystem>() {
+    final result = _systems[T];
+    assert(
+      result != null,
+      'No system of type "$T" has been added to the world.',
+    );
+    return result! as T;
+  }
 
   /// Processes all changes to entities and executes all non-passive systems.
   void process([int group = 0]) {
+    assert(_frame.containsKey(group), 'No group $group exists');
     // delete entites that have been deleted outside of a system
     _deleteEntities();
     _frame[group] = _frame[group]! + 1;
@@ -188,7 +206,9 @@ class World {
   void _updateSystem(EntitySystem system) {
     if (componentManager.isUpdateNeededForSystem(system)) {
       system._actives = componentManager._getEntitiesForSystem(
-          system, entityManager._entities.length);
+        system,
+        entityManager._entities.length,
+      );
       componentManager._systemUpdated(system);
     }
   }
@@ -271,8 +291,12 @@ class PerformanceMeasureWorld extends World {
       system.process();
       final afterSystem = stopwatch.elapsedMicroseconds;
       _storeTime(_systemTimes, system, afterSystem, afterProcessEntityChanges);
-      _storeTime(_processEntityChangesTimes, system, afterProcessEntityChanges,
-          lastStop);
+      _storeTime(
+        _processEntityChangesTimes,
+        system,
+        afterProcessEntityChanges,
+        lastStop,
+      );
       lastStop = stopwatch.elapsedMicroseconds;
     }
     final now = stopwatch.elapsedMicroseconds;
@@ -283,8 +307,12 @@ class PerformanceMeasureWorld extends World {
     times.add(now);
   }
 
-  void _storeTime(Map<Type, ListQueue<int>> measuredTimes, EntitySystem system,
-      int afterSystem, int lastStop) {
+  void _storeTime(
+    Map<Type, ListQueue<int>> measuredTimes,
+    EntitySystem system,
+    int afterSystem,
+    int lastStop,
+  ) {
     final times = measuredTimes[system.runtimeType]!;
     if (times.length >= _framesToMeasure) {
       times.removeFirst();
@@ -311,7 +339,9 @@ class PerformanceMeasureWorld extends World {
   }
 
   void _createPerformanceStats(
-      Map<Type, ListQueue<int>> measuredTimes, List<PerformanceStats> result) {
+    Map<Type, ListQueue<int>> measuredTimes,
+    List<PerformanceStats> result,
+  ) {
     for (final entry in measuredTimes.entries) {
       final measurements = entry.value.length;
       final sorted = List<int>.from(entry.value)..sort();
@@ -320,8 +350,16 @@ class PerformanceMeasureWorld extends World {
           sorted.fold<double>(0, (sum, item) => sum + item) / measurements;
       final minTime = sorted.first;
       final maxTime = sorted.last;
-      result.add(PerformanceStats._internal(
-          entry.key, measurements, minTime, maxTime, averageTime, meanTime));
+      result.add(
+        PerformanceStats._internal(
+          entry.key,
+          measurements,
+          minTime,
+          maxTime,
+          averageTime,
+          meanTime,
+        ),
+      );
     }
   }
 }
@@ -335,8 +373,11 @@ class PerformanceStats {
   /// The number of measurements.
   int measurements;
 
-  /// The fastest ([minTime]) and the slowest ([maxTime]) time in microseconds.
-  int minTime, maxTime;
+  /// The fastest ([minTime]) time in microseconds.
+  int minTime;
+
+  /// The slowest ([maxTime]) time in microseconds.
+  int maxTime;
 
   /// The mean time in microseconds.
   int meanTime;
@@ -344,8 +385,14 @@ class PerformanceStats {
   /// The avaerage time in microseconds.
   double averageTime;
 
-  PerformanceStats._internal(this.system, this.measurements, this.minTime,
-      this.maxTime, this.averageTime, this.meanTime);
+  PerformanceStats._internal(
+    this.system,
+    this.measurements,
+    this.minTime,
+    this.maxTime,
+    this.averageTime,
+    this.meanTime,
+  );
 
   @override
   String toString() => '''

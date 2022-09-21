@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../../dartemis.dart';
 
 /// A [Bag] that uses a [BitSet] to manage entities. Results in faster
 /// removement of entities.

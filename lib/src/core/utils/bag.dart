@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../../dartemis.dart';
 
 /// Collection type a bit like List but does not preserve the order of its
 /// entities, speedwise it is very good, especially suited for games.
@@ -8,8 +8,7 @@ class Bag<E> with IterableMixin<E> {
   int _size = 0;
 
   /// Create a [Bag] with an initial capacity of [capacity].
-  Bag({int capacity = 32})
-      : _data = List<E?>.filled(capacity, null, growable: false);
+  Bag({int capacity = 32}) : _data = List<E?>.filled(capacity, null);
 
   /// Creates a new [Bag] with the elements of [iterable].
   Bag.from(Iterable<E> iterable)
@@ -101,7 +100,7 @@ class Bag<E> with IterableMixin<E> {
 
   void _growTo(int newCapacity) {
     final oldData = _data;
-    _data = List<E?>.filled(newCapacity, null, growable: false)
+    _data = List<E?>.filled(newCapacity, null)
       ..setRange(0, oldData.length, oldData);
   }
 

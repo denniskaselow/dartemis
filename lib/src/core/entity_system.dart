@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// The most raw entity system. It should not typically be used, but you can
 /// create your own entity system handling by extending this. It is recommended

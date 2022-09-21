@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../../dartemis.dart';
 
 /// This system has an empty aspect so it processes no entities, but it still
 /// gets invoked.

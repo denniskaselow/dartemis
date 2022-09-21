@@ -1,4 +1,4 @@
-part of darteroids;
+part of '../main.dart';
 
 class PlayerControlSystem extends IntervalEntitySystem {
   static const int up = 87;

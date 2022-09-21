@@ -1,4 +1,4 @@
-part of darteroids;
+part of '../main.dart';
 
 class MovementSystem extends EntityProcessingSystem {
   late final Mapper<Position> positionMapper;
@@ -116,8 +116,14 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
       final asteroidPos = positionMapper[asteroid];
       final asteroidBody = bodyMapper[asteroid];
 
-      if (doCirclesCollide(destroyerPos.x, destroyerPos.y, 0, asteroidPos.x,
-          asteroidPos.y, asteroidBody.radius)) {
+      if (doCirclesCollide(
+        destroyerPos.x,
+        destroyerPos.y,
+        0,
+        asteroidPos.x,
+        asteroidPos.y,
+        asteroidBody.radius,
+      )) {
         deleteFromWorld(asteroid);
         deleteFromWorld(entity);
         if (asteroidBody.radius > 10) {
@@ -173,8 +179,14 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
         final pos = positionMapper[entity];
         final body = bodyMapper[entity];
 
-        if (doCirclesCollide(pos.x, pos.y, body.radius, playerPos.x,
-            playerPos.y, playerBody.radius)) {
+        if (doCirclesCollide(
+          pos.x,
+          pos.y,
+          body.radius,
+          playerPos.x,
+          playerPos.y,
+          playerBody.radius,
+        )) {
           playerStatus.lifes--;
           playerStatus.invisiblityTimer = 5000;
           playerPos

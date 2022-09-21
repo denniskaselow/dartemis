@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// An Aspect is used by systems as a matcher against entities, to check if a
 /// system is interested in an entity. Aspects define what sort of component

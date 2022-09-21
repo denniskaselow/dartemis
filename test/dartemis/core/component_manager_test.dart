@@ -76,9 +76,12 @@ void main() {
       final entity = world.createEntity([componentA]);
 
       expect(
-          world.componentManager.getComponent<Component0>(
-              entity, ComponentType.getTypeFor(Component0)),
-          equals(componentA));
+        world.componentManager.getComponent<Component0>(
+          entity,
+          ComponentType.getTypeFor(Component0),
+        ),
+        equals(componentA),
+      );
     });
     test(
         'ComponentManager returns null if component for specific entity '
@@ -86,9 +89,12 @@ void main() {
       final entity = world.createEntity([Component0()]);
 
       expect(
-          world.componentManager.getComponent<Component1>(
-              entity, ComponentType.getTypeFor(Component1)),
-          isNull);
+        world.componentManager.getComponent<Component1>(
+          entity,
+          ComponentType.getTypeFor(Component1),
+        ),
+        isNull,
+      );
     });
     test(
         'ComponentManager returns null if component for specific entity does '
@@ -100,9 +106,12 @@ void main() {
       world.createEntity([Component1()]);
 
       expect(
-          world.componentManager.getComponent<Component1>(
-              entity, ComponentType.getTypeFor(Component1)),
-          isNull);
+        world.componentManager.getComponent<Component1>(
+          entity,
+          ComponentType.getTypeFor(Component1),
+        ),
+        isNull,
+      );
     });
     test(
         'ComponentManager returns null if no component for high index entity '
@@ -111,9 +120,12 @@ void main() {
       world.createEntity([componentA]);
 
       expect(
-          world.componentManager.getComponent<Component0>(
-              1000, ComponentType.getTypeFor(Component0)),
-          isNull);
+        world.componentManager.getComponent<Component0>(
+          1000,
+          ComponentType.getTypeFor(Component0),
+        ),
+        isNull,
+      );
     });
   });
 }

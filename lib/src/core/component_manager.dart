@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// Manages als components of all entities.
 class ComponentManager extends Manager {
@@ -39,7 +39,10 @@ class ComponentManager extends Manager {
   }
 
   void _addComponent<T extends Component>(
-      int entity, ComponentType type, T component) {
+    int entity,
+    ComponentType type,
+    T component,
+  ) {
     final index = type._bitIndex;
     _componentInfoByType._ensureCapacity(index);
     var componentInfo = _componentInfoByType[index];
@@ -87,13 +90,17 @@ class ComponentManager extends Manager {
   List<Component> getComponentsFor(int entity) {
     final result = <Component>[];
     _forComponentsOfEntity(
-        entity, (components, _) => result.add(components[entity]));
+      entity,
+      (components, _) => result.add(components[entity]),
+    );
 
     return result;
   }
 
   void _forComponentsOfEntity(
-      int entity, void Function(_ComponentInfo components, int index) f) {
+    int entity,
+    void Function(_ComponentInfo components, int index) f,
+  ) {
     for (var index = 0; index < ComponentType._nextBitIndex; index++) {
       final componentInfo = _componentInfoByType[index];
       if (componentInfo != null &&
@@ -126,7 +133,9 @@ class ComponentManager extends Manager {
 
   /// Returns every entity that is of interest for [system].
   List<int> _getEntitiesForSystem(
-      EntitySystem system, int entitiesBitSetLength) {
+    EntitySystem system,
+    int entitiesBitSetLength,
+  ) {
     final baseAll = BitSet(entitiesBitSetLength)..setAll();
     for (final interestingComponent in system._componentIndicesAll) {
       baseAll.and((_componentInfoByType[interestingComponent])!.entities);
@@ -151,7 +160,9 @@ class ComponentManager extends Manager {
 
   /// Returns the component of type [T] for the given [entity].
   T? getComponent<T extends Component>(
-      int entity, ComponentType componentType) {
+    int entity,
+    ComponentType componentType,
+  ) {
     final index = componentType._bitIndex;
     final components = _componentInfoByType[index];
     if (components != null && entity < components.components.length) {

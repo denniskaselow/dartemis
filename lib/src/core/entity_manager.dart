@@ -1,4 +1,4 @@
-part of dartemis;
+part of '../../dartemis.dart';
 
 /// Manages creation and deletion of every [int] and gives access to some
 /// basic statistcs.

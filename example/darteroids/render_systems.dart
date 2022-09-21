@@ -1,4 +1,4 @@
-part of darteroids;
+part of '../main.dart';
 
 class CircleRenderingSystem extends EntityProcessingSystem {
   final CanvasRenderingContext2D context;
@@ -55,11 +55,15 @@ class CircleRenderingSystem extends EntityProcessingSystem {
     }
   }
 
-  void drawCirle(Position pos, CircularBody body,
-      {int offsetX = 0, int offsetY = 0}) {
+  void drawCirle(
+    Position pos,
+    CircularBody body, {
+    int offsetX = 0,
+    int offsetY = 0,
+  }) {
     context
       ..beginPath()
-      ..arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, pi * 2, false)
+      ..arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, pi * 2)
       ..closePath()
       ..fill();
   }
@@ -117,7 +121,7 @@ class HudRenderSystem extends VoidEntitySystem {
       for (var i = 0; i < status.lifes; i++) {
         context
           ..beginPath()
-          ..arc(50 + i * 50, maxHeight + hudHeight ~/ 2, 15, 0, pi * 2, false)
+          ..arc(50 + i * 50, maxHeight + hudHeight ~/ 2, 15, 0, pi * 2)
           ..closePath()
           ..fill();
       }
