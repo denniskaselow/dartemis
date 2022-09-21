@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.6
+### Enhancements
+* performance improvement when adding/removing components
+
 ## 0.9.5+3
 ### Bugfix
 * `componentManager.getComponent` couldn't handle accessing components that don't exist for the 

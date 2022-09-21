@@ -177,6 +177,7 @@ class _ComponentInfo<T extends Component> {
   List<T?> components = List.filled(32, null, growable: true);
   BitSet interestedSystems = BitSet(32);
   BitSet requiresUpdate = BitSet(32);
+  bool dirty = false;
 
   _ComponentInfo();
 
@@ -189,7 +190,7 @@ class _ComponentInfo<T extends Component> {
     }
     entities[entity] = true;
     components[entity] = component;
-    requiresUpdate.or(interestedSystems);
+    dirty = true;
   }
 
   T operator [](int entity) => (components[entity])!;
@@ -199,7 +200,7 @@ class _ComponentInfo<T extends Component> {
       entities[entity] = false;
       (components[entity])!._removed();
       components[entity] = null;
-      requiresUpdate.or(interestedSystems);
+      dirty = true;
     }
   }
 
@@ -219,8 +220,13 @@ class _ComponentInfo<T extends Component> {
     requiresUpdate[systemBitIndex] = false;
   }
 
-  bool systemRequiresUpdate(int systemBitIndex) =>
-      requiresUpdate[systemBitIndex];
+  bool systemRequiresUpdate(int systemBitIndex) {
+    if (dirty) {
+      requiresUpdate.or(interestedSystems);
+      dirty = false;
+    }
+    return requiresUpdate[systemBitIndex];
+  }
 
   void systemUpdated(int systemBitIndex) =>
       requiresUpdate[systemBitIndex] = false;
