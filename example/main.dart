@@ -51,9 +51,10 @@ class Darteroids {
     ]);
 
     final tagManager = TagManager()..register(player, tagPlayer);
-    world.addManager(tagManager);
     final groupManager = GroupManager();
-    world.addManager(groupManager);
+    world
+      ..addManager(tagManager)
+      ..addManager(groupManager);
 
     addAsteroids(groupManager);
 

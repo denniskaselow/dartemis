@@ -34,89 +34,112 @@ Getting started
 ===============
 1. Add dartemis to your project by adding it to your **pubspec.yaml**:
 
-    ```yaml
-    dependencies:
-      dartemis: any
-    ```
+   ```yaml
+   dependencies:
+     dartemis: any
+   ```
 
 2. Import it in your project:
 
-    ```dart
-    import 'package:dartemis/dartemis.dart';
-    ```
+   ```dart
+   import 'package:dartemis/dartemis.dart';
+   ```
 3. Create a world:
 
-    ```dart
-    final world = World();
-    ```
+   ```dart
+   final world = World();
+   ```
 4. Create an entity from a list of components. Entities with different components will be processed by different systems:
 
-    ```dart
-    world.createEntity([
-      Position(0, 0), 
-      Velocity(1, 1),
-    ]);
-    ```
-    A `Component` is a pretty simple structure and should not contain any logic:
+   ```dart
+   world.createEntity([
+     Position(0, 0), 
+     Velocity(1, 1),
+   ]);
+   ```
+   A `Component` is a pretty simple structure and should not contain any logic:
 
-    ```dart
-    class Position extends Component {
-        num x, y;
-        Position(this.x, this.y);
-    }
-    ```
-    Or if you want to use a `PooledComponent`:
+   ```dart
+   class Position extends Component {
+     num x, y;
+     Position(this.x, this.y);
+   }
+   ```
+   Or if you want to use a `PooledComponent`:
 
-    ```dart
-    class Position extends PooledComponent {
-        late num x, y;
+   ```dart
+   class Position extends PooledComponent {
+     late num x, y;
     
-        Position._();
-        factory Position(num x, num y) {
-            final position = Pooled.of<Position>(() => Position._())
-              ..x = x
-              ..y = y;
-            return position;
-        }
-    }
-    ```
-    By using a factory constructor and calling the static function `Pooled.of`, dartemis is able to reuse destroyed components and they will not be garbage collected.
+     Position._();
+     factory Position(num x, num y) {
+       final position = Pooled.of<Position>(() => Position._())
+         ..x = x
+         ..y = y;
+       return position;
+     }
+   }
+   ```
+   By using a factory constructor and calling the static function `Pooled.of`, dartemis is able to reuse destroyed components and they will not be garbage collected.
 
 5. Define a systems that should process your entities. The `Aspect` defines which components an entity needs to have in order to be processed by the system:
 
-    ```dart
-    class MovementSystem extends EntityProcessingSystem {
-        late Mapper<Position> positionMapper;
-        late Mapper<Velocity> velocityMapper;
+   ```dart
+   class MovementSystem extends EntityProcessingSystem {
+     late Mapper<Position> positionMapper;
+     late Mapper<Velocity> velocityMapper;
 
-        MovementSystem() : super(Aspect.forAllOf([Position, Velocity]));
+     MovementSystem() : super(Aspect.forAllOf([Position, Velocity]));
 
-        void initialize() {
-          // initialize your system
-          // Mappers, Systems and Managers have to be assigned here
-          // see dartemis_builder if you don't want to write this code
-          positionMapper = Mapper<Position>(world);
-          velocityMapper = Mapper<Velocity>(world);
-        }
+     void initialize() {
+       // initialize your system
+       // Mappers, Systems and Managers have to be assigned here
+       // see dartemis_builder if you don't want to write this code
+       positionMapper = Mapper<Position>(world);
+       velocityMapper = Mapper<Velocity>(world);
+     }
 
-        void processEntity(int entity) {
-          Position position = positionMapper[entity];
-          Velocity vel = velocityMapper[entity];
-          position.x += vel.x * world.delta;
-          position.y += vel.y * world.delta;
-        }
-    }
-    ```
+     void processEntity(int entity) {
+       Position position = positionMapper[entity];
+       Velocity vel = velocityMapper[entity];
+       position
+         ..x += vel.x * world.delta
+         ..y += vel.y * world.delta;
+     }
+   }
+   ```
+   Or using [dartemis_builder](https://pub.dev/packages/dartemis_builder)   
+   
+   ```dart
+   part 'filename.g.part';
+   
+   @Generate(
+     EntityProcessingSystem,
+     allOf: [
+       Position,
+       Velocity,
+     ],
+   )
+   class MovementSystem extends _$MovementSystem {
+     void processEntity(int entity) {
+       Position position = positionMapper[entity];
+       Velocity vel = velocityMapper[entity];
+       position
+         ..x += vel.x * world.delta
+         ..y += vel.y * world.delta;
+     }
+   }
+   ```
 6. Add your system to the world:
 
-    ```dart
-    world.addSystem(MovementSystem());
-    ```
+   ```dart
+   world.addSystem(MovementSystem());
+   ```
 7. Initialize the world:
 
-    ```dart
-    world.initialize();   
-    ```
+   ```dart
+   world.initialize();   
+   ```
 8. Usually your logic requires a delta, so you need to set it in your game loop:
 
    ```dart
@@ -124,9 +147,9 @@ Getting started
    ```
 9. In your game loop you then process your systems:
 
-    ```dart
-    world.process();
-    ```
+   ```dart
+   world.process();
+   ```
 
 Documentation
 =============
