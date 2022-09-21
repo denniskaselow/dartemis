@@ -1,5 +1,6 @@
 canvas {
   border: solid 1px black;
+  user-select: none;
 }
 
 div#canvascontainer {
