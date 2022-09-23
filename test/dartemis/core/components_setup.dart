@@ -11,8 +11,7 @@ class Component0 extends Component {}
 class Component1 extends Component {}
 
 class PooledComponent2 extends PooledComponent<PooledComponent2> {
-  factory PooledComponent2() =>
-      Pooled.of<PooledComponent2>(() => PooledComponent2._());
+  factory PooledComponent2() => Pooled.of<PooledComponent2>(PooledComponent2._);
   PooledComponent2._();
 }
 

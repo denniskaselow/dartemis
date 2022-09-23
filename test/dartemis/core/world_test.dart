@@ -389,7 +389,7 @@ typedef EntitySystemStarter = void Function(
 class TestEntitySystem extends EntitySystem {
   bool isSetup = true;
   List<int> _expectedEntities;
-  TestEntitySystem(Aspect aspect, this._expectedEntities) : super(aspect);
+  TestEntitySystem(super.aspect, this._expectedEntities);
 
   @override
   void processEntities(Iterable<int> entities) {

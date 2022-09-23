@@ -12,7 +12,7 @@ class ComponentType {
 
   /// Returns the [ComponentType] for the runtimeType of a [Component].
   factory ComponentType.getTypeFor(Type typeOfComponent) =>
-      _componentTypes.putIfAbsent(typeOfComponent, () => ComponentType());
+      _componentTypes.putIfAbsent(typeOfComponent, ComponentType.new);
 
   /// Returns the index of the bit of the [componentType].
   static int getBitIndex(Type componentType) =>

@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.7
+### Internal
+* use SDK 2.17 (super parameters, constructor tear-offs)
+
 ## 0.9.6
 ### Enhancements
 * performance improvement when adding/removing components

@@ -15,7 +15,7 @@ class PlayerManager extends Manager {
   /// Make [entity] belong to [player].
   void setPlayer(int entity, String player) {
     _playerByEntity[entity] = player;
-    _entitiesByPlayer.putIfAbsent(player, () => Bag<int>()).add(entity);
+    _entitiesByPlayer.putIfAbsent(player, Bag<int>.new).add(entity);
   }
 
   /// Returns all entities that belong to [player].
