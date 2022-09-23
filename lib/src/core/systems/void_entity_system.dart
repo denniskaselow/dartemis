@@ -13,7 +13,4 @@ abstract class VoidEntitySystem extends EntitySystem {
 
   /// Execute the logic for this system.
   void processSystem();
-
-  @override
-  bool checkProcessing() => true;
 }

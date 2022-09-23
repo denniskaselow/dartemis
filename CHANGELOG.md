@@ -1,5 +1,9 @@
 # Changelog
 ## 0.9.7
+### Enhancements
+* `EntitySystem.checkProcessing()` is no longer abstract, returns `true`
+* delta can be directly accessed in systems (**BREAKING CHANGE** if variable delta already exists in extending system)
+
 ### Internal
 * use SDK 2.17 (super parameters, constructor tear-offs)
 

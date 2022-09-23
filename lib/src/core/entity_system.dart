@@ -26,6 +26,10 @@ abstract class EntitySystem {
 
   late final int _group;
 
+  double _time = 0;
+  double _delta = 0;
+  int _frame = 0;
+
   /// Creates an [EntitySystem] with [aspect].
   EntitySystem(Aspect aspect)
       : _all = aspect._all,
@@ -50,12 +54,15 @@ abstract class EntitySystem {
   /// Returns the [World] this [EntitySystem] belongs to.
   World get world => _world;
 
-  /// Returns how often the system in this [group] have been processed.
-  int get frame => world._frame[_group]!;
+  /// Returns how often the systems in this [group] have been processed.
+  int get frame => _frame;
 
   /// Returns the time that has elapsed for the systems in this [group] since
   /// the game has started (sum of all deltas).
-  double get time => world._time[_group]!;
+  double get time => _time;
+
+  /// Returns the delta that has elapsed since the last update of the world.
+  double get delta => _delta;
 
   /// Called before processing of entities begins.
   void begin() {}
@@ -63,6 +70,9 @@ abstract class EntitySystem {
   /// This is the only method that is supposed to be called from outside the
   /// library,
   void process() {
+    _frame = world._frame[_group]!;
+    _time = world._time[_group]!;
+    _delta = world.delta;
     if (checkProcessing()) {
       begin();
       processEntities(_actives);
@@ -78,7 +88,7 @@ abstract class EntitySystem {
   void processEntities(Iterable<int> entities);
 
   /// Returns true if the system should be processed, false if not.
-  bool checkProcessing();
+  bool checkProcessing() => true;
 
   /// Override to implement code that gets executed when systems are
   /// initialized.
