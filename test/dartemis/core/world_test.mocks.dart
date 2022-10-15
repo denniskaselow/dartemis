@@ -68,6 +68,12 @@ class MockEntitySystem2 extends _i1.Mock implements _i2.EntitySystem {
         returnValueForMissingStub: 0.0,
       ) as double);
   @override
+  double get delta => (super.noSuchMethod(
+        Invocation.getter(#delta),
+        returnValue: 0.0,
+        returnValueForMissingStub: 0.0,
+      ) as double);
+  @override
   void begin() => super.noSuchMethod(
         Invocation.method(
           #begin,
@@ -195,6 +201,12 @@ class MockEntitySystem extends _i1.Mock implements _i2.EntitySystem {
   @override
   double get time => (super.noSuchMethod(
         Invocation.getter(#time),
+        returnValue: 0.0,
+        returnValueForMissingStub: 0.0,
+      ) as double);
+  @override
+  double get delta => (super.noSuchMethod(
+        Invocation.getter(#delta),
         returnValue: 0.0,
         returnValueForMissingStub: 0.0,
       ) as double);
