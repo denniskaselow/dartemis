@@ -21,3 +21,10 @@ abstract class Manager implements EntityObserver {
   /// your manager.
   void destroy() {}
 }
+
+/// For Testing.
+@visibleForTesting
+mixin MockManagerMixin implements Manager {
+  @override
+  late World _world;
+}

@@ -30,7 +30,9 @@ class _FakeWorld_0 extends _i1.SmartFake implements _i2.World {
 /// A class which mocks [EntitySystem].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockEntitySystem2 extends _i1.Mock implements _i2.EntitySystem {
+class MockEntitySystem2 extends _i1.Mock
+    with _i2.MockEntitySystemMixin
+    implements _i2.EntitySystem {
   @override
   bool get passive => (super.noSuchMethod(
         Invocation.getter(#passive),
@@ -167,7 +169,9 @@ class MockEntitySystem2 extends _i1.Mock implements _i2.EntitySystem {
 /// A class which mocks [EntitySystem].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockEntitySystem extends _i1.Mock implements _i2.EntitySystem {
+class MockEntitySystem extends _i1.Mock
+    with _i2.MockEntitySystemMixin
+    implements _i2.EntitySystem {
   @override
   bool get passive => (super.noSuchMethod(
         Invocation.getter(#passive),
@@ -304,7 +308,9 @@ class MockEntitySystem extends _i1.Mock implements _i2.EntitySystem {
 /// A class which mocks [ComponentManager].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockComponentManager extends _i1.Mock implements _i2.ComponentManager {
+class MockComponentManager extends _i1.Mock
+    with _i2.MockComponentManagerMixin
+    implements _i2.ComponentManager {
   @override
   _i2.World get world => (super.noSuchMethod(
         Invocation.getter(#world),
@@ -398,7 +404,9 @@ class MockComponentManager extends _i1.Mock implements _i2.ComponentManager {
 /// A class which mocks [Manager].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockManager extends _i1.Mock implements _i2.Manager {
+class MockManager extends _i1.Mock
+    with _i2.MockManagerMixin
+    implements _i2.Manager {
   @override
   _i2.World get world => (super.noSuchMethod(
         Invocation.getter(#world),

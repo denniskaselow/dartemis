@@ -233,3 +233,14 @@ class _ComponentInfo<T extends Component> {
 
   _ComponentInfo<S> cast<S extends Component>() => this as _ComponentInfo<S>;
 }
+
+/// For Testing.
+@visibleForTesting
+mixin MockComponentManagerMixin implements ComponentManager {
+  @override
+  late World _world;
+  @override
+  void _registerSystem(EntitySystem system) {}
+  @override
+  void _removeComponentsOfEntity(int entity) {}
+}

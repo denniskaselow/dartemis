@@ -14,10 +14,28 @@ import 'world_test.mocks.dart';
     MockSpec<EntitySystem>(
       as: #MockEntitySystem2,
       onMissingStub: OnMissingStub.returnDefault,
+      mixingIn: [
+        MockEntitySystemMixin,
+      ],
     ),
-    MockSpec<EntitySystem>(onMissingStub: OnMissingStub.returnDefault),
-    MockSpec<ComponentManager>(onMissingStub: OnMissingStub.returnDefault),
-    MockSpec<Manager>(onMissingStub: OnMissingStub.returnDefault),
+    MockSpec<EntitySystem>(
+      onMissingStub: OnMissingStub.returnDefault,
+      mixingIn: [
+        MockEntitySystemMixin,
+      ],
+    ),
+    MockSpec<ComponentManager>(
+      onMissingStub: OnMissingStub.returnDefault,
+      mixingIn: [
+        MockComponentManagerMixin,
+      ],
+    ),
+    MockSpec<Manager>(
+      onMissingStub: OnMissingStub.returnDefault,
+      mixingIn: [
+        MockManagerMixin,
+      ],
+    ),
   ],
 )
 void main() {

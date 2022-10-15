@@ -109,3 +109,14 @@ abstract class EntitySystem {
   /// Delete [entity] from the world.
   void deleteFromWorld(int entity) => world.deleteEntity(entity);
 }
+
+/// For Testing.
+@visibleForTesting
+mixin MockEntitySystemMixin implements EntitySystem {
+  @override
+  late World _world;
+  @override
+  late bool _passive;
+  @override
+  late final int _group;
+}
