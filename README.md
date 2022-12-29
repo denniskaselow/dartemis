@@ -120,13 +120,12 @@ Getting started
        Velocity,
      ],
    )
-   class MovementSystem extends _$MovementSystem {
-     void processEntity(int entity) {
-       Position position = positionMapper[entity];
-       Velocity vel = velocityMapper[entity];
+   class SimpleMovementSystem extends _$SimpleMovementSystem {
+     @override
+     void processEntity(int entity, Position position, Velocity velocity) {    
        position
-         ..x += vel.x * world.delta
-         ..y += vel.y * world.delta;
+         ..x += velocity.x * world.delta
+         ..y += velocity.y * world.delta;
      }
    }
    ```
