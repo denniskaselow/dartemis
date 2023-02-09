@@ -129,7 +129,10 @@ class World {
   /// happen.
   void moveComponent<T extends Component>(int srcEntity, int dstEntity) =>
       componentManager._moveComponent(
-          srcEntity, dstEntity, ComponentType.getTypeFor(T));
+        srcEntity,
+        dstEntity,
+        ComponentType.getTypeFor(T),
+      );
 
   /// Gives you all the systems in this world for possible iteration.
   Iterable<EntitySystem> get systems => _systemsList;

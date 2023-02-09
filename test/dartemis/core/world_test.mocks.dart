@@ -157,15 +157,6 @@ class MockEntitySystem2 extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void moveComponent<T extends _i2.Component>(int? srcEntity, int? dstEntity) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #removeComponent,
-          [srcEntity, dstEntity],
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
   void deleteFromWorld(int? entity) => super.noSuchMethod(
         Invocation.method(
           #deleteFromWorld,

@@ -388,8 +388,8 @@ Adding a component will get the entity processed''', () {
       expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
     });
     test(
-        'systems should not require update when component required by system is '
-        'moved', () {
+        'systems should not require update when component required by system '
+        'is moved', () {
       world.moveComponent<Component32>(entityA, entityB);
 
       expect(world.componentManager.isUpdateNeededForSystem(es), isFalse);
