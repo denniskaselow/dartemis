@@ -58,6 +58,11 @@ class ComponentManager extends Manager {
     _componentInfoByType[typeId]!.remove(entity);
   }
 
+  void _moveComponent(int entitySrc, int entityDst, ComponentType type) {
+    final typeId = type._bitIndex;
+    _componentInfoByType[typeId]?.move(entitySrc, entityDst);
+  }
+
   /// Returns all components of [ComponentType type] accessible by their entity
   /// id.
   List<T?> _getComponentsByType<T extends Component>(ComponentType type) {
@@ -200,6 +205,17 @@ class _ComponentInfo<T extends Component> {
       entities[entity] = false;
       (components[entity])!._removed();
       components[entity] = null;
+      dirty = true;
+    }
+  }
+
+  void move(int srcEntity, int dstEntity) {
+    if (entities.length > srcEntity && entities[srcEntity]) {
+      remove(dstEntity);
+      entities[dstEntity] = true;
+      entities[srcEntity] = false;
+      components[dstEntity] = components[srcEntity];
+      components[srcEntity] = null;
       dirty = true;
     }
   }

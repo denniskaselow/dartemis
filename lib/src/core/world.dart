@@ -124,6 +124,13 @@ class World {
   void removeComponent<T extends Component>(int entity) =>
       componentManager._removeComponent(entity, ComponentType.getTypeFor(T));
 
+  /// moves a [Component] of type [T] from the [srcEntity] to the [dstEntity].
+  /// if the [srcEntity] does not have the [Component] of type [T] nothing will
+  /// happen.
+  void moveComponent<T extends Component>(int srcEntity, int dstEntity) =>
+      componentManager._moveComponent(
+          srcEntity, dstEntity, ComponentType.getTypeFor(T));
+
   /// Gives you all the systems in this world for possible iteration.
   Iterable<EntitySystem> get systems => _systemsList;
 
