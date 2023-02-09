@@ -334,11 +334,13 @@ Adding a component will get the entity processed''', () {
     late World world;
     late int entityA;
     late int entityB;
+    late int entityC;
     late TestEntitySystem es;
     setUp(() {
       world = World();
       entityA = world.createEntity([Component0(), Component32()]);
       entityB = world.createEntity([Component32()]);
+      entityC = world.createEntity([Component0()]);
       final expectedEntities = [entityA];
       es = TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
 
@@ -370,6 +372,27 @@ Adding a component will get the entity processed''', () {
       world.removeComponent<Component0>(entityA);
 
       expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
+    });
+    test(
+        'systems should require update when component required by system is '
+        'moved', () {
+      world.moveComponent<Component0>(entityA, entityC);
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
+    });
+    test(
+        'systems should require update when component required by system is '
+        'moved to a entity  that did not have the component before', () {
+      world.moveComponent<Component0>(entityA, entityB);
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isTrue);
+    });
+    test(
+        'systems should not require update when component required by system is '
+        'moved', () {
+      world.moveComponent<Component32>(entityA, entityB);
+
+      expect(world.componentManager.isUpdateNeededForSystem(es), isFalse);
     });
     test(
         'systems should require update when component required by system is '
