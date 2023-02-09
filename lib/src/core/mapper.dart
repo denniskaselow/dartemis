@@ -14,7 +14,7 @@ class Mapper<T extends Component> {
   /// No bounding checks, so this could throw a [RangeError],
   /// however in most scenarios you already know the entity possesses this
   /// component.
-  T operator [](int entity) => (_components[entity])!;
+  T operator [](int entity) => _components[entity]!;
 
   /// Fast and safe retrieval of a component for this entity.
   /// If the entity does not have this component then null is returned.

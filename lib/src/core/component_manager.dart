@@ -120,7 +120,7 @@ class ComponentManager extends Manager {
   bool isUpdateNeededForSystem(EntitySystem system) {
     final systemBitIndex = system._systemBitIndex;
     for (final interestingComponent in system._interestingComponentsIndices) {
-      if ((_componentInfoByType[interestingComponent])!
+      if (_componentInfoByType[interestingComponent]!
           .systemRequiresUpdate(systemBitIndex)) {
         return true;
       }
@@ -143,19 +143,19 @@ class ComponentManager extends Manager {
   ) {
     final baseAll = BitSet(entitiesBitSetLength)..setAll();
     for (final interestingComponent in system._componentIndicesAll) {
-      baseAll.and((_componentInfoByType[interestingComponent])!.entities);
+      baseAll.and(_componentInfoByType[interestingComponent]!.entities);
     }
     final baseOne = BitSet(entitiesBitSetLength);
     if (system._componentIndicesOne.isEmpty) {
       baseOne.setAll();
     } else {
       for (final interestingComponent in system._componentIndicesOne) {
-        baseOne.or((_componentInfoByType[interestingComponent])!.entities);
+        baseOne.or(_componentInfoByType[interestingComponent]!.entities);
       }
     }
     final baseExclude = BitSet(entitiesBitSetLength);
     for (final interestingComponent in system._componentIndicesExcluded) {
-      baseExclude.or((_componentInfoByType[interestingComponent])!.entities);
+      baseExclude.or(_componentInfoByType[interestingComponent]!.entities);
     }
     baseAll
       ..and(baseOne)
@@ -198,12 +198,12 @@ class _ComponentInfo<T extends Component> {
     dirty = true;
   }
 
-  T operator [](int entity) => (components[entity])!;
+  T operator [](int entity) => components[entity]!;
 
   void remove(int entity) {
     if (entities.length > entity && entities[entity]) {
       entities[entity] = false;
-      (components[entity])!._removed();
+      components[entity]!._removed();
       components[entity] = null;
       dirty = true;
     }
