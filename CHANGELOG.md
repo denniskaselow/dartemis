@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.8
+### Enhancements
+* new method in `World` to move a component from one entity to another
+
 ## 0.9.7
 ### Enhancements
 * `EntitySystem.checkProcessing()` is no longer abstract, returns `true`

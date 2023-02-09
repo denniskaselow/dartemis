@@ -120,11 +120,11 @@ class World {
     }
   }
 
-  /// removes a [Component] of type [T] from the [entity].
+  /// Removes a [Component] of type [T] from the [entity].
   void removeComponent<T extends Component>(int entity) =>
       componentManager._removeComponent(entity, ComponentType.getTypeFor(T));
 
-  /// moves a [Component] of type [T] from the [srcEntity] to the [dstEntity].
+  /// Moves a [Component] of type [T] from the [srcEntity] to the [dstEntity].
   /// if the [srcEntity] does not have the [Component] of type [T] nothing will
   /// happen.
   void moveComponent<T extends Component>(int srcEntity, int dstEntity) =>
