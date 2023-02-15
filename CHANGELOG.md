@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.8+1
+### Bugfix
+* Fix crash when moving components
+
 ## 0.9.8
 ### Enhancements
 * new method in `World` to move a component from one entity to another
