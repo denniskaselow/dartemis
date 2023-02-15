@@ -29,5 +29,19 @@ void main() {
       world.removeComponent<PooledComponent2>(entity);
       expect(PooledComponent2(), same(c));
     });
+
+    test('moving components should not crash', () {
+      final entity0 = world.createEntity();
+      world.addComponent(entity0, PooledComponent2());
+
+      var previousEntity = entity0;
+      for (var i = 0; i < 128; i++) {
+        final entity = world.createEntity();
+        world.moveComponent<PooledComponent2>(previousEntity, entity);
+        previousEntity = entity;
+      }
+
+      expect(world.getComponents(previousEntity), isNotEmpty);
+    });
   });
 }

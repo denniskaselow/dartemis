@@ -212,9 +212,8 @@ class _ComponentInfo<T extends Component> {
   void move(int srcEntity, int dstEntity) {
     if (entities.length > srcEntity && entities[srcEntity]) {
       remove(dstEntity);
-      entities[dstEntity] = true;
+      this[dstEntity] = components[srcEntity]!;
       entities[srcEntity] = false;
-      components[dstEntity] = components[srcEntity];
       components[srcEntity] = null;
       dirty = true;
     }
