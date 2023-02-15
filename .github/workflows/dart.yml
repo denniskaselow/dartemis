@@ -32,7 +32,9 @@ jobs:
         run: dart test
 
       - name: Activate test coverage
+        if: github.event_name != 'pull_request'
         run: dart pub global activate -sgit https://github.com/denniskaselow/dart-coveralls.git
 
       - name: Run test coverage
+        if: github.event_name != 'pull_request'
         run: dart pub global run dart_coveralls report --token ${{ secrets.COVERALLS_TOKEN }} --exclude-test-files test/all_tests.dart --throw-on-error
