@@ -55,32 +55,25 @@ class ComponentManager extends Manager {
 
   void _removeComponent(int entity, ComponentType type) {
     final typeId = type._bitIndex;
-    if (typeId < _componentInfoByType.length) {
-      _componentInfoByType[typeId]!.remove(entity);
-    }
+    _componentInfoByType[typeId]!.remove(entity);
   }
 
   void _moveComponent(int entitySrc, int entityDst, ComponentType type) {
     final typeId = type._bitIndex;
-    if (typeId < _componentInfoByType.length) {
-      _componentInfoByType[typeId]?.move(entitySrc, entityDst);
-    }
+    _componentInfoByType[typeId]?.move(entitySrc, entityDst);
   }
 
   /// Returns all components of [ComponentType type] accessible by their entity
   /// id.
   List<T?> _getComponentsByType<T extends Component>(ComponentType type) {
     final index = type._bitIndex;
-    if (index >= _componentInfoByType.length) {
-      return [];
-    }
+    _componentInfoByType._ensureCapacity(index);
 
     var components = _componentInfoByType[index];
     if (components == null) {
-      return [];
-    }
-
-    if (components.components is! List<T?>) {
+      components = _ComponentInfo<T>();
+      _componentInfoByType[index] = components;
+    } else if (components.components is! List<T?>) {
       // when components get added to an entity as part of a list containing
       // multiple different components, the type is infered as Component
       // instead of the actual type of the component. So if _addComponent was
@@ -113,8 +106,7 @@ class ComponentManager extends Manager {
     int entity,
     void Function(_ComponentInfo components, int index) f,
   ) {
-    final maxIndex = _componentInfoByType.length;
-    for (var index = 0; index < maxIndex; index++) {
+    for (var index = 0; index < ComponentType._nextBitIndex; index++) {
       final componentInfo = _componentInfoByType[index];
       if (componentInfo != null &&
           componentInfo.entities.length > entity &&
@@ -177,9 +169,6 @@ class ComponentManager extends Manager {
     ComponentType componentType,
   ) {
     final index = componentType._bitIndex;
-    if (index >= _componentInfoByType.length) {
-      return null;
-    }
     final components = _componentInfoByType[index];
     if (components != null && entity < components.components.length) {
       return components.components[entity] as T?;

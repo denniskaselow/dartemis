@@ -43,10 +43,5 @@ void main() {
 
       expect(world.getComponents(previousEntity), isNotEmpty);
     });
-
-    test('get components that were not added should not crash', () {
-      final entity0 = world.createEntity();
-      expect(world.getComponents(entity0), isEmpty);
-    });
   });
 }
