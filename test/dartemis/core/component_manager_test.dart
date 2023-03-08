@@ -127,5 +127,158 @@ void main() {
         isNull,
       );
     });
+
+    test('ComponentManager getComponent of components that were not added', () {
+      final entity0 = world.createEntity();
+
+      // Try to access more than 32 components
+      world.componentManager.getComponent<Component0>(
+        entity0,
+        ComponentType.getTypeFor(Component0),
+      );
+      world.componentManager.getComponent<Component1>(
+        entity0,
+        ComponentType.getTypeFor(Component1),
+      );
+      world.componentManager.getComponent<PooledComponent2>(
+        entity0,
+        ComponentType.getTypeFor(PooledComponent2),
+      );
+      world.componentManager.getComponent<Component3>(
+        entity0,
+        ComponentType.getTypeFor(Component3),
+      );
+      world.componentManager.getComponent<Component4>(
+        entity0,
+        ComponentType.getTypeFor(Component4),
+      );
+      world.componentManager.getComponent<Component5>(
+        entity0,
+        ComponentType.getTypeFor(Component5),
+      );
+      world.componentManager.getComponent<Component6>(
+        entity0,
+        ComponentType.getTypeFor(Component6),
+      );
+      world.componentManager.getComponent<Component7>(
+        entity0,
+        ComponentType.getTypeFor(Component7),
+      );
+      world.componentManager.getComponent<Component8>(
+        entity0,
+        ComponentType.getTypeFor(Component8),
+      );
+      world.componentManager.getComponent<Component9>(
+        entity0,
+        ComponentType.getTypeFor(Component9),
+      );
+      world.componentManager.getComponent<Component10>(
+        entity0,
+        ComponentType.getTypeFor(Component10),
+      );
+      world.componentManager.getComponent<Component11>(
+        entity0,
+        ComponentType.getTypeFor(Component11),
+      );
+      world.componentManager.getComponent<Component12>(
+        entity0,
+        ComponentType.getTypeFor(Component12),
+      );
+      world.componentManager.getComponent<Component13>(
+        entity0,
+        ComponentType.getTypeFor(Component13),
+      );
+      world.componentManager.getComponent<Component14>(
+        entity0,
+        ComponentType.getTypeFor(Component14),
+      );
+      world.componentManager.getComponent<Component15>(
+        entity0,
+        ComponentType.getTypeFor(Component15),
+      );
+      world.componentManager.getComponent<Component16>(
+        entity0,
+        ComponentType.getTypeFor(Component16),
+      );
+      world.componentManager.getComponent<Component17>(
+        entity0,
+        ComponentType.getTypeFor(Component17),
+      );
+      world.componentManager.getComponent<Component18>(
+        entity0,
+        ComponentType.getTypeFor(Component18),
+      );
+      world.componentManager.getComponent<Component19>(
+        entity0,
+        ComponentType.getTypeFor(Component19),
+      );
+      world.componentManager.getComponent<Component20>(
+        entity0,
+        ComponentType.getTypeFor(Component20),
+      );
+      world.componentManager.getComponent<Component21>(
+        entity0,
+        ComponentType.getTypeFor(Component21),
+      );
+      world.componentManager.getComponent<Component22>(
+        entity0,
+        ComponentType.getTypeFor(Component22),
+      );
+      world.componentManager.getComponent<Component23>(
+        entity0,
+        ComponentType.getTypeFor(Component23),
+      );
+      world.componentManager.getComponent<Component24>(
+        entity0,
+        ComponentType.getTypeFor(Component24),
+      );
+      world.componentManager.getComponent<Component25>(
+        entity0,
+        ComponentType.getTypeFor(Component25),
+      );
+      world.componentManager.getComponent<Component26>(
+        entity0,
+        ComponentType.getTypeFor(Component26),
+      );
+      world.componentManager.getComponent<Component27>(
+        entity0,
+        ComponentType.getTypeFor(Component27),
+      );
+      world.componentManager.getComponent<Component28>(
+        entity0,
+        ComponentType.getTypeFor(Component28),
+      );
+      world.componentManager.getComponent<Component29>(
+        entity0,
+        ComponentType.getTypeFor(Component29),
+      );
+      world.componentManager.getComponent<Component30>(
+        entity0,
+        ComponentType.getTypeFor(Component30),
+      );
+      world.componentManager.getComponent<Component31>(
+        entity0,
+        ComponentType.getTypeFor(Component31),
+      );
+      final component32 = world.componentManager.getComponent<Component32>(
+        entity0,
+        ComponentType.getTypeFor(Component32),
+      );
+      expect(component32, isNull);
+
+      // Try to remove an out of bound components info
+      world.removeComponent<Component32>(entity0);
+
+      // Try to list components where ComponentType._nextBitIndex >= 32
+      expect(world.componentManager.getComponentsFor(entity0), isEmpty);
+
+      // Trying to get components that were not added should not register them
+      expect(
+        world.componentManager.getComponentsByType<Component32>(
+          ComponentType.getTypeFor(Component32),
+        ),
+        isEmpty,
+      );
+    });
   });
 }
