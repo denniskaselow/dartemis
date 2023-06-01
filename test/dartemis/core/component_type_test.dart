@@ -1,5 +1,3 @@
-library component_type_test;
-
 import 'package:dartemis/dartemis.dart';
 import 'package:test/test.dart';
 

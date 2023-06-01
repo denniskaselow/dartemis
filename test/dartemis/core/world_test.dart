@@ -1,5 +1,3 @@
-library world_test;
-
 import 'package:dartemis/dartemis.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

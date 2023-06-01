@@ -5,10 +5,13 @@ part of '../../../dartemis.dart';
 abstract class IntervalEntitySystem extends EntitySystem {
   double _acc = 0;
   double _intervalDelta = 0;
-  final double _interval;
 
-  /// Create an [IntervalEntitySystem] with the specified interval and [aspect].
-  IntervalEntitySystem(this._interval, Aspect aspect) : super(aspect);
+  /// The interval in which the system will be processed.
+  final double interval;
+
+  /// Create an [IntervalEntitySystem] with the specified [interval] and
+  /// [aspect].
+  IntervalEntitySystem(this.interval, Aspect aspect) : super(aspect);
 
   /// Returns the accumulated delta since the system was last invoked.
   @override
@@ -18,8 +21,8 @@ abstract class IntervalEntitySystem extends EntitySystem {
   bool checkProcessing() {
     _acc += world.delta;
     _intervalDelta += world.delta;
-    if (_acc >= _interval) {
-      _acc -= _interval;
+    if (_acc >= interval) {
+      _acc -= interval;
       return true;
     }
     return false;

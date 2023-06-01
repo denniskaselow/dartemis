@@ -1,5 +1,3 @@
-library core.all_tests;
-
 import 'aspect_test.dart' as aspect;
 import 'component_manager_test.dart' as component_manager;
 import 'component_test.dart' as component;

@@ -1,5 +1,3 @@
-library group_manager_test;
-
 import 'package:dartemis/dartemis.dart';
 import 'package:test/test.dart';
 

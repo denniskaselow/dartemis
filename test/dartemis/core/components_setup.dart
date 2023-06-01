@@ -1,5 +1,3 @@
-library components_setup;
-
 import 'package:dartemis/dartemis.dart';
 
 final int componentBit0 = ComponentType.getBitIndex(Component0);
