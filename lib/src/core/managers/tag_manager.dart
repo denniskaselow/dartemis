@@ -30,6 +30,9 @@ class TagManager extends Manager {
   /// Returns the entity with [tag].
   int? getEntity(String tag) => _entitiesByTag[tag];
 
+  /// Returns the tag of the [entity].
+  String? getTag(int entity) => _tagsByEntity[entity];
+
   /// Returns all known tags.
   Iterable<String> getRegisteredTags() =>
       _tagsByEntity.values as Iterable<String>;

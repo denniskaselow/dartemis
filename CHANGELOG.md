@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.9
+### Enhancements
+* new method `getTag` in `TagManager` to get the tag of an entity
+
 ## 0.9.8+1
 ### Bugfix
 * Fix crash when moving components

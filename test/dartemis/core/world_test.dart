@@ -12,24 +12,28 @@ import 'world_test.mocks.dart';
     MockSpec<EntitySystem>(
       as: #MockEntitySystem2,
       onMissingStub: OnMissingStub.returnDefault,
+      // ignore: deprecated_member_use
       mixingIn: [
         MockEntitySystemMixin,
       ],
     ),
     MockSpec<EntitySystem>(
       onMissingStub: OnMissingStub.returnDefault,
+      // ignore: deprecated_member_use
       mixingIn: [
         MockEntitySystemMixin,
       ],
     ),
     MockSpec<ComponentManager>(
       onMissingStub: OnMissingStub.returnDefault,
+      // ignore: deprecated_member_use
       mixingIn: [
         MockComponentManagerMixin,
       ],
     ),
     MockSpec<Manager>(
       onMissingStub: OnMissingStub.returnDefault,
+      // ignore: deprecated_member_use
       mixingIn: [
         MockManagerMixin,
       ],
