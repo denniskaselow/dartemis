@@ -3,14 +3,12 @@ library darteroids;
 import 'dart:async';
 import 'dart:html';
 import 'dart:math';
+
 import 'package:dartemis/dartemis.dart';
 
 part 'darteroids/components.dart';
-
 part 'darteroids/gamelogic_systems.dart';
-
 part 'darteroids/input_systems.dart';
-
 part 'darteroids/render_systems.dart';
 
 const String tagPlayer = 'player';
@@ -65,9 +63,9 @@ class Darteroids {
       ..addSystem(MovementSystem())
       ..addSystem(AsteroidDestructionSystem())
       ..addSystem(PlayerCollisionDetectionSystem())
-      ..addSystem(BackgroundRenderSystem(context2d), group: 1)
-      ..addSystem(CircleRenderingSystem(context2d), group: 1)
-      ..addSystem(HudRenderSystem(context2d), group: 1)
+      ..addSystem(BackgroundRenderSystem(context2d, group: 1))
+      ..addSystem(CircleRenderingSystem(context2d, group: 1))
+      ..addSystem(HudRenderSystem(context2d, group: 1))
       ..initialize();
 
     physicsLoop();

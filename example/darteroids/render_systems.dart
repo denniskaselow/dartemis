@@ -7,11 +7,12 @@ class CircleRenderingSystem extends EntityProcessingSystem {
   late final Mapper<CircularBody> bodyMapper;
   late final Mapper<Status> statusMapper;
 
-  CircleRenderingSystem(this.context)
+  CircleRenderingSystem(this.context, {super.group})
       : super(Aspect.forAllOf([Position, CircularBody]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     positionMapper = Mapper<Position>(world);
     statusMapper = Mapper<Status>(world);
     bodyMapper = Mapper<CircularBody>(world);
@@ -72,7 +73,7 @@ class CircleRenderingSystem extends EntityProcessingSystem {
 class BackgroundRenderSystem extends VoidEntitySystem {
   final CanvasRenderingContext2D context;
 
-  BackgroundRenderSystem(this.context);
+  BackgroundRenderSystem(this.context, {super.group});
 
   @override
   void processSystem() {
@@ -95,10 +96,11 @@ class HudRenderSystem extends VoidEntitySystem {
   late final TagManager tagManager;
   late final Mapper<Status> statusMapper;
 
-  HudRenderSystem(this.context);
+  HudRenderSystem(this.context, {super.group});
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     tagManager = world.getManager<TagManager>();
     statusMapper = Mapper<Status>(world);
   }

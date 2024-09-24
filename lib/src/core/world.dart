@@ -52,9 +52,9 @@ class World {
     _systemsList.forEach(_initializeSystem);
   }
 
-  void _initializeManager(Manager manager) => manager.initialize();
+  void _initializeManager(Manager manager) => manager.initialize(this);
 
-  void _initializeSystem(EntitySystem system) => system.initialize();
+  void _initializeSystem(EntitySystem system) => system.initialize(this);
 
   /// Returns a manager that takes care of all the entities in the world.
   /// entities of this world.
@@ -75,7 +75,6 @@ class World {
     }
     _managers[manager.runtimeType] = manager;
     _managersBag.add(manager);
-    manager._world = this;
   }
 
   /// Returns a [Manager] of the specified type [T].
@@ -138,11 +137,7 @@ class World {
   Iterable<EntitySystem> get systems => _systemsList;
 
   /// Adds a [system] to this world that will be processed by [process()].
-  /// If [passive] is set to true the [system] will not be processed by the
-  /// world.
-  /// If a [group] is set, this [system] will only be processed when calling
-  /// [process()] with the same [group].
-  void addSystem(EntitySystem system, {bool passive = false, int group = 0}) {
+  void addSystem(EntitySystem system) {
     if (_systems.containsKey(system.runtimeType)) {
       throw ArgumentError.value(
           system,
@@ -150,16 +145,12 @@ class World {
           'A system of type "${system.runtimeType}" has already been added to '
               'the world.');
     }
-    system
-      .._world = this
-      .._passive = passive
-      .._group = group;
 
     _systems[system.runtimeType] = system;
     _systemsList.add(system);
-    _time.putIfAbsent(group, () => 0.0);
-    _frame.putIfAbsent(group, () => 0);
-    componentManager._registerSystem(system);
+    _time.putIfAbsent(system.group, () => 0.0);
+    _frame.putIfAbsent(system.group, () => 0);
+    componentManager.registerSystem(system);
   }
 
   /// Removed the specified system from the world.
@@ -209,7 +200,7 @@ class World {
     for (final manager in _managers.values) {
       manager.deleted(entity);
     }
-    componentManager._removeComponentsOfEntity(entity);
+    componentManager.removeComponentsOfEntity(entity);
     entityManager._delete(entity);
   }
 
@@ -331,8 +322,8 @@ class PerformanceMeasureWorld extends World {
   }
 
   @override
-  void addSystem(EntitySystem system, {bool passive = false, int group = 0}) {
-    super.addSystem(system, passive: passive, group: group);
+  void addSystem(EntitySystem system) {
+    super.addSystem(system);
     _systemTimes[system.runtimeType] = ListQueue<int>(_framesToMeasure);
     _processEntityChangesTimes[system.runtimeType] =
         ListQueue<int>(_framesToMeasure);

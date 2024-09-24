@@ -32,15 +32,22 @@ class _FakeWorld_0 extends _i1.SmartFake implements _i2.World {
 /// A class which mocks [EntitySystem].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockEntitySystem2 extends _i1.Mock
-    with _i2.MockEntitySystemMixin
-    implements _i2.EntitySystem {
+class MockEntitySystem2 extends _i1.Mock implements _i2.EntitySystem {
   @override
   bool get passive => (super.noSuchMethod(
         Invocation.getter(#passive),
         returnValue: false,
         returnValueForMissingStub: false,
       ) as bool);
+
+  @override
+  set passive(bool? _passive) => super.noSuchMethod(
+        Invocation.setter(
+          #passive,
+          _passive,
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   int get group => (super.noSuchMethod(
@@ -130,10 +137,10 @@ class MockEntitySystem2 extends _i1.Mock
       ) as bool);
 
   @override
-  void initialize() => super.noSuchMethod(
+  void initialize(_i2.World? world) => super.noSuchMethod(
         Invocation.method(
           #initialize,
-          [],
+          [world],
         ),
         returnValueForMissingStub: null,
       );
@@ -186,15 +193,22 @@ class MockEntitySystem2 extends _i1.Mock
 /// A class which mocks [EntitySystem].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockEntitySystem extends _i1.Mock
-    with _i2.MockEntitySystemMixin
-    implements _i2.EntitySystem {
+class MockEntitySystem extends _i1.Mock implements _i2.EntitySystem {
   @override
   bool get passive => (super.noSuchMethod(
         Invocation.getter(#passive),
         returnValue: false,
         returnValueForMissingStub: false,
       ) as bool);
+
+  @override
+  set passive(bool? _passive) => super.noSuchMethod(
+        Invocation.setter(
+          #passive,
+          _passive,
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   int get group => (super.noSuchMethod(
@@ -284,10 +298,10 @@ class MockEntitySystem extends _i1.Mock
       ) as bool);
 
   @override
-  void initialize() => super.noSuchMethod(
+  void initialize(_i2.World? world) => super.noSuchMethod(
         Invocation.method(
           #initialize,
-          [],
+          [world],
         ),
         returnValueForMissingStub: null,
       );
@@ -340,9 +354,7 @@ class MockEntitySystem extends _i1.Mock
 /// A class which mocks [ComponentManager].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockComponentManager extends _i1.Mock
-    with _i2.MockComponentManagerMixin
-    implements _i2.ComponentManager {
+class MockComponentManager extends _i1.Mock implements _i2.ComponentManager {
   @override
   _i2.World get world => (super.noSuchMethod(
         Invocation.getter(#world),
@@ -357,10 +369,28 @@ class MockComponentManager extends _i1.Mock
       ) as _i2.World);
 
   @override
-  void initialize() => super.noSuchMethod(
+  void initialize(_i2.World? world) => super.noSuchMethod(
         Invocation.method(
           #initialize,
-          [],
+          [world],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void registerSystem(_i2.EntitySystem? system) => super.noSuchMethod(
+        Invocation.method(
+          #registerSystem,
+          [system],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void removeComponentsOfEntity(_i2.Entity? entity) => super.noSuchMethod(
+        Invocation.method(
+          #removeComponentsOfEntity,
+          [entity],
         ),
         returnValueForMissingStub: null,
       );
@@ -445,9 +475,7 @@ class MockComponentManager extends _i1.Mock
 /// A class which mocks [Manager].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockManager extends _i1.Mock
-    with _i2.MockManagerMixin
-    implements _i2.Manager {
+class MockManager extends _i1.Mock implements _i2.Manager {
   @override
   _i2.World get world => (super.noSuchMethod(
         Invocation.getter(#world),
@@ -462,10 +490,10 @@ class MockManager extends _i1.Mock
       ) as _i2.World);
 
   @override
-  void initialize() => super.noSuchMethod(
+  void initialize(_i2.World? world) => super.noSuchMethod(
         Invocation.method(
           #initialize,
-          [],
+          [world],
         ),
         returnValueForMissingStub: null,
       );

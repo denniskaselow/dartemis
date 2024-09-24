@@ -9,7 +9,12 @@ abstract class Manager implements EntityObserver {
 
   /// Override to implement code that gets executed when managers are
   /// initialized.
-  void initialize() {}
+  @mustCallSuper
+  @protected
+  // ignore: use_setters_to_change_properties
+  void initialize(World world) {
+    _world = world;
+  }
 
   @override
   void added(Entity entity) {}
@@ -20,11 +25,4 @@ abstract class Manager implements EntityObserver {
   /// Called when the world gets destroyed. Override if you need to clean up
   /// your manager.
   void destroy() {}
-}
-
-/// For Testing.
-@visibleForTesting
-mixin MockManagerMixin implements Manager {
-  @override
-  late World _world;
 }

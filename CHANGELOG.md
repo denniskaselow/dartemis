@@ -4,6 +4,10 @@
 * Entities are no longer simple `int`s and have been turned into an `extension type Entity(int)`. 
   Methods that previously expected `int entity` or `Iterable<int> entities>` 
   now expect `Entity entity` or `Iterable<Entity> entities`.
+* Removed named parameters `group` and `passive` from `World.addSystem`,
+  they are now named parameters of the constructor of `EntitySystem`.
+* The `initialize`-method of `Manager`s and `EntitySystem`s now has a
+  parameter for the `World`.
 
 ## 0.9.9
 ### Enhancements
