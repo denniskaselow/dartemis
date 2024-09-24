@@ -11,6 +11,7 @@ part 'src/core/aspect.dart';
 part 'src/core/component.dart';
 part 'src/core/component_manager.dart';
 part 'src/core/component_type.dart';
+part 'src/core/entity.dart';
 part 'src/core/entity_manager.dart';
 part 'src/core/entity_observer.dart';
 part 'src/core/entity_system.dart';

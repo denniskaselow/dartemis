@@ -116,10 +116,14 @@ void main() {
         'exist', () {
       final componentA = Component0();
       world.createEntity([componentA]);
+      for (var i = 0; i < 1000; i++) {
+        world.createEntity<Component>([]);
+      }
+      final highIdEntity = world.createEntity<Component>([]);
 
       expect(
         world.componentManager.getComponent<Component0>(
-          1000,
+          highIdEntity,
           ComponentType.getTypeFor(Component0),
         ),
         isNull,

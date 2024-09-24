@@ -5,9 +5,9 @@ void main() {
   group('GroupManager tests', () {
     late World world;
     late GroupManager sut;
-    late int entityA;
-    late int entityAB;
-    late int entity0;
+    late Entity entityA;
+    late Entity entityAB;
+    late Entity entity0;
     setUp(() {
       world = World();
       sut = GroupManager();

@@ -13,7 +13,7 @@ class MovementSystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(int entity) {
+  void processEntity(Entity entity) {
     final pos = positionMapper[entity];
     final vel = velocityMapper[entity];
 
@@ -40,7 +40,7 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(int entity) {
+  void processEntity(Entity entity) {
     final cannon = cannonMapper[entity];
 
     if (cannon.canShoot) {
@@ -81,7 +81,7 @@ class DecaySystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(int entity) {
+  void processEntity(Entity entity) {
     final decay = decayMapper[entity];
 
     if (decay.timer < 0) {
@@ -109,7 +109,7 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(int entity) {
+  void processEntity(Entity entity) {
     final destroyerPos = positionMapper[entity];
 
     for (final asteroid in groupManager.getEntities(groupAsteroids)) {
@@ -168,7 +168,7 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
   }
 
   @override
-  void processEntities(Iterable<int> entities) {
+  void processEntities(Iterable<Entity> entities) {
     final player = tagManager.getEntity(tagPlayer)!;
     final playerPos = positionMapper[player];
     final playerStatus = statusMapper[player];

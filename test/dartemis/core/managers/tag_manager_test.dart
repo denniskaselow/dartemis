@@ -7,8 +7,8 @@ void main() {
 
     late World world;
     late TagManager sut;
-    late int entityWithTag;
-    late int entityWithoutTag;
+    late Entity entityWithTag;
+    late Entity entityWithoutTag;
     setUp(() {
       world = World();
       sut = TagManager();

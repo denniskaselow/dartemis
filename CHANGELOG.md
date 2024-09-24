@@ -1,4 +1,10 @@
 # Changelog
+## 0.10.0
+### Breaking API Changes
+* Entities are no longer simple `int`s and have been turned into an `extension type Entity(int)`. 
+  Methods that previously expected `int entity` or `Iterable<int> entities>` 
+  now expect `Entity entity` or `Iterable<Entity> entities`.
+
 ## 0.9.9
 ### Enhancements
 * new method `getTag` in `TagManager` to get the tag of an entity

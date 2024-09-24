@@ -37,7 +37,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   }
 
   @override
-  void processEntities(Iterable<int> entities) {
+  void processEntities(Iterable<Entity> entities) {
     final player = tagManager.getEntity(tagPlayer)!;
     final velocity = velocityMapper[player];
     final cannon = cannonMapper[player];

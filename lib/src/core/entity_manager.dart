@@ -4,41 +4,41 @@ part of '../../dartemis.dart';
 /// basic statistcs.
 class EntityManager extends Manager {
   BitSet _entities;
-  final Bag<int> _deletedEntities;
+  final Bag<Entity> _deletedEntities;
 
   int _active = 0;
   int _added = 0;
   int _created = 0;
   int _deleted = 0;
 
-  final _IdentifierPool _identifierPool;
+  final _EntityPool _identifierPool;
 
   EntityManager._internal()
       : _entities = BitSet(32),
-        _deletedEntities = Bag<int>(),
-        _identifierPool = _IdentifierPool();
+        _deletedEntities = Bag<Entity>(),
+        _identifierPool = _EntityPool();
 
   @override
   void initialize() {}
 
-  int _createEntityInstance() {
+  Entity _createEntityInstance() {
     final entity = _deletedEntities.removeLast() ?? _identifierPool.checkOut();
     _created++;
     return entity;
   }
 
-  void _add(int entity) {
+  void _add(Entity entity) {
     _active++;
     _added++;
-    if (entity >= _entities.length) {
-      _entities = BitSet.fromBitSet(_entities, length: entity + 1);
+    if (entity._id >= _entities.length) {
+      _entities = BitSet.fromBitSet(_entities, length: entity._id + 1);
     }
-    _entities[entity] = true;
+    _entities[entity._id] = true;
   }
 
-  void _delete(int entity) {
-    if (_entities[entity]) {
-      _entities[entity] = false;
+  void _delete(Entity entity) {
+    if (_entities[entity._id]) {
+      _entities[entity._id] = false;
 
       _deletedEntities.add(entity);
 
@@ -49,7 +49,7 @@ class EntityManager extends Manager {
 
   /// Check if this entity is active.
   /// Active means the entity is being actively processed.
-  bool isActive(int entityId) => _entities[entityId];
+  bool isActive(Entity entity) => _entities[entity._id];
 
   /// Get how many entities are active in this world.
   int get activeEntityCount => _active;
@@ -67,18 +67,18 @@ class EntityManager extends Manager {
 }
 
 /// Used only internally to generate distinct ids for entities and reuse them.
-class _IdentifierPool {
-  final List<int> _ids = [];
+class _EntityPool {
+  final List<Entity> _entities = [];
   int _nextAvailableId = 0;
 
-  _IdentifierPool();
+  _EntityPool();
 
-  int checkOut() {
-    if (_ids.isNotEmpty) {
-      return _ids.removeLast();
+  Entity checkOut() {
+    if (_entities.isNotEmpty) {
+      return _entities.removeLast();
     }
-    return _nextAvailableId++;
+    return Entity._(_nextAvailableId++);
   }
 
-  void checkIn(int id) => _ids.add(id);
+  void checkIn(Entity entity) => _entities.add(entity);
 }

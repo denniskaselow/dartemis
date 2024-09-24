@@ -6,33 +6,29 @@ import 'package:test/test.dart';
 import 'components_setup.dart';
 import 'world_test.mocks.dart';
 
-@GenerateMocks(
-  [],
-  customMocks: [
+// mixingIn because of https://github.com/dart-lang/sdk/issues/49687
+@GenerateNiceMocks(
+  [
     MockSpec<EntitySystem>(
       as: #MockEntitySystem2,
-      onMissingStub: OnMissingStub.returnDefault,
       // ignore: deprecated_member_use
       mixingIn: [
         MockEntitySystemMixin,
       ],
     ),
     MockSpec<EntitySystem>(
-      onMissingStub: OnMissingStub.returnDefault,
       // ignore: deprecated_member_use
       mixingIn: [
         MockEntitySystemMixin,
       ],
     ),
     MockSpec<ComponentManager>(
-      onMissingStub: OnMissingStub.returnDefault,
       // ignore: deprecated_member_use
       mixingIn: [
         MockComponentManagerMixin,
       ],
     ),
     MockSpec<Manager>(
-      onMissingStub: OnMissingStub.returnDefault,
       // ignore: deprecated_member_use
       mixingIn: [
         MockManagerMixin,
@@ -208,8 +204,8 @@ void main() {
   });
   group('integration tests for World.process()', () {
     late World world;
-    late int entityAB;
-    late int entityAC;
+    late Entity entityAB;
+    late Entity entityAC;
     late EntitySystemStarter systemStarter;
     setUp(() {
       world = World();
@@ -334,9 +330,9 @@ Adding a component will get the entity processed''', () {
   });
   group('isUpdateNeededForSystem', () {
     late World world;
-    late int entityA;
-    late int entityB;
-    late int entityC;
+    late Entity entityA;
+    late Entity entityB;
+    late Entity entityC;
     late TestEntitySystem es;
     setUp(() {
       world = World();
@@ -431,11 +427,11 @@ typedef EntitySystemStarter = void Function(
 
 class TestEntitySystem extends EntitySystem {
   bool isSetup = true;
-  List<int> _expectedEntities;
+  List<Entity> _expectedEntities;
   TestEntitySystem(super.aspect, this._expectedEntities);
 
   @override
-  void processEntities(Iterable<int> entities) {
+  void processEntities(Iterable<Entity> entities) {
     final length = _expectedEntities.length;
     expect(entities.length, length);
     for (final entity in entities) {
@@ -494,7 +490,7 @@ class TestEntitySystemWithMoreThan32Components extends EntitySystem {
         );
 
   @override
-  void processEntities(Iterable<int> entities) {}
+  void processEntities(Iterable<Entity> entities) {}
 
   @override
   bool checkProcessing() => true;
@@ -511,7 +507,7 @@ class TestEntitySystemForComponent3 extends EntityProcessingSystem {
   }
 
   @override
-  void processEntity(int entity) {
+  void processEntity(Entity entity) {
     final component = mapper.getSafe(entity);
 
     expect(
@@ -536,7 +532,7 @@ class TestEntitySystemWithInteractingDeletedEntities extends EntitySystem {
   bool checkProcessing() => true;
 
   @override
-  void processEntities(Iterable<int> entities) {
+  void processEntities(Iterable<Entity> entities) {
     // some interaction that causes one entity to be deleted
     world.deleteEntity(entities.last);
 

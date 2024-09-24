@@ -14,19 +14,19 @@ class Mapper<T extends Component> {
   /// No bounding checks, so this could throw a [RangeError],
   /// however in most scenarios you already know the entity possesses this
   /// component.
-  T operator [](int entity) => _components[entity]!;
+  T operator [](Entity entity) => _components[entity._id]!;
 
   /// Fast and safe retrieval of a component for this entity.
   /// If the entity does not have this component then null is returned.
-  T? getSafe(int entity) {
-    if (_components.length > entity) {
-      return _components[entity];
+  T? getSafe(Entity entity) {
+    if (_components.length > entity._id) {
+      return _components[entity._id];
     }
     return null;
   }
 
   /// Checks if the entity has this type of component.
-  bool has(int entity) => getSafe(entity) != null;
+  bool has(Entity entity) => getSafe(entity) != null;
 }
 
 /// Same as [Mapper], except the [[]] operator returns [T?] instead of [T] and
@@ -42,13 +42,13 @@ class OptionalMapper<T extends Component> {
 
   /// Fast and safe retrieval of a component for this entity.
   /// If the entity does not have this component then null is returned.
-  T? operator [](int entity) {
-    if (_components.length > entity) {
-      return _components[entity];
+  T? operator [](Entity entity) {
+    if (_components.length > entity._id) {
+      return _components[entity._id];
     }
     return null;
   }
 
   /// Checks if the entity has this type of component.
-  bool has(int entity) => this[entity] != null;
+  bool has(Entity entity) => this[entity] != null;
 }

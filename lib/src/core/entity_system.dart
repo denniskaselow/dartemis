@@ -10,10 +10,7 @@ abstract class EntitySystem {
   late final int _systemBitIndex;
   late final World _world;
 
-  // false positive: https://github.com/dart-lang/sdk/issues/39935
-  // ignore: prefer_final_fields
-  List<int> _actives = [];
-  // ignore: prefer_final_fields
+  List<Entity> _actives = [];
   bool _passive = true;
   late final List<int> _interestingComponentsIndices;
   late final List<int> _componentIndicesAll;
@@ -85,7 +82,7 @@ abstract class EntitySystem {
 
   /// Any implementing entity system must implement this method and the logic
   /// to process the given [entities] of the system.
-  void processEntities(Iterable<int> entities);
+  void processEntities(Iterable<Entity> entities);
 
   /// Returns true if the system should be processed, false if not.
   bool checkProcessing() => true;
@@ -99,15 +96,15 @@ abstract class EntitySystem {
   void destroy() {}
 
   /// Add a [component] to an [entity].
-  void addComponent<T extends Component>(int entity, T component) =>
+  void addComponent<T extends Component>(Entity entity, T component) =>
       world.addComponent(entity, component);
 
   /// Remove the component with type [T] from an [entity].
-  void removeComponent<T extends Component>(int entity) =>
+  void removeComponent<T extends Component>(Entity entity) =>
       world.removeComponent<T>(entity);
 
   /// Delete [entity] from the world.
-  void deleteFromWorld(int entity) => world.deleteEntity(entity);
+  void deleteFromWorld(Entity entity) => world.deleteEntity(entity);
 }
 
 /// For Testing.

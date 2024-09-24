@@ -2,8 +2,7 @@ part of '../../../dartemis.dart';
 
 /// Collection type a bit like List but does not preserve the order of its
 /// entities, speedwise it is very good, especially suited for games.
-// ignore: prefer_mixin
-class Bag<E> with IterableMixin<E> {
+class Bag<E> with Iterable<E> {
   List<E?> _data;
   int _size = 0;
 

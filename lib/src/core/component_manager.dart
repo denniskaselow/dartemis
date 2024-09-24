@@ -32,14 +32,14 @@ class ComponentManager extends Manager {
     }
   }
 
-  void _removeComponentsOfEntity(int entity) {
-    _forComponentsOfEntity(entity, (components, typeId) {
+  void _removeComponentsOfEntity(Entity entity) {
+    _forComponentsOfEntity(entity, (components) {
       components.remove(entity);
     });
   }
 
   void _addComponent<T extends Component>(
-    int entity,
+    Entity entity,
     ComponentType type,
     T component,
   ) {
@@ -53,12 +53,12 @@ class ComponentManager extends Manager {
     componentInfo[entity] = component;
   }
 
-  void _removeComponent(int entity, ComponentType type) {
+  void _removeComponent(Entity entity, ComponentType type) {
     final typeId = type._bitIndex;
     _componentInfoByType[typeId]!.remove(entity);
   }
 
-  void _moveComponent(int entitySrc, int entityDst, ComponentType type) {
+  void _moveComponent(Entity entitySrc, Entity entityDst, ComponentType type) {
     final typeId = type._bitIndex;
     _componentInfoByType[typeId]?.move(entitySrc, entityDst);
   }
@@ -92,26 +92,26 @@ class ComponentManager extends Manager {
       _getComponentsByType(type).whereType<T>().toList();
 
   /// Returns all components of [entity].
-  List<Component> getComponentsFor(int entity) {
+  List<Component> getComponentsFor(Entity entity) {
     final result = <Component>[];
     _forComponentsOfEntity(
       entity,
-      (components, _) => result.add(components[entity]),
+      (components) => result.add(components[entity]),
     );
 
     return result;
   }
 
   void _forComponentsOfEntity(
-    int entity,
-    void Function(_ComponentInfo components, int index) f,
+    Entity entity,
+    void Function(_ComponentInfo components) f,
   ) {
     for (var index = 0; index < ComponentType._nextBitIndex; index++) {
       final componentInfo = _componentInfoByType[index];
       if (componentInfo != null &&
-          componentInfo.entities.length > entity &&
-          componentInfo.entities[entity]) {
-        f(componentInfo, entity);
+          componentInfo.entities.length > entity._id &&
+          componentInfo.entities[entity._id]) {
+        f(componentInfo);
       }
     }
   }
@@ -137,7 +137,7 @@ class ComponentManager extends Manager {
   }
 
   /// Returns every entity that is of interest for [system].
-  List<int> _getEntitiesForSystem(
+  List<Entity> _getEntitiesForSystem(
     EntitySystem system,
     int entitiesBitSetLength,
   ) {
@@ -160,18 +160,18 @@ class ComponentManager extends Manager {
     baseAll
       ..and(baseOne)
       ..andNot(baseExclude);
-    return baseAll.toIntValues();
+    return baseAll.toIntValues().map(Entity._).toList(growable: false);
   }
 
   /// Returns the component of type [T] for the given [entity].
   T? getComponent<T extends Component>(
-    int entity,
+    Entity entity,
     ComponentType componentType,
   ) {
     final index = componentType._bitIndex;
     final components = _componentInfoByType[index];
-    if (components != null && entity < components.components.length) {
-      return components.components[entity] as T?;
+    if (components != null && entity._id < components.components.length) {
+      return components.components[entity._id] as T?;
     }
     return null;
   }
@@ -186,35 +186,35 @@ class _ComponentInfo<T extends Component> {
 
   _ComponentInfo();
 
-  void operator []=(int entity, T component) {
-    if (entity >= entities.length) {
-      entities = BitSet.fromBitSet(entities, length: entity + 1);
+  void operator []=(Entity entity, T component) {
+    if (entity._id >= entities.length) {
+      entities = BitSet.fromBitSet(entities, length: entity._id + 1);
       final newCapacity = (entities.length * 3) ~/ 2 + 1;
       final filler = List.filled(newCapacity - components.length, null);
       components.addAll(filler);
     }
-    entities[entity] = true;
-    components[entity] = component;
+    entities[entity._id] = true;
+    components[entity._id] = component;
     dirty = true;
   }
 
-  T operator [](int entity) => components[entity]!;
+  T operator [](Entity entity) => components[entity._id]!;
 
-  void remove(int entity) {
-    if (entities.length > entity && entities[entity]) {
-      entities[entity] = false;
-      components[entity]!._removed();
-      components[entity] = null;
+  void remove(Entity entity) {
+    if (entities.length > entity._id && entities[entity._id]) {
+      entities[entity._id] = false;
+      components[entity._id]!._removed();
+      components[entity._id] = null;
       dirty = true;
     }
   }
 
-  void move(int srcEntity, int dstEntity) {
-    if (entities.length > srcEntity && entities[srcEntity]) {
+  void move(Entity srcEntity, Entity dstEntity) {
+    if (entities.length > srcEntity._id && entities[srcEntity._id]) {
       remove(dstEntity);
-      this[dstEntity] = components[srcEntity]!;
-      entities[srcEntity] = false;
-      components[srcEntity] = null;
+      this[dstEntity] = components[srcEntity._id]!;
+      entities[srcEntity._id] = false;
+      components[srcEntity._id] = null;
       dirty = true;
     }
   }
@@ -257,5 +257,5 @@ mixin MockComponentManagerMixin implements ComponentManager {
   @override
   void _registerSystem(EntitySystem system) {}
   @override
-  void _removeComponentsOfEntity(int entity) {}
+  void _removeComponentsOfEntity(Entity entity) {}
 }
