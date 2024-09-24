@@ -99,7 +99,7 @@ Getting started
        velocityMapper = Mapper<Velocity>(world);
      }
 
-     void processEntity(int entity) {
+     void processEntity(Entity entity) {
        Position position = positionMapper[entity];
        Velocity vel = velocityMapper[entity];
        position
@@ -122,7 +122,7 @@ Getting started
    )
    class SimpleMovementSystem extends _$SimpleMovementSystem {
      @override
-     void processEntity(int entity, Position position, Velocity velocity) {    
+     void processEntity(Entity entity, Position position, Velocity velocity) {    
        position
          ..x += velocity.x * world.delta
          ..y += velocity.y * world.delta;

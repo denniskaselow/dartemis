@@ -6,10 +6,10 @@ abstract class EntityProcessingSystem extends EntitySystem {
   /// Create a new [EntityProcessingSystem]. It requires at least one component.
   EntityProcessingSystem(super.aspect);
 
-  /// Process a [entity] this system is interested in.
-  void processEntity(int entity);
+  /// Process an [entity] this system is interested in.
+  void processEntity(Entity entity);
 
   @override
-  void processEntities(Iterable<int> entities) =>
+  void processEntities(Iterable<Entity> entities) =>
       entities.forEach(processEntity);
 }

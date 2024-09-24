@@ -21,7 +21,7 @@ class World {
   final Map<int, int> _frame = {0: 0, -1: 0};
   final Map<int, double> _time = {0: 0.0, -1: 0.0};
 
-  final Set<int> _entitiesMarkedForDeletion = <int>{};
+  final Set<Entity> _entitiesMarkedForDeletion = <Entity>{};
 
   /// The time that passed since the last time [process] was called.
   double delta = 0;
@@ -96,7 +96,7 @@ class World {
 
   /// Create and return a new or reused [int] instance, optionally with
   /// [components].
-  int createEntity<T extends Component>([List<T> components = const []]) {
+  Entity createEntity<T extends Component>([List<T> components = const []]) {
     final e = _entityManager._createEntityInstance();
     for (final component in components) {
       addComponent(e, component);
@@ -106,7 +106,7 @@ class World {
   }
 
   /// Adds a [component] to the [entity].
-  void addComponent<T extends Component>(int entity, T component) =>
+  void addComponent<T extends Component>(Entity entity, T component) =>
       componentManager._addComponent(
         entity,
         ComponentType.getTypeFor(component.runtimeType),
@@ -114,20 +114,20 @@ class World {
       );
 
   /// Adds [components] to the [entity].
-  void addComponents<T extends Component>(int entity, List<T> components) {
+  void addComponents<T extends Component>(Entity entity, List<T> components) {
     for (final component in components) {
       addComponent(entity, component);
     }
   }
 
   /// Removes a [Component] of type [T] from the [entity].
-  void removeComponent<T extends Component>(int entity) =>
+  void removeComponent<T extends Component>(Entity entity) =>
       componentManager._removeComponent(entity, ComponentType.getTypeFor(T));
 
   /// Moves a [Component] of type [T] from the [srcEntity] to the [dstEntity].
   /// if the [srcEntity] does not have the [Component] of type [T] nothing will
   /// happen.
-  void moveComponent<T extends Component>(int srcEntity, int dstEntity) =>
+  void moveComponent<T extends Component>(Entity srcEntity, Entity dstEntity) =>
       componentManager._moveComponent(
         srcEntity,
         dstEntity,
@@ -205,7 +205,7 @@ class World {
   }
 
   /// Delete an entity.
-  void _deleteEntity(int entity) {
+  void _deleteEntity(Entity entity) {
     for (final manager in _managers.values) {
       manager.deleted(entity);
     }
@@ -232,12 +232,12 @@ class World {
   void deleteAllEntities() {
     entityManager._entities
         .toIntValues()
-        .forEach(_entitiesMarkedForDeletion.add);
+        .forEach((id) => _entitiesMarkedForDeletion.add(Entity._(id)));
     _deleteEntities();
   }
 
-  /// Adds a [int entity] to this world.
-  void addEntity(int entity) {
+  /// Adds a [Entity entity] to this world.
+  void addEntity(Entity entity) {
     entityManager._add(entity);
     for (final manager in _managers.values) {
       manager.added(entity);
@@ -246,7 +246,7 @@ class World {
 
   /// Mark an [entity] for deletion from the world. Will be deleted after the
   /// current system finished running.
-  void deleteEntity(int entity) {
+  void deleteEntity(Entity entity) {
     _entitiesMarkedForDeletion.add(entity);
   }
 
@@ -269,7 +269,7 @@ class World {
   }
 
   /// Get all components belonging to this entity.
-  List<Component> getComponents(int entity) =>
+  List<Component> getComponents(Entity entity) =>
       _componentManager.getComponentsFor(entity);
 }
 

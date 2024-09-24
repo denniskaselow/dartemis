@@ -111,7 +111,7 @@ class MockEntitySystem2 extends _i1.Mock
       );
 
   @override
-  void processEntities(Iterable<int>? entities) => super.noSuchMethod(
+  void processEntities(Iterable<_i2.Entity>? entities) => super.noSuchMethod(
         Invocation.method(
           #processEntities,
           [entities],
@@ -149,7 +149,7 @@ class MockEntitySystem2 extends _i1.Mock
 
   @override
   void addComponent<T extends _i2.Component>(
-    int? entity,
+    _i2.Entity? entity,
     T? component,
   ) =>
       super.noSuchMethod(
@@ -164,7 +164,7 @@ class MockEntitySystem2 extends _i1.Mock
       );
 
   @override
-  void removeComponent<T extends _i2.Component>(int? entity) =>
+  void removeComponent<T extends _i2.Component>(_i2.Entity? entity) =>
       super.noSuchMethod(
         Invocation.method(
           #removeComponent,
@@ -174,7 +174,7 @@ class MockEntitySystem2 extends _i1.Mock
       );
 
   @override
-  void deleteFromWorld(int? entity) => super.noSuchMethod(
+  void deleteFromWorld(_i2.Entity? entity) => super.noSuchMethod(
         Invocation.method(
           #deleteFromWorld,
           [entity],
@@ -265,7 +265,7 @@ class MockEntitySystem extends _i1.Mock
       );
 
   @override
-  void processEntities(Iterable<int>? entities) => super.noSuchMethod(
+  void processEntities(Iterable<_i2.Entity>? entities) => super.noSuchMethod(
         Invocation.method(
           #processEntities,
           [entities],
@@ -303,7 +303,7 @@ class MockEntitySystem extends _i1.Mock
 
   @override
   void addComponent<T extends _i2.Component>(
-    int? entity,
+    _i2.Entity? entity,
     T? component,
   ) =>
       super.noSuchMethod(
@@ -318,7 +318,7 @@ class MockEntitySystem extends _i1.Mock
       );
 
   @override
-  void removeComponent<T extends _i2.Component>(int? entity) =>
+  void removeComponent<T extends _i2.Component>(_i2.Entity? entity) =>
       super.noSuchMethod(
         Invocation.method(
           #removeComponent,
@@ -328,7 +328,7 @@ class MockEntitySystem extends _i1.Mock
       );
 
   @override
-  void deleteFromWorld(int? entity) => super.noSuchMethod(
+  void deleteFromWorld(_i2.Entity? entity) => super.noSuchMethod(
         Invocation.method(
           #deleteFromWorld,
           [entity],
@@ -378,7 +378,8 @@ class MockComponentManager extends _i1.Mock
       ) as List<T>);
 
   @override
-  List<_i2.Component> getComponentsFor(int? entity) => (super.noSuchMethod(
+  List<_i2.Component> getComponentsFor(_i2.Entity? entity) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getComponentsFor,
           [entity],
@@ -399,7 +400,7 @@ class MockComponentManager extends _i1.Mock
 
   @override
   T? getComponent<T extends _i2.Component>(
-    int? entity,
+    _i2.Entity? entity,
     _i2.ComponentType? componentType,
   ) =>
       (super.noSuchMethod(
@@ -414,7 +415,7 @@ class MockComponentManager extends _i1.Mock
       ) as T?);
 
   @override
-  void added(int? entity) => super.noSuchMethod(
+  void added(_i2.Entity? entity) => super.noSuchMethod(
         Invocation.method(
           #added,
           [entity],
@@ -423,7 +424,7 @@ class MockComponentManager extends _i1.Mock
       );
 
   @override
-  void deleted(int? entity) => super.noSuchMethod(
+  void deleted(_i2.Entity? entity) => super.noSuchMethod(
         Invocation.method(
           #deleted,
           [entity],
@@ -470,7 +471,7 @@ class MockManager extends _i1.Mock
       );
 
   @override
-  void added(int? entity) => super.noSuchMethod(
+  void added(_i2.Entity? entity) => super.noSuchMethod(
         Invocation.method(
           #added,
           [entity],
@@ -479,7 +480,7 @@ class MockManager extends _i1.Mock
       );
 
   @override
-  void deleted(int? entity) => super.noSuchMethod(
+  void deleted(_i2.Entity? entity) => super.noSuchMethod(
         Invocation.method(
           #deleted,
           [entity],
