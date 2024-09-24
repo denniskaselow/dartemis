@@ -7,11 +7,14 @@ class ComponentManager extends Manager {
   ComponentManager._internal() : _componentInfoByType = Bag<_ComponentInfo>();
 
   @override
-  void initialize() {}
+  void initialize(World world) {
+    super.initialize(world);
+  }
 
   /// Register a system to know if it needs to be updated when an entity
   /// changed.
-  void _registerSystem(EntitySystem system) {
+  @visibleForTesting
+  void registerSystem(EntitySystem system) {
     final systemBitIndex = system._systemBitIndex;
     for (final index in system._interestingComponentsIndices) {
       _componentInfoByType._ensureCapacity(index);
@@ -32,7 +35,9 @@ class ComponentManager extends Manager {
     }
   }
 
-  void _removeComponentsOfEntity(Entity entity) {
+  /// Removes all components from the [entity].
+  @visibleForTesting
+  void removeComponentsOfEntity(Entity entity) {
     _forComponentsOfEntity(entity, (components) {
       components.remove(entity);
     });
@@ -247,15 +252,4 @@ class _ComponentInfo<T extends Component> {
       requiresUpdate[systemBitIndex] = false;
 
   _ComponentInfo<S> cast<S extends Component>() => this as _ComponentInfo<S>;
-}
-
-/// For Testing.
-@visibleForTesting
-mixin MockComponentManagerMixin implements ComponentManager {
-  @override
-  late World _world;
-  @override
-  void _registerSystem(EntitySystem system) {}
-  @override
-  void _removeComponentsOfEntity(Entity entity) {}
 }

@@ -25,7 +25,8 @@ class PlayerControlSystem extends IntervalEntitySystem {
       : super(20, Aspect.forAllOf([Velocity, Cannon]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     tagManager = world.getManager<TagManager>();
     velocityMapper = Mapper<Velocity>(world);
     cannonMapper = Mapper<Cannon>(world);

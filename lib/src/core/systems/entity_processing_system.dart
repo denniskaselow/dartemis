@@ -4,7 +4,7 @@ part of '../../../dartemis.dart';
 /// possessing the provided component types.
 abstract class EntityProcessingSystem extends EntitySystem {
   /// Create a new [EntityProcessingSystem]. It requires at least one component.
-  EntityProcessingSystem(super.aspect);
+  EntityProcessingSystem(super.aspect, {super.group, super.passive});
 
   /// Process an [entity] this system is interested in.
   void processEntity(Entity entity);

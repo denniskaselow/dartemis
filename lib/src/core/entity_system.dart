@@ -11,7 +11,7 @@ abstract class EntitySystem {
   late final World _world;
 
   List<Entity> _actives = [];
-  bool _passive = true;
+
   late final List<int> _interestingComponentsIndices;
   late final List<int> _componentIndicesAll;
   late final List<int> _componentIndicesOne;
@@ -21,14 +21,20 @@ abstract class EntitySystem {
   final BitSet _excluded;
   final BitSet _one;
 
-  late final int _group;
-
   double _time = 0;
   double _delta = 0;
   int _frame = 0;
 
+  /// If [passive] is set to true the [EntitySystem] will not be processed by
+  /// the world.
+  bool passive;
+
+  /// This [EntitySystem] will only be processed when calling [World.process()]
+  /// with the same [group].
+  final int group;
+
   /// Creates an [EntitySystem] with [aspect].
-  EntitySystem(Aspect aspect)
+  EntitySystem(Aspect aspect, {this.passive = false, this.group = 0})
       : _all = aspect._all,
         _excluded = aspect._excluded,
         _one = aspect._one {
@@ -41,12 +47,6 @@ abstract class EntitySystem {
         .followedBy(_componentIndicesExcluded)
         .toList();
   }
-
-  /// Returns [:true:] if this [EntitySystem] is passive.
-  bool get passive => _passive;
-
-  /// Returns the [group] of this [EntitySystem].
-  int get group => _group;
 
   /// Returns the [World] this [EntitySystem] belongs to.
   World get world => _world;
@@ -67,8 +67,8 @@ abstract class EntitySystem {
   /// This is the only method that is supposed to be called from outside the
   /// library,
   void process() {
-    _frame = world._frame[_group]!;
-    _time = world._time[_group]!;
+    _frame = world._frame[group]!;
+    _time = world._time[group]!;
     _delta = world.delta;
     if (checkProcessing()) {
       begin();
@@ -89,7 +89,13 @@ abstract class EntitySystem {
 
   /// Override to implement code that gets executed when systems are
   /// initialized.
-  void initialize() {}
+  @mustCallSuper
+  @protected
+  @visibleForTesting
+  // ignore: use_setters_to_change_properties
+  void initialize(World world) {
+    _world = world;
+  }
 
   /// Gets called if the world gets destroyed. Override if there is cleanup to
   /// do.
@@ -105,15 +111,4 @@ abstract class EntitySystem {
 
   /// Delete [entity] from the world.
   void deleteFromWorld(Entity entity) => world.deleteEntity(entity);
-}
-
-/// For Testing.
-@visibleForTesting
-mixin MockEntitySystemMixin implements EntitySystem {
-  @override
-  late World _world;
-  @override
-  late bool _passive;
-  @override
-  late final int _group;
 }

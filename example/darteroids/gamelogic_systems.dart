@@ -7,7 +7,8 @@ class MovementSystem extends EntityProcessingSystem {
   MovementSystem() : super(Aspect.forAllOf([Position, Velocity]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     positionMapper = Mapper<Position>(world);
     velocityMapper = Mapper<Velocity>(world);
   }
@@ -33,7 +34,8 @@ class BulletSpawningSystem extends EntityProcessingSystem {
   BulletSpawningSystem() : super(Aspect.forAllOf([Cannon, Position, Velocity]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     positionMapper = Mapper<Position>(world);
     cannonMapper = Mapper<Cannon>(world);
     velocityMapper = Mapper<Velocity>(world);
@@ -76,7 +78,8 @@ class DecaySystem extends EntityProcessingSystem {
   DecaySystem() : super(Aspect.forAllOf([Decay]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     decayMapper = Mapper<Decay>(world);
   }
 
@@ -102,7 +105,8 @@ class AsteroidDestructionSystem extends EntityProcessingSystem {
       : super(Aspect.forAllOf([AsteroidDestroyer, Position]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     positionMapper = Mapper<Position>(world);
     bodyMapper = Mapper<CircularBody>(world);
     groupManager = world.getManager<GroupManager>();
@@ -160,7 +164,8 @@ class PlayerCollisionDetectionSystem extends EntitySystem {
       : super(Aspect.forAllOf([PlayerDestroyer, Position, CircularBody]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     positionMapper = Mapper<Position>(world);
     statusMapper = Mapper<Status>(world);
     bodyMapper = Mapper<CircularBody>(world);

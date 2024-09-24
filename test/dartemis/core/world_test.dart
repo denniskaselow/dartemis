@@ -6,34 +6,12 @@ import 'package:test/test.dart';
 import 'components_setup.dart';
 import 'world_test.mocks.dart';
 
-// mixingIn because of https://github.com/dart-lang/sdk/issues/49687
 @GenerateNiceMocks(
   [
-    MockSpec<EntitySystem>(
-      as: #MockEntitySystem2,
-      // ignore: deprecated_member_use
-      mixingIn: [
-        MockEntitySystemMixin,
-      ],
-    ),
-    MockSpec<EntitySystem>(
-      // ignore: deprecated_member_use
-      mixingIn: [
-        MockEntitySystemMixin,
-      ],
-    ),
-    MockSpec<ComponentManager>(
-      // ignore: deprecated_member_use
-      mixingIn: [
-        MockComponentManagerMixin,
-      ],
-    ),
-    MockSpec<Manager>(
-      // ignore: deprecated_member_use
-      mixingIn: [
-        MockManagerMixin,
-      ],
-    ),
+    MockSpec<EntitySystem>(as: #MockEntitySystem2),
+    MockSpec<EntitySystem>(),
+    MockSpec<ComponentManager>(),
+    MockSpec<Manager>(),
   ],
 )
 void main() {
@@ -56,7 +34,7 @@ void main() {
         ..addSystem(system)
         ..initialize();
 
-      verify(system.initialize()).called(1);
+      verify(system.initialize(world)).called(1);
     });
     test("the same system can't be added twice", () {
       world.addSystem(system);
@@ -81,7 +59,7 @@ void main() {
       when(system.passive).thenReturn(true);
 
       world
-        ..addSystem(system, passive: true)
+        ..addSystem(system)
         ..process();
 
       verifyNever(system.process());
@@ -94,7 +72,7 @@ void main() {
 
       world
         ..addSystem(system)
-        ..addSystem(system2, group: 1)
+        ..addSystem(system2)
         ..process();
       verify(system.process()).called(1);
       verifyNever(system2.process());
@@ -111,7 +89,7 @@ void main() {
 
       world
         ..addSystem(system)
-        ..addSystem(system2, group: 1)
+        ..addSystem(system2)
         ..delta = 10.0
         ..process()
         ..delta = 20.0
@@ -131,7 +109,7 @@ void main() {
         ..addManager(manager)
         ..initialize();
 
-      verify(manager.initialize()).called(1);
+      verify(manager.initialize(world)).called(1);
     });
     test('world initializes added managers', () {
       world.addManager(MockManager());
@@ -502,7 +480,8 @@ class TestEntitySystemForComponent3 extends EntityProcessingSystem {
   TestEntitySystemForComponent3() : super(Aspect.forAllOf([Component3]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     mapper = Mapper<Component3>(world);
   }
 
@@ -524,7 +503,8 @@ class TestEntitySystemWithInteractingDeletedEntities extends EntitySystem {
       : super(Aspect.forAllOf([Component0]));
 
   @override
-  void initialize() {
+  void initialize(World world) {
+    super.initialize(world);
     mapper0 = Mapper<Component0>(world);
   }
 

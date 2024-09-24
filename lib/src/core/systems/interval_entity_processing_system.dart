@@ -7,7 +7,12 @@ part of '../../../dartemis.dart';
 abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
   /// Create a new [IntervalEntityProcessingSystem]. It requires at least one
   /// component.
-  IntervalEntityProcessingSystem(super.interval, super.aspect);
+  IntervalEntityProcessingSystem(
+    super.interval,
+    super.aspect, {
+    super.group,
+    super.passive,
+  });
 
   /// Process an [entity] this system is interested in.
   void processEntity(Entity entity);

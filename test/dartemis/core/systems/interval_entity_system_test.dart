@@ -8,6 +8,7 @@ void main() {
       final sut = TestIntervalEntitySystem(40);
       world
         ..addSystem(sut)
+        ..initialize()
         ..delta = 16;
 
       expect(sut.checkProcessing(), equals(false));
