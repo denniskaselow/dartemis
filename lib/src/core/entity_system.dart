@@ -58,10 +58,12 @@ abstract class EntitySystem {
   double get delta => _delta;
 
   /// Called before processing of entities begins.
+  @visibleForOverriding
   void begin() {}
 
   /// This is the only method that is supposed to be called from outside the
   /// library,
+  @visibleForOverriding
   void process() {
     _frame = world._frame[group]!;
     _time = world._time[group]!;
@@ -74,20 +76,22 @@ abstract class EntitySystem {
   }
 
   /// Called after the processing of entities ends.
+  @visibleForOverriding
   void end() {}
 
   /// Any implementing entity system must implement this method and the logic
   /// to process the given [entities] of the system.
+  @visibleForOverriding
   void processEntities(Iterable<Entity> entities);
 
   /// Returns true if the system should be processed, false if not.
+  @visibleForOverriding
   bool checkProcessing() => true;
 
   /// Override to implement code that gets executed when systems are
   /// initialized.
   @mustCallSuper
-  @protected
-  @visibleForTesting
+  @visibleForOverriding
   void initialize(World world) {
     _world = world;
 
@@ -115,6 +119,7 @@ abstract class EntitySystem {
 
   /// Gets called if the world gets destroyed. Override if there is cleanup to
   /// do.
+  @visibleForOverriding
   void destroy() {}
 
   /// Add a [component] to an [entity].

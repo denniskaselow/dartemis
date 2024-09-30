@@ -18,11 +18,6 @@ class EntityManager extends Manager {
         _deletedEntities = Bag<Entity>(),
         _identifierPool = _EntityPool();
 
-  @override
-  void initialize(World world) {
-    super.initialize(world);
-  }
-
   Entity _createEntityInstance() {
     final entity = _deletedEntities.removeLast() ?? _identifierPool.checkOut();
     _created++;

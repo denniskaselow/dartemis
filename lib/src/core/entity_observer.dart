@@ -4,8 +4,10 @@ part of '../../dartemis.dart';
 /// to the state of an [int].
 abstract class EntityObserver {
   /// Called when an [entity] is added to the world.
+  @visibleForOverriding
   void added(Entity entity);
 
   /// Called when an [entity] is being deleted from the world.
+  @visibleForOverriding
   void deleted(Entity entity);
 }
