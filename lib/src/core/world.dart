@@ -20,6 +20,7 @@ class World {
   // any systems, for testing purposes
   final Map<int, int> _frame = {0: 0, -1: 0};
   final Map<int, double> _time = {0: 0.0, -1: 0.0};
+  bool _initialized = false;
 
   final Set<Entity> _entitiesMarkedForDeletion = <Entity>{};
 
@@ -49,7 +50,10 @@ class World {
   /// added.
   void initialize() {
     _managersBag.forEach(_initializeManager);
-    _systemsList.forEach(_initializeSystem);
+    _systemsList
+      ..forEach(_initializeSystem)
+      ..forEach(componentManager.registerSystem);
+    _initialized = true;
   }
 
   void _initializeManager(Manager manager) => manager.initialize(this);
@@ -72,6 +76,11 @@ class World {
           'manager',
           'A manager of type "${manager.runtimeType}" has already been added '
               'to the world.');
+    }
+    if (_initialized) {
+      throw StateError(
+          'The world has already been initialized. The manager needs to be '
+          'added before calling initialize.');
     }
     _managers[manager.runtimeType] = manager;
     _managersBag.add(manager);
@@ -106,9 +115,8 @@ class World {
 
   /// Adds a [component] to the [entity].
   void addComponent<T extends Component>(Entity entity, T component) =>
-      componentManager._addComponent(
+      componentManager._addComponent<T>(
         entity,
-        ComponentType.getTypeFor(component.runtimeType),
         component,
       );
 
@@ -121,16 +129,15 @@ class World {
 
   /// Removes a [Component] of type [T] from the [entity].
   void removeComponent<T extends Component>(Entity entity) =>
-      componentManager._removeComponent(entity, ComponentType.getTypeFor(T));
+      componentManager._removeComponent<T>(entity);
 
   /// Moves a [Component] of type [T] from the [srcEntity] to the [dstEntity].
   /// if the [srcEntity] does not have the [Component] of type [T] nothing will
   /// happen.
   void moveComponent<T extends Component>(Entity srcEntity, Entity dstEntity) =>
-      componentManager._moveComponent(
+      componentManager._moveComponent<T>(
         srcEntity,
         dstEntity,
-        ComponentType.getTypeFor(T),
       );
 
   /// Gives you all the systems in this world for possible iteration.
@@ -145,12 +152,16 @@ class World {
           'A system of type "${system.runtimeType}" has already been added to '
               'the world.');
     }
+    if (_initialized) {
+      throw StateError(
+          'The world has already been initialized. The system needs to be '
+          'added before calling initialize.');
+    }
 
     _systems[system.runtimeType] = system;
     _systemsList.add(system);
     _time.putIfAbsent(system.group, () => 0.0);
     _frame.putIfAbsent(system.group, () => 0);
-    componentManager.registerSystem(system);
   }
 
   /// Removed the specified system from the world.

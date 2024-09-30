@@ -1,9 +1,5 @@
 import 'package:dartemis/dartemis.dart';
 
-final int componentBit0 = ComponentType.getBitIndex(Component0);
-final int componentBit1 = ComponentType.getBitIndex(Component1);
-final int componentBit2 = ComponentType.getBitIndex(PooledComponent2);
-
 class Component0 extends Component {}
 
 class Component1 extends Component {}
@@ -72,3 +68,5 @@ class Component30 extends Component {}
 class Component31 extends Component {}
 
 class Component32 extends Component {}
+
+class UnusedComponent extends Component {}
