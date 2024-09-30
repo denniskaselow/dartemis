@@ -23,6 +23,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   double get delta => _intervalDelta;
 
   @override
+  @visibleForOverriding
   bool checkProcessing() {
     _acc += world.delta;
     _intervalDelta += world.delta;
@@ -37,6 +38,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   ///
   /// Call `super.end()` if you overwrite this function.
   @override
+  @visibleForOverriding
   void end() {
     _intervalDelta = 0;
   }

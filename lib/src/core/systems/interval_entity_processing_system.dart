@@ -15,9 +15,11 @@ abstract class IntervalEntityProcessingSystem extends IntervalEntitySystem {
   });
 
   /// Process an [entity] this system is interested in.
+  @visibleForOverriding
   void processEntity(Entity entity);
 
   @override
+  @visibleForOverriding
   void processEntities(Iterable<Entity> entities) =>
       entities.forEach(processEntity);
 }

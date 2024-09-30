@@ -11,12 +11,18 @@ void main() {
         ..initialize()
         ..delta = 16;
 
+      // ignore: invalid_use_of_visible_for_overriding_member
       expect(sut.checkProcessing(), equals(false));
+      // ignore: invalid_use_of_visible_for_overriding_member
       expect(sut.checkProcessing(), equals(false));
+      // ignore: invalid_use_of_visible_for_overriding_member
       expect(sut.checkProcessing(), equals(true));
       expect(sut.delta, equals(48));
+      // ignore: invalid_use_of_visible_for_overriding_member
       sut.end();
+      // ignore: invalid_use_of_visible_for_overriding_member
       expect(sut.checkProcessing(), equals(false));
+      // ignore: invalid_use_of_visible_for_overriding_member
       expect(sut.checkProcessing(), equals(true));
       expect(sut.delta, equals(32));
     });

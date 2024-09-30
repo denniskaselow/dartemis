@@ -8,7 +8,7 @@
 * removed named parameters `group` and `passive` from `World.addSystem`,
   they are now named parameters of the constructor of `EntitySystem`
 * the `initialize`-method of `Manager`s and `EntitySystem`s now has a
-  parameter for the `World`
+  parameter for the `World` and must be called when overriding `initialize`
 * it's no longer possible to add systems or managers after the world has been initialized
 * `ComponentType` has been turned into an extension type, static methods of this class are now instance methods on
   `ComponentManager`
@@ -16,6 +16,7 @@
 ### Enhancements
 * it's now possible to have multiple worlds (e.g. multiple games in the same webpage/app)
   * sharing instances of components/entities/managers/systems between worlds is NOT possible and things will break
+* added `@visibleForOverriding`-annotations to several methods that are only supposed to be called by dartemis
 
 ## 0.9.9
 ### Enhancements

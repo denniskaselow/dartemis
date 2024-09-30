@@ -22,5 +22,6 @@ class PooledComponent<T extends Pooled<T>> extends Component with Pooled<T> {
   /// If you need to do some cleanup when removing this component override this
   /// method.
   @override
+  @visibleForOverriding
   void cleanUp() {}
 }

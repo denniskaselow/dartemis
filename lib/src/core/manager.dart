@@ -10,19 +10,22 @@ abstract class Manager implements EntityObserver {
   /// Override to implement code that gets executed when managers are
   /// initialized.
   @mustCallSuper
-  @protected
+  @visibleForOverriding
   // ignore: use_setters_to_change_properties
   void initialize(World world) {
     _world = world;
   }
 
   @override
+  @visibleForOverriding
   void added(Entity entity) {}
 
   @override
+  @visibleForOverriding
   void deleted(Entity entity) {}
 
   /// Called when the world gets destroyed. Override if you need to clean up
   /// your manager.
+  @visibleForOverriding
   void destroy() {}
 }

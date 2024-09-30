@@ -34,6 +34,10 @@ void main() {
         ..addSystem(system)
         ..initialize();
 
+      // TODO(me): remove this and other ignores after https://github.com/dart-lang/sdk/issues/56819 is fixed
+      // can't use @visibleForTesting annotation as it will complain about
+      // calls to super in the overriding method
+      // ignore: invalid_use_of_visible_for_overriding_member
       verify(system.initialize(world)).called(1);
     });
     test('systems can not be added after calling initialize', () {
@@ -51,6 +55,7 @@ void main() {
         ..addSystem(system)
         ..process();
 
+      // ignore: invalid_use_of_visible_for_overriding_member
       verify(system.process()).called(1);
     });
     test('world processes added system', () {
@@ -58,6 +63,7 @@ void main() {
         ..addSystem(system)
         ..process();
 
+      // ignore: invalid_use_of_visible_for_overriding_member
       verify(system.process()).called(1);
     });
     test('world does not process passive system', () {
@@ -67,6 +73,7 @@ void main() {
         ..addSystem(system)
         ..process();
 
+      // ignore: invalid_use_of_visible_for_overriding_member
       verifyNever(system.process());
     });
     test('world processes systems by group', () {
@@ -79,10 +86,12 @@ void main() {
         ..addSystem(system)
         ..addSystem(system2)
         ..process();
+      // ignore: invalid_use_of_visible_for_overriding_member
       verify(system.process()).called(1);
       verifyNever(system2.process());
 
       world.process(1);
+      // ignore: invalid_use_of_visible_for_overriding_member
       verifyNever(system.process());
       verify(system2.process()).called(1);
     });
@@ -177,6 +186,7 @@ void main() {
         ..process()
         ..destroy();
 
+      // ignore: invalid_use_of_visible_for_overriding_member
       verify(system.destroy()).called(1);
     });
     test('destroy calls destroy method on managers', () {
