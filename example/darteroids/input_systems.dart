@@ -1,10 +1,10 @@
 part of '../main.dart';
 
 class PlayerControlSystem extends IntervalEntitySystem {
-  static const int up = 87;
-  static const int down = 83;
-  static const int left = 65;
-  static const int right = 68;
+  static const int up = KeyCode.W;
+  static const int down = KeyCode.S;
+  static const int left = KeyCode.A;
+  static const int right = KeyCode.D;
 
   bool moveUp = false;
   bool moveDown = false;
@@ -19,7 +19,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   late final Mapper<Cannon> cannonMapper;
   late final TagManager tagManager;
 
-  final CanvasElement canvas;
+  final HTMLCanvasElement canvas;
 
   PlayerControlSystem(this.canvas)
       : super(20, Aspect.forAllOf([Velocity, Cannon]));
@@ -32,7 +32,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
     cannonMapper = Mapper<Cannon>(world);
 
     window.onKeyDown.listen(handleKeyDown);
-    window.onKeyUp.listen(handleKeyUp);
+    EventStreamProviders.keyUpEvent.forTarget(window).listen(handleKeyUp);
     canvas.onMouseDown.listen(handleMouseDown);
     canvas.onMouseUp.listen(handleMouseUp);
   }
@@ -90,8 +90,8 @@ class PlayerControlSystem extends IntervalEntitySystem {
   }
 
   void handleMouseDown(MouseEvent e) {
-    targetX = e.offset.x;
-    targetY = e.offset.y;
+    targetX = e.offsetX;
+    targetY = e.offsetY;
     shoot = true;
   }
 

@@ -29,8 +29,8 @@ class CircleRenderingSystem extends EntityProcessingSystem {
     try {
       context
         ..lineWidth = 0.5
-        ..fillStyle = body.color
-        ..strokeStyle = body.color;
+        ..fillStyle = body.color.toJS
+        ..strokeStyle = body.color.toJS;
       if (null != status && status.invisible) {
         if (status.invisiblityTimer % 600 < 300) {
           context.globalAlpha = 0.4;
@@ -80,7 +80,7 @@ class BackgroundRenderSystem extends VoidEntitySystem {
     context.save();
     try {
       context
-        ..fillStyle = 'black'
+        ..fillStyle = 'black'.toJS
         ..beginPath()
         ..rect(0, 0, maxWidth, maxHeight + hudHeight)
         ..closePath()
@@ -110,7 +110,7 @@ class HudRenderSystem extends VoidEntitySystem {
     context.save();
     try {
       context
-        ..fillStyle = '#555'
+        ..fillStyle = '#555'.toJS
         ..beginPath()
         ..rect(0, maxHeight, maxWidth, maxHeight + hudHeight)
         ..closePath()
@@ -119,7 +119,7 @@ class HudRenderSystem extends VoidEntitySystem {
       final player = tagManager.getEntity(tagPlayer)!;
       final status = statusMapper[player];
 
-      context.fillStyle = playerColor;
+      context.fillStyle = playerColor.toJS;
       for (var i = 0; i < status.lifes; i++) {
         context
           ..beginPath()

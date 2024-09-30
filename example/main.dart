@@ -1,10 +1,11 @@
 library darteroids;
 
 import 'dart:async';
-import 'dart:html';
+import 'dart:js_interop';
 import 'dart:math';
 
 import 'package:dartemis/dartemis.dart';
+import 'package:web/web.dart';
 
 part 'darteroids/components.dart';
 part 'darteroids/gamelogic_systems.dart';
@@ -22,7 +23,7 @@ const int hudHeight = 100;
 final Random random = Random();
 
 void main() async {
-  final canvas = querySelector('#gamecontainer')! as CanvasElement
+  final canvas = document.querySelector('#gamecontainer')! as HTMLCanvasElement
     ..width = maxWidth
     ..height = maxHeight + hudHeight;
 
@@ -30,7 +31,7 @@ void main() async {
 }
 
 class Darteroids {
-  final CanvasElement canvas;
+  final HTMLCanvasElement canvas;
   final CanvasRenderingContext2D context2d;
   final World world;
   num lastTime = 0;
@@ -69,7 +70,7 @@ class Darteroids {
       ..initialize();
 
     physicsLoop();
-    await renderLoop(16.66);
+    renderLoop(16.66);
   }
 
   void addAsteroids(GroupManager groupManager) {
@@ -97,12 +98,12 @@ class Darteroids {
     Future.delayed(const Duration(milliseconds: 5), physicsLoop);
   }
 
-  Future<void> renderLoop(num time) async {
+  void renderLoop(num time) {
     world.delta = (time - lastTime).toDouble();
     lastTime = time;
     world.process(1);
 
-    await renderLoop(await window.animationFrame);
+    window.requestAnimationFrame(renderLoop.toJS);
   }
 }
 
