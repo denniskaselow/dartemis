@@ -36,6 +36,11 @@ void main() {
 
       verify(system.initialize(world)).called(1);
     });
+    test('systems can not be added after calling initialize', () {
+      world.initialize();
+
+      expect(() => world.addSystem(MockEntitySystem2()), throwsStateError);
+    });
     test("the same system can't be added twice", () {
       world.addSystem(system);
 
@@ -111,10 +116,15 @@ void main() {
 
       verify(manager.initialize(world)).called(1);
     });
-    test('world initializes added managers', () {
+    test("the same manager can't be added twice", () {
       world.addManager(MockManager());
 
       expect(() => world.addManager(MockManager()), throwsArgumentError);
+    });
+    test('managers can not be added after calling initialize', () {
+      world.initialize();
+
+      expect(() => world.addManager(TagManager()), throwsStateError);
     });
     test('world deletes all entites', () {
       world
@@ -202,7 +212,7 @@ void main() {
       };
     });
     test('''
-EntitySystem which requires one Component processes int with this component''',
+EntitySystem which requires one Component processes entity with this component''',
         () {
       final expectedEntities = [entityAB, entityAC];
       final es =
@@ -210,7 +220,7 @@ EntitySystem which requires one Component processes int with this component''',
       systemStarter(es, () {});
     });
     test('''
-EntitySystem which required multiple Components does not process int with a subset of those components''',
+EntitySystem which required multiple Components does not process entity with a subset of those components''',
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
@@ -220,7 +230,7 @@ EntitySystem which required multiple Components does not process int with a subs
       systemStarter(es, () {});
     });
     test('''
-EntitySystem which requires one of multiple components processes int with a subset of those components''',
+EntitySystem which requires one of multiple components processes entity with a subset of those components''',
         () {
       final expectedEntities = [entityAB, entityAC];
       final es = TestEntitySystem(
@@ -230,7 +240,7 @@ EntitySystem which requires one of multiple components processes int with a subs
       systemStarter(es, () {});
     });
     test('''
-EntitySystem which excludes a component does not process int with one of those components''',
+EntitySystem which excludes a component does not process entity with one of those components''',
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
@@ -411,7 +421,12 @@ class TestEntitySystem extends EntitySystem {
   @override
   void processEntities(Iterable<Entity> entities) {
     final length = _expectedEntities.length;
-    expect(entities.length, length);
+    expect(
+      entities.length,
+      length,
+      reason:
+          '''expected $length entities, got ${entities.length} entities: [${entities.join(', ')}]''',
+    );
     for (final entity in entities) {
       expect(entity, isIn(_expectedEntities));
     }

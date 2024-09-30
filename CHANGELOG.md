@@ -1,13 +1,21 @@
 # Changelog
 ## 0.10.0
+
 ### Breaking API Changes
-* Entities are no longer simple `int`s and have been turned into an `extension type Entity(int)`. 
+* entities are no longer simple `int`s and have been turned into an `extension type Entity(int)`. 
   Methods that previously expected `int entity` or `Iterable<int> entities>` 
-  now expect `Entity entity` or `Iterable<Entity> entities`.
-* Removed named parameters `group` and `passive` from `World.addSystem`,
-  they are now named parameters of the constructor of `EntitySystem`.
-* The `initialize`-method of `Manager`s and `EntitySystem`s now has a
-  parameter for the `World`.
+  now expect `Entity entity` or `Iterable<Entity> entities`
+* removed named parameters `group` and `passive` from `World.addSystem`,
+  they are now named parameters of the constructor of `EntitySystem`
+* the `initialize`-method of `Manager`s and `EntitySystem`s now has a
+  parameter for the `World`
+* it's no longer possible to add systems or managers after the world has been initialized
+* `ComponentType` has been turned into an extension type, static methods of this class are now instance methods on
+  `ComponentManager`
+
+### Enhancements
+* it's now possible to have multiple worlds (e.g. multiple games in the same webpage/app)
+  * sharing instances of components/entities/managers/systems between worlds is NOT possible and things will break
 
 ## 0.9.9
 ### Enhancements
@@ -15,7 +23,7 @@
 
 ## 0.9.8+1
 ### Bugfix
-* Fix crash when moving components
+* fix crash when moving components
 
 ## 0.9.8
 ### Enhancements

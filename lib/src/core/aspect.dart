@@ -20,20 +20,27 @@ part of '../../dartemis.dart';
 /// is the same as:
 ///     Aspect.forAllOf([A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
 class Aspect {
-  final BitSet _all = BitSet(64);
-  final BitSet _excluded = BitSet(64);
-  final BitSet _one = BitSet(64);
+  /// All components an [Entity] needs to be processed by an [EntitySystem].
+  final Set<Type> all = {};
+
+  /// An [Entity] needs one of these components to be processed by the
+  /// [EntitySystem].
+  final Set<Type> one = {};
+
+  /// An [Entity] will not be processed by the [EntitySystem] if it has one of
+  /// these [Component] types.
+  final Set<Type> excluded = {};
 
   /// Creates an aspect where an entity must possess all of the specified
   /// components.
-  Aspect.forAllOf(List<Type> componentTypes) {
-    allOf(componentTypes);
+  Aspect.forAllOf(Iterable<Type> componentTypes) {
+    all.addAll(componentTypes);
   }
 
   /// Creates an aspect where an entity must possess one of the specified
-  /// componens.
-  Aspect.forOneOf(List<Type> componentTypes) {
-    oneOf(componentTypes);
+  /// components.
+  Aspect.forOneOf(Iterable<Type> componentTypes) {
+    one.addAll(componentTypes);
   }
 
   /// Creates and returns an empty aspect. This can be used if you want a system
@@ -51,35 +58,20 @@ class Aspect {
 
   /// Modifies the aspect in a way that an entity must possess all of the
   /// specified components.
-  void allOf(List<Type> componentTypes) {
-    _updateBitMask(_all, componentTypes);
+  void allOf(Iterable<Type> componentTypes) {
+    all.addAll(componentTypes);
   }
 
   /// Excludes all of the specified components from the aspect. A system will
   /// not be interested in an entity that possesses one of the specified
   /// excluded components.
-  void exclude(List<Type> componentTypes) {
-    _updateBitMask(_excluded, componentTypes);
+  void exclude(Iterable<Type> componentTypes) {
+    excluded.addAll(componentTypes);
   }
 
   /// Modifies the aspect in a way that an entity must possess one of the
   /// specified components.
-  void oneOf(List<Type> componentTypes) {
-    _updateBitMask(_one, componentTypes);
-  }
-
-  /// The bitmask of all aspects combined via [allOf].
-  BitSet get all => _all;
-
-  /// The bitmask of all aspects combined via [exclude].
-  BitSet get excluded => _excluded;
-
-  /// The bitmask of all aspects combined via [oneOf].
-  BitSet get one => _one;
-
-  void _updateBitMask(BitSet mask, List<Type> componentTypes) {
-    for (final componentType in componentTypes) {
-      mask[ComponentType.getBitIndex(componentType)] = true;
-    }
+  void oneOf(Iterable<Type> componentTypes) {
+    one.addAll(componentTypes);
   }
 }

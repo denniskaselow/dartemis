@@ -7,19 +7,19 @@ part of '../../dartemis.dart';
 /// There is no need to ever call any other method than process on objects of
 /// this class.
 abstract class EntitySystem {
-  late final int _systemBitIndex;
   late final World _world;
 
   List<Entity> _actives = [];
 
-  late final List<int> _interestingComponentsIndices;
-  late final List<int> _componentIndicesAll;
-  late final List<int> _componentIndicesOne;
-  late final List<int> _componentIndicesExcluded;
+  final List<int> _interestingComponentsIndices = [];
+  final List<int> _componentIndicesAll = [];
+  final List<int> _componentIndicesOne = [];
+  final List<int> _componentIndicesExcluded = [];
 
-  final BitSet _all;
-  final BitSet _excluded;
-  final BitSet _one;
+  final Aspect _aspect;
+  final BitSet _all = BitSet(64);
+  final BitSet _excluded = BitSet(64);
+  final BitSet _one = BitSet(64);
 
   double _time = 0;
   double _delta = 0;
@@ -34,19 +34,15 @@ abstract class EntitySystem {
   final int group;
 
   /// Creates an [EntitySystem] with [aspect].
+  ///
+  /// If [passive] is set to [`true`] the system will not be processed as long
+  /// as it stays passive.
+  ///
+  /// If [group] is set, [World.process] needs to be called with this group
+  /// to be processed. For example the group can be used to handle systems
+  /// for physics and rendering separately and with different deltas.
   EntitySystem(Aspect aspect, {this.passive = false, this.group = 0})
-      : _all = aspect._all,
-        _excluded = aspect._excluded,
-        _one = aspect._one {
-    _systemBitIndex = _SystemBitManager._getBitIndexFor(runtimeType);
-    _componentIndicesAll = _all.toIntValues();
-    _componentIndicesOne = _one.toIntValues();
-    _componentIndicesExcluded = _excluded.toIntValues();
-    _interestingComponentsIndices = _componentIndicesAll
-        .followedBy(_componentIndicesOne)
-        .followedBy(_componentIndicesExcluded)
-        .toList();
-  }
+      : _aspect = aspect;
 
   /// Returns the [World] this [EntitySystem] belongs to.
   World get world => _world;
@@ -92,9 +88,29 @@ abstract class EntitySystem {
   @mustCallSuper
   @protected
   @visibleForTesting
-  // ignore: use_setters_to_change_properties
   void initialize(World world) {
     _world = world;
+
+    _updateBitMask(_all, _aspect.all);
+    _updateBitMask(_one, _aspect.one);
+    _updateBitMask(_excluded, _aspect.excluded);
+
+    _componentIndicesAll.addAll(_all.toIntValues());
+    _componentIndicesOne.addAll(_one.toIntValues());
+    _componentIndicesExcluded.addAll(_excluded.toIntValues());
+    _interestingComponentsIndices.addAll(
+      _componentIndicesAll
+          .followedBy(_componentIndicesOne)
+          .followedBy(_componentIndicesExcluded)
+          .toList(),
+    );
+  }
+
+  void _updateBitMask(BitSet mask, Iterable<Type> componentTypes) {
+    final componentManager = world.getManager<ComponentManager>();
+    for (final componentType in componentTypes) {
+      mask[componentManager.getBitIndex(componentType)] = true;
+    }
   }
 
   /// Gets called if the world gets destroyed. Override if there is cleanup to

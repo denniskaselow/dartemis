@@ -3,19 +3,21 @@ part of '../../dartemis.dart';
 /// Manages als components of all entities.
 class ComponentManager extends Manager {
   final Bag<_ComponentInfo> _componentInfoByType;
+  final _componentTypes = <Type, ComponentType>{};
+  final _systemIndices = <Type, int>{};
+  int _systemCount = 0;
+  int _componentTypeCount = 0;
 
   ComponentManager._internal() : _componentInfoByType = Bag<_ComponentInfo>();
-
-  @override
-  void initialize(World world) {
-    super.initialize(world);
-  }
 
   /// Register a system to know if it needs to be updated when an entity
   /// changed.
   @visibleForTesting
   void registerSystem(EntitySystem system) {
-    final systemBitIndex = system._systemBitIndex;
+    final systemBitIndex = _systemIndices.putIfAbsent(
+      system.runtimeType,
+      () => _systemCount++,
+    );
     for (final index in system._interestingComponentsIndices) {
       _componentInfoByType._ensureCapacity(index);
       var componentInfo = _componentInfoByType[index];
@@ -29,7 +31,7 @@ class ComponentManager extends Manager {
   }
 
   void _unregisterSystem(EntitySystem system) {
-    final systemBitIndex = system._systemBitIndex;
+    final systemBitIndex = _systemIndices.remove(system.runtimeType)!;
     for (final index in system._interestingComponentsIndices) {
       _componentInfoByType[index]!.removeInterestedSystem(systemBitIndex);
     }
@@ -45,10 +47,12 @@ class ComponentManager extends Manager {
 
   void _addComponent<T extends Component>(
     Entity entity,
-    ComponentType type,
     T component,
   ) {
-    final index = type._bitIndex;
+    // needs the runtimeType instead of T because this method gets called
+    // in a loop over a list of Components, so T would be Component
+    final type = getTypeFor(component.runtimeType);
+    final index = type.bitIndex;
     _componentInfoByType._ensureCapacity(index);
     var componentInfo = _componentInfoByType[index];
     if (componentInfo == null) {
@@ -58,20 +62,23 @@ class ComponentManager extends Manager {
     componentInfo[entity] = component;
   }
 
-  void _removeComponent(Entity entity, ComponentType type) {
-    final typeId = type._bitIndex;
+  void _removeComponent<T>(Entity entity) {
+    final type = getTypeFor(T);
+    final typeId = type.bitIndex;
     _componentInfoByType[typeId]!.remove(entity);
   }
 
-  void _moveComponent(Entity entitySrc, Entity entityDst, ComponentType type) {
-    final typeId = type._bitIndex;
+  void _moveComponent<T>(Entity entitySrc, Entity entityDst) {
+    final type = getTypeFor(T);
+    final typeId = type.bitIndex;
     _componentInfoByType[typeId]?.move(entitySrc, entityDst);
   }
 
   /// Returns all components of [ComponentType type] accessible by their entity
   /// id.
-  List<T?> _getComponentsByType<T extends Component>(ComponentType type) {
-    final index = type._bitIndex;
+  List<T?> _getComponentsByType<T extends Component>() {
+    final type = getTypeFor(T);
+    final index = type.bitIndex;
     _componentInfoByType._ensureCapacity(index);
 
     var components = _componentInfoByType[index];
@@ -93,8 +100,8 @@ class ComponentManager extends Manager {
   }
 
   /// Returns all components of [ComponentType type].
-  List<T> getComponentsByType<T extends Component>(ComponentType type) =>
-      _getComponentsByType(type).whereType<T>().toList();
+  List<T> getComponentsByType<T extends Component>() =>
+      _getComponentsByType<T>().whereType<T>().toList();
 
   /// Returns all components of [entity].
   List<Component> getComponentsFor(Entity entity) {
@@ -111,7 +118,7 @@ class ComponentManager extends Manager {
     Entity entity,
     void Function(_ComponentInfo components) f,
   ) {
-    for (var index = 0; index < ComponentType._nextBitIndex; index++) {
+    for (var index = 0; index < _componentTypeCount; index++) {
       final componentInfo = _componentInfoByType[index];
       if (componentInfo != null &&
           componentInfo.entities.length > entity._id &&
@@ -123,7 +130,7 @@ class ComponentManager extends Manager {
 
   /// Returns true if the list of entities of [system] need to be updated.
   bool isUpdateNeededForSystem(EntitySystem system) {
-    final systemBitIndex = system._systemBitIndex;
+    final systemBitIndex = _systemIndices[system.runtimeType]!;
     for (final interestingComponent in system._interestingComponentsIndices) {
       if (_componentInfoByType[interestingComponent]!
           .systemRequiresUpdate(systemBitIndex)) {
@@ -135,7 +142,7 @@ class ComponentManager extends Manager {
 
   /// Marks the [system] as updated for the necessary component types.
   void _systemUpdated(EntitySystem system) {
-    final systemBitIndex = system._systemBitIndex;
+    final systemBitIndex = _systemIndices[system.runtimeType]!;
     for (final interestingComponent in system._interestingComponentsIndices) {
       _componentInfoByType[interestingComponent]!.systemUpdated(systemBitIndex);
     }
@@ -171,15 +178,24 @@ class ComponentManager extends Manager {
   /// Returns the component of type [T] for the given [entity].
   T? getComponent<T extends Component>(
     Entity entity,
-    ComponentType componentType,
   ) {
-    final index = componentType._bitIndex;
+    final componentType = getTypeFor(T);
+    final index = componentType.bitIndex;
     final components = _componentInfoByType[index];
     if (components != null && entity._id < components.components.length) {
       return components.components[entity._id] as T?;
     }
     return null;
   }
+
+  /// Returns the [ComponentType] for the runtimeType of a [Component].
+  ComponentType getTypeFor(Type typeOfComponent) => _componentTypes.putIfAbsent(
+        typeOfComponent,
+        () => ComponentType(_componentTypeCount++),
+      );
+
+  /// Returns the index of the bit of the [componentType].
+  int getBitIndex(Type componentType) => getTypeFor(componentType).bitIndex;
 }
 
 class _ComponentInfo<T extends Component> {

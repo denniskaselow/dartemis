@@ -7,8 +7,7 @@ class Mapper<T extends Component> {
 
   /// Create a Mapper for [T] in [world].
   Mapper(World world)
-      : _components = world.componentManager
-            ._getComponentsByType<T>(ComponentType.getTypeFor(T));
+      : _components = world.componentManager._getComponentsByType<T>();
 
   /// Fast but unsafe retrieval of a component for this entity.
   /// No bounding checks, so this could throw a [RangeError],
@@ -37,8 +36,7 @@ class OptionalMapper<T extends Component> {
 
   /// Create a Mapper for [T] in [world].
   OptionalMapper(World world)
-      : _components = world.componentManager
-            ._getComponentsByType<T>(ComponentType.getTypeFor(T));
+      : _components = world.componentManager._getComponentsByType<T>();
 
   /// Fast and safe retrieval of a component for this entity.
   /// If the entity does not have this component then null is returned.

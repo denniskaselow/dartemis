@@ -3,13 +3,17 @@ import 'package:test/test.dart';
 
 import 'components_setup.dart';
 
-const int defaultBagSize = 16;
-
 void main() {
   group('integration tests for ComponentManager', () {
     late World world;
     setUp(() {
       world = World();
+    });
+    test('returns correct bit', () {
+      final componentManager = world.getManager<ComponentManager>();
+      expect(componentManager.getBitIndex(Component0), 0);
+      expect(componentManager.getBitIndex(Component1), 1);
+      expect(componentManager.getBitIndex(PooledComponent2), 2);
     });
     test('ComponentManager correctly associates entity and components', () {
       final entity = world.createEntity();
@@ -62,11 +66,8 @@ void main() {
       expect(fillBag.length, equals(0));
     });
     test('ComponentManager can be created for unused Component', () {
-      var type = ComponentType();
-      for (var i = 0; i < defaultBagSize; i++) {
-        type = ComponentType();
-      }
-      final componentsByType = world.componentManager.getComponentsByType(type);
+      final componentsByType =
+          world.componentManager.getComponentsByType<UnusedComponent>();
       expect(componentsByType.length, equals(0));
     });
     test('ComponentManager returns specific component for specific entity', () {
@@ -74,10 +75,7 @@ void main() {
       final entity = world.createEntity([componentA]);
 
       expect(
-        world.componentManager.getComponent<Component0>(
-          entity,
-          ComponentType.getTypeFor(Component0),
-        ),
+        world.componentManager.getComponent<Component0>(entity),
         equals(componentA),
       );
     });
@@ -87,10 +85,7 @@ void main() {
       final entity = world.createEntity([Component0()]);
 
       expect(
-        world.componentManager.getComponent<Component1>(
-          entity,
-          ComponentType.getTypeFor(Component1),
-        ),
+        world.componentManager.getComponent<Component1>(entity),
         isNull,
       );
     });
@@ -104,10 +99,7 @@ void main() {
       world.createEntity([Component1()]);
 
       expect(
-        world.componentManager.getComponent<Component1>(
-          entity,
-          ComponentType.getTypeFor(Component1),
-        ),
+        world.componentManager.getComponent<Component1>(entity),
         isNull,
       );
     });
@@ -122,10 +114,7 @@ void main() {
       final highIdEntity = world.createEntity<Component>([]);
 
       expect(
-        world.componentManager.getComponent<Component0>(
-          highIdEntity,
-          ComponentType.getTypeFor(Component0),
-        ),
+        world.componentManager.getComponent<Component0>(highIdEntity),
         isNull,
       );
     });

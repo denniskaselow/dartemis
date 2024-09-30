@@ -21,7 +21,6 @@ part 'src/core/managers/player_manager.dart';
 part 'src/core/managers/tag_manager.dart';
 part 'src/core/managers/team_manager.dart';
 part 'src/core/mapper.dart';
-part 'src/core/system_bit_manager.dart';
 part 'src/core/systems/entity_processing_system.dart';
 part 'src/core/systems/interval_entity_processing_system.dart';
 part 'src/core/systems/interval_entity_system.dart';
