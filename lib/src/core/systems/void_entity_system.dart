@@ -6,7 +6,7 @@ part of '../../../dartemis.dart';
 /// to concern yourself about aspects or entities.
 abstract class VoidEntitySystem extends EntitySystem {
   /// Create the [VoidEntitySystem].
-  VoidEntitySystem({super.group}) : super(Aspect.empty());
+  VoidEntitySystem({super.group, super.passive}) : super(Aspect.empty());
 
   @override
   @visibleForOverriding
