@@ -8,7 +8,7 @@ class CircleRenderingSystem extends EntityProcessingSystem {
   late final Mapper<Status> statusMapper;
 
   CircleRenderingSystem(this.context, {super.group})
-      : super(Aspect.forAllOf([Position, CircularBody]));
+      : super(Aspect(allOf: [Position, CircularBody]));
 
   @override
   void initialize(World world) {

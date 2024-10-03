@@ -226,7 +226,7 @@ EntitySystem which requires one Component processes entity with this component''
         () {
       final expectedEntities = [entityAB, entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
+          TestEntitySystem(Aspect(allOf: [Component0]), expectedEntities);
       systemStarter(es, () {});
     });
     test('''
@@ -234,7 +234,7 @@ EntitySystem which required multiple Components does not process entity with a s
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
-        Aspect.forAllOf([Component0, Component1]),
+        Aspect(allOf: [Component0, Component1]),
         expectedEntities,
       );
       systemStarter(es, () {});
@@ -244,7 +244,7 @@ EntitySystem which requires one of multiple components processes entity with a s
         () {
       final expectedEntities = [entityAB, entityAC];
       final es = TestEntitySystem(
-        Aspect.forOneOf([Component0, Component1]),
+        Aspect(oneOf: [Component0, Component1]),
         expectedEntities,
       );
       systemStarter(es, () {});
@@ -254,7 +254,7 @@ EntitySystem which excludes a component does not process entity with one of thos
         () {
       final expectedEntities = [entityAB];
       final es = TestEntitySystem(
-        Aspect.forAllOf([Component0])..exclude([PooledComponent2]),
+        Aspect(allOf: [Component0])..exclude([PooledComponent2]),
         expectedEntities,
       );
       systemStarter(es, () {});
@@ -262,7 +262,7 @@ EntitySystem which excludes a component does not process entity with one of thos
     test('A removed entity will not get processed', () {
       final expectedEntities = [entityAC];
       final es =
-          TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
+          TestEntitySystem(Aspect(allOf: [Component0]), expectedEntities);
       systemStarter(es, () => es.deleteFromWorld(entityAB));
     });
     test(
@@ -295,7 +295,7 @@ EntitySystem which excludes a component does not process entity with one of thos
 Adding a component will get the entity processed''', () {
       final expectedEntities = [entityAC];
       final es = TestEntitySystem(
-        Aspect.forAllOf([PooledComponent2]),
+        Aspect(allOf: [PooledComponent2]),
         expectedEntities,
       );
       world
@@ -338,7 +338,7 @@ Adding a component will get the entity processed''', () {
       entityB = world.createEntity([Component32()]);
       entityC = world.createEntity([Component0()]);
       final expectedEntities = [entityA];
-      es = TestEntitySystem(Aspect.forAllOf([Component0]), expectedEntities);
+      es = TestEntitySystem(Aspect(allOf: [Component0]), expectedEntities);
 
       world
         ..addSystem(es)
@@ -455,41 +455,43 @@ class TestEntitySystem extends EntitySystem {
 class TestEntitySystemWithMoreThan32Components extends EntitySystem {
   TestEntitySystemWithMoreThan32Components()
       : super(
-          Aspect.forAllOf([
-            Component0,
-            Component1,
-            PooledComponent2,
-            Component3,
-            Component4,
-            Component5,
-            Component6,
-            Component7,
-            Component8,
-            Component9,
-            Component10,
-            Component11,
-            Component12,
-            Component13,
-            Component14,
-            Component15,
-            Component16,
-            Component17,
-            Component18,
-            Component19,
-            Component20,
-            Component21,
-            Component22,
-            Component23,
-            Component24,
-            Component25,
-            Component26,
-            Component27,
-            Component28,
-            Component29,
-            Component30,
-            Component31,
-            Component32,
-          ]),
+          Aspect(
+            allOf: [
+              Component0,
+              Component1,
+              PooledComponent2,
+              Component3,
+              Component4,
+              Component5,
+              Component6,
+              Component7,
+              Component8,
+              Component9,
+              Component10,
+              Component11,
+              Component12,
+              Component13,
+              Component14,
+              Component15,
+              Component16,
+              Component17,
+              Component18,
+              Component19,
+              Component20,
+              Component21,
+              Component22,
+              Component23,
+              Component24,
+              Component25,
+              Component26,
+              Component27,
+              Component28,
+              Component29,
+              Component30,
+              Component31,
+              Component32,
+            ],
+          ),
         );
 
   @override
@@ -502,7 +504,7 @@ class TestEntitySystemWithMoreThan32Components extends EntitySystem {
 class TestEntitySystemForComponent3 extends EntityProcessingSystem {
   late Mapper<Component3> mapper;
 
-  TestEntitySystemForComponent3() : super(Aspect.forAllOf([Component3]));
+  TestEntitySystemForComponent3() : super(Aspect(allOf: [Component3]));
 
   @override
   void initialize(World world) {
@@ -525,7 +527,7 @@ class TestEntitySystemForComponent3 extends EntityProcessingSystem {
 class TestEntitySystemWithInteractingDeletedEntities extends EntitySystem {
   late final Mapper<Component0> mapper0;
   TestEntitySystemWithInteractingDeletedEntities()
-      : super(Aspect.forAllOf([Component0]));
+      : super(Aspect(allOf: [Component0]));
 
   @override
   void initialize(World world) {

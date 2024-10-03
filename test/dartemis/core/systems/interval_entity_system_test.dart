@@ -30,7 +30,7 @@ void main() {
 }
 
 class TestIntervalEntitySystem extends IntervalEntitySystem {
-  TestIntervalEntitySystem(double interval) : super(interval, Aspect.empty());
+  TestIntervalEntitySystem(double interval) : super(interval, Aspect());
   @override
   void processEntities(Iterable<Entity> entities) {}
 }
