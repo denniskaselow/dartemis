@@ -30,7 +30,7 @@ class Mapper<T extends Component> {
 
 /// Same as [Mapper], except the [[]] operator returns [T?] instead of [T] and
 /// no getSafe method.
-/// For use in combination with [Aspect.forOneOf].
+/// For use in combination with [Aspect.oneOf].
 class OptionalMapper<T extends Component> {
   final List<T?> _components;
 

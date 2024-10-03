@@ -6,15 +6,14 @@ import 'components_setup.dart';
 void main() {
   group('Aspect Tests', () {
     test('getAspectForAll with one component', () {
-      final aspect = Aspect.forAllOf([PooledComponent2]);
+      final aspect = Aspect(allOf: [PooledComponent2]);
       expect(aspect.all, contains(PooledComponent2));
       expect(aspect.all, hasLength(1));
       expect(aspect.excluded, isEmpty);
       expect(aspect.one, isEmpty);
     });
     test('getAspectForAll with all components', () {
-      final aspect =
-          Aspect.forAllOf([Component0, Component1, PooledComponent2]);
+      final aspect = Aspect(allOf: [Component0, Component1, PooledComponent2]);
       expect(
         aspect.all,
         containsAll([Component0, Component1, PooledComponent2]),
@@ -23,28 +22,27 @@ void main() {
       expect(aspect.one, isEmpty);
     });
     test('getAspectForAll with one component, excluding another one', () {
-      final aspect = Aspect.forAllOf([PooledComponent2])..exclude([Component0]);
+      final aspect = Aspect(allOf: [PooledComponent2])..exclude([Component0]);
       expect(aspect.all, containsAll([PooledComponent2]));
       expect(aspect.excluded, containsAll([Component0]));
       expect(aspect.one, isEmpty);
     });
     test('getAspectForAll with one component, excluding another two', () {
-      final aspect = Aspect.forAllOf([PooledComponent2])
+      final aspect = Aspect(allOf: [PooledComponent2])
         ..exclude([Component0, Component1]);
       expect(aspect.all, containsAll([PooledComponent2]));
       expect(aspect.excluded, containsAll([Component0, Component1]));
       expect(aspect.one, isEmpty);
     });
     test('getAspectForAll with one component, and one of two', () {
-      final aspect = Aspect.forAllOf([PooledComponent2])
+      final aspect = Aspect(allOf: [PooledComponent2])
         ..oneOf([Component0, Component1]);
       expect(aspect.all, containsAll([PooledComponent2]));
       expect(aspect.excluded, isEmpty);
       expect(aspect.one, containsAll([Component0, Component1]));
     });
     test('getAspectForOne with all components', () {
-      final aspect =
-          Aspect.forOneOf([Component0, Component1, PooledComponent2]);
+      final aspect = Aspect(oneOf: [Component0, Component1, PooledComponent2]);
       expect(aspect.all, isEmpty);
       expect(aspect.excluded, isEmpty);
       expect(
@@ -53,7 +51,7 @@ void main() {
       );
     });
     test('getAspectForOne with chaining each component', () {
-      final aspect = Aspect.forOneOf([Component0])
+      final aspect = Aspect(oneOf: [Component0])
         ..oneOf([Component1])
         ..oneOf([PooledComponent2]);
       expect(aspect.all, isEmpty);
@@ -64,7 +62,7 @@ void main() {
       );
     });
     test('getEmpty()', () {
-      final aspect = Aspect.empty();
+      final aspect = Aspect();
       expect(aspect.all, isEmpty);
       expect(aspect.excluded, isEmpty);
       expect(aspect.one, isEmpty);

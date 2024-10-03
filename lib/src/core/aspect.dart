@@ -5,20 +5,20 @@ part of '../../dartemis.dart';
 /// types an entity must possess, or not possess.
 ///
 /// This creates an aspect where an entity must possess A and B and C:
-///     Aspect.forAllOf([A, B, C])
+///     Aspect(allOf: [A, B, C])
 ///
 /// This creates an aspect where an entity must possess A and B and C, but must
 /// not possess U or V.
-///     Aspect.forAllOf([A, B, C])..exclude([U, V])
+///     Aspect(allOf: [A, B, C])..exclude([U, V])
 ///
 /// This creates an aspect where an entity must possess A and B and C, but must
 /// not possess U or V, but must possess one of X or Y or Z.
-///     Aspect.forAllOf([A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
+///     Aspect(allOf: [A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
 ///
 /// You can create and compose aspects in many ways:
 ///     Aspect.empty()..oneOf([X, Y, Z])..allOf([A, B, C])..exclude([U, V])
 /// is the same as:
-///     Aspect.forAllOf([A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
+///     Aspect(allOf: [A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
 class Aspect {
   /// All components an [Entity] needs to be processed by an [EntitySystem].
   final Set<Type> all = {};
@@ -31,30 +31,31 @@ class Aspect {
   /// these [Component] types.
   final Set<Type> excluded = {};
 
-  /// Creates an aspect where an entity must possess all of the specified
-  /// components.
-  Aspect.forAllOf(Iterable<Type> componentTypes) {
-    all.addAll(componentTypes);
-  }
-
-  /// Creates an aspect where an entity must possess one of the specified
-  /// components.
-  Aspect.forOneOf(Iterable<Type> componentTypes) {
-    one.addAll(componentTypes);
-  }
-
-  /// Creates and returns an empty aspect. This can be used if you want a system
-  /// that processes no entities, but still gets invoked. Typical usages is when
+  /// Creates and returns an aspect.
+  ///
+  /// A system only processes an [Entity] that posses all [Component]s
+  /// given by [allOf].
+  ///
+  /// With [oneOf] an [Entity] must posses at least one of the specified
+  /// [Component]s to be processed by a system.
+  ///
+  /// [exclude] can be used to prevent an [Entity] to be processed when it has
+  /// one of the specified [Component]s.
+  ///
+  /// If no arguments are passed it will be an empty aspect.
+  /// This can be used if you want a system that processes no entities,
+  /// but still gets invoked. Typical usages is when
   /// you need to create special purpose systems for debug rendering, like
   /// rendering FPS, how many entities are active in the world, etc.
-  ///
-  /// You can also use the all, one and exclude methods on this aspect, so if
-  /// you wanted to create a system that processes only entities possessing just
-  /// one of the components A or B or C, then you can do:
-  ///     Aspect.empty()..one("A", "B", "C");
-  ///
-  /// Returns an empty Aspect that will reject all entities.
-  Aspect.empty();
+  Aspect({
+    Iterable<Type> allOf = const {},
+    Iterable<Type> oneOf = const {},
+    Iterable<Type> exclude = const {},
+  }) {
+    all.addAll(allOf);
+    one.addAll(oneOf);
+    excluded.addAll(exclude);
+  }
 
   /// Modifies the aspect in a way that an entity must possess all of the
   /// specified components.

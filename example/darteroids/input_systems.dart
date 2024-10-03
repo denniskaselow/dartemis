@@ -22,7 +22,7 @@ class PlayerControlSystem extends IntervalEntitySystem {
   final HTMLCanvasElement canvas;
 
   PlayerControlSystem(this.canvas)
-      : super(20, Aspect.forAllOf([Velocity, Cannon]));
+      : super(20, Aspect(allOf: [Velocity, Cannon]));
 
   @override
   void initialize(World world) {

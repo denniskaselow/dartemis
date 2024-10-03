@@ -12,6 +12,8 @@
 * it's no longer possible to add systems or managers after the world has been initialized
 * `ComponentType` has been turned into an extension type, static methods of this class are now instance methods on
   `ComponentManager`
+* combined the different `Aspect`-constructors into a single one with optional named parameters for `allOf`, `oneOf`
+  and `exclude`
 
 ### Enhancements
 * it's now possible to have multiple worlds (e.g. multiple games in the same webpage/app)
