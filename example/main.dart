@@ -35,6 +35,7 @@ class Darteroids {
   final CanvasRenderingContext2D context2d;
   final World world;
   num lastTime = 0;
+  final Stopwatch physicsLoopTimer = Stopwatch()..start();
 
   Darteroids(this.canvas)
       : context2d = canvas.context2D,
@@ -92,8 +93,9 @@ class Darteroids {
 
   void physicsLoop() {
     world
-      ..delta = 5.0
+      ..delta = physicsLoopTimer.elapsedMicroseconds / 1000.0
       ..process();
+    physicsLoopTimer.reset();
 
     Future.delayed(const Duration(milliseconds: 5), physicsLoop);
   }
