@@ -1,5 +1,5 @@
 name: dartemis
-version: 0.10.0-dev
+version: 0.10.0
 description: An Entity System Framework for game development. Based on Artemis.
 repository: https://github.com/denniskaselow/dartemis
 environment:
@@ -18,4 +18,6 @@ dev_dependencies:
 # for extension types support
 dependency_overrides:
   mockito:
-    git: https://github.com/dart-lang/mockito.git
+    git:
+      url: https://github.com/dart-lang/mockito.git
+      ref: f72791
