@@ -24,6 +24,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
 
   @override
   @visibleForOverriding
+  @visibleForTesting
   bool checkProcessing() {
     _acc += world.delta;
     _intervalDelta += world.delta;
@@ -39,6 +40,7 @@ abstract class IntervalEntitySystem extends EntitySystem {
   /// Call `super.end()` if you overwrite this function.
   @override
   @visibleForOverriding
+  @visibleForTesting
   void end() {
     _intervalDelta = 0;
   }

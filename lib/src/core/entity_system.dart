@@ -64,6 +64,7 @@ abstract class EntitySystem {
   /// This is the only method that is supposed to be called from outside the
   /// library,
   @visibleForOverriding
+  @visibleForTesting
   void process() {
     _frame = world._frame[group]!;
     _time = world._time[group]!;
@@ -92,6 +93,7 @@ abstract class EntitySystem {
   /// initialized.
   @mustCallSuper
   @visibleForOverriding
+  @visibleForTesting
   void initialize(World world) {
     _world = world;
 
@@ -120,6 +122,7 @@ abstract class EntitySystem {
   /// Gets called if the world gets destroyed. Override if there is cleanup to
   /// do.
   @visibleForOverriding
+  @visibleForTesting
   void destroy() {}
 
   /// Add a [component] to an [entity].
