@@ -36,6 +36,18 @@ void main() {
 
       verify(system.initialize(world)).called(1);
     });
+    test('world initializes every added system when adding multiple', () {
+      final system2 = MockEntitySystem2();
+      when(system2.passive).thenReturn(false);
+      when(system2.group).thenReturn(1);
+
+      world
+        ..addSystems([system, system2])
+        ..initialize();
+
+      verify(system.initialize(world)).called(1);
+      verify(system2.initialize(world)).called(1);
+    });
     test('systems can not be added after calling initialize', () {
       world.initialize();
 
@@ -113,6 +125,15 @@ void main() {
 
       world
         ..addManager(manager)
+        ..initialize();
+
+      verify(manager.initialize(world)).called(1);
+    });
+    test('world initializes every added manager when adding multple', () {
+      final manager = MockManager();
+
+      world
+        ..addManagers([manager])
         ..initialize();
 
       verify(manager.initialize(world)).called(1);

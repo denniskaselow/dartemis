@@ -67,7 +67,11 @@ class World {
   /// Returns a manager that takes care of all the components in the world.
   ComponentManager get componentManager => _componentManager;
 
-  /// Add a manager into this world. It can be retrieved later. World will
+  /// Add multiple [managers] to this world. It can be retrieved later.
+  /// World will notify this manager of changes to entity.
+  void addManagers(List<Manager> managers) => managers.forEach(addManager);
+
+  /// Add a [manager] to this world. It can be retrieved later. World will
   /// notify this manager of changes to entity.
   void addManager(Manager manager) {
     if (_managers.containsKey(manager.runtimeType)) {
@@ -142,6 +146,10 @@ class World {
 
   /// Gives you all the systems in this world for possible iteration.
   Iterable<EntitySystem> get systems => _systemsList;
+
+  /// Adds multiple [systems] to this world that will be processed by
+  /// [process()].
+  void addSystems(List<EntitySystem> systems) => systems.forEach(addSystem);
 
   /// Adds a [system] to this world that will be processed by [process()].
   void addSystem(EntitySystem system) {
