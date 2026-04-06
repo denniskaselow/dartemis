@@ -1,24 +1,34 @@
 part of '../../dartemis.dart';
 
-/// An Aspect is used by systems as a matcher against entities, to check if a
+/// An [Aspect] is used by systems as a matcher against entities, to check if a
 /// system is interested in an entity. Aspects define what sort of component
 /// types an entity must possess, or not possess.
 ///
-/// This creates an aspect where an entity must possess A and B and C:
+/// This creates an aspect where an entity must possess `A` and `B` and `C`:
+/// ```dart
 ///     Aspect(allOf: [A, B, C])
+/// ```
 ///
-/// This creates an aspect where an entity must possess A and B and C, but must
-/// not possess U or V.
+/// This creates an aspect where an entity must possess `A` and `B` and `C`,
+/// but must not possess `U` or `V`.
+/// ```dart
 ///     Aspect(allOf: [A, B, C])..exclude([U, V])
+/// ```
 ///
-/// This creates an aspect where an entity must possess A and B and C, but must
-/// not possess U or V, but must possess one of X or Y or Z.
+/// This creates an aspect where an entity must possess `A` and `B` and `C`,
+/// but must not possess `U` or `V`, but must possess one of `X` or `Y` or `Z`.
+/// ```dart
 ///     Aspect(allOf: [A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
+/// ```
 ///
 /// You can create and compose aspects in many ways:
+/// ```dart
 ///     Aspect.empty()..oneOf([X, Y, Z])..allOf([A, B, C])..exclude([U, V])
+/// ```
 /// is the same as:
-///     Aspect(allOf: [A, B, C])..exclude([U, V])..oneOf([X, Y, Z])
+/// ```dart
+///     Aspect(allOf: [A, B, C], exclude: [U, V])..oneOf([X, Y, Z])
+/// ```
 class Aspect {
   /// All components an [Entity] needs to be processed by an [EntitySystem].
   final Set<Type> all = {};

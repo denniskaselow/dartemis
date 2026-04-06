@@ -74,7 +74,7 @@ class ComponentManager extends Manager {
     _componentInfoByType[typeId]?.move(entitySrc, entityDst);
   }
 
-  /// Returns all components of [ComponentType type] accessible by their entity
+  /// Returns all components of type [T] accessible by their entity
   /// id.
   List<T?> _getComponentsByType<T extends Component>() {
     final type = getTypeFor(T);
@@ -99,7 +99,7 @@ class ComponentManager extends Manager {
     return components!.components.cast<T?>();
   }
 
-  /// Returns all components of [ComponentType type].
+  /// Returns all components of type [T].
   List<T> getComponentsByType<T extends Component>() =>
       _getComponentsByType<T>().whereType<T>().toList();
 

@@ -1,7 +1,7 @@
 part of '../../dartemis.dart';
 
 /// Interface for [EntitySystem]s and [Manager]s to get informed about changes
-/// to the state of an [int].
+/// to the state of an [Entity].
 abstract class EntityObserver {
   /// Called when an [entity] is added to the world.
   @visibleForOverriding

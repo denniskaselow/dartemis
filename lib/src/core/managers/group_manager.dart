@@ -4,7 +4,7 @@ part of '../../../dartemis.dart';
 /// group or explosions into "effects", then use this manager. You must retrieve
 /// it using world instance.
 ///
-/// An [int] can only belong to several groups (0,n) at a time.
+/// An [Entity] can belong to several groups (0,n) at a time.
 class GroupManager extends Manager {
   final Map<String, EntityBag> _entitiesByGroup;
   final Map<Entity, Bag<String>> _groupsByEntity;

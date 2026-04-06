@@ -1,6 +1,6 @@
 part of '../../dartemis.dart';
 
-/// Manages creation and deletion of every [int] and gives access to some
+/// Manages creation and deletion of every [Entity] and gives access to some
 /// basic statistcs.
 class EntityManager extends Manager {
   BitSet _entities;

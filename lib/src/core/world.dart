@@ -106,7 +106,7 @@ class World {
     _managersBag.remove(manager);
   }
 
-  /// Create and return a new or reused [int] instance, optionally with
+  /// Create and return a new or reused [Entity] instance, optionally with
   /// [components].
   Entity createEntity<T extends Component>([List<T> components = const []]) {
     final e = _entityManager._createEntityInstance();
@@ -236,7 +236,7 @@ class World {
   /// Removes all entities from the world.
   ///
   /// Every entity and component has to be created anew. Make sure not to reuse
-  /// [Component]s that were added to an [int] and referenced in you code
+  /// [Component]s that were added to an [Entity] and referenced in you code
   /// because they will be added to a free list and might be overwritten once a
   /// new [Component] of that type is created.
   void deleteAllEntities() {
@@ -246,7 +246,7 @@ class World {
     _deleteEntities();
   }
 
-  /// Adds a [Entity entity] to this world.
+  /// Adds an [entity] to this world.
   void addEntity(Entity entity) {
     entityManager._add(entity);
     for (final manager in _managers.values) {
@@ -349,7 +349,7 @@ class PerformanceMeasureWorld extends World {
   }
 
   /// Returns the [PerformanceStats] for every system and and the
-  /// [PerformanceStats] for changes to [int]s that require updates to other
+  /// [PerformanceStats] for changes to [Entity]s that require updates to other
   /// [EntitySystem]s and [Manager]s.
   List<PerformanceStats> getPerformanceStats() {
     final result = <PerformanceStats>[];
