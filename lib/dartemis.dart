@@ -1,5 +1,3 @@
-library dartemis;
-
 import 'dart:collection';
 import 'dart:core';
 

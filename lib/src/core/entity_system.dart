@@ -35,7 +35,7 @@ abstract class EntitySystem {
 
   /// Creates an [EntitySystem] with [aspect].
   ///
-  /// If [passive] is set to [`true`] the system will not be processed as long
+  /// If [passive] is set to `true` the system will not be processed as long
   /// as it stays passive.
   ///
   /// If [group] is set, [World.process] needs to be called with this group

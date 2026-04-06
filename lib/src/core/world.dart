@@ -246,7 +246,7 @@ class World {
     _deleteEntities();
   }
 
-  /// Adds a [Entity entity] to this world.
+  /// Adds an [entity] to this world.
   void addEntity(Entity entity) {
     entityManager._add(entity);
     for (final manager in _managers.values) {
